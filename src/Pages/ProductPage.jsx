@@ -25,6 +25,7 @@ function ProductPage() {
 	const toast = useToast()
 
 	const height = window.innerHeight
+	const width = window.innerWidth
 
 
 	const { currentUser, loadingShow, loadingClose } = useContext(AuthContext)
@@ -177,20 +178,17 @@ function ProductPage() {
 			</HStack>
 
 			<Stack bgColor={'gray.100'} px={2}>
-
-
-				<HStack alignItems={'center'} justifyContent='center' spacing={10} my={1}>
+				<Stack maxWidth={'100%'}>
+				{/* <SimpleGrid columns={[ 1, null, category.length ]} alignItems={'center'} gap={2} justifyContent='center' maxW={'100%'} overflowX='scroll' my={3}> */}
+				<HStack   alignItems={'center'} gap={2} justifyContent='center'  spacing={5}  m={3} >
 					{category.length > 0 && category.map((x, index) =>
-						<Stack key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer'>
-							<Text color={x.name === activeCategory ? 'blue.400' : 'gray.600'} size={'md'}>{x.name}</Text>
+						<Stack  key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer' alignItems={'center'} justifyContent='center'>
+							<Text color={x.name === activeCategory ? 'blue.400' : 'gray.600'} fontSize={'sm'}>{x.name}</Text>
 						</Stack>
 					)}
-
-					{/* <HStack bgColor={'white'} shadow={'md'} px={3} py={1} borderBottomRadius='md' cursor={'pointer'} onClick={() => console.log('filter')}>
-						<BiFilterAlt size={22} />
-						<Text>Filter</Text>
-					</HStack> */}
 				</HStack>
+				</Stack>
+				{/* </SimpleGrid> */}
 				{productList.length > 0 ? (
 					<>
 					<SimpleGrid columns={2} gap={5} mx={5}>
