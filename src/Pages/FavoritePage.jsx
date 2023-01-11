@@ -61,7 +61,7 @@ function FavoritePage() {
 
 
   return (
-    <Stack bgColor={'gray.100'} py={5} h={height}>
+    <Stack bgColor={'gray.100'} py={5} minH={height}>
 
       {productListWishlist?.data?.length > 0 ? (
         <SimpleGrid columns={2} gap={5} mx={5}>

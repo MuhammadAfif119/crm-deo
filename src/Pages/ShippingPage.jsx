@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineCopy } from 'react-icons/ai'
 import { BsCircleFill } from 'react-icons/bs'
 import { IoHelpCircleOutline } from 'react-icons/io5'
+import { SlArrowDown } from 'react-icons/sl'
 import { useNavigate } from 'react-router-dom'
 import _axios from '../Api/AxiosBarrier'
 import AuthContext from '../Routes/hooks/AuthContext'
@@ -123,80 +124,87 @@ function ShippingPage() {
     return (
         <Stack bgColor={'gray.200'} p={5}>
             {shippingData.length > 0 ? (
-                shippingData.map((x, index) => (
-                    <Stack spacing={1} bgColor={'white'} key={index} borderRadius='xl' m={2} p={5} shadow={'md'}  >
-                        <Stack mx={3}>
-                            <Text color={'gray.600'} fontSize='sm' >{moment(x.created_at).format('LLL')}</Text>
-                        </Stack>
+                <>
+                    <Stack>
+                        {shippingData.map((x, index) => (
+                            <Stack spacing={1} bgColor={'white'} key={index} borderRadius='xl' m={2} p={5} shadow={'md'}  >
+                                <Stack mx={3}>
+                                    <Text color={'gray.600'} fontSize='sm' >{moment(x.created_at).format('LLL')}</Text>
+                                </Stack>
 
-                        <HStack alignItems='center' justifyContent={'space-between'} m={3}>
-                            <Stack >
+                                <HStack alignItems='center' justifyContent={'space-between'} m={3}>
+                                    <Stack >
 
-                                <Image
-                                    src={x.image}
-                                    alt={x.image}
-                                    size='lg'
-                                    borderRadius={'xl'}
-                                    w='200px'
-                                    h='200px'
-                                />
+                                        <Image
+                                            src={x.image}
+                                            alt={x.image}
+                                            size='lg'
+                                            borderRadius={'xl'}
+                                            w='200px'
+                                            h='200px'
+                                        />
 
-                            </Stack>
-
-                            <Stack spacing={1}  >
-                                <Text fontSize={'lg'} fontWeight='bold'>{x.order_number}</Text>
-                                <Text color={'gray.600'} fontSize='sm' numberOfLines={2}>{x.name}</Text>
-                                <HStack alignItems={'center'} spacing={2} >
-                                    <Stack>
-                                        <Text textTransform={'capitalize'}>
-                                            from : {x.from}
-                                        </Text>
                                     </Stack>
 
+                                    <Stack spacing={1}  >
+                                        <Text fontSize={'lg'} fontWeight='bold'>{x.order_number}</Text>
+                                        <Text color={'gray.600'} fontSize='sm' numberOfLines={2}>{x.name}</Text>
+                                        <HStack alignItems={'center'} spacing={2} >
+                                            <Stack>
+                                                <Text textTransform={'capitalize'}>
+                                                    from : {x.from}
+                                                </Text>
+                                            </Stack>
+
+                                        </HStack>
+                                    </Stack>
+
+
+                                    <Stack >
+                                        <Button shadow={'md'} borderRadius={'lg'} bgColor={'green.400'} onClick={() => handleModalDetail(x?.order_number)}>
+                                            <HStack>
+
+                                                <Text color={'white'} fontWeight='bold' fontSize={'md'}>Detail</Text>
+                                            </HStack>
+                                        </Button>
+                                    </Stack>
                                 </HStack>
-                            </Stack>
+                                <Divider />
 
-
-                            <Stack >
-                                <Button shadow={'md'} borderRadius={'lg'} bgColor={'green.400'} onClick={() => handleModalDetail(x?.order_number)}>
-                                    <HStack>
-
-                                        <Text color={'white'} fontWeight='bold' fontSize={'md'}>Detail</Text>
+                                <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
+                                    <Text fontSize={'sm'} color='gray.600' >Status</Text>
+                                    <Spacer />
+                                    <HStack spacing={1} alignItems='center' justifyContent={'center'}>
+                                        <Text fontSize={'sm'} textTransform='capitalize'>{x?.last_status}</Text>
+                                        <BsCircleFill size={7} color="green" />
                                     </HStack>
-                                </Button>
+                                </HStack>
+
+                                <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
+                                    <Text fontSize={'sm'} color='gray.600' >Quantity</Text>
+                                    <Spacer />
+                                    <Text fontSize={'sm'}>{x?.quantity}</Text>
+                                </HStack>
+
+                                <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
+                                    <Text fontSize={'sm'} color='gray.600'>Price / pcs</Text>
+                                    <Spacer />
+                                    <Text fontSize={'sm'} fontWeight='bold'>Rp. {formatFrice(x?.price_per_pcs)}</Text>
+                                </HStack>
+
+                                <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
+                                    <Text fontSize={'sm'} color='gray.600'>Total</Text>
+                                    <Spacer />
+                                    <Text fontSize={'sm'} fontWeight='bold' color={'green.600'}>Rp. {formatFrice(x?.price_per_pcs * x?.quantity)}</Text>
+                                </HStack>
+
                             </Stack>
-                        </HStack>
-                        <Divider />
-
-                        <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
-                            <Text fontSize={'sm'} color='gray.600' >Status</Text>
-                            <Spacer />
-                            <HStack spacing={1} alignItems='center' justifyContent={'center'}>
-                                <Text fontSize={'sm'} textTransform='capitalize'>{x?.last_status}</Text>
-                                <BsCircleFill size={7} color="green" />
-                            </HStack>
-                        </HStack>
-
-                        <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
-                            <Text fontSize={'sm'} color='gray.600' >Quantity</Text>
-                            <Spacer />
-                            <Text fontSize={'sm'}>{x?.quantity}</Text>
-                        </HStack>
-
-                        <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
-                            <Text fontSize={'sm'} color='gray.600'>Price / pcs</Text>
-                            <Spacer />
-                            <Text fontSize={'sm'} fontWeight='bold'>Rp. {formatFrice(x?.price_per_pcs)}</Text>
-                        </HStack>
-
-                        <HStack mx={3} alignItems='center' justifyContent={'space-evenly'}>
-                            <Text fontSize={'sm'} color='gray.600'>Total</Text>
-                            <Spacer />
-                            <Text fontSize={'sm'} fontWeight='bold' color={'green.600'}>Rp. {formatFrice(x?.price_per_pcs * x?.quantity)}</Text>
-                        </HStack>
-
+                        ))}
                     </Stack>
-                ))
+                    <Button onClick={() => handlePagination()} >
+                        <SlArrowDown />
+                    </Button>
+                </>
             ) : (
                 <Stack h={height} alignItems={'center'} justifyContent='center' >
                     <Text color={'gray.500'} fontWeight='bold'>Tidak ada data shipping</Text>

@@ -11,6 +11,7 @@ import { get } from '../Api/importirApi';
 import { formatFrice } from '../Utils/Helper'
 import { db } from '../Config/firebase';
 import { arrayUnion, doc, setDoc } from 'firebase/firestore';
+import { SlArrowDown } from 'react-icons/sl'
 
 function ProductPage() {
 	const [search, setSearch] = useState('')
@@ -23,6 +24,8 @@ function ProductPage() {
 	const navigate = useNavigate()
 	const toast = useToast()
 
+	const height = window.innerHeight
+
 
 	const { currentUser, loadingShow, loadingClose } = useContext(AuthContext)
 
@@ -31,7 +34,7 @@ function ProductPage() {
 		try {
 			const result = await get('category-list')
 			if (result) {
-				setCategory(result.data)
+				setCategory(result?.data)
 				console.log(result.data, 'category')
 			}
 		} catch (error) {
@@ -41,11 +44,12 @@ function ProductPage() {
 
 	const getDataProduct = async (count) => {
 		loadingShow()
+		console.log(count, 'count')
 		let productArr = []
 		try {
 			const result = await get('product-list', `page=${count}`)
 			if (result) {
-				// console.log(result.data.data,'total data')
+
 				const dataArr = result.data.data
 				productArr.push(...dataArr)
 			}
@@ -69,7 +73,7 @@ function ProductPage() {
 		try {
 			const result = await get(`product-list-by-category/${id}`)
 			if (result) {
-				setProductList(result.data.data)
+				setProductList(result?.data?.data)
 
 			}
 			  loadingClose()
@@ -136,21 +140,24 @@ function ProductPage() {
 
 	useEffect(() => {
 		getCategory()
-
-		return () => {
-		}
-	}, [])
-
-	useEffect(() => {
 		getDataProduct()
 
 		return () => {
+			setProductList([])
 		}
-	}, [currentUser])
+	}, [])
+
+
+
+	const handlePagination = async () => {
+		setCount(count + 1)
+		getDataProduct(count)
+	  }
+
 
 
 	return (
-		<Stack bgColor={'gray.100'} >
+		<Stack bgColor={'gray.100'} minH={height}>
 			<HStack bgColor={colors.theme} alignItems={'center'} justifyContent='center' p={2} spacing={2} shadow={'md'}>
 				<Stack>
 					<MdSearch size={25} />
@@ -174,8 +181,8 @@ function ProductPage() {
 
 				<HStack alignItems={'center'} justifyContent='center' spacing={10} my={1}>
 					{category.length > 0 && category.map((x, index) =>
-						<Stack onClick={() => getProductList(x.id, x.name)} cursor='pointer'>
-							<Text key={index} color={x.name === activeCategory ? 'blue.400' : 'gray.600'} size={'md'}>{x.name}</Text>
+						<Stack key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer'>
+							<Text color={x.name === activeCategory ? 'blue.400' : 'gray.600'} size={'md'}>{x.name}</Text>
 						</Stack>
 					)}
 
@@ -185,6 +192,7 @@ function ProductPage() {
 					</HStack> */}
 				</HStack>
 				{productList.length > 0 ? (
+					<>
 					<SimpleGrid columns={2} gap={5} mx={5}>
 						{
 							productList.map((x, i) =>
@@ -237,6 +245,10 @@ function ProductPage() {
 						}
 
 					</SimpleGrid>
+					<Button onClick={() => handlePagination()} >
+						<SlArrowDown />
+					</Button>
+					</>
 				) : (
 					<Stack h={'70vh'} alignItems='center' justifyContent={'center'}>
 						<Text color={'gray.300'} fontWeight='bold'>Sedang Mencari Produk ...</Text>

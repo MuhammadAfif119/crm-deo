@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "belanja-co-id"
+  },
+  "targets": {
+    "belanja-co-id": {
+      "hosting": {
+        "public": [
+          "belanjacoid"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

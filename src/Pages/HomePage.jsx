@@ -10,6 +10,7 @@ import AuthContext from '../Routes/hooks/AuthContext'
 import colors from '../Utils/colors'
 import { BsInstagram } from 'react-icons/bs'
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa'
+import { SlArrowRight } from 'react-icons/sl'
 
 
 function HomePage() {
@@ -20,9 +21,8 @@ function HomePage() {
 	const { loadingShow, loadingClose } = useContext(AuthContext)
 
 	const carosel = [
-		'https://images.dusdusan.com/product/LrnsKmHO1672123889_1672123888510.jpg',
-		'https://images.dusdusan.com/product/2dt3Y3an1671097073_1671097073736.jpg',
-		'https://images.dusdusan.com/product/dnynjaPf1671096833_1671096833774.jpg'
+		'https://firebasestorage.googleapis.com/v0/b/entrepreneurs-id-app.appspot.com/o/assets%2F1.png?alt=media&token=beae35da-f106-49b8-bba9-47b37c3c1ec7',
+		'https://firebasestorage.googleapis.com/v0/b/entrepreneurs-id-app.appspot.com/o/assets%2F2.png?alt=media&token=34c892c7-c192-4899-b894-630679c260e7',
 	]
 
 	const width = window.innerWidth
@@ -72,7 +72,7 @@ function HomePage() {
 
 
 	return (
-		<Stack bgColor={'gray.100'} >
+		<Stack bgColor={'gray.100'} minH={height} >
 			<AppCarosel images={carosel} />
 			<Stack px={5}>
 				<Heading fontSize={'xl'} textTransform='uppercase'>🛍️ Produk trending</Heading>
@@ -125,6 +125,9 @@ function HomePage() {
 							</Stack>
 						</Stack>
 					))}
+					<Button onClick={() => handlePagination()}  h={'100%'} bgColor={'white'} alignItems='center' justifyContent={'center'} py={3}>
+						<SlArrowRight fontSize={'30px'}/>
+					</Button>
 				</HStack>
 			) : (
 				<Stack alignItems='center' justifyContent={'center'}>

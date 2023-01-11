@@ -3,6 +3,7 @@ import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import { BsCircleFill } from 'react-icons/bs'
 import { FaPlane, FaShip } from 'react-icons/fa'
+import { SlArrowDown } from 'react-icons/sl'
 import _axios from '../Api/AxiosBarrier'
 import AuthContext from '../Routes/hooks/AuthContext'
 import { getCountry } from '../Utils/country'
@@ -99,7 +100,9 @@ function OrderPage() {
     return (
         <Stack bgColor={'gray.200'} p={5}>
             {orderList.length > 0 ? (
-                orderList.map((x, index) => (
+                <>
+                <Stack>
+                {orderList.map((x, index) => (
                     <Stack spacing={1} key={index} bgColor={'white'} borderRadius='xl' m={2} p={5} shadow={'md'}  >
                         <Stack mx={3}>
                             <Text color={'gray.600'} fontSize='xs'>{moment(x.created_at).format('LLL')}</Text>
@@ -182,8 +185,12 @@ function OrderPage() {
                         </HStack>
 
                     </Stack>
-                ))
-            ) : (
+                ))}
+                <Button onClick={() => handlePagination()} >
+						<SlArrowDown />
+					</Button>
+                </Stack>
+                </>) : (
                 <Stack h={height / 2} alignItems={'center'} justifyContent='center' >
                     <Text color={'gray.500'} fontWeight='bold'>Tidak ada data order</Text>
                 </Stack>
