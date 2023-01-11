@@ -70,7 +70,7 @@ function ProfilePage() {
 
   return (
     <Box minH={height}>
-      <Stack bgColor='gray.100' borderRadius={'xl'} shadow={'md'} alignItems='center' height={height / 3}>
+      <Stack bgColor='gray.100' borderRadius={'xl'} shadow={'md'} alignItems='center' >
         <Stack alignItems="center" m={4} my={10} >
           <Stack bgColor='black' shadow={'md'} alignItems={'center'} justifyContent='center' borderRadius={'xl'} p={5}>
             <MdAccountCircle size={120} color="white" />

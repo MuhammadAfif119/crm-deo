@@ -178,17 +178,15 @@ function ProductPage() {
 			</HStack>
 
 			<Stack bgColor={'gray.100'} px={2}>
-				<Stack maxWidth={'100%'}>
-				{/* <SimpleGrid columns={[ 1, null, category.length ]} alignItems={'center'} gap={2} justifyContent='center' maxW={'100%'} overflowX='scroll' my={3}> */}
-				<HStack   alignItems={'center'} gap={2} justifyContent='center'  spacing={5}  m={3} >
+				<SimpleGrid columns={[ 1, null, category.length ]} alignItems={'center'} gap={2} justifyContent='center' maxW={'100%'} overflowX='scroll' my={3}>
+				{/* <HStack   alignItems={'center'} gap={2} justifyContent='center'  spacing={5}  m={3} > */}
 					{category.length > 0 && category.map((x, index) =>
 						<Stack  key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer' alignItems={'center'} justifyContent='center'>
 							<Text color={x.name === activeCategory ? 'blue.400' : 'gray.600'} fontSize={'sm'}>{x.name}</Text>
 						</Stack>
 					)}
-				</HStack>
-				</Stack>
-				{/* </SimpleGrid> */}
+				{/* </HStack> */}
+				</SimpleGrid>
 				{productList.length > 0 ? (
 					<>
 					<SimpleGrid columns={2} gap={5} mx={5}>
