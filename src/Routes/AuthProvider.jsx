@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
                     } else {
                         console.log("No such document!");
                     }
+                    getCart()
                     loadingClose()
                 } catch (error) {
                     console.log(error, "ini error");

@@ -16,7 +16,7 @@ function LoginEmail() {
     const navigate = useNavigate()
 
     if(currentUser){
-        navigate('/')
+        navigate(-1)
     }
 
 

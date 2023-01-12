@@ -37,7 +37,7 @@ function CartPage() {
 
 
   return (
-    <Stack bgColor={'gray.100'} minH={height}>
+    <Stack bgColor={'gray.100'} minH={height} >
       
       <Stack shadow={'md'} p='5' >
 
@@ -62,7 +62,9 @@ function CartPage() {
         </HStack>
       </Stack>
 
-      <HStack cursor='pointer' w={'100px'} m={5} zIndex='100' p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+      <Stack p={5}>
+
+      <HStack cursor='pointer' w={'100px'}  zIndex='100' p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
         <IoCaretBackOutline size={15} />
         <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
       </HStack>
@@ -104,6 +106,7 @@ function CartPage() {
           <Text color={'gray.500'} fontWeight='bold'>Tidak ada data cart</Text>
         </Stack>
       )}
+      </Stack>
 
 
     </Stack>
