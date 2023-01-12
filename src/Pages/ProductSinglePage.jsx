@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import { ArrowLeftIcon } from '@chakra-ui/icons';
-import { AspectRatio, Badge, Box, Button, Center, Container, Divider, Flex, Heading, HStack, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spacer, Spinner, Stack, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
+import { AspectRatio, Badge, Box, Button, Center, Container, Divider, Flex, Heading, HStack, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Skeleton, SkeletonText, Spacer, Spinner, Stack, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { transactionImportir, viewSingleProduct } from '../Api/importirApi';
 import AppCarosel from '../Components/AppCarosel';
 import AppHeader from '../Components/AppHeader'
@@ -12,10 +12,13 @@ import { db } from '../Config/firebase';
 import AuthContext from '../Routes/hooks/AuthContext';
 import { getCountry } from '../Utils/country';
 import { formatFrice } from '../Utils/Helper';
+import  {IoCaretBackOutline } from 'react-icons/io5'
+import colors from '../Utils/colors';
 
 function ProductSinglePage() {
 
 	const { isOpen, onOpen, onClose } = useDisclosure()
+	const navigate = useNavigate()
 
 
 	const [shipBy] = useState('Sea')
@@ -42,13 +45,9 @@ function ProductSinglePage() {
 	const param = useParams()
 	const toast = useToast()
 
-	const { userStorage, userDb, loadingShow, loadingClose } = useContext(AuthContext)
+	const { userStorage, userDb, loadingShow, loadingClose, getCart } = useContext(AuthContext)
 
-	console.log(userStorage, 'user storage')
-	console.log(userDb, 'user db')
-
-
-	console.log(param, 'ini params')
+	const height = window.innerHeight
 
 
 
@@ -81,10 +80,10 @@ function ProductSinglePage() {
 			//variant_type
 			//no_variants
 			//multiple_items
-			  loadingClose()
+			loadingClose()
 		} catch (error) {
 			console.log(error.message)
-			  loadingClose()
+			loadingClose()
 		}
 		loadingClose()
 	}
@@ -415,7 +414,7 @@ function ProductSinglePage() {
 		// }
 
 		try {
-			  loadingShow()
+			loadingShow()
 			const res = await transactionImportir(params, userStorage?.token)
 			if (res.status === 200) {
 
@@ -427,10 +426,12 @@ function ProductSinglePage() {
 					description: 'Berhasil menambahkan ke keranjang product.',
 					status: 'success'
 				})
+				getCart()
+				navigate(`/cart`)
 			}
 
 		} catch (error) {
-			  loadingClose()
+			loadingClose()
 			return toast({
 				title: 'BELANJA.ID',
 				description: error.message,
@@ -457,21 +458,33 @@ function ProductSinglePage() {
 	return (
 		<>
 			<Stack flex='1' >
+			<HStack position={'absolute'} cursor='pointer' zIndex='100' m={5} p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+						<IoCaretBackOutline size={15} />
+						<Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+					</HStack>
 				<Stack>
-					{images.length > 0 && (
+					{images.length > 0 ? (
 						<AppCarosel images={images && images} />
-					)}
+					) :
+						(
+							<Skeleton w={'full'} h={height / 1.5}></Skeleton>
+						)
+					}
 
 					<Box width='full' px={1} flex='1' shadow={'md'}>
 						<HStack shadow={'md'} space={2} alignItems='center' justifyContent={'space-between'} bgColor='white' m='1' p='1' borderRadius='md'>
 							<Center>
-								<Heading fontSize='2xl' fontWeight='extrabold' color={'gray.800'}>
-									{product?.price_ranges.length > 1 ?
-										`Rp. ${formatFrice(product?.price_ranges[0].price)}`
-										:
-										`Rp. ${formatFrice(product?.prices)}`
-									} /Pcs
-								</Heading>
+								{product ? (
+									<Heading fontSize='2xl' fontWeight='extrabold' color={'gray.800'}>
+										{product?.price_ranges.length > 1 ?
+											`Rp. ${formatFrice(product?.price_ranges[0].price)}`
+											:
+											`Rp. ${formatFrice(product?.prices)}`
+										} /Pcs
+									</Heading>
+								) : (
+									<Skeleton w={'300px'} h='50px' />
+								)}
 							</Center>
 
 							{product?.variant_type === 'no_variants' ?
@@ -517,19 +530,6 @@ function ProductSinglePage() {
 
 						<Stack p={2} bgColor='white' space={2}>
 							<Heading size={'md'}> Variants</Heading>
-							{/* <FlatList
-				  data={product?.variants}
-				  // keyExtractor={(item, index) => `${item + index}`}
-				  horizontal
-				  renderItem={({ item }) => {
-					return <Box m={1}>
-					  <Image source={{
-						uri: item?.image
-					  }} alt="Alternate Text" size='sm'
-					  />
-					</Box>
-				  }}
-				/> */}
 						</Stack>
 
 					</Stack>
@@ -615,7 +615,7 @@ function ProductSinglePage() {
 
 				</Stack>
 
-			
+
 			</Stack>
 
 
@@ -630,7 +630,7 @@ function ProductSinglePage() {
 					</ModalBody>
 
 					<ModalFooter>
-						<HStack bg="white" alignItems="center" shadow={'md'} safeAreaBottom>
+						<HStack bg="white" alignItems="center"  safeAreaBottom>
 							<Stack py="1.5" space={1} mx="auto">
 								<HStack py="0.5" justifyContent="space-between">
 									<Text fontSize="sm" fontWeight="bold" color="gray.600">
@@ -654,7 +654,7 @@ function ProductSinglePage() {
 
 
 
-		
+
 		</>
 	)
 }

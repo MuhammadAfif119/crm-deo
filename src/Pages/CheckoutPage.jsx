@@ -2,6 +2,7 @@ import { Box, Button, Heading, HStack, Image, Input, Modal, ModalBody, ModalClos
 import { doc, setDoc } from 'firebase/firestore'
 import React, { useContext, useEffect, useState } from 'react'
 import { FaHome, FaPlane, FaShip } from 'react-icons/fa'
+import { IoCaretBackOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import _axios from '../Api/AxiosBarrier'
 import { db } from '../Config/firebase'
@@ -232,6 +233,11 @@ function CheckoutPage() {
 
     return (
         <Stack bgColor={'gray.200'}>
+            <HStack cursor='pointer' w='100px'  zIndex='100' m={5} p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+                <IoCaretBackOutline size={15} />
+                <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+            </HStack>
+
             <Stack shadow={'md'} borderRadius='xl' bgColor={'white'} p={4} m={3}>
                 <Text fontSize={'lg'} fontWeight='bold'>Kirim ke</Text>
                 {!activeAddress ? (

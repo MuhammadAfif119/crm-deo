@@ -4,12 +4,13 @@ import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineCopy } from 'react-icons/ai'
 import { BsCircleFill } from 'react-icons/bs'
-import { IoHelpCircleOutline } from 'react-icons/io5'
+import { IoCaretBackOutline, IoHelpCircleOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import _axios from '../Api/AxiosBarrier'
 import AppCarosel from '../Components/AppCarosel'
 import { db } from '../Config/firebase'
 import AuthContext from '../Routes/hooks/AuthContext'
+import colors from '../Utils/colors'
 import { formatFrice } from '../Utils/Helper'
 
 function InvoiceListPage() {
@@ -125,6 +126,10 @@ function InvoiceListPage() {
 
     return (
         <Stack bgColor={'gray.200'} p={5}>
+            <HStack cursor='pointer' zIndex='100' w='100px' mx={5} mb={2} p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+                <IoCaretBackOutline size={15} />
+                <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+            </HStack>
             {invoiceList?.data?.length > 0 ? (
                 invoiceList?.data?.map((x, index) => {
                     const imageCarousel = x.details.map((z) => z?.order?.product_image)

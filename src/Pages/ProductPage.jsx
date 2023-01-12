@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Image, Input, SimpleGrid, Spacer, Spinner, Stack, Tag, Text, useToast, } from '@chakra-ui/react'
+import { Box, Button, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Skeleton, Spacer, Spinner, Stack, Tag, Text, useToast, } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import { MdSearch } from 'react-icons/md';
 import { BiFilterAlt } from 'react-icons/bi';
@@ -14,21 +14,18 @@ import { arrayUnion, doc, setDoc } from 'firebase/firestore';
 import { SlArrowDown } from 'react-icons/sl'
 
 function ProductPage() {
-	const [search, setSearch] = useState('')
 	const [category, setCategory] = useState('')
-	const [activeCategory, setActiveCategory] = useState('')
-	const [productList, setProductList] = useState('')
-	// const [ productList, setProductList ] = useState([])
 	const [count, setCount] = useState(1)
+	const [imageView, setImageView] = useState('')
+	const [detailModal, setDetailModal] = useState(false)
 
 	const navigate = useNavigate()
 	const toast = useToast()
 
 	const height = window.innerHeight
-	const width = window.innerWidth
 
 
-	const { currentUser, loadingShow, loadingClose } = useContext(AuthContext)
+	const { currentUser, loadingShow, loadingClose, activeCategory, productList, getDataProduct, handleKeyDown, getProductList } = useContext(AuthContext)
 
 
 	const getCategory = async () => {
@@ -43,66 +40,6 @@ function ProductPage() {
 		}
 	}
 
-	const getDataProduct = async (count) => {
-		loadingShow()
-		console.log(count, 'count')
-		let productArr = []
-		try {
-			const result = await get('product-list', `page=${count}`)
-			if (result) {
-
-				const dataArr = result.data.data
-				productArr.push(...dataArr)
-			}
-			if (count > 1) {
-				setProductList([...productList, ...productArr])
-			} else {
-				setProductList(productArr)
-			}
-			loadingClose()
-		} catch (error) {
-			console.log(error.message, 'error in shop screen')
-			loadingClose()
-		}
-		loadingClose()
-	}
-
-	const getProductList = async (id, name) => {
-		setActiveCategory(name)
-		setProductList([])
-		loadingShow()
-		try {
-			const result = await get(`product-list-by-category/${id}`)
-			if (result) {
-				setProductList(result?.data?.data)
-
-			}
-			  loadingClose()
-		} catch (error) {
-			console.log(error.message, 'error in shop screen')
-			  loadingClose()
-		}
-	}
-
-	const handleKeyDown = async (event) => {
-		setSearch(event.target.value)
-		if (event.key === "Enter") {
-			setProductList([])
-			loadingShow()
-			try {
-				const result = await get('product-list', `search=${search}`)
-
-				if (result) {
-					// console.log(result.data.data,'total data')
-					setProductList(result.data.data)
-				}
-				  loadingClose()
-			} catch (error) {
-				console.log(error.message, 'error in shop screen')
-				  loadingClose()
-			}
-		}
-	};
 
 	const handleWishlist = async (item) => {
 		let firebaseData = {}
@@ -141,10 +78,9 @@ function ProductPage() {
 
 	useEffect(() => {
 		getCategory()
-		getDataProduct()
 
 		return () => {
-			setProductList([])
+			setImageView('')
 		}
 	}, [])
 
@@ -152,8 +88,13 @@ function ProductPage() {
 
 	const handlePagination = async () => {
 		setCount(count + 1)
-		getDataProduct(count)
-	  }
+		await getDataProduct(count)
+	}
+
+	const handleImage = (data) => {
+		setImageView(data)
+		setDetailModal(true)
+	}
 
 
 
@@ -178,80 +119,165 @@ function ProductPage() {
 			</HStack>
 
 			<Stack bgColor={'gray.100'} px={2}>
-				<SimpleGrid columns={[ 1, null, category.length ]} alignItems={'center'} gap={2} justifyContent='center' maxW={'100%'} overflowX='scroll' my={3}>
-				{/* <HStack   alignItems={'center'} gap={2} justifyContent='center'  spacing={5}  m={3} > */}
+				<SimpleGrid columns={[1, null, category.length]} alignItems={'center'} gap={2} justifyContent='center' maxW={'100%'} overflowX='scroll' my={3}>
+					{/* <HStack   alignItems={'center'} gap={2} justifyContent='center'  spacing={5}  m={3} > */}
 					{category.length > 0 && category.map((x, index) =>
-						<Stack  key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer' alignItems={'center'} justifyContent='center'>
+						<Stack key={index} onClick={() => getProductList(x.id, x.name)} cursor='pointer' alignItems={'center'} justifyContent='center'>
 							<Text color={x.name === activeCategory ? 'blue.400' : 'gray.600'} fontSize={'sm'}>{x.name}</Text>
 						</Stack>
 					)}
-				{/* </HStack> */}
+					{/* </HStack> */}
 				</SimpleGrid>
 				{productList.length > 0 ? (
 					<>
-					<SimpleGrid columns={2} gap={5} mx={5}>
-						{
-							productList.map((x, i) =>
-								<Stack shadow='md' key={i} borderRadius={'xl'} spacing={2} bgColor='white' >
-									<Stack alignItems={'center'} >
-										<Image src={x.image} alt='img' borderRadius={'md'} />
-									</Stack>
-									<Stack px={3}>
-										<Text textTransform={'capitalize'} fontWeight='bold' fontSize={'sm'} noOfLines={2}> {x.title_en}</Text>
-									</Stack>
+						<SimpleGrid columns={2} gap={5} mx={5}>
+							{
+								productList.map((x, i) =>
+									<Stack shadow='md' key={i} borderRadius={'xl'} spacing={2} bgColor='white' >
+										<Stack alignItems={'center'} cursor='pointer' onClick={() => handleImage(x)}>
+											{x.image ? (
+												<Image src={x.image} alt='img' borderRadius={'md'} />
+											) : (
+												<Skeleton w={'200px'} h='300px' borderRadius={'md'} />
+											)}
 
-
-									<SimpleGrid columns={[1, 2, 2]} alignItems={'flex-end'} px={4} spacing={0}>
-										<Stack spacing={0}>
-											<Text textTransform={'capitalize'} fontWeight='extrabold' color={'gray.600'} fontSize={'sm'}>harga</Text>
-											<Text textTransform={'capitalize'} fontWeight='extrabold' color={'gray.00'} fontSize={'md'}>Rp. {formatFrice(x.price_idr_markup)}</Text>
 										</Stack>
-
-										<Stack alignItems={'flex-end'} justifyContent='center'>
-											<HStack>
-												<Stack>
-													<Tag>CN 🇨🇳</Tag>
-												</Stack>
-												<Stack onClick={() => handleWishlist(x)}>
-													<HiOutlineHeart
-														style={{ fontSize: 20, color: 'red', }} />
-												</Stack>
-
-											</HStack>
-											<HStack spacing={0}>
-												<AiFillStar name='star' color='orange' />
-												<AiFillStar name='star' color='orange' />
-												<AiFillStar name='star' color='orange' />
-												<AiFillStar name='star' color='orange' />
-												<AiFillStar name='star' color='orange' />
-											</HStack>
+										<Stack px={3}>
+											<Text textTransform={'capitalize'} fontWeight='bold' fontSize={'sm'} noOfLines={2}> {x.title_en}</Text>
 										</Stack>
 
 
-									</SimpleGrid>
+										<SimpleGrid columns={[1, 2, 2]} alignItems={'flex-end'} px={4} spacing={0}>
+											<Stack spacing={0}>
+												<Text textTransform={'capitalize'} fontWeight='extrabold' color={'gray.600'} fontSize={'sm'}>harga</Text>
+												<Text textTransform={'capitalize'} fontWeight='extrabold' color={'black'} fontSize={'md'}>Rp. {formatFrice(x.price_idr_markup)}</Text>
+											</Stack>
 
-									<Stack p={3} >
-										<Button size={'sm'} bgColor='green.400' onClick={() => navigate(`${x.flag}/${x.product_id}`)}>
-											<Text color={'white'}>🛒 Order now</Text>
-										</Button>
+											<Stack alignItems={'flex-end'} justifyContent='center'>
+												<HStack>
+													<Stack>
+														<Tag>CN 🇨🇳</Tag>
+													</Stack>
+													<Stack onClick={() => handleWishlist(x)}>
+														<HiOutlineHeart
+															style={{ fontSize: 20, color: 'red', }} />
+													</Stack>
+
+												</HStack>
+												<HStack spacing={0}>
+													<AiFillStar name='star' color='orange' />
+													<AiFillStar name='star' color='orange' />
+													<AiFillStar name='star' color='orange' />
+													<AiFillStar name='star' color='orange' />
+													<AiFillStar name='star' color='orange' />
+												</HStack>
+											</Stack>
+
+
+										</SimpleGrid>
+
+										<Stack p={3} >
+											<Button size={'sm'} bgColor='green.400' onClick={() => navigate(`${x.flag}/${x.product_id}`)}>
+												<Text color={'white'}>🛒 Order now</Text>
+											</Button>
+										</Stack>
 									</Stack>
-								</Stack>
 
-							)
-						}
+								)
+							}
 
-					</SimpleGrid>
-					<Button onClick={() => handlePagination()} >
-						<SlArrowDown />
-					</Button>
+						</SimpleGrid>
+						<Button onClick={() => handlePagination()} >
+							<SlArrowDown />
+						</Button>
 					</>
 				) : (
-					<Stack h={'70vh'} alignItems='center' justifyContent={'center'}>
-						<Text color={'gray.300'} fontWeight='bold'>Sedang Mencari Produk ...</Text>
+					<Stack alignItems={'center'} justifyContent='center'>
+						<Text textAlign={'center'} fontSize='sm' letterSpacing={0.5} color='gray.500' >Sedang mencari Produk ...</Text>
+						<SimpleGrid columns={[1, null, 2]} gap={5} mx={5}>
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+							<Skeleton width={'280px'} h='400px' borderRadius={'xl'} />
+						</SimpleGrid>
 					</Stack>
 				)}
 
 			</Stack>
+
+			{imageView !== "" && (
+				<Modal isOpen={detailModal} onClose={() => setDetailModal(false)} >
+					<ModalOverlay />
+					<ModalContent bgColor={'white'} >
+						<ModalHeader>
+							<HStack spacing={2} alignItems='center' >
+								{/* <FontAwesome5 name="file-invoice" size={22} color="black" /> */}
+								<Text fontSize={'lg'} fontWeight='bold'>Detail</Text>
+							</HStack>
+						</ModalHeader>
+
+						<ModalCloseButton />
+						<ModalBody >
+							<Stack  borderRadius={'xl'} spacing={3} bgColor='white' >
+								<Stack alignItems={'center'} justifyContent='center'>
+									<Image w='100%' src={imageView.image} borderRadius='lg' alt='belanja.co.id' />
+								</Stack>
+								<Stack px={3}>
+									<Text textTransform={'capitalize'} fontWeight='bold' fontSize={'sm'}> {imageView.title_en}</Text>
+								</Stack>
+
+
+								<SimpleGrid columns={[1, 2, 2]} alignItems={'flex-end'} px={4} spacing={0}>
+									<Stack spacing={0}>
+										<Text textTransform={'capitalize'} fontWeight='extrabold' color={'gray.600'} fontSize={'sm'}>harga</Text>
+										<Text textTransform={'capitalize'} fontWeight='extrabold' color={'black'} fontSize={'lg'}>Rp. {formatFrice(imageView.price_idr_markup)}</Text>
+									</Stack>
+
+									<Stack alignItems={'flex-end'} justifyContent='center'>
+										<HStack>
+											<Stack>
+												<Tag>CN 🇨🇳</Tag>
+											</Stack>
+											<Stack onClick={() => handleWishlist(imageView)}>
+												<HiOutlineHeart
+													style={{ fontSize: 20, color: 'red', }} />
+											</Stack>
+
+										</HStack>
+										<HStack spacing={0}>
+											<AiFillStar name='star' color='orange' />
+											<AiFillStar name='star' color='orange' />
+											<AiFillStar name='star' color='orange' />
+											<AiFillStar name='star' color='orange' />
+											<AiFillStar name='star' color='orange' />
+										</HStack>
+									</Stack>
+
+
+								</SimpleGrid>
+
+							</Stack>
+						</ModalBody>
+
+						<ModalFooter>
+							<HStack spacing={5}>
+							<Button bgColor='green.400' onClick={() => navigate(`${imageView.flag}/${imageView.product_id}`)}>
+								<Text color={'white'}>🛒 Order now</Text>
+							</Button>
+							<Button colorScheme='red' mr={3} onClick={() => setDetailModal(false)}>
+								Close
+							</Button>
+							</HStack>
+						</ModalFooter>
+
+
+					</ModalContent>
+				</Modal>
+			)}
 		</Stack>
 	)
 }

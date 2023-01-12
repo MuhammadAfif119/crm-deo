@@ -1,9 +1,20 @@
-import { Heading, Stack, Text } from '@chakra-ui/react'
+import { Heading, HStack, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
+import { IoCaretBackOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
+import colors from '../Utils/colors'
 
 function HelpPage() {
+
+    const navigate = useNavigate()
     return (
         <Stack m={5}>
+
+            <HStack cursor='pointer' w={'100px'} mb={3} p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+                <IoCaretBackOutline size={15} />
+                <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+            </HStack>
+
             <Heading fontSize={'md'}>
                 Kebijakan Privasi
             </Heading>
@@ -254,6 +265,7 @@ function HelpPage() {
                 18. Memfasilitasi transaksi penggabungan, penjualan aset perusahaan, konsolidasi atau restrukturisasi, pembiayaan atau akuisisi yang melibatkan Belanja.co.id.
                 <br />
             </Text>
+
         </Stack>
     )
 }

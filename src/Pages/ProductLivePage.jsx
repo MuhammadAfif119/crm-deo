@@ -169,7 +169,7 @@ function ProductLivePage() {
                 .then(async (docSnap) => {
                     let dataStock = 0
                     if (docSnap.exists()) {
-                        dataStock = docSnap.data().stock
+                        dataStock = docSnap?.data().stock
                     }
                     if (dataStock > orderQuantity) {
                         const res = await _axios.post('api/blj-shipping', params)
@@ -365,7 +365,7 @@ function ProductLivePage() {
                                 </Box>
                                 <Box width="50%">
                                     <Text color="gray.500" fontSize="12">
-                                        {dataProduct.stock ? dataProduct.stock : '-'}
+                                        {dataProduct?.stock ? dataProduct?.stock : '-'}
                                     </Text>
                                 </Box>
                             </Flex>
@@ -376,7 +376,7 @@ function ProductLivePage() {
                                 </Box>
                                 <Box width="50%">
                                     <Text color="gray.500" fontSize="12" textTransform={'capitalize'}>
-                                        {dataProduct.from ? dataProduct.from : '-'}
+                                        {dataProduct?.from ? dataProduct?.from : '-'}
                                     </Text>
                                 </Box>
                             </Flex>

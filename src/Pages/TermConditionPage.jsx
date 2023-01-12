@@ -1,9 +1,20 @@
-import { Heading, Stack, Text } from '@chakra-ui/react'
+import { Heading, HStack, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
+import { IoCaretBackOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
+import colors from '../Utils/colors'
 
 function TermConditionPage() {
+
+    const navigate = useNavigate()
+
     return (
         <Stack m={5}>
+                        <HStack cursor='pointer' w={'100px'} mb={3}  p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+                <IoCaretBackOutline size={15} />
+                <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+            </HStack>
+
             <Heading fontSize={'md'}>
                 Syarat dan Ketentuan Mitra Belanja.co.id
             </Heading>
@@ -234,7 +245,6 @@ function TermConditionPage() {
                 Syarat dan Ketentuan ini mungkin diubah dan/atau diperbaharui dari waktu ke waktu tanpa pemberitahuan sebelumnya. Belanja.co.id menyarankan agar Mitra Belanja.co.id membaca secara seksama dan memeriksa halaman Syarat dan ketentuan ini dari waktu ke waktu untuk mengetahui perubahan apapun. Dengan tetap mengakses dan menggunakan Situs/Aplikasi, maka Mitra Belanja.co.id dianggap menyetujui perubahan-perubahan dalam Syarat dan Ketentuan ini.
 
             </Text>
-
 
         </Stack>
     )

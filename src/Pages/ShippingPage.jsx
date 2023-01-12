@@ -3,11 +3,12 @@ import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlineCopy } from 'react-icons/ai'
 import { BsCircleFill } from 'react-icons/bs'
-import { IoHelpCircleOutline } from 'react-icons/io5'
+import { IoCaretBackOutline, IoHelpCircleOutline } from 'react-icons/io5'
 import { SlArrowDown } from 'react-icons/sl'
 import { useNavigate } from 'react-router-dom'
 import _axios from '../Api/AxiosBarrier'
 import AuthContext from '../Routes/hooks/AuthContext'
+import colors from '../Utils/colors'
 import { formatFrice } from '../Utils/Helper'
 
 function ShippingPage() {
@@ -123,6 +124,11 @@ function ShippingPage() {
 
     return (
         <Stack bgColor={'gray.200'} p={5}>
+            <HStack w='100px' cursor='pointer' zIndex='100' mx={5} p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+                <IoCaretBackOutline size={15} />
+                <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+            </HStack>
+
             {shippingData.length > 0 ? (
                 <>
                     <Stack>

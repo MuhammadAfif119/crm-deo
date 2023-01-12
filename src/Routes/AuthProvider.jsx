@@ -8,18 +8,23 @@ import AuthContext from "./hooks/AuthContext";
 import store from 'store'
 import { postImportirAuth } from '../Api/importirApi'
 import _axios from "../Api/AxiosBarrier";
+import { get } from '../Api/importirApi';
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState('');
     const [tokenId, setTokenId] = useState("");
     const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState([])
-    const [productList, setProductList] = useState([])
     const [userStorage, setUserStorage] = useState()
     const [userDb, setUserDb] = useState()
     const [cart, setCart] = useState([])
     const [totalPrice, setTotalPrice] = useState(0)
     const [productListWishlist, setProductWishlist] = useState([])
+
+    const [activeCategory, setActiveCategory] = useState('')
+	const [productList, setProductList] = useState('')
+    const [search, setSearch] = useState('')
+
+    const [productData, setProductdata] = useState([])
 
     const navigate = useNavigate();
     const toast = useToast();
@@ -210,6 +215,96 @@ export const AuthProvider = ({ children }) => {
 
     }
 
+    // get Data Product Page
+
+    	const getDataProduct = async (count) => {
+		loadingShow()
+		console.log(count, 'count')
+		let productArr = []
+		try {
+			const result = await get('product-list', `page=${count}`)
+			if (result) {
+
+				const dataArr = result.data.data
+				productArr.push(...dataArr)
+			}
+			if (count > 1) {
+				setProductList([...productList, ...productArr])
+			} else {
+				setProductList(productArr)
+			}
+			loadingClose()
+		} catch (error) {
+			console.log(error.message, 'error in shop screen')
+			loadingClose()
+		}
+		loadingClose()
+	}
+
+	const getProductList = async (id, name) => {
+		setActiveCategory(name)
+		setProductList([])
+		loadingShow()
+		try {
+			const result = await get(`product-list-by-category/${id}`)
+			if (result) {
+				setProductList(result?.data?.data)
+
+			}
+			  loadingClose()
+		} catch (error) {
+			console.log(error.message, 'error in shop screen')
+			  loadingClose()
+		}
+	}
+
+	const handleKeyDown = async (event) => {
+		setSearch(event.target.value)
+		if (event.key === "Enter") {
+			setProductList([])
+			loadingShow()
+			try {
+				const result = await get('product-list', `search=${search}`)
+
+				if (result) {
+					// console.log(result.data.data,'total data')
+					setProductList(result.data.data)
+				}
+				  loadingClose()
+			} catch (error) {
+				console.log(error.message, 'error in shop screen')
+				  loadingClose()
+			}
+		}
+	};
+
+   // Home Page
+
+   const getData = async (count) => {
+    loadingShow()
+    let productArr = []
+    try {
+        const res = await get('product-video-list', `page=${count}`)
+        if (res) {
+            const dataArr = res.data
+            productArr.push(...dataArr)
+        }
+        if (count > 1) {
+            setProductdata([...productData, ...productArr])
+        } else {
+            setProductdata(productArr)
+        }
+        loadingClose()
+    } catch (error) {
+        console.log(error, 'ini error')
+        loadingClose()
+    }
+}
+
+
+
+    
+
 
 
     useEffect(() => {
@@ -240,6 +335,17 @@ export const AuthProvider = ({ children }) => {
         }
     }, [currentUser])
 
+    useEffect(() => {
+        getData()
+        getDataProduct()
+    
+      return () => {
+        setProductdata([])
+        setProductList([])
+      }
+    }, [])
+    
+
 
 
     const value = {
@@ -250,8 +356,6 @@ export const AuthProvider = ({ children }) => {
         signOut,
         signUp,
         getUserStorage,
-        products,
-        // getProductName,
         userStorage,
         userDb,
         cart,
@@ -260,7 +364,19 @@ export const AuthProvider = ({ children }) => {
         productListWishlist,
         loadingShow,
         loadingClose,
-        loading
+        loading,
+
+        activeCategory,
+        productList,
+        setSearch,
+        handleKeyDown,
+        getProductList,
+        setActiveCategory,
+        getDataProduct,
+
+        getData,
+        productData
+
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

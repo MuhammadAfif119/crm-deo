@@ -5,6 +5,8 @@ import AuthContext from '../Routes/hooks/AuthContext'
 import { formatFrice } from '../Utils/Helper'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom'
+import { IoCaretBackOutline } from 'react-icons/io5'
+import colors from '../Utils/colors'
 
 function CartPage() {
 
@@ -36,8 +38,9 @@ function CartPage() {
 
   return (
     <Stack bgColor={'gray.100'} minH={height}>
-
+      
       <Stack shadow={'md'} p='5' >
+
         <HStack>
           <Box>
             <Text color={'gray.700'}>Total Harga</Text>
@@ -58,6 +61,11 @@ function CartPage() {
           )}
         </HStack>
       </Stack>
+
+      <HStack cursor='pointer' w={'100px'} m={5} zIndex='100' p={2} alignItems='center' shadow={'base'} justifyContent={'center'} borderRadius='full' bgColor={colors.theme} onClick={() => navigate(-1)}>
+        <IoCaretBackOutline size={15} />
+        <Text fontSize={'xs'} letterSpacing={0.5}>Kembali</Text>
+      </HStack>
 
       {cart?.data?.length > 0 ? (
         cart?.data?.map((x, index) =>
@@ -92,8 +100,8 @@ function CartPage() {
           </Stack>
         )
       ) : (
-        <Stack h={height} alignItems='center' justifyContent={'center'}>
-          <Spinner />
+        <Stack h={height / 2} alignItems={'center'} justifyContent='center' >
+          <Text color={'gray.500'} fontWeight='bold'>Tidak ada data cart</Text>
         </Stack>
       )}
 

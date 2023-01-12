@@ -1,71 +1,63 @@
-import { Button, Heading, HStack, Image, SimpleGrid, Spinner, Stack, Tag, Text, useToast } from '@chakra-ui/react'
+import { Button, Heading, HStack, Image, SimpleGrid, Skeleton, Stack, Tag, Text, useToast } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import AppCarosel from '../Components/AppCarosel'
 import { get } from '../Api/importirApi'
-import { HiOutlineHeart } from 'react-icons/hi'
-import { AiFillStar, AiOutlineCopyrightCircle } from 'react-icons/ai'
+import { AiFillStar } from 'react-icons/ai'
 import { formatFrice } from '../Utils/Helper'
 import { useNavigate } from 'react-router-dom'
 import AuthContext from '../Routes/hooks/AuthContext'
 import colors from '../Utils/colors'
-import { BsInstagram } from 'react-icons/bs'
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa'
 import { SlArrowRight } from 'react-icons/sl'
+import { db } from '../Config/firebase'
+import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore'
 
 
 function HomePage() {
 
-	const [productData, setProductdata] = useState([])
 	const [count, setCount] = useState(1)
+	const [dashboardImage, setDashboardImage] = useState('')
 
-	const { loadingShow, loadingClose } = useContext(AuthContext)
-
-	const carosel = [
-		'https://firebasestorage.googleapis.com/v0/b/entrepreneurs-id-app.appspot.com/o/assets%2F1.png?alt=media&token=beae35da-f106-49b8-bba9-47b37c3c1ec7',
-		'https://firebasestorage.googleapis.com/v0/b/entrepreneurs-id-app.appspot.com/o/assets%2F2.png?alt=media&token=34c892c7-c192-4899-b894-630679c260e7',
-	]
-
-	const width = window.innerWidth
-	const height = window.innerHeight
-
-	const navigate = useNavigate()
-	const toast = useToast()
+	const { productData, getData } = useContext(AuthContext)
 
 
-
-	const getData = async (count) => {
-		loadingShow()
-		let productArr = []
+	const getDataDashboard = () => {
 		try {
-			const res = await get('product-video-list', `page=${count}`)
-			if (res) {
-				const dataArr = res.data
-				productArr.push(...dataArr)
-			}
-			if (count > 1) {
-				setProductdata([...productData, ...productArr])
-			} else {
-				setProductdata(productArr)
-			}
-			loadingClose()
+			const q = query(collection(db, "dashboard"), orderBy("createdAt", "desc"), limit(10));
+			onSnapshot(q, (querySnapshot) => {
+				const arrImage = [];
+				querySnapshot.forEach((doc) => {
+					const objData = doc.data()
+					objData.id = doc.id
+					arrImage.push(objData.image)
+				});
+				setDashboardImage(arrImage, 'arr')
+			});
 		} catch (error) {
-			console.log(error, 'ini error')
-			loadingClose()
+			console.log(error)
 		}
-	}
-
-	const handlePagination = async () => {
-		setCount(count + 1)
-		getData(count)
 	}
 
 	useEffect(() => {
-		getData()
+		getDataDashboard()
 
 		return () => {
-			setProductdata([])
 		}
 	}, [])
+
+
+	const height = window.innerHeight
+
+	const navigate = useNavigate()
+
+
+
+
+	const handlePagination = async () => {
+		setCount(count + 1)
+		await getData(count)
+	}
+
 
 
 
@@ -73,9 +65,13 @@ function HomePage() {
 
 	return (
 		<Stack bgColor={'gray.100'} minH={height} >
-			<AppCarosel images={carosel} />
+			{dashboardImage ? (
+				<AppCarosel images={dashboardImage} />
+			) : (
+				<Skeleton width={'100%'} h={height/2} />
+			)}
 			<Stack px={5}>
-				<Heading fontSize={'xl'} textTransform='uppercase'>🛍️ Produk trending</Heading>
+				<Heading fontSize={'lg'} textTransform='uppercase'>🛍️ Produk trending</Heading>
 			</Stack>
 			{productData.length > 0 ? (
 				<HStack spacing={3} maxWidth={'100%'} p={5} overflowY={'scroll'}>{
@@ -125,21 +121,23 @@ function HomePage() {
 							</Stack>
 						</Stack>
 					))}
-					<Button onClick={() => handlePagination()}  h={'100%'} bgColor={'white'} alignItems='center' justifyContent={'center'} py={3}>
-						<SlArrowRight fontSize={'30px'}/>
+					<Button onClick={() => handlePagination()} h={'100%'} bgColor={'white'} alignItems='center' justifyContent={'center'} py={3}>
+						<SlArrowRight fontSize={'30px'} />
 					</Button>
 				</HStack>
 			) : (
-				<Stack alignItems='center' justifyContent={'center'}>
-					<Spinner />
-				</Stack>
+				<HStack spacing={3} maxWidth={'100%'} p={5} overflowY={'scroll'}>
+					<Skeleton height='300px' w={'500px'} />
+					<Skeleton height='300px' w={'500px'} />
+					<Skeleton height='300px' w={'500px'} />
+				</HStack>
 			)}
 			<Stack>
 
 			</Stack>
 
 			<Stack px={5}>
-				<Heading fontSize={'xl'} textTransform='uppercase'>🔴 Live produk dari luar negeri</Heading>
+				<Heading fontSize={'lg'} textTransform='uppercase'>🔴 Live produk dari luar negeri</Heading>
 			</Stack>
 
 			<Stack p={5} alignItems='center' justifyContent={'center'}>
