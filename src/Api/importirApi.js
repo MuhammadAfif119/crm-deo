@@ -20,6 +20,26 @@ export const get = async (data, param) => {
   return response
 }
 
+export const getNew = async (data, param) => {
+  let response = {}
+  const baseUrl = `https://new-apiv2.importir.com/api/${data}/list?token=syigdfjhagsjdf766et4wff6&${param}`  
+
+  const configurationObject = {
+    url: baseUrl,
+    method: 'GET',
+  }
+
+  try {
+    // console.log('ini response')
+    const resp = await axios(configurationObject)
+    response = resp.data
+    // console.log(response.data,'ini response')
+  } catch (error) {
+    console.log(error.message)
+  }
+  return response
+}
+
 export const viewSingleProduct = async (id, flag) => {
   let response = {}
   // const baseUrl=`https://dev-api-node.importir.com/api/products/${flag}/${id}?markup=40`

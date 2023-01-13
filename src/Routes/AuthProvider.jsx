@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, db, fetchToken } from "../Config/firebase";
 import AuthContext from "./hooks/AuthContext";
 import store from 'store'
-import { postImportirAuth } from '../Api/importirApi'
+import { getNew, postImportirAuth } from '../Api/importirApi'
 import _axios from "../Api/AxiosBarrier";
 import { get } from '../Api/importirApi';
 
@@ -285,7 +285,7 @@ export const AuthProvider = ({ children }) => {
     loadingShow()
     let productArr = []
     try {
-        const res = await get('product-video-list', `page=${count}`)
+        const res = await getNew('blj-product-video', `page=${count}`)
         if (res) {
             const dataArr = res.data
             productArr.push(...dataArr)
