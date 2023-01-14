@@ -223,7 +223,7 @@ export const AuthProvider = ({ children }) => {
 		console.log(count, 'count')
 		let productArr = []
 		try {
-			const result = await get('product-list', `page=${count}`)
+			const result = await getNew('blj-product-video', 'list-product', `page=${count}`)
 			if (result) {
 
 				const dataArr = result.data.data
@@ -265,7 +265,7 @@ export const AuthProvider = ({ children }) => {
 			setProductList([])
 			loadingShow()
 			try {
-				const result = await get('product-list', `search=${search}`)
+				const result = await getNew('blj-product-video', 'list-product', `search=${search}`)
 
 				if (result) {
 					// console.log(result.data.data,'total data')
@@ -285,7 +285,7 @@ export const AuthProvider = ({ children }) => {
     loadingShow()
     let productArr = []
     try {
-        const res = await getNew('blj-product-video', `page=${count}`)
+        const res = await getNew('blj-product-video', 'list', `page=${count}`)
         if (res) {
             const dataArr = res.data
             productArr.push(...dataArr)

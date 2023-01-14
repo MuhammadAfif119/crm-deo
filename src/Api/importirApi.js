@@ -20,9 +20,9 @@ export const get = async (data, param) => {
   return response
 }
 
-export const getNew = async (data, param) => {
+export const getNew = async (data, type, param) => {
   let response = {}
-  const baseUrl = `https://new-apiv2.importir.com/api/${data}/list?token=syigdfjhagsjdf766et4wff6&${param}`  
+  const baseUrl = `https://new-apiv2.importir.com/api/${data}/${type}?token=syigdfjhagsjdf766et4wff6&${param}`  
 
   const configurationObject = {
     url: baseUrl,
