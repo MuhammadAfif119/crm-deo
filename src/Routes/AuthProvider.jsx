@@ -247,7 +247,7 @@ export const AuthProvider = ({ children }) => {
 		setProductList([])
 		loadingShow()
 		try {
-			const result = await get(`product-list-by-category/${id}`)
+			const result = await getNew('blj-product-video/list-product-by-category', id)
 			if (result) {
 				setProductList(result?.data?.data)
 
