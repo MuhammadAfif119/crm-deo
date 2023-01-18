@@ -412,6 +412,7 @@ function ProductSinglePage() {
 		// if(items && productPrice){
 		//   addToCartsAnalytics('IDR', items, productPrice)
 		// }
+		setShowModal(false)
 
 		try {
 			loadingShow()
@@ -420,7 +421,6 @@ function ProductSinglePage() {
 
 
 				loadingClose()
-				setShowModal(false)
 				toast({
 					title: 'BELANJA.ID',
 					description: 'Berhasil menambahkan ke keranjang product.',
@@ -490,7 +490,7 @@ function ProductSinglePage() {
 							{product?.variant_type === 'no_variants' ?
 								<Button m='1' p='2' bgColor='green.400' color={'white'} onClick={() => console.log('no VARIANT')}>+ Keranjang</Button>
 								:
-								<Button m='1' p='2' bgColor='green.400' color={'white'} onClick={onOpen}>+ Keranjang</Button>
+								<Button m='1' p='2' bgColor='green.400' color={'white'} onClick={() => setShowModal(true)}>+ Keranjang</Button>
 							}
 						</HStack>
 					</Box>
@@ -619,7 +619,7 @@ function ProductSinglePage() {
 			</Stack>
 
 
-			<Modal isOpen={isOpen} onClose={onClose} >
+			<Modal isOpen={showModal} onClose={() => setShowModal(false)} >
 				<ModalOverlay />
 				<ModalContent >
 					<ModalHeader>Variant</ModalHeader>

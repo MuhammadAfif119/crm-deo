@@ -36,7 +36,7 @@ function CheckoutPage() {
     const width = window.innerWidth
     const height = window.innerHeight
 
-    const { currentUser } = useContext(AuthContext)
+    const { currentUser, getCart } = useContext(AuthContext)
 
     const getAddress = async () => {
         try {
@@ -74,7 +74,7 @@ function CheckoutPage() {
         }
     }
 
-    const getCart = async () => {
+    const getCartData = async () => {
         // loadingShow()
         let sum = 0
         try {
@@ -192,12 +192,13 @@ function CheckoutPage() {
                 }, { merge: true });
 
                 console.log(res.data.invoice_number, 'ini res invoice')
-                navigate(`invoices/${res.data.invoice_number}`)
+                navigate(`/invoices`)
                 toast({
                     title: 'Belanja.co.id',
                     description: 'Berhasil checkout product',
                     status: 'success'
                 })
+                getCart()
 
             }
             if (res.status === false) {
@@ -216,7 +217,7 @@ function CheckoutPage() {
 
     useEffect(() => {
         getAddress()
-        getCart()
+        getCartData()
 
         return () => {
         }
