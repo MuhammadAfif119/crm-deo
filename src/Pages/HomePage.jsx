@@ -178,7 +178,7 @@ function HomePage() {
 						</Stack>
 					</a>
 
-					<a href={`https://api.whatsapp.com/send?phone=6288224806571&text=Halo, admin Belanja :)`} target="_blank" rel="noopener noreferrer">
+					<a href={`https://api.whatsapp.com/send?phone=6281774941698&text=Halo, admin Belanja :)`} target="_blank" rel="noopener noreferrer">
 						<Stack bgColor={'white'} borderRadius='full' p={3} shadow={'base'}>
 							<FaWhatsapp size={30} color={colors.theme} />
 						</Stack>
