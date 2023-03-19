@@ -26,7 +26,7 @@ function PricingPage() {
     return (
         <>
         <AppHeader/>
-        <Stack pt={20} bgColor={colors.black} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
+        <Stack pt={20} bgColor={colors.black} minH={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
             <Stack py={10} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
 
@@ -94,10 +94,10 @@ function PricingPage() {
                         </Stack>
                     </Stack>
                 </SimpleGrid>
-            </Stack>
 
-            <Stack alignItems={'center'} justifyContent='centrer'>
-                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg'>Use the same platform we used to build over 10,000 mobile apps</Text>
+
+            <Stack alignItems={'center'} justifyContent='centrer' >
+                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg' color={'white'}>Use the same platform we used to build over 10,000 mobile apps</Text>
                 <SimpleGrid columns={[imageSponsor.length / 2, null, imageSponsor.length]}>
                     {imageSponsor.length > 0 && imageSponsor.map((x, index) => {
                         return (
@@ -108,6 +108,8 @@ function PricingPage() {
                     })}
 
                 </SimpleGrid>
+            </Stack>
+
             </Stack>
 
             <Stack bgColor={'gray.100'} py={10}>

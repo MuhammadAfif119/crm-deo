@@ -25,7 +25,7 @@ function StartPage() {
     return (
         <>
         <AppHeader/>
-        <Stack pt={20} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
+        <Stack pt={20} minH={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
             <Stack py={20} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
                     <Text fontWeight={'bold'} color='white'>Turn your app idea into reality
@@ -82,7 +82,7 @@ function StartPage() {
             </Stack>
 
             <Stack alignItems={'center'} justifyContent='centrer'>
-                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg'>Use the same platform we used to build over 10,000 mobile apps</Text>
+                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg' color={'white'}>Use the same platform we used to build over 10,000 mobile apps</Text>
                 <SimpleGrid columns={[imageSponsor.length / 2, null, imageSponsor.length]}>
                     {imageSponsor.length > 0 && imageSponsor.map((x, index) => {
                         return (

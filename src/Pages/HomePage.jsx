@@ -142,7 +142,7 @@ function HomePage() {
 			</Stack>
 
 			<Stack alignItems={'center'} justifyContent='centrer'>
-                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg'>Use the same platform we used to build over 10,000 mobile apps</Text>
+                <Text textAlign={'center'} fontWeight={'bold'} fontSize='lg' color={'white'}>Use the same platform we used to build over 10,000 mobile apps</Text>
 				<SimpleGrid columns={[imageSponsor.length / 2, null, imageSponsor.length]}>
 					{imageSponsor.length > 0 && imageSponsor.map((x, index) => {
 						return (
