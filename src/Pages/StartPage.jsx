@@ -26,7 +26,7 @@ function StartPage() {
         <>
         <AppHeader/>
         <Stack pt={20} minH={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
-            <Stack py={20} px={[null, null, 20]}>
+            <Stack py={10} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
                     <Text fontWeight={'bold'} color='white'>Turn your app idea into reality
                     </Text>
