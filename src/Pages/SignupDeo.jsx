@@ -260,7 +260,10 @@ function SignupDeo() {
   }
 
   const handleFinish = () => {
-
+    navigate('/pricing/app-development')
+    setProgress(0)
+    setLayoutFinish(false)
+    setLayoutTamplate(true)
   }
 
 
@@ -327,7 +330,7 @@ function SignupDeo() {
 
           <Stack py={3} px='6' minW={['100%', null, '25%']} bgColor={'white'}>
             <Stack w={'full'}>
-              <Button size={'sm'} bgColor='blue.400' onClick={() => handleAccountLayout()}>
+              <Button size={'sm'} bgColor='blue.400' onClick={() => {handleAccountLayout(); setProgress(progress+30)}}>
                 <HStack alignItems={'center'} justifyContent='space-evenly'>
                   <Text fontSize={'sm'} color='white' >Start with this Template</Text>
                   <SlArrowRight color="white" />

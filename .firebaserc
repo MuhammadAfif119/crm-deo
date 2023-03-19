@@ -1,15 +1,8 @@
 {
   "projects": {
-    "default": "belanja-co-id"
+    "default": "buildfire-project",
+    " ": "buildfire-project"
   },
-  "targets": {
-    "belanja-co-id": {
-      "hosting": {
-        "public": [
-          "belanjacoid"
-        ]
-      }
-    }
-  },
+  "targets": {},
   "etags": {}
 }
