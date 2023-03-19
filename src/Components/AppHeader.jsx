@@ -38,7 +38,7 @@ import {
 import store from "store";
 import { Link } from "react-router-dom";
 
-import logobelanja from '../assets/logoitem.png'
+import logobelanja from '../assets/1.png'
 import { useNavigate } from "react-router-dom";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { AiOutlineLogout } from "react-icons/ai";

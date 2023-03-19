@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import AppImageSlideAgain from '../Components/Carousel/AppImageSlideAgain'
 import { auth, db } from '../Config/firebase'
 import AuthContext from '../Routes/hooks/AuthContext'
-import store from 'store'
+import logodeo from '../assets/1.png'
 
 function SignupDeo() {
   const width = window.innerWidth
@@ -271,7 +271,7 @@ function SignupDeo() {
     <Stack bgColor={'gray.100'} spacing={2}>
       <HStack minW={width} h='100px' bgColor={'white'} shadow='md' px={5}>
         <Stack cursor={'pointer'} onClick={() => navigate('/')}>
-          <Image w={'150px'} src='https://apmyztgbko.cloudimg.io/s/width/200/https://s3-us-west-2.amazonaws.com/imageserver.prod/1717/70d99d60-bba1-11ea-afeb-9b24b15f2961.png' alt='https://apmyztgbko.cloudimg.io/s/width/200/https://s3-us-west-2.amazonaws.com/imageserver.prod/1717/70d99d60-bba1-11ea-afeb-9b24b15f2961.png' />
+          <Image w={'150px'} src={logodeo} alt='image' />
         </Stack>
         <Stack
           bgColor="white"
