@@ -8,6 +8,8 @@ import HomePage from '../Pages/HomePage'
 import InformationPage from '../Pages/InformationPage'
 import InvoiceListPage from '../Pages/InvoiceListPage'
 import OrderPage from '../Pages/OrderPage'
+import PricingDetail from '../Pages/PricingDetail'
+import PricingPage from '../Pages/PricingPage'
 import ProductLivePage from '../Pages/ProductLivePage'
 import ProductPage from '../Pages/ProductPage'
 import ProductSinglePage from '../Pages/ProductSinglePage'
@@ -15,6 +17,7 @@ import ProfilePage from '../Pages/ProfilePage'
 import LoginEmail from '../Pages/registration/LoginEmail'
 import SignUpPage from '../Pages/registration/SignUpPage'
 import ShippingPage from '../Pages/ShippingPage'
+import StartPage from '../Pages/StartPage'
 import TermConditionPage from '../Pages/TermConditionPage'
 import ProtectedRoutesUser from './ProtectRoutesUser'
 
@@ -22,6 +25,9 @@ function MainRoute() {
 	return (
 		<Routes>
 			<Route path="/" element={<HomePage />} />
+			<Route path="/get-started" element={<StartPage />} />
+			<Route path="/pricing" element={<PricingPage />} />
+			<Route path="/pricing/:type" element={<PricingDetail />} />
 			<Route path="/product" element={<ProductPage />} />
 			<Route path="/login" element={<LoginEmail />} />
 			<Route path="/signup" element={<SignUpPage />} />

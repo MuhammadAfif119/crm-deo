@@ -9,17 +9,11 @@ function App() {
   return (
     <>
       <Preloader />
-      <Container
-        shadow="2xl"
-        padding={0}
-        w="full"
-        alignItems={"flex-end"}
-        justifyContent="space-between"
-      >
+      <Stack>
         <AppHeader />
         <MainRoute />
-        <AppFooter />
-      </Container>
+        {/* <AppFooter /> */}
+      </Stack>
     </>
   );
 }

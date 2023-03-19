@@ -14,18 +14,16 @@ import song from "../assets/CoinDrop-Notification.mp3"
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyAlXO4Yo-1AvWUrhQ3-Xn5FfhwFCY_mUq4',
-  authDomain: 'belanja-co-id.firebaseapp.com',
-  databaseURL:
-    'https://belanja-co-id-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'belanja-co-id',
-  storageBucket: 'belanja-co-id.appspot.com',
-  messagingSenderId: '642634353607',
-  appId: '1:642634353607:web:02e05ca9eebdce542167e2',
-  measurementId: 'G-MFNK2E1E75',
-  token_option: "BOB0K1Tfn-Z9FY8x_66YcRPw2b2xO220QPUTueLSacqchs4ZJhpRcoLygWpLG2yzPStqwggDgVavCRTwDyADdVg", // your vapid key
-}
+  apiKey: "AIzaSyA-p2OkCT9rjeta1lQM4krUfllcSWl_E1s",
+  authDomain: "buildfire-project.firebaseapp.com",
+  projectId: "buildfire-project",
+  storageBucket: "buildfire-project.appspot.com",
+  messagingSenderId: "2213424327",
+  appId: "1:2213424327:web:9f216a47897c3209fbe2e2",
+  measurementId: "G-MMP1NFBP7C",
+  token_option: "BPdQWjdl69AqNC55m3oTZyMyUjSBMFjgkdgPAYuEdfTFtY0mEBL2V7mI3KgboDBTYccMlK6cOf5otN9HlDu4JW8", // your vapid key
 
+};
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
