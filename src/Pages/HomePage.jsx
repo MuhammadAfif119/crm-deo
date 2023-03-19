@@ -13,6 +13,7 @@ import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestor
 import { BsShieldFillCheck } from 'react-icons/bs'
 import { MdArrowRightAlt } from 'react-icons/md'
 import ImageSlide from '../Components/AppImageSlide'
+import AppHeader from '../Components/AppHeader'
 
 
 function HomePage() {
@@ -90,6 +91,7 @@ function HomePage() {
 
 	return (
 		<Stack bgColor={colors.black} >
+			<AppHeader/>
 			<Stack pt={20} h='full' >
 				<SimpleGrid columns={[1, null, 2]} px={['10', null, '20']} >
 					<Stack alignItems={'center'} justifyContent='center'>

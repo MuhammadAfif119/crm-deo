@@ -1,8 +1,12 @@
 import { Button, Heading, HStack, Image, SimpleGrid, Spacer, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
 import { MdArrowRightAlt } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import AppHeader from '../Components/AppHeader'
 
 function StartPage() {
+
+    const navigate = useNavigate()
 
     const imageSponsor = [
         'https://buildfire.com/wp-content/themes/buildfire/assets/images/logos/pepsi@2x.png',
@@ -19,8 +23,10 @@ function StartPage() {
     const width = window.innerWidth
 
     return (
+        <>
+        <AppHeader/>
         <Stack pt={20} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
-            <Stack py={10} px={[null, null, 20]}>
+            <Stack py={20} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
                     <Text fontWeight={'bold'} color='white'>Turn your app idea into reality
                     </Text>
@@ -36,7 +42,7 @@ function StartPage() {
                                 <Heading color={'black'} size='lg' textAlign={'center'}>I want my app build for me</Heading>
                             </Stack>
                             <Stack w={'80%'} py={5}>
-                                <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => console.log('get-started')}>
+                                <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => navigate('/sign-up')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
                                         <Text fontSize={'md'} color='white'>Build it for me</Text>
                                         <MdArrowRightAlt size={30}  color='white'/>
@@ -57,7 +63,7 @@ function StartPage() {
                                 <Heading color={'black'} size='lg' textAlign={'center'}>I want to build it myself</Heading>
                             </Stack>
                             <Stack w={'80%'} py={5}>
-                                <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => console.log('get-started')}>
+                                <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => navigate('/sign-up')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
                                         <Text fontSize={'md'} color='white'>Build it myself</Text>
                                         <MdArrowRightAlt size={30}  color='white'/>
@@ -89,6 +95,7 @@ function StartPage() {
                 </SimpleGrid>
             </Stack>
         </Stack>
+        </>
     )
 }
 

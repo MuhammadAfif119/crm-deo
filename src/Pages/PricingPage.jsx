@@ -2,6 +2,7 @@ import { Button, Heading, HStack, Image, SimpleGrid, Spacer, Stack, Text } from 
 import React from 'react'
 import { MdArrowRightAlt } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
+import AppHeader from '../Components/AppHeader'
 import colors from '../Utils/colors'
 
 function PricingPage() {
@@ -23,6 +24,8 @@ function PricingPage() {
     const navigate = useNavigate()
 
     return (
+        <>
+        <AppHeader/>
         <Stack pt={20} bgColor={colors.black} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
             <Stack py={10} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
@@ -139,6 +142,7 @@ function PricingPage() {
                 </SimpleGrid>
             </Stack>
         </Stack>
+        </>
     )
 }
 

@@ -17,6 +17,7 @@ import ProfilePage from '../Pages/ProfilePage'
 import LoginEmail from '../Pages/registration/LoginEmail'
 import SignUpPage from '../Pages/registration/SignUpPage'
 import ShippingPage from '../Pages/ShippingPage'
+import SignupDeo from '../Pages/SignupDeo'
 import StartPage from '../Pages/StartPage'
 import TermConditionPage from '../Pages/TermConditionPage'
 import ProtectedRoutesUser from './ProtectRoutesUser'
@@ -28,6 +29,7 @@ function MainRoute() {
 			<Route path="/get-started" element={<StartPage />} />
 			<Route path="/pricing" element={<PricingPage />} />
 			<Route path="/pricing/:type" element={<PricingDetail />} />
+			<Route path="/sign-up" element={<SignupDeo />} />
 			<Route path="/product" element={<ProductPage />} />
 			<Route path="/login" element={<LoginEmail />} />
 			<Route path="/signup" element={<SignUpPage />} />

@@ -8,6 +8,7 @@ import { FaHome } from 'react-icons/fa';
 import { MdAccountCircle, MdEmail, MdFlag, MdLock, MdOutlinePhoneIphone } from 'react-icons/md';
 import AuthContext from '../Routes/hooks/AuthContext';
 import { sendEmailVerification, updateProfile } from 'firebase/auth';
+import AppHeader from '../Components/AppHeader';
 
 
 function PricingDetail() {
@@ -196,6 +197,8 @@ function PricingDetail() {
 
 
   return (
+    <>
+    <AppHeader/>
     <Stack bgColor={'gray.100'} minH={height} spacing='-10'>
       <Stack pt={20} spacing={10} minH={height / 1.8} alignItems='center' justifyContent={'center'} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/pricing_background@3x.png) no-repeat center  fixed" bgSize="cover">
         <Stack alignItems='center' justifyContent={'center'}>
@@ -365,6 +368,7 @@ function PricingDetail() {
         </Modal>
       </Stack>
     </Stack>
+    </>
   )
 }
 
