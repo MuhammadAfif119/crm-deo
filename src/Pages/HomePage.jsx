@@ -119,7 +119,7 @@ function HomePage() {
 							<HStack spacing={5}>
 								<Button bgColor={'blue.500'} size={'lg'} px={12}  onClick={() => navigate('get-started')}>
 									<HStack alignItems={'center'} justifyContent='center'>
-										<Text fontSize={'md'} color='white'>Get Started</Text>
+										<Text fontSize={'md'} color='white' onClick={() => navigate('/get-started')}>Get Started</Text>
 										<MdArrowRightAlt color='white' size={30} />
 									</HStack>
 								</Button>

@@ -9,6 +9,7 @@ import { MdAccountCircle, MdEmail, MdFlag, MdLock, MdOutlinePhoneIphone } from '
 import AuthContext from '../Routes/hooks/AuthContext';
 import { sendEmailVerification, updateProfile } from 'firebase/auth';
 import AppHeader from '../Components/AppHeader';
+import { useNavigate } from 'react-router-dom';
 
 
 function PricingDetail() {
@@ -16,6 +17,7 @@ function PricingDetail() {
   const API_KEY = "pk_test_eZL2hA7uIiCkLVuxcTNIIx7I008ckE9NzV";
 
   const toast = useToast()
+  const navigate = useNavigate()
 
   const { signUp, currentUser } = useContext(AuthContext);
 
@@ -244,9 +246,12 @@ function PricingDetail() {
                         color={colors.light}
                         disabled={isCurrentPlan}
                         // onClick={() => checkOut(productData.price.priceId)}
-                        onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => handleModal(productData.price.priceId))}
+                        // onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => handleModal(productData.price.priceId))}
+                        onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => navigate('/get-started'))}
                         bgColor={'blue.400'}
-                      >Get Started</Button>
+                      >
+                        <Text color={'white'}>Get Started</Text>
+                      </Button>
                     </Stack>
                   </VStack>
 
