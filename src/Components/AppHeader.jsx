@@ -51,6 +51,8 @@ export default function AppHeader() {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const navigate = useNavigate()
+
 
 	const height = window.innerHeight
 	const width = window.innerWidth
@@ -116,7 +118,7 @@ export default function AppHeader() {
           </Flex>
           <Spacer />
           <Flex display={{ base: "none", md: "flex" }}>
-            <AccountNav />
+            <AccountNav navigate={navigate}/>
           </Flex>
         </HStack>
       </Stack>
@@ -127,7 +129,7 @@ export default function AppHeader() {
   );
 }
 
-const AccountNav = () => {
+const AccountNav = ({navigate}) => {
 
 
 
@@ -135,7 +137,7 @@ const AccountNav = () => {
 
     
     <Stack flex={{ base: 1, md: 2 }} alignItems="center" direction={"row"} spacing={3}>
-      <Button bgColor={'blue.400'} size='md' px={10}>
+      <Button bgColor={'blue.400'} size='md' px={10} onClick={() => navigate('/get-started')}>
 		<Text fontSize={'sm'}>Build an App</Text>
 	  </Button>
     </Stack>)

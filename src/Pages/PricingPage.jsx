@@ -2,6 +2,7 @@ import { Button, Heading, HStack, Image, SimpleGrid, Spacer, Stack, Text } from 
 import React from 'react'
 import { MdArrowRightAlt } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
+import colors from '../Utils/colors'
 
 function PricingPage() {
 
@@ -22,11 +23,11 @@ function PricingPage() {
     const navigate = useNavigate()
 
     return (
-        <Stack pt={20} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
+        <Stack pt={20} bgColor={colors.black} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
             <Stack py={10} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
 
-                    <Heading size={'2xl'} textAlign='center'>
+                    <Heading size={'2xl'} textAlign='center' color={'white'}>
                         Pricing to meet your budget and needs
 
                     </Heading>
@@ -46,8 +47,8 @@ function PricingPage() {
                             <Stack py={5} >
                                 <Button bgColor={'green.500'} size={'lg'} px={12} onClick={() => navigate('app-development')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
-                                        <Text fontSize={'md'}>View plans</Text>
-                                        <MdArrowRightAlt size={30} />
+                                        <Text fontSize={'md'} color='white'>View plans</Text>
+                                        <MdArrowRightAlt size={30} color='white' />
                                     </HStack>
                                 </Button>
                             </Stack>
@@ -74,10 +75,10 @@ function PricingPage() {
                                 </Text>
                             </Stack>
                             <Stack py={5} >
-                                <Button bgColor={'green.500'} size={'lg'} px={12} onClick={() => console.log('get-started')}>
+                                <Button bgColor={'green.500'} size={'lg'} px={12}onClick={() => navigate('app-development')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
-                                        <Text fontSize={'md'}>View plans</Text>
-                                        <MdArrowRightAlt size={30} />
+                                        <Text fontSize={'md'} color='white'>View plans</Text>
+                                        <MdArrowRightAlt size={30} color='white'/>
                                     </HStack>
                                 </Button>
                             </Stack>
@@ -113,7 +114,7 @@ function PricingPage() {
                             <Image src='https://buildfire.com/wp-content/themes/buildfire/assets/images/footer/app-builder.svg'  />
                         </Stack>
                         <Stack>
-                            <Text color={'black'} fontSize='sm' fontWeight={'bold'}>Powerful app builder</Text>
+                            <Text color={'gray.600'} fontSize='sm' fontWeight={'bold'}>Powerful app builder</Text>
                         </Stack>
                     </Stack>
 
@@ -122,7 +123,7 @@ function PricingPage() {
                             <Image src='https://buildfire.com/wp-content/themes/buildfire/assets/images/footer/ios-and-android.svg' />
                         </Stack>
                         <Stack>
-                            <Text color={'black'} fontSize='sm' fontWeight={'bold'}>IOS, Android, & PWA</Text>
+                            <Text color={'gray.600'} fontSize='sm' fontWeight={'bold'}>IOS, Android, & PWA</Text>
                         </Stack>
                     </Stack>
 
@@ -131,7 +132,7 @@ function PricingPage() {
                             <Image src='https://buildfire.com/wp-content/themes/buildfire/assets/images/footer/unlimited-customization.svg'  />
                         </Stack>
                         <Stack>
-                            <Text color={'black'} fontSize='sm' fontWeight={'bold'}>Unlimited Costumization</Text>
+                            <Text color={'gray.600'} fontSize='sm' fontWeight={'bold'}>Unlimited Costumization</Text>
                         </Stack>
                     </Stack>
 

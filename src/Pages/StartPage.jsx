@@ -22,24 +22,24 @@ function StartPage() {
         <Stack pt={20} h={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover">
             <Stack py={10} px={[null, null, 20]}>
                 <Stack alignItems={'center'} justifyContent='center'>
-                    <Text fontWeight={'bold'}>Turn your app idea into reality
+                    <Text fontWeight={'bold'} color='white'>Turn your app idea into reality
                     </Text>
-                    <Heading size={'2xl'} textAlign='center'>
+                    <Heading size={'2xl'} textAlign='center' color={'white'}>
                         How would you like your app built?
 
                     </Heading>
                 </Stack>
                 <SimpleGrid columns={[1, null, 2]} gap={5} py={10}>
                     <Stack alignItems={'center'} justifyContent='center'>
-                        <Stack w={['90%', null, '60%']}  bgColor='white' borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>
+                        <Stack w={['90%', '70%', '50%']}  bgColor='white' borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>
                             <Stack p={5} w={'80%'}>
                                 <Heading color={'black'} size='lg' textAlign={'center'}>I want my app build for me</Heading>
                             </Stack>
                             <Stack w={'80%'} py={5}>
                                 <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => console.log('get-started')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
-                                        <Text fontSize={'md'}>Build it for me</Text>
-                                        <MdArrowRightAlt size={30} />
+                                        <Text fontSize={'md'} color='white'>Build it for me</Text>
+                                        <MdArrowRightAlt size={30}  color='white'/>
                                     </HStack>
                                 </Button>
                             </Stack>
@@ -52,15 +52,15 @@ function StartPage() {
                         </Stack>
                     </Stack>
                     <Stack alignItems={'center'} justifyContent='center' >
-                        <Stack w={['90%', null, '60%']}  bgColor='white' borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>
+                        <Stack  w={['90%', '70%', '50%']}   bgColor='white' borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>
                             <Stack p={5} w={'80%'}>
                                 <Heading color={'black'} size='lg' textAlign={'center'}>I want to build it myself</Heading>
                             </Stack>
                             <Stack w={'80%'} py={5}>
                                 <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => console.log('get-started')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
-                                        <Text fontSize={'md'}>Build it myself</Text>
-                                        <MdArrowRightAlt size={30} />
+                                        <Text fontSize={'md'} color='white'>Build it myself</Text>
+                                        <MdArrowRightAlt size={30}  color='white'/>
                                     </HStack>
                                 </Button>
                             </Stack>

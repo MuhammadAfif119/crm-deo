@@ -89,26 +89,26 @@ function HomePage() {
 
 
 	return (
-		<Stack pt={20}  >
-			<Stack h='full' bgColor={colors.black} >
+		<Stack bgColor={colors.black} >
+			<Stack pt={20} h='full' >
 				<SimpleGrid columns={[1, null, 2]} px={['10', null, '20']} >
 					<Stack alignItems={'center'} justifyContent='center'>
 						<Stack w={['100%', null, '80%']} spacing={5}>
-							<Heading fontWeight='bold' size={'3xl'} textAlign='start' >The Most Powerful App Maker For iOS & Android</Heading>
-							<Text fontSize={'sm'} >BuildFire’s powerful and easy to use mobile app builder makes it so you can create mobile apps for iOS & Android in a fraction of the time and cost.</Text>
+							<Heading fontWeight='bold' size={'3xl'} textAlign='start' color={'white'}>The Most Powerful App Maker For iOS & Android</Heading>
+							<Text fontSize={'sm'} color={'white'}>BuildFire’s powerful and easy to use mobile app builder makes it so you can create mobile apps for iOS & Android in a fraction of the time and cost.</Text>
 
 							<Stack>
-								<HStack alignItems={'center'}>
+								<HStack alignItems={'center'} color={'white'}>
 									<BsShieldFillCheck />
 									<Text fontSize={'sm'} >Simple and intuitive app builder - No coding required</Text>
 								</HStack>
 
-								<HStack alignItems={'center'}>
+								<HStack alignItems={'center'} color={'white'}>
 									<BsShieldFillCheck />
 									<Text fontSize={'sm'} >Build custom functionality with our developer SDK</Text>
 								</HStack>
 
-								<HStack alignItems={'center'}>
+								<HStack alignItems={'center'} color={'white'}>
 									<BsShieldFillCheck />
 									<Text fontSize={'sm'} >Build for FREE for 14 days. No credit card required</Text>
 								</HStack>
@@ -117,14 +117,14 @@ function HomePage() {
 							<HStack spacing={5}>
 								<Button bgColor={'blue.500'} size={'lg'} px={12}  onClick={() => navigate('get-started')}>
 									<HStack alignItems={'center'} justifyContent='center'>
-										<Text fontSize={'md'}>Get Started</Text>
-										<MdArrowRightAlt size={30} />
+										<Text fontSize={'md'} color='white'>Get Started</Text>
+										<MdArrowRightAlt color='white' size={30} />
 									</HStack>
 								</Button>
 
-								<Button size={'lg'} px={12} borderColor='white' borderWidth={0.5}>
+								<Button size={'lg'} px={12} borderColor='white' bgColor={'transparent'} borderWidth={0.5}>
 									<HStack alignItems={'center'} justifyContent='center'>
-										<Text fontSize={'md'}>Get a free consultation</Text>
+										<Text fontSize={'md'} color='white'>Get a free consultation</Text>
 									</HStack>
 								</Button>
 								{/* <Button></Button> */}
@@ -183,7 +183,7 @@ function HomePage() {
 					</Stack>
 					<Stack justifyContent={'center'} alignItems='center'>
 						<Button px={12} py={5} size='xl' bgColor={'green.400'}>
-							<Text fontSize={'md'}>Get Started</Text>
+							<Text fontSize={'md'} color='white' onClick={() => navigate('/get-started')}>Get Started</Text>
 						</Button>
 					</Stack>
 				</Stack>

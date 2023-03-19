@@ -62,11 +62,11 @@ const ImageSlide = () => {
           objectFit="cover"
           left="800px"
         />
-        <Button onClick={prev} position="absolute" left={1}>
-          <SlArrowLeft />
+        <Button onClick={prev} position="absolute" left={1} bgColor='transparent'>
+          <SlArrowLeft color="white" />
         </Button>
-        <Button onClick={next} position="absolute" right={1}>
-          <SlArrowRight />
+        <Button onClick={next} position="absolute" right={1} bgColor='transparent'>
+          <SlArrowRight color="white"  />
         </Button>
       </HStack>
     </Stack>
