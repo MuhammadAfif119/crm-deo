@@ -108,6 +108,7 @@ export default function AppHeader() {
             }
             color='black'
             aria-label={"Toggle Navigation"}
+            bgColor='transparent'
           />
         </Flex>
 

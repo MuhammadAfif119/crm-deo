@@ -56,7 +56,10 @@ function PricingDetail() {
     }
   }, [currentUser])
 
+
   const getDataProducts = async () => {
+
+    const priceData = [ 349, 449, 669 ]
     let products = {};
     const col = collection(db, "products");
     const q = query(col, where("active", "==", true));
@@ -65,6 +68,7 @@ function PricingDetail() {
       // console.log('productdoc', doc.id)
       // console.log('productdata', doc.data())
       products[doc.id] = doc.data()
+
       // for get price
       const priceSnapshot = await getDocs(collection(db, `products/${doc.id}/prices`));
       priceSnapshot.forEach((priceDoc) => {
@@ -72,8 +76,13 @@ function PricingDetail() {
           priceId: priceDoc.id,
           priceData: priceDoc.data()
         }
+      
       })
+
     });
+
+    // products.priceAmount = priceData.forEach((x) => {return(x)})
+    // console.log(products, 'xxx')
     setProductsArr(products)
   }
 
@@ -81,7 +90,6 @@ function PricingDetail() {
     getDataProducts()
 
     return () => {
-      setProductsArr([])
     }
 
   }, [])
@@ -117,8 +125,6 @@ function PricingDetail() {
   }
 
   const handleAccount = () => {
-    console.log(priceIdValue, 'id')
-    console.log(name, email, password, 'account')
 
     const displayName = name;
 
@@ -218,10 +224,9 @@ function PricingDetail() {
       <Stack>
         {paymentLink !== null &&
           <SimpleGrid columns={[1, null, 3]} gap={6} px={6}>
-            {Object.entries(productsArr) !== null && (
+            {Object.entries(productsArr) && (
               Object.entries(productsArr).map(([productId, productData]) => {
                 const isCurrentPlan = productsArr?.name?.toLowerCase().includes(subscription?.role)
-                console.log(isCurrentPlan, 'xxx')
                 return (
 
                   <VStack key={productId} bgColor='white' shadow={'base'} borderRadius='lg' spacing={5} p={3}>
