@@ -10,6 +10,7 @@ import AuthContext from '../Routes/hooks/AuthContext';
 import { sendEmailVerification, updateProfile } from 'firebase/auth';
 import AppHeader from '../Components/AppHeader';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
 
 function PricingDetail() {
@@ -58,7 +59,6 @@ function PricingDetail() {
 
 
   const getDataProducts = async () => {
-
     const priceData = [ 349, 449, 669 ]
     let products = {};
     const col = collection(db, "products");
