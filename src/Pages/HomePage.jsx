@@ -14,6 +14,8 @@ import { BsShieldFillCheck } from 'react-icons/bs'
 import { MdArrowRightAlt } from 'react-icons/md'
 import ImageSlide from '../Components/AppImageSlide'
 import AppHeader from '../Components/AppHeader'
+import AppFooter from '../Components/AppFooter'
+import AppFooterNew from '../Components/AppFooterNew'
 
 
 function HomePage() {
@@ -90,6 +92,7 @@ function HomePage() {
 
 
 	return (
+		<>
 		<Stack bgColor={colors.black} >
 			<AppHeader/>
 			<Stack pt={20} h='full' >
@@ -190,9 +193,9 @@ function HomePage() {
 					</Stack>
 				</Stack>
 			</Stack>
-
-
 		</Stack>
+		<AppFooterNew/>
+		</>
 	)
 }
 
