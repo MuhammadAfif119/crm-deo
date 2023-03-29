@@ -8,7 +8,7 @@
         "admin": [
           "edrus-pasardigital"
         ],
-        "edrus-testing": [
+        "admin-testing": [
           "edrus-testing"
         ]
       }
