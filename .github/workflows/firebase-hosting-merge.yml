@@ -20,7 +20,7 @@ jobs:
      
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
-        
+
       - name: Deploy Firebase Hosting
         run: |
           for site in $SITES
