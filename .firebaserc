@@ -3,17 +3,11 @@
     "default": "buildfire-project"
   },
   "targets": {
-    "belanja-co-id": {
-      "hosting": {
-        "admin": [
-          "edrus-pasardigital"
-        ]
-      }
-    },
     "buildfire-project": {
       "hosting": {
         "admin": [
-          "edrus-pasardigital"
+          "edrus-pasardigital",
+          "edrus-test"
         ]
       }
     }
