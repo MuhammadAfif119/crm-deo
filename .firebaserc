@@ -7,6 +7,9 @@
       "hosting": {
         "admin": [
           "edrus-pasardigital"
+        ],
+        "admin-testing": [
+          "edrus-testing"
         ]
       }
     }
