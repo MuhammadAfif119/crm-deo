@@ -14,21 +14,6 @@
           "destination": "/index.html"
         }
       ]
-    },
-    {
-      "target": "admin-testing",
-      "public": "build",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
     }
   ]
 }
