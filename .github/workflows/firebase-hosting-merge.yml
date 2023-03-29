@@ -9,20 +9,20 @@ name: Deploy to Firebase Hosting on merge
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+          PROJECT_ID: buildfire-project
+          SITES: buildfire-project edrus-pasardigital
+          CI: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      - run: npm i --legacy-peer-deps && npm run build
 
-      
+      - run: npm run build
+     
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
         
       - name: Deploy Firebase Hosting
-        env:
-          PROJECT_ID: buildfire-project
-          SITES: buildfire-project edrus-pasardigital
         run: |
           for site in $SITES
           do
