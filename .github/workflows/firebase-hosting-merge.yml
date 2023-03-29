@@ -10,10 +10,22 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_BUILDFIRE_PROJECT }}'
-          channelId: live
-          projectId: buildfire-project
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - run: npm i --legacy-peer-deps && npm run build
+
+      
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+        
+      - name: Deploy Firebase Hosting
+        env:
+          PROJECT_ID: buildfire-project
+          SITES: buildfire-project edrus-pasardigital
+        run: |
+          for site in $SITES
+          do
+            firebase target:apply hosting $site $PROJECT_ID.$site
+            firebase deploy --only hosting:$site --project $PROJECT_ID.$site
+          done
