@@ -105,7 +105,7 @@ function HomePage() {
 							<Stack>
 								<HStack alignItems={'center'} color={'white'}>
 									<BsShieldFillCheck />
-									<Text fontSize={'sm'} >Simple and intuitive app builder - No coding Test required</Text>
+									<Text fontSize={'sm'} >Simple and intuitive app builder - No coding required again.</Text>
 								</HStack>
 
 								<HStack alignItems={'center'} color={'white'}>
