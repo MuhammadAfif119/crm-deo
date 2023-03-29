@@ -35,7 +35,7 @@ jobs:
           firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
       
       - name: Add Firebase project
-        run: firebase use --add ${{ secrets.FIREBASE_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase use --add ${{ secrets.FIREBASE_PROJECT_ID }} --token "$FIREBASE_TOKEN"
 
       - name: Deploy Firebase Hosting for edrus-testing
         run: |
