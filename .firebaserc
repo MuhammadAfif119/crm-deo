@@ -6,8 +6,7 @@
     "buildfire-project": {
       "hosting": {
         "admin": [
-          "edrus-pasardigital",
-          "edrus-test"
+          "edrus-pasardigital"
         ]
       }
     }
