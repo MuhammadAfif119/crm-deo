@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
           PROJECT_ID: buildfire-project
-          SITES: buildfire-project edrus-pasardigital
+          SITES: edrus-pasardigital
           CI: false
     steps:
       - name: Checkout repository
