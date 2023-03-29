@@ -12,7 +12,7 @@ jobs:
     env:
           PROJECT_ID: buildfire-project
           SITES: edrus-pasardigital edrus-test
-          FIREBASE_TOKEN: 1//0g74DJWSuhiE-CgYIARAAGBASNwF-L9IrUp3Ija1h8WS2bCwrq6xneopw4FXbCkzZ8g5BzKNC4r6QTao10cqbCZ0mpgsCOMHnSeA
+          FIREBASE_TOKEN: 1//0gLU0fW6eFchwCgYIARAAGBASNwF-L9IrDw-rimHNFOezJbBWGSm_gRUNd6njmeu-dw2Jx8dyXTi6AOCQ3tHHhc9VXZgN-XfG36w
           CI: false
     steps:
       - name: Checkout repository
@@ -26,5 +26,5 @@ jobs:
           for site in $SITES
           do
             firebase target:clear hosting admin $site
-            sudo firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
+            firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
           done
