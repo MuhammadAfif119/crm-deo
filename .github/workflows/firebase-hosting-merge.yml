@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Add Firebase project
-        run: firebase use --add ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: firebase use $PROJECT_ID
 
       - name: Deploy Firebase Hosting for edrus-pasardigital
         run: |
@@ -35,7 +35,7 @@ jobs:
           firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
       
       - name: Add Firebase project
-        run: firebase use --add ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: firebase use $PROJECT_ID
 
       - name: Deploy Firebase Hosting for edrus-testing
         run: |
