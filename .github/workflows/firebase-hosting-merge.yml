@@ -12,6 +12,7 @@ jobs:
     env:
           PROJECT_ID: buildfire-project
           SITES: edrus-pasardigital edrus-test
+          FIREBASE_TOKEN: 1//0g74DJWSuhiE-CgYIARAAGBASNwF-L9IrUp3Ija1h8WS2bCwrq6xneopw4FXbCkzZ8g5BzKNC4r6QTao10cqbCZ0mpgsCOMHnSeA
           CI: false
     steps:
       - name: Checkout repository
@@ -19,11 +20,14 @@ jobs:
      
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
+
+      - name: login firebase
+        run: npm install -g firebase-tools
         
       - name: Deploy Firebase Hosting
         run: |
           for site in $SITES
           do
             firebase target:apply hosting admin $site
-            firebase deploy --only hosting:admin
+            sudo firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
           done
