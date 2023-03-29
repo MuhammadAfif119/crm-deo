@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
           PROJECT_ID: buildfire-project
-          SITES: edrus-pasardigital edrus-test
+          SITES: edrus-pasardigital
           FIREBASE_TOKEN: 1//0gLU0fW6eFchwCgYIARAAGBASNwF-L9IrDw-rimHNFOezJbBWGSm_gRUNd6njmeu-dw2Jx8dyXTi6AOCQ3tHHhc9VXZgN-XfG36w
           CI: false
     steps:
@@ -25,6 +25,6 @@ jobs:
         run: |
           for site in $SITES
           do
-            firebase target:clear hosting admin $site
+            firebase target:apply hosting admin $site
             firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
           done
