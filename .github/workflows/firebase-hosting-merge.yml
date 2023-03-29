@@ -28,6 +28,6 @@ jobs:
         run: |
           for site in $SITES
           do
-            firebase target:apply hosting admin $site
-            sudo firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
+            firebase target:clear hosting admin $site
+            firebase deploy --only hosting:admin firebase use $PROJECT_ID
           done
