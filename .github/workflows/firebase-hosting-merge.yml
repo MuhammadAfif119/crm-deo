@@ -33,5 +33,6 @@ jobs:
 
       - name: Deploy Firebase Hosting for edrus-testing
         run: |
+          firebase target:clear hosting admin edrus-pasardigital
           firebase target:apply hosting admin-testing edrus-testing
           firebase deploy --only hosting:admin-testing --token "$FIREBASE_TOKEN"
