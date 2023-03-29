@@ -2,25 +2,22 @@
   "projects": {
     "default": "buildfire-project"
   },
-  "targets": 
-  [{
-    "buildfire-project": {
+  "targets": {
+    "buildfire-project": 
+    [{
       "hosting": {
         "admin": [
           "edrus-pasardigital"
         ]
       }
-    }
-  },
-  {
-    "buildfire-project": {
+    },
+    {
       "hosting": {
         "admin-testing": [
           "edrus-testing"
         ]
       }
-    }
-  }
-],
+    }]
+  },
   "etags": {}
 }
