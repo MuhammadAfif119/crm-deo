@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
           PROJECT_ID: buildfire-project
-          SITES: edrus-pasardigital
+          SITES: edrus-pasardigital edrus-test
           FIREBASE_TOKEN: 1//0gLU0fW6eFchwCgYIARAAGBASNwF-L9IrDw-rimHNFOezJbBWGSm_gRUNd6njmeu-dw2Jx8dyXTi6AOCQ3tHHhc9VXZgN-XfG36w
           CI: false
     steps:
