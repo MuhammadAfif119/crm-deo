@@ -16,7 +16,7 @@
       ]
     },
     {
-      "target": "edrus-testing",
+      "target": "admin-testing",
       "public": "build",
       "ignore": [
         "firebase.json",
