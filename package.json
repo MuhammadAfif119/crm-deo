@@ -29,8 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "hosting-target": "firebase target:apply hosting admin edrus-pasardigital",
-    "hosting": "firebase deploy --only hosting:admin"
+    "hosting-target": "firebase target:apply hosting admin-testing edrus-test",
+    "hosting": "firebase deploy --only hosting:admin-testing"
   },
   "eslintConfig": {
     "extends": [
