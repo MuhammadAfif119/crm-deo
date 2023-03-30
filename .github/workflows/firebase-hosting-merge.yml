@@ -34,8 +34,9 @@ jobs:
           firebase target:apply hosting admin edrus-pasardigital
           firebase deploy --only hosting:admin --token "$FIREBASE_TOKEN"
       
-      - name: Add Firebase project
-        run: firebase use $PROJECT_ID
+      - name: Build project for production
+        run: npm run build
+
 
       - name: Deploy Firebase Hosting for edrus-testing
         run: |
