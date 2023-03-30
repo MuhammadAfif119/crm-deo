@@ -9,7 +9,7 @@
           "edrus-pasardigital"
         ],
         "admin-testing": [
-          "edrus-testing"
+          "edrus-test"
         ]
       }
     }
