@@ -1,6 +1,6 @@
 import { Box, Button, HStack, Image, Input, InputGroup, InputLeftAddon, Select, Spacer, Spinner, Stack, Text, useToast } from '@chakra-ui/react'
 import React, { useContext, useState } from 'react'
-import logobelanja from '../../assets/logoitem.png'
+import logo from '../../assets/1.png'
 import { MdEmail, MdAccountCircle, MdOutlinePhoneIphone, MdFlag, MdLock } from 'react-icons/md'
 import colors from '../../Utils/colors'
 import AuthContext from '../../Routes/hooks/AuthContext'
@@ -10,6 +10,11 @@ import { doc, setDoc } from 'firebase/firestore'
 import { sendEmailVerification, updateProfile } from 'firebase/auth'
 import store from 'store'
 import { postImportirAuth } from '../../Api/importirApi'
+import AppHeader from '../../Components/AppHeader'
+import moment from 'moment'
+import { AiFillInstagram } from 'react-icons/ai'
+import AppSponsor from '../../Components/AppSponsor'
+import ApiBackend from '../../Api/ApiBackend'
 
 
 function SignUpPage() {
@@ -17,8 +22,8 @@ function SignUpPage() {
 	const [nohp, setNohp] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
-	const [country, setCountry] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
+	// const [instagram, setInstagram] = useState("");
 	const [loading, setLoading] = useState(false)
 
 	const { signUp } = useContext(AuthContext);
@@ -28,7 +33,7 @@ function SignUpPage() {
 
 	const handleSignup = () => {
 		const displayName = name;
-		if ((email === "" && password === "" && nohp === "" && name === "" && country === "") || password !== confirmPassword)
+		if ((email === "" && password === "" && nohp === "" && name === "") || password !== confirmPassword)
 			return toast({
 				title: "Something Wrong",
 				description: "check your email, password, data",
@@ -38,7 +43,7 @@ function SignUpPage() {
 				position: "top-end",
 			});
 
-		if (email !== "" && password !== ""  && nohp !== "" && country !== "" && name !== ""  ) {
+		if (email !== "" && password !== "" && nohp !== "" && name !== "") {
 			try {
 				setLoading(true)
 				signUp(email, password)
@@ -51,6 +56,7 @@ function SignUpPage() {
 						// Signed in
 						const user = userCredential.user;
 						if (user) {
+
 							toast({
 								title: "Success Create",
 								description: `Success Create account ${user.displayName}`,
@@ -60,39 +66,29 @@ function SignUpPage() {
 								position: "top-right",
 							});
 						}
-						await setDoc(doc(db, "users", user.uid), {
-							name: name,
-							keyword_name: (name).toLowerCase().split(' ').join(''),
-							email: user.email,
-							uid_user: user.uid,
-							nohp: nohp,
-							tanggal_lahir: new Date(),
-							country: (country).toLowerCase(),
-							role: 'user',
-							subscription: 'null',
-							createdAt: new Date(),
-						});
-						let dataSignup = {
-							'name': name,
-							'email': email,
-							'phone': nohp
-						  }
-		  
-						  let userData = {}
-		  
-						  const result = await postImportirAuth(dataSignup, 'sign-up')
-						  console.log(result)
-		  
-						  if (result.status === true) {
-							userData.email = email
-							userData.token = result.data
-							userData.status = true
-							// const data = JSON.stringify(userData)
-							// console.log(data, 'data')
-							await store.set('userData', userData)
-						  }
-						  setLoading(false)
-						navigate("/", { replace: true });
+						const res = await ApiBackend.post('createprofile', {
+							title: email,
+						})
+						console.log(res, 'ioni ress')
+						if (res.status === 200) {
+							console.log(res.data, 'xxx')
+							await setDoc(doc(db, "users", user.uid), {
+								name: name,
+								keyword_name: (name).toLowerCase().split(' ').join(''),
+								email: user.email,
+								uid_user: user.uid,
+								nohp: nohp,
+								// sosmed: instagram,
+								role: 'user',
+								subscription: 'trial',
+								createdAt: new Date(),
+								enrollmentDate: moment().format("MMMM Do YYYY, h:mm:ss a"),
+								ayrshare_account : res.data
+							});
+
+							setLoading(false)
+							navigate("/login", { replace: true });
+						}
 					})
 					.catch((error) => {
 						toast({
@@ -116,7 +112,7 @@ function SignUpPage() {
 				});
 				setLoading(false)
 			}
-		}else{
+		} else {
 			toast({
 				title: "Something Wrong",
 				description: "check your data",
@@ -129,150 +125,170 @@ function SignUpPage() {
 	}
 
 
+	const height = window.innerHeight
+	const width = window.innerWidth
+
+
+
 	return (
-		<Stack alignItems={'center'} justifyContent='center' h='80vh' >
-			<Stack justifyContent='center' alignItems='center' position={'absolute'} spacing={3} pb={10}>
+		<>
+			{/* <AppHeader /> */}
 
-				<Box >
-					<Image
-					
-						w='200px'
-						borderRadius={20}
-						src={logobelanja}
-						alt="Alternate Text"
-					/>
-				</Box>
-				<Spacer />
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdAccountCircle size={24} color="black" />} />
-						<Input placeholder="Full name"
-							fontSize={'md'}
-							type="text"
-							bgColor={'white'}
-							color={colors.black}
-							onChange={(e) => setName(e.target.value)}
-						/>
-					</InputGroup>
+			<Stack pt={20} spacing={10} minH={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover" alignItems={'center'} justifyContent='center' >
+				<Stack alignItems={'center'} justifyContent='center'>
+					<Stack w={['90%', null, width / 4]} spacing={3} p={10} bgColor="blackAlpha.600" shadow={'md'} borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>
+						<Box >
+							<Image
 
+								w='200px'
+								borderRadius={20}
+								src={logo}
+								alt="Alternate Text"
+							/>
+						</Box>
+						<Spacer />
+						<Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<MdAccountCircle size={24} color="black" />} />
+								<Input placeholder="Full name"
+									fontSize={'sm'}
+									type="text"
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setName(e.target.value)}
+								/>
+							</InputGroup>
+
+						</Stack>
+
+						<Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<MdOutlinePhoneIphone size={24} color="black" />} />
+								<Input w={{
+									base: '100%',
+									md: '100%'
+								}} placeholder="Number phone"
+									fontSize={'sm'}
+									type="number"
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setNohp(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+						<Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<MdEmail name="email" size={24} color="black" />} />
+								<Input w={{
+									base: '100%',
+									md: '100%'
+								}} placeholder="Email"
+									fontSize={'sm'}
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+						{/* <Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<AiFillInstagram name="instagram" size={24} color="black" />} />
+								<Input w={{
+									base: '100%',
+									md: '100%'
+								}} placeholder="Social Media"
+									fontSize={'sm'}
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setInstagram(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack> */}
+
+
+
+
+						<Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<MdLock size={24} color="black" />} />
+								<Input w={{
+									base: '100%',
+									md: '100%'
+								}} placeholder="Password"
+									fontSize={'sm'}
+									type="password"
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+						<Stack alignItems="center">
+							<InputGroup w={{
+								base: '100%',
+								md: '285'
+							}}>
+								<InputLeftAddon children={<MdLock size={24} color="black" />} />
+								<Input w={{
+									base: '100%',
+									md: '100%'
+								}} placeholder="Confirm password"
+									fontSize={'sm'}
+									id="password"
+									type="password"
+									bgColor={'white'}
+									color={colors.black}
+									onChange={(e) => setConfirmPassword(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+
+
+						{loading ? (
+							<Spinner size={'sm'} />
+						) : (
+							<Button w='80%' size={'sm'} bgColor={colors.buttonPrimary} onClick={() => handleSignup()}  >
+								<Text color={colors.buttonSecondary} fontSize='xs' fontWeight="bold">
+									CREATE ACCOUNT
+								</Text>
+							</Button>
+						)}
+
+						<Spacer />
+						<Spacer />
+
+						<HStack space={1}>
+							<Text color={'gray.400'} fontSize='sm'>Back to</Text>
+							<Text color={'gray.400'} fontWeight='bold' fontSize='sm' onClick={() => navigate('/login')}>Login</Text>
+						</HStack>
+					</Stack>
 				</Stack>
 
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdOutlinePhoneIphone size={24} color="black" />} />
-						<Input w={{
-							base: '100%',
-							md: '100%'
-						}} placeholder="Number phone"
-							fontSize={'md'}
-							type="number"
-							bgColor={'white'}
-							color={colors.black}
-							onChange={(e) => setNohp(e.target.value)}
-						/>
-					</InputGroup>
+				<Stack>
+					<AppSponsor />
 				</Stack>
 
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdEmail name="email" size={24} color="black" />} />
-						<Input w={{
-							base: '100%',
-							md: '100%'
-						}} placeholder="Email"
-							fontSize={'md'}
-							bgColor={'white'}
-							color={colors.black}
-							onChange={(e) => setEmail(e.target.value)}
-						/>
-					</InputGroup>
-				</Stack>
-
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdFlag size={24} color="black" />} />
-						<Select fontSize='md' w='210px' bgColor={'white'} placeholder="All" onChange={(e) => setCountry(e.target.value)}>
-							<option value="indonesia">Indonesia</option>
-							<option value="thailand">Thailand</option>
-							<option value="usa">USA</option>
-							<option value="china">China</option>
-						</Select>
-					</InputGroup>
-				</Stack>
-
-
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdLock size={24} color="black" />} />
-						<Input w={{
-							base: '100%',
-							md: '100%'
-						}} placeholder="Password"
-							fontSize={'md'}
-							type="password"
-							bgColor={'white'}
-							color={colors.black}
-							onChange={(e) => setPassword(e.target.value)}
-						/>
-					</InputGroup>
-				</Stack>
-
-				<Stack alignItems="center">
-					<InputGroup w={{
-						base: '100%',
-						md: '285'
-					}}>
-						<InputLeftAddon children={<MdLock size={24} color="black" />} />
-						<Input w={{
-							base: '100%',
-							md: '100%'
-						}} placeholder="Confirm password"
-							fontSize={'md'}
-							id="password"
-							type="password"
-							bgColor={'white'}
-							color={colors.black}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-						/>
-					</InputGroup>
-				</Stack>
-
-
-
-				{loading ? (
-					<Spinner size={'sm'} />
-				) : (
-					<Button w='80%' size={'sm'} bgColor={colors.theme} onClick={() => handleSignup()}  >
-						<Text color={colors.black} fontWeight="bold">
-							CREATE ACCOUNT
-						</Text>
-					</Button>
-				)}
-
-				<Spacer />
-				<Spacer />
-
-				<HStack space={1}>
-					<Text color={'black'}>Back to</Text>
-					<Text color={'black'} fontWeight='bold' onClick={() => navigate('/login')}>Login</Text>
-				</HStack>
 			</Stack>
-		</Stack>
+		</>
 	)
 }
 

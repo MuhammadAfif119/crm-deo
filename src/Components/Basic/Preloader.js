@@ -19,8 +19,8 @@ export default function Preloader() {
         width="100%"
         bg="rgba(0, 0, 0, 0.7)"
       >
-        <Image src={gif} width='100px'/>
-        {/* <Spinner accessibilityLabel="Loading..." color="white" /> */}
+        {/* <Image src={gif} width='100px'/> */}
+        <Spinner accessibilityLabel="Loading..." color="white" />
       </HStack>
     ) 
   );

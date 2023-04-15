@@ -10,6 +10,9 @@
         ],
         "admin-testing": [
           "edrus-test"
+        ],
+        "docial": [
+          "docial-app"
         ]
       }
     }

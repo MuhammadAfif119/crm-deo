@@ -9,13 +9,14 @@ import store from 'store'
 import { getNew, postImportirAuth } from '../Api/importirApi'
 import _axios from "../Api/AxiosBarrier";
 import { get } from '../Api/importirApi';
+import ApiBackend from "../Api/ApiBackend";
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState('');
     const [tokenId, setTokenId] = useState("");
     const [loading, setLoading] = useState(false);
     const [userStorage, setUserStorage] = useState()
-    
+
     const navigate = useNavigate();
     const toast = useToast();
 
@@ -25,35 +26,44 @@ export const AuthProvider = ({ children }) => {
             .then(async (response) => {
                 const user = response.user
                 if (user) {
-                    let userData = {}
-                    const result = await postImportirAuth(
-                        { email: email },
-                        'sign-in'
-                    )
-                    if (result.status === true) {
-                        userData.email = email
-                        userData.token = result.data
-                        userData.status = true
-                        // const data = JSON.stringify(userData)
-                        setUserStorage(userData)
-                        await store.set('userData', userData)
+                    try {
+                        const docRef = doc(db, "users", user.uid);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            if (docSnap?.data()?.ayrshare_account?.profileKey) {
+                                const res = await ApiBackend.post('/generateJWT', {
+                                    domain: 'importir',
+                                    profileKey: docSnap.data().ayrshare_account.profileKey
+                                })
+                                if (res.status === 200) {
+                                    await updateDoc(docRef, { token_ayrshare: res.data.token });
+                                    // console.log('test')
+
+                                    await updateDoc(docRef, { tokenId: arrayUnion(tokenId) })
+
+
+                                    await store.set('userData', docSnap.data())
+                                }
+                            } else {
+
+                                await updateDoc(docRef, { tokenId: arrayUnion(tokenId) })
+
+
+                                await store.set('userData', docSnap.data())
+
+                            }
+
+                        } else {
+                            console.log("No such document!");
+                        }
+                        // getCart()
+                        loadingClose()
+                    } catch (error) {
+                        console.log(error, "ini error");
+                        loadingClose()
                     }
                 }
-                try {
-                    const docRef = doc(db, "users", response.user.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        await updateDoc(docRef, { tokenId: arrayUnion(tokenId) });
-                        // console.log('test')
-                    } else {
-                        console.log("No such document!");
-                    }
-                    // getCart()
-                    loadingClose()
-                } catch (error) {
-                    console.log(error, "ini error");
-                    loadingClose()
-                }
+
 
                 toast({
                     title: "Success Login",
@@ -87,15 +97,15 @@ export const AuthProvider = ({ children }) => {
 
 
     const getUserStorage = async () => {
-        if (currentUser !== "") {
+        if (currentUser) {
             try {
                 const res = await store.get("userData");
                 setUserStorage(res)
-
             } catch (error) {
                 console.log(error, 'error')
             }
         }
+        return userStorage
     };
 
     const signUp = (email, password) => {
@@ -114,20 +124,25 @@ export const AuthProvider = ({ children }) => {
         setLoading(false)
     }
 
-
-
-    
-
-
-
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
             fetchToken(setTokenId)
-            // getProductBisnis()
         });
     }, []);
-    
+
+    useEffect(() => {
+        getUserStorage()
+
+        return () => {
+
+        }
+    }, [currentUser])
+
+
+
+
+
 
 
 
