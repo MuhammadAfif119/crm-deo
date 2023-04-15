@@ -10,9 +10,7 @@ function App() {
     <>
       <Preloader />
       <Stack>
-        {/* <AppHeader /> */}
         <MainRoute />
-        {/* <AppFooter /> */}
       </Stack>
     </>
   );

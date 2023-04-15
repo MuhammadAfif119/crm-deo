@@ -126,6 +126,14 @@ function SocialBuildPage() {
                 }
 
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
         loadingClose()
     }
@@ -143,6 +151,7 @@ function SocialBuildPage() {
             try {
                 const res = await ApiBackend.post('delete', {
                     id: postActive.id,
+                    profileKey
                 })
                 if (res.status === 200) {
                     toast({
@@ -159,6 +168,14 @@ function SocialBuildPage() {
             } catch (error) {
                 console.log(error, 'ini error')
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
     }
 
@@ -201,6 +218,14 @@ function SocialBuildPage() {
                 setLoadingComment(false)
 
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
 
         setLoadingComment(false)
@@ -278,6 +303,14 @@ function SocialBuildPage() {
                     isClosable: true,
                 })
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
 
     }
@@ -303,7 +336,16 @@ function SocialBuildPage() {
             } catch (error) {
                 console.log(error, 'ini error')
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
+
 
 
     }
@@ -439,6 +481,14 @@ function SocialBuildPage() {
                 }
                 loadingClose()
             }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
         }
 
     }

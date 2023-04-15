@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, useToast, } from '@chakra-ui/react'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { MdOutlinePermMedia, MdSchedule } from 'react-icons/md'
 import { FiSend } from 'react-icons/fi'
@@ -34,6 +34,7 @@ function SocialAccountPage() {
 
 
     const navigate = useNavigate()
+    const toast = useToast()
 
 
     const getSocialAccount = async () => {
@@ -45,12 +46,7 @@ function SocialAccountPage() {
                 domain: 'importir',
                 profileKey: profileKey,
             })
-            // const parser = new DOMParser();
-            // const html = parser.parseFromString(res.data, "text/html");
-            // setResponseHTML(html.documentElement.innerHTML)
-            // console.log(html.documentElement.innerHTML, 'xxx')
             setGenerateData(res.data)
-            console.log(res.data, 'yyy')
             const url = res.data.url + "&output=embed"
             setUrlData(url)
         }
@@ -72,6 +68,42 @@ function SocialAccountPage() {
             }
         }
     }
+
+    const handleDisconnected = async (data) => {
+        console.log(data, 'test')
+
+        const res = await store.get("userData");
+        const profileKey = res?.ayrshare_account?.profileKey
+        if (profileKey) {
+            try {
+                const res = await ApiBackend.post('unlinksocial', {
+                    platform : data.platform,
+                    profileKey
+                })
+                if(res.status === 200){
+                    toast({
+                        title: 'Deoapp.com',
+                        description: 'Succes to disconnect from social accounts',
+                        status: 'success',
+                        position: 'top-right',
+                        isClosable: true,
+                    })
+                    getUser()
+                }
+            } catch (error) {
+                console.log(error, 'ini error ')
+            }
+        }else{
+            toast({
+                title: 'Deoapp.com',
+                description: 'You must set billing pricing',
+                status: 'error',
+                position: 'top-right',
+                isClosable: true,
+            })
+        }
+
+    } 
 
     const handleWindowConnected = () => {
         window.open(urlData, '_blank', 'noreferrer');
@@ -109,7 +141,7 @@ function SocialAccountPage() {
                             <HStack>
                                 <Text fontSize={'xs'} color='gray.600'>Email</Text>
                                 <Spacer />
-                                <Text fontSize={'xs'} color='gray.900' fontWeight={'bold'}>{generateData?.title ? generateData?.title : "Admin" }</Text>
+                                <Text fontSize={'xs'} color='gray.900' fontWeight={'bold'}>{generateData?.title ? generateData?.title : "Please set your billing" }</Text>
                             </HStack>
                             <HStack>
                                 <Text fontSize={'xs'} color='gray.600'>Social Media</Text>
@@ -192,7 +224,7 @@ function SocialAccountPage() {
                                                 <Text textAlign={'center'} fontSize='xs' color={'gray.600'}>{x.displayName}</Text>
                                             </Stack>
 
-                                            <SimpleGrid columns={[1, null, 2]} gap={2}>
+                                            <SimpleGrid columns={[1, 1, 2]} gap={2}>
                                                 <Stack>
                                                     <a href={x.profileUrl} target="_blank" rel="noopener noreferrer">
                                                         <Button size={'sm'} colorScheme='green' >
@@ -201,7 +233,7 @@ function SocialAccountPage() {
                                                     </a>
                                                 </Stack>
                                                 <Stack>
-                                                    <Button size={'sm'} colorScheme='blackAlpha'>
+                                                    <Button size={'sm'} colorScheme='blackAlpha' onClick={() => handleDisconnected(x)}>
                                                         <Text fontSize={'xs'}>Disconnected</Text>
                                                     </Button>
                                                 </Stack>
