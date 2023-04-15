@@ -110,16 +110,6 @@ const AppSideBar = ({ setBarStatus }) => {
             transition={"0.2s ease-in-out"}
 
           />
-          {/* <IconButton
-            aria-label="Toggle Navigation"
-            icon={<Icon as={() => (isOpen ? <MdArrowBackIos /> : <MdArrowForwardIos />)} />}
-            onClick={onToggle}
-            bg="transparent"
-            _hover={{ bg: 'transparent' }}
-            _focus={{ outline: 'none' }}
-            size={'sm'}
-            transition={"0.2s ease-in-out"}
-          /> */}
 
 
         </Flex>
@@ -179,7 +169,7 @@ const AppSideBar = ({ setBarStatus }) => {
 
         <Spacer />
 
-        <Stack w={'100%'} >
+        <Stack w={'100%'}   zIndex={100}>
           {currentUser ? (
             <>
               <Popover
@@ -189,10 +179,12 @@ const AppSideBar = ({ setBarStatus }) => {
                 onClose={() => setOpenAvatar(false)}
                 placement='right'
                 closeOnBlur={false}
+
               >
-                <PopoverTrigger>
+                <PopoverTrigger >
                   <Stack
                   cursor={'pointer'}
+
                   >
                     <Avatar size={'sm'} src={''} alt={''}>
                       <AvatarBadge boxSize='1.25em' bg='green.500' />
@@ -201,7 +193,7 @@ const AppSideBar = ({ setBarStatus }) => {
                 </PopoverTrigger>
                 <PopoverContent p={5} bottom={5}
                 >
-                  <HStack>
+                  <HStack >
                     <Stack spacing={0} transition={"0.2s ease-in-out"}>
                       <Text fontSize={'sm'} color='gray.700' fontWeight={'bold'} noOfLines={1}>{currentUser?.displayName}</Text>
                       <Text fontSize={'xs'} color='gray.700' textTransform={'capitalize'}>{userStorage?.subscription}</Text>

@@ -12,7 +12,6 @@ import store from 'store'
 import { postImportirAuth } from '../../Api/importirApi'
 import AppHeader from '../../Components/AppHeader'
 import moment from 'moment'
-import { AiFillInstagram } from 'react-icons/ai'
 import AppSponsor from '../../Components/AppSponsor'
 import ApiBackend from '../../Api/ApiBackend'
 
@@ -57,6 +56,21 @@ function SignUpPage() {
 						const user = userCredential.user;
 						if (user) {
 
+							await setDoc(doc(db, "users", user.uid), {
+								name: name,
+								keyword_name: (name).toLowerCase().split(' ').join(''),
+								email: user.email,
+								uid_user: user.uid,
+								nohp: nohp,
+								role: 'user',
+								subscription: 'owner',
+								createdAt: new Date(),
+								enrollmentDate: moment().format("MMMM Do YYYY, h:mm:ss a"),
+							});
+
+							setLoading(false)
+							navigate("/login", { replace: true });
+
 							toast({
 								title: "Success Create",
 								description: `Success Create account ${user.displayName}`,
@@ -66,29 +80,27 @@ function SignUpPage() {
 								position: "top-right",
 							});
 						}
-						const res = await ApiBackend.post('createprofile', {
-							title: email,
-						})
-						console.log(res, 'ioni ress')
-						if (res.status === 200) {
-							console.log(res.data, 'xxx')
-							await setDoc(doc(db, "users", user.uid), {
-								name: name,
-								keyword_name: (name).toLowerCase().split(' ').join(''),
-								email: user.email,
-								uid_user: user.uid,
-								nohp: nohp,
-								// sosmed: instagram,
-								role: 'user',
-								subscription: 'trial',
-								createdAt: new Date(),
-								enrollmentDate: moment().format("MMMM Do YYYY, h:mm:ss a"),
-								ayrshare_account : res.data
-							});
+						// const res = await ApiBackend.post('createprofile', {
+						// 	title: email,
+						// })
+						// if (res.status === 200) {
+						// 	console.log(res.data, 'xxx')
+						// 	await setDoc(doc(db, "users", user.uid), {
+						// 		name: name,
+						// 		keyword_name: (name).toLowerCase().split(' ').join(''),
+						// 		email: user.email,
+						// 		uid_user: user.uid,
+						// 		nohp: nohp,
+						// 		role: 'user',
+						// 		subscription: 'trial',
+						// 		createdAt: new Date(),
+						// 		enrollmentDate: moment().format("MMMM Do YYYY, h:mm:ss a"),
+						// 		ayrshare_account : res.data
+						// 	});
 
-							setLoading(false)
-							navigate("/login", { replace: true });
-						}
+						// 	setLoading(false)
+						// 	navigate("/login", { replace: true });
+						// }
 					})
 					.catch((error) => {
 						toast({

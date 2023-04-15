@@ -63,7 +63,6 @@ function MyFeedRssPage() {
                 <Spacer
                 />
                 <Stack
-                    Stack
                     w={contentWidth}
                     transition={"0.2s ease-in-out"}
                     minH={height}

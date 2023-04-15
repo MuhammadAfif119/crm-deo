@@ -20,6 +20,7 @@ function App() {
         <Stack h={height} zIndex={100}>
           <AppSideBar setBarStatus={setBarStatus} />
         </Stack>
+        
         <Spacer 
         />
         <Stack

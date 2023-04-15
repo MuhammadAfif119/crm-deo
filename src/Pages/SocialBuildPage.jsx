@@ -2,13 +2,14 @@ import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogConten
 import React, { useContext, useEffect, useState } from 'react'
 import { MdOutlinePermMedia, MdSchedule } from 'react-icons/md'
 import { FiSend } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import store from 'store'
 
 import { FaFacebook, FaFacebookF, FaGoogle, FaInstagram, FaLinkedin, FaPinterest, FaTelegram, FaTiktok, FaTwitter, FaYoutube } from 'react-icons/fa'
 import moment from 'moment'
 import AuthContext from '../Routes/hooks/AuthContext'
 import ApiBackend from '../Api/ApiBackend'
+import AppSideAccountBar from '../Components/AppSideAccountBar'
 
 function SocialBuildPage() {
 
@@ -26,6 +27,15 @@ function SocialBuildPage() {
     const [files, setFiles] = useState([]);
     const [scheduleActive, setScheduleActive] = useState(false)
     const [schedulePosting, setSchedulePosting] = useState('')
+
+    const [barStatus, setBarStatus] = useState(false)
+
+
+    const contentWidth = barStatus ? "85%" : "95%";
+
+    let [searchParams, setSearchParams] = useSearchParams();
+
+    const profileKey = searchParams.get("detail")
 
 
     const { loadingShow, loadingClose } = useContext(AuthContext)
@@ -63,8 +73,6 @@ function SocialBuildPage() {
     const handlePost = async () => {
         loadingShow()
         let fileImage = []
-        const res = await store.get("userData");
-        const profileKey = res?.ayrshare_account?.profileKey
 
         if (profileKey) {
             if (files.length > 0) {
@@ -153,7 +161,7 @@ function SocialBuildPage() {
                 }
                 loadingClose()
             }
-        }else{
+        } else {
             toast({
                 title: 'Deoapp.com',
                 description: 'You must set billing pricing',
@@ -174,9 +182,16 @@ function SocialBuildPage() {
 
 
     return (
-        <Stack p={5}>
+        <Stack >
 
-                <Stack transition={"0.2s ease-in-out"} minH={height}  >
+            <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
+
+                <Stack >
+                    <AppSideAccountBar setBarStatus={setBarStatus} />
+                </Stack>
+                <Spacer />
+
+                <Stack w={contentWidth}  transition={"0.2s ease-in-out"} minH={height}  >
                     <Stack p={10} >
                         <Stack>
                             <Text fontSize={'xl'}>Create a post</Text>
@@ -307,6 +322,8 @@ function SocialBuildPage() {
 
                     </Stack>
                 </Stack>
+
+            </ Flex>
 
                 <AlertDialog
                     motionPreset='slideInBottom'

@@ -99,7 +99,7 @@ const AppSideBarFeed = ({ setBarStatus }) => {
       boxShadow="lg"
       h={height}
     >
-      <Flex align="center" justify="center" px="4" mb="8" >
+      <Flex  px="4" mb="8" >
         <Flex align="center">
           <IconButton
             aria-label="Toggle Navigation"
@@ -116,17 +116,10 @@ const AppSideBarFeed = ({ setBarStatus }) => {
         </Flex>
       </Flex>
 
-      <VStack spacing="5" px="4"  minH={'90%'}  >
-        {/* <NavButton
-          icon={FiRss}
-          label="My Feeds"
-          hoverColor={sidebarHoverColor[colorMode]}
-          onClick={() => navigate(`/my-feed`)}
-          isOpen={isOpen}
-        /> */}
+      <VStack spacing="5" px="4"  alignItems={'flex-start'} >
 
         <Stack>
-            <Text fontSize={'sm'}>My Feeds</Text>
+            <Text fontSize={'xs'}>Social Account</Text>
         </Stack>
 
         <Stack>
