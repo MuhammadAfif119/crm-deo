@@ -13,6 +13,7 @@ import { FaFacebook, FaFacebookF, FaGoogle, FaInstagram, FaLinkedin, FaPinterest
 import AppHeader from '../Components/AppHeader'
 import moment from 'moment'
 import ApiBackend from '../Api/ApiBackend'
+import AppSideBarFeed from '../Components/AppSideBarFeed'
 
 function MyFeedRssPage() {
 
@@ -55,71 +56,83 @@ function MyFeedRssPage() {
 
 
     return (
-        <Stack p={5}>
+            <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
+                <Stack  zIndex={100}>
+                    <AppSideBarFeed setBarStatus={setBarStatus} />
+                </Stack>
+                <Spacer
+                />
+                <Stack
+                    Stack
+                    w={contentWidth}
+                    transition={"0.2s ease-in-out"}
+                    minH={height}
+                >
+                    <Stack transition={"0.2s ease-in-out"} minH={height}  >
+                        <Stack p={10} spacing={5}>
+                            <Stack >
+                                <Text fontSize={'xl'}>Feeds</Text>
+                            </Stack>
 
-                <Stack transition={"0.2s ease-in-out"} minH={height}  >
-                    <Stack p={10} spacing={5}>
-                        <Stack >
-                            <Text fontSize={'xl'}>Feeds</Text>
-                        </Stack>
+
+                            <Stack >
+                                <SimpleGrid columns={[1, 2, 4]} gap={5}>
+                                    {listData?.length > 0 && listData?.map((x, index) => {
+
+                                        return (
+                                            <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={5} >
+                                                <HStack>
+                                                    <Text >{x.title}</Text>
 
 
-                        <Stack >
-                            <SimpleGrid columns={[1, 2, 4]} gap={5}>
-                                {listData?.length > 0 && listData?.map((x, index) => {
-
-                                    return (
-                                        <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={5} >
-                                            <HStack>
-                                                <Text >{x.title}</Text>
-
-
-                                            </HStack>
-                                            <Divider borderStyle={'dotted'} />
-                                            {x.image && (
-                                                <Stack>
-                                                    <Image crossOrigin="anonymous" src={x?.image} alt={'img'} borderRadius='md' />
-                                                </Stack>
-                                            )}
-                                            <Spacer />
-                                            <Stack>
-                                                <Text textAlign={'center'} fontSize='xs' color={'gray.600'}>{x.content_text}</Text>
-                                            </Stack>
-
-                                            <HStack>
-                                                <Stack>
-                                                    {x?.authors?.length > 0 &&
-                                                        x?.authors?.map((y, index) => {
-                                                            return (
-                                                                <Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y.name}</Text>
-
-                                                            )
-                                                        })
-                                                    }
-                                                </Stack>
-
+                                                </HStack>
+                                                <Divider borderStyle={'dotted'} />
+                                                {x.image && (
+                                                    <Stack>
+                                                        <Image crossOrigin="anonymous" src={x?.image} alt={'img'} borderRadius='md' />
+                                                    </Stack>
+                                                )}
                                                 <Spacer />
-                                                <Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(x.date_published).fromNow()}</Text>
-                                            </HStack>
-
-                                            <SimpleGrid columns={[1]} gap={2}>
                                                 <Stack>
-                                                    <a href={x.url} target="_blank" rel="noopener noreferrer">
-                                                        <Button size={'sm'} colorScheme='green' >
-                                                            <Text fontSize={'xs'}>Go to website</Text>
-                                                        </Button>
-                                                    </a>
+                                                    <Text textAlign={'center'} fontSize='xs' color={'gray.600'}>{x.content_text}</Text>
                                                 </Stack>
-                                            </SimpleGrid>
 
-                                        </Stack>
-                                    )
-                                })}
-                            </SimpleGrid>
+                                                <HStack>
+                                                    <Stack>
+                                                        {x?.authors?.length > 0 &&
+                                                            x?.authors?.map((y, index) => {
+                                                                return (
+                                                                    <Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y.name}</Text>
+
+                                                                )
+                                                            })
+                                                        }
+                                                    </Stack>
+
+                                                    <Spacer />
+                                                    <Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(x.date_published).fromNow()}</Text>
+                                                </HStack>
+
+                                                <SimpleGrid columns={[1]} gap={2}>
+                                                    <Stack>
+                                                        <a href={x.url} target="_blank" rel="noopener noreferrer">
+                                                            <Button size={'sm'} colorScheme='green' >
+                                                                <Text fontSize={'xs'}>Go to website</Text>
+                                                            </Button>
+                                                        </a>
+                                                    </Stack>
+                                                </SimpleGrid>
+
+                                            </Stack>
+                                        )
+                                    })}
+                                </SimpleGrid>
+                            </Stack>
                         </Stack>
                     </Stack>
                 </Stack>
-        </Stack>
+            </Flex>
+
     )
 }
 
