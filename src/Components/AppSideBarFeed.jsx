@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Avatar, AvatarBadge, Box, Button, Flex, HStack, Icon, IconButton, Image, Popover, PopoverContent, PopoverTrigger, Spacer, Stack, Text, useColorMode, useDisclosure, VStack } from '@chakra-ui/react';
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Avatar, AvatarBadge, Box, Button, Center, Container, Flex, Heading, HStack, Icon, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Popover, PopoverContent, PopoverTrigger, Spacer, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorMode, useDisclosure, VStack } from '@chakra-ui/react';
 import { AiOutlineCloudUpload, AiOutlineComment } from 'react-icons/ai';
-import { MdArrowForwardIos, MdArrowBackIos, MdOutlineAnalytics, MdOutlineCalendarToday } from 'react-icons/md';
+import { MdArrowForwardIos, MdArrowBackIos, MdOutlineAnalytics, MdOutlineCalendarToday, MdStarRate, MdLibraryAdd, MdOutlineDeleteForever, MdOutlineShare } from 'react-icons/md';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/1.png'
@@ -10,165 +10,170 @@ import { FiRss } from 'react-icons/fi';
 import { useContext } from 'react';
 import AuthContext from '../Routes/hooks/AuthContext';
 import store from 'store'
+import { async } from '@firebase/util';
+import { createRssFetch } from '../Api/FetchRss';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 
-const AppSideBarFeed = ({ setBarStatus }) => {
+const AppSideBarFeed = () => {
 
-  const width = window.innerWidth
-  const height = window.innerHeight
+	const width = window.innerWidth
+	const height = window.innerHeight
+	const navigate = useNavigate()
+	const location = useLocation();
+	const { colorMode } = useColorMode();
+	const { isOpen, onOpen, onClose } = useDisclosure()
+	const [urlFeed, setUrlFeed] = useState()
 
-//   const [barStatus, setBarStatus] = useState(false)
-
-  const navigate = useNavigate()
-
-  const [userStorage, setUserStorage] = useState({})
-
-  const { currentUser, signOut } = useContext(AuthContext)
-  const [openAvatar, setOpenAvatar] = useState(false)
-
-  const firstFieldRef = React.useRef(null)
-
-  const getDataUser = async () => {
-    const res = await store.get("userData");
-    setUserStorage(res)
-
-  }
-
-  const location = useLocation();
-  console.log(location.pathname , 'yses');
+	const data = ['Jokowi', 'gayung', 'auk apa', 'loncat dari gedung lantai 5']
 
 
+	const sidebarBg = {
+		light: 'white',
+		dark: 'gray.800',
+	};
+
+	const sidebarColor = {
+		light: 'gray.900',
+		dark: 'white',
+	};
 
 
-  const { isOpen, onToggle } = useDisclosure();
-  const { colorMode } = useColorMode();
+	const createRss = async () => {
+		try {
+			const response = await createRssFetch(urlFeed)
+			console.log(response)
+		} catch (error) {
+			console.log(error)
 
-  const handleBar = () => {
-    setBarStatus(isOpen)
-  }
+		}
+	}
 
-  useEffect(() => {
-    handleBar()
-    getDataUser()
+	useEffect(() => {
 
-    return () => {
-    }
-  }, [isOpen])
-
-  const handleLogout = () => {
-    signOut()
-      .then(() => {
-        navigate("/", { replace: true });
-        store.clearAll();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+		return () => {
+		}
+	}, [])
 
 
 
 
-  const sidebarBg = {
-    light: 'white',
-    dark: 'gray.800',
-  };
+	return (
+		<>
+			<Box
+				bg={sidebarBg[colorMode]}
+				color={sidebarColor[colorMode]}
+				w={'200px'}
+				p="5"
+				transition="width .3s ease"
+				shadow="sm"
+				position="fixed"
+				overflow="auto"
+				borderRightRadius="xl"
+				boxShadow="lg"
+				h={height}
+			>
+				{/* <Box>
 
-  const sidebarColor = {
-    light: 'gray.900',
-    dark: 'white',
-  };
+					<HStack>
+						<Icon as={MdStarRate} />
+						<Heading fontSize='sm'>Favorites</Heading>
+					</HStack>
 
-  const sidebarHoverColor = {
-    light: 'blue.600',
-    dark: 'blue.200',
-  };
+				</Box> */}
+
+				<Accordion allowMultiple>
+					<AccordionItem>
+						<h2>
+							<AccordionButton>
+								<Box as="span" flex='1' textAlign='left' onClick={() => console.log('clicking accordion')}>
+									Section 1 title
+								</Box>
+								<AccordionIcon />
+							</AccordionButton>
+						</h2>
+						<AccordionPanel pb={4}>
+							<HStack>
+								<Spacer />
+								<Icon as={MdOutlineShare} color='green' />
+								<Icon as={MdOutlineDeleteForever} color='red' />
+							</HStack>
+							{data.map((x) =>
+								<HStack>
+									<Text noOfLines={1} onClick={() => console.log('clicking xml location')}>{x}</Text>
+									<Spacer />
+									<ChevronRightIcon />
+								</HStack>)}
+
+						</AccordionPanel>
+					</AccordionItem>
+
+					<AccordionItem>
+						<h2>
+							<AccordionButton>
+								<Text as="span" flex='1' textAlign='left' onClick={() => console.log('clicking accordion')}>
+									Section 2 title
+								</Text>
+								<AccordionIcon />
+							</AccordionButton>
+						</h2>
+						<AccordionPanel pb={4}>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+							veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+							commodo consequat.
+						</AccordionPanel>
+					</AccordionItem>
+
+				</Accordion>
+
+				<Center mt='2'>
+					<Button onClick={onOpen} colorScheme='green'>Add New</Button>
+				</Center>
+
+			</Box>
 
 
-  return (
-    <Box
-      bg={sidebarBg[colorMode]}
-      color={sidebarColor[colorMode]}
-      w={isOpen ? '200px' : '80px'}
-      pt="5"
-      pb="4"
-      transition="width .3s ease"
-      shadow="sm"
-      position="fixed"
-      overflow="auto"
-      borderRightRadius="xl"
-      boxShadow="lg"
-      h={height}
-    >
-      <Flex align="center" justify="center" px="4" mb="8" >
-        <Flex align="center">
-          <IconButton
-            aria-label="Toggle Navigation"
-            icon={<Icon as={() => (isOpen ? <MdArrowBackIos /> : <MdArrowForwardIos />)} />}
-            onClick={onToggle}
-            bg="transparent"
-            _hover={{ bg: 'transparent' }}
-            _focus={{ outline: 'none' }}
-            size={'sm'}
-            transition={"0.2s ease-in-out"}
-          />
+
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Modal Title</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Tabs>
+							<TabList>
+								<Tab>Folder</Tab>
+								<Tab>URL</Tab>
+								<Tab>Topic</Tab>
+							</TabList>
+
+							<TabPanels>
+								<TabPanel>
+									<Input type='text' placeholder='What would you like to name your folder?' onChange={(e) => setUrlFeed(e.target.value)} />
+									<Button mt='1' width='full' onClick={() => createRss()}>Add Folder</Button>
+								</TabPanel>
+								<TabPanel>
+									<Input type='text' placeholder='URL here' onChange={(e) => setUrlFeed(e.target.value)} />
+									<Button mt='1' width='full' onClick={() => createRss()}>Get Feed</Button>
+								</TabPanel>
+								<TabPanel>
+									<p>three!</p>
+								</TabPanel>
+							</TabPanels>
+						</Tabs>
 
 
-        </Flex>
-      </Flex>
+					</ModalBody>
 
-      <VStack spacing="5" px="4"  minH={'90%'}  >
-        {/* <NavButton
-          icon={FiRss}
-          label="My Feeds"
-          hoverColor={sidebarHoverColor[colorMode]}
-          onClick={() => navigate(`/my-feed`)}
-          isOpen={isOpen}
-        /> */}
-
-        <Stack>
-            <Text fontSize={'sm'}>My Feeds</Text>
-        </Stack>
-
-        <Stack>
-            <Button size={'sm'}>
-                <Text fontSize={'xs'}>+ New Folder</Text>
-            </Button>
-        </Stack>
-
-      </VStack>
-    </Box>
-  );
+					<ModalFooter>
+						<Button colorScheme='blue' mr={3} onClick={onClose}>
+							Close
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</>
+	);
 };
-
-// const NavButton = ({ icon, label, hoverColor, onClick, isOpen }) => {
-//   const [isHover, setIsHover] = useState(false);
-
-//   const toggleHover = () => {
-//     setIsHover(!isHover);
-//   };
-
-//   return (
-//     <Flex
-//       align="center"
-//       p="3"
-//       borderRadius="md"
-//       cursor="pointer"
-//       _hover={{ bg: hoverColor, color: 'white' }}
-//       bg={isHover ? hoverColor : 'transparent'}
-//       color={isHover ? 'white' : null}
-//       onClick={onClick}
-//       onMouseEnter={toggleHover}
-//       onMouseLeave={toggleHover}
-
-//     >
-//       <Icon as={icon} fontSize='xl' />
-//       {isOpen && (
-//         <Text ml="4" fontSize="sm" fontWeight="medium">
-//           {label}
-//         </Text>
-//       )}
-//     </Flex>
-//   );
-// };
 
 export default AppSideBarFeed
