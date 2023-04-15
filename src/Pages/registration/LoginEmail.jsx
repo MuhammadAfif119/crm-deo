@@ -37,7 +37,6 @@ function LoginEmail() {
 
     return (
         <>
-            {/* <AppHeader /> */}
             <Stack spacing={10} pt={20} minH={height} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/gsf-hero-sm.jpg) no-repeat center center fixed" bgSize="cover" alignItems={'center'} justifyContent='center'>
                 <Stack alignItems={'center'} justifyContent='center'>
                     <Stack w={['90%', null, width / 4]} p={10} spacing={3} bgColor="blackAlpha.600" shadow={'md'} borderRadius={'xl'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} alignItems={'center'} justifyContent='center'>

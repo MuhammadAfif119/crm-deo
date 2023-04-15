@@ -55,17 +55,9 @@ function MyFeedRssPage() {
 
 
     return (
-        <Stack bgColor={colors.secondary}>
+        <Stack p={5}>
 
-
-            <Flex bgColor={'gray.100'} flex={1} flexDirection='row' spacing={3} >
-                <Stack h={height} zIndex={100}>
-                    <AppSideBar setBarStatus={setBarStatus} />
-                </Stack>
-
-                <Spacer />
-
-                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} py={10} >
+                <Stack transition={"0.2s ease-in-out"} minH={height}  >
                     <Stack p={10} spacing={5}>
                         <Stack >
                             <Text fontSize={'xl'}>Feeds</Text>
@@ -127,13 +119,6 @@ function MyFeedRssPage() {
                         </Stack>
                     </Stack>
                 </Stack>
-            </Flex>
-
-
-
-
-
-
         </Stack>
     )
 }

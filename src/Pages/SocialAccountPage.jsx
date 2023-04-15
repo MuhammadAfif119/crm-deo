@@ -47,7 +47,8 @@ function SocialAccountPage() {
                 profileKey: profileKey,
             })
             setGenerateData(res.data)
-            const url = res.data.url + "&output=embed"
+            // const url = res.data.url
+            const url = res.data.url + "&logout=true"
             setUrlData(url)
         }
     }
@@ -121,22 +122,15 @@ function SocialAccountPage() {
 
 
     return (
-        <Stack bgColor={colors.secondary}>
+        <Stack p={5} >
 
-            <Flex bgColor={'gray.100'} flex={1} flexDirection='row' spacing={3} >
-                <Stack h={height} zIndex={100}>
-                    <AppSideBar setBarStatus={setBarStatus} />
-                </Stack>
-
-                <Spacer />
-
-                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} py={10} >
+                <Stack  transition={"0.2s ease-in-out"} minH={height} >
                     <Stack p={10} spacing={5}>
                         <Stack >
                             <Text fontSize={'xl'}>Social Accounts </Text>
                         </Stack>
 
-                        <Stack shadow={'md'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={3}>
+                        <Stack shadow={'md'} justifyContent='center' borderRadius='lg' bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={3}>
                             <Text fontSize={'sm'} color='gray.600'>{moment(listData?.created).format("LLLL")}</Text>
                             <HStack>
                                 <Text fontSize={'xs'} color='gray.600'>Email</Text>
@@ -248,12 +242,6 @@ function SocialAccountPage() {
 
                     </Stack>
                 </Stack>
-            </Flex >
-
-
-
-
-
 
         </Stack >
     )
