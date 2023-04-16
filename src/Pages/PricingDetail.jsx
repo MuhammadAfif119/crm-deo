@@ -206,7 +206,7 @@ function PricingDetail() {
 
   return (
     <>
-    <AppHeader/>
+    {/* <AppHeader/> */}
     <Stack bgColor={'gray.100'} minH={height} spacing='-10'>
       <Stack pt={20} spacing={10} minH={height / 1.8} alignItems='center' justifyContent={'center'} bg="url(https://buildfire.com/wp-content/themes/buildfire/assets/images/pricing_background@3x.png) no-repeat center  fixed" bgSize="cover">
         <Stack alignItems='center' justifyContent={'center'}>
@@ -252,7 +252,7 @@ function PricingDetail() {
                         disabled={isCurrentPlan}
                         // onClick={() => checkOut(productData.price.priceId)}
                         // onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => handleModal(productData.price.priceId))}
-                        onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => navigate('/get-started'))}
+                        onClick={currentUser !== null ? (() => checkOut(productData.price.priceId, currentUser?.uid)) : (() => navigate('/login'))}
                         bgColor={'blue.400'}
                       >
                         <Text color={'white'}>Get Started</Text>

@@ -1,13 +1,25 @@
-import React, { useEffect } from 'react'
+import { Flex, Spacer, Stack, Text } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom';
 import store from 'store'
 import ApiBackend from '../Api/ApiBackend';
+import AppSideAccountBar from '../Components/AppSideAccountBar';
 
 
 function ReportsPage() {
 
+  const [barStatus, setBarStatus] = useState(false)
+  const contentWidth = barStatus ? "85%" : "95%";
+
+  const height = window.innerHeight
+
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const profileKey = searchParams.get("detail")
+
+
+
     const getAnalytics = async () => {
-        const res = await store.get("userData");
-        const profileKey = res?.ayrshare_account?.profileKey
 
         if(profileKey){
             try {
@@ -15,7 +27,7 @@ function ReportsPage() {
                     lastDays : 1,
                     profileKey
                 })
-                console.log(res, 'ini res')
+                console.log(res, 'report')
             } catch (error) {
                 console.log(error)
             }
@@ -27,10 +39,27 @@ function ReportsPage() {
     
       return () => {
       }
-    }, [])
+    }, [profileKey])
     
   return (
-    <div>ReportsPage</div>
+    <>
+            <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
+                <Stack >
+                    <AppSideAccountBar setBarStatus={setBarStatus} />
+                </Stack>
+                
+                <Spacer/>
+
+                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} >
+                    <Stack p={10} spacing={5}>
+
+                      <Text>Report page</Text>
+
+                    </Stack>
+                </Stack>
+            </Flex>
+
+        </ >
   )
 }
 

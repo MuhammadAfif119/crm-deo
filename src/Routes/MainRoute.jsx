@@ -11,6 +11,8 @@ import ReportsPage from '../Pages/ReportsPage'
 import SocialAccountPage from '../Pages/SocialAccountPage'
 import SocialBuildPage from '../Pages/SocialBuildPage'
 import TermConditionPage from '../Pages/TermConditionPage'
+// import PricingPage from '../Pages/PricingPage' 
+import PricingDetail from '../Pages/PricingDetail' 
 
 function MainRoute() {
 	return (
@@ -25,6 +27,7 @@ function MainRoute() {
 			<Route path="/comments" element={<CommentsPage />} />
 			<Route path="/calendar" element={<CalendarPage />} />
 			<Route path="/reports" element={<ReportsPage />} />
+			<Route path="/pricing/:detail" element={<PricingDetail />} />
 			
 			<Route path="/termcondition" element={<TermConditionPage />} />
 			<Route path="/help" element={<HelpPage />} />

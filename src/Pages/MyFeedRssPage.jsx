@@ -14,6 +14,7 @@ import AppHeader from '../Components/AppHeader'
 import moment from 'moment'
 import ApiBackend from '../Api/ApiBackend'
 import AppSideBarFeed from '../Components/AppSideBarFeed'
+import AppSideBarFeedV2 from '../Components/AppSideBarFeedV2'
 
 function MyFeedRssPage() {
 
@@ -58,7 +59,8 @@ function MyFeedRssPage() {
 	return (
 		<Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
 			<Stack zIndex={100}>
-				<AppSideBarFeed setBarStatus={setBarStatus} />
+				{/* <AppSideBarFeed setBarStatus={setBarStatus} /> */}
+				<AppSideBarFeedV2 setBarStatus={setBarStatus} />
 			</Stack>
 			<Spacer
 			/>

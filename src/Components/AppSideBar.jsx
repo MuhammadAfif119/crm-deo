@@ -33,8 +33,8 @@ const AppSideBar = ({ setBarStatus }) => {
 
 	}
 
-	const location = useLocation();
-	console.log(location.pathname, 'yses');
+	// const location = useLocation();
+	// console.log(location.pathname, 'yses');
 
 
 
@@ -166,38 +166,39 @@ const AppSideBar = ({ setBarStatus }) => {
 
 				<Spacer />
 
-				<Stack w={'100%'} >
-					{currentUser ? (
-						<>
-							<Popover
-								isOpen={openAvatar}
-								initialFocusRef={firstFieldRef}
-								onOpen={() => setOpenAvatar(true)}
-								onClose={() => setOpenAvatar(false)}
-								placement='right'
-								closeOnBlur={false}
-							>
-								<PopoverTrigger>
-									<Stack
-										cursor={'pointer'}
-									>
-										<Avatar size={'sm'} src={''} alt={''}>
-											<AvatarBadge boxSize='1.25em' bg='green.500' />
-										</Avatar>
-									</Stack>
-								</PopoverTrigger>
-								<PopoverContent p={5} bottom={5}
-								>
-									<HStack>
-										<Stack spacing={0} transition={"0.2s ease-in-out"}>
-											<Text fontSize={'sm'} color='gray.700' fontWeight={'bold'} noOfLines={1}>{currentUser?.displayName}</Text>
-											<Text fontSize={'xs'} color='gray.700' textTransform={'capitalize'}>{userStorage?.subscription}</Text>
-										</Stack>
-										<Spacer />
-										<Button size={'sm'} bgColor={'red.600'} onClick={() => handleLogout()}>
-											<Text fontSize={'xs'} color='twitter.100'>Logout</Text>
-										</Button>
-									</HStack>
+        <Stack w={'100%'}   zIndex={100}>
+          {currentUser ? (
+            <>
+              <Popover
+                isOpen={openAvatar}
+                initialFocusRef={firstFieldRef}
+                onOpen={() => setOpenAvatar(true)}
+                onClose={() => setOpenAvatar(false)}
+                placement='right'
+                closeOnBlur={false}
+              >
+                <PopoverTrigger >
+                  <Stack
+                  cursor={'pointer'}
+
+                  >
+                    <Avatar size={'sm'} src={''} alt={''}>
+                      <AvatarBadge boxSize='1.25em' bg='green.500' />
+                    </Avatar>
+                  </Stack>
+                </PopoverTrigger>
+                <PopoverContent p={5} bottom={5}
+                >
+                  <HStack >
+                    <Stack spacing={0} transition={"0.2s ease-in-out"}>
+                      <Text fontSize={'sm'} color='gray.700' fontWeight={'bold'} noOfLines={1}>{currentUser?.displayName}</Text>
+                      <Text fontSize={'xs'} color='gray.700' textTransform={'capitalize'}>{userStorage?.subscription}</Text>
+                    </Stack>
+                    <Spacer />
+                    <Button size={'sm'} bgColor={'red.600'} onClick={() => handleLogout()}>
+                      <Text fontSize={'xs'} color='twitter.100'>Logout</Text>
+                    </Button>
+                  </HStack>
 
 								</PopoverContent>
 							</Popover>
