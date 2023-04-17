@@ -6,20 +6,28 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { extendTheme, ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./Routes/AuthProvider";
+import ScrollToTop from "./Components/AppScrollToTop";
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('../firebase-messaging-sw.js')
-    .then(function (registration) {
-      // Successful registration
-      console.log('Hooray. Registration successful, scope is:', registration.scope);
-    }).catch(function (error) {
-      // Failed registration, service worker won’t be installed
-      console.log('Whoops. Service worker registration failed, error:', error);
-    });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("../firebase-messaging-sw.js")
+      .then(function (registration) {
+        // Successful registration
+        console.log(
+          "Hooray. Registration successful, scope is:",
+          registration.scope
+        );
+      })
+      .catch(function (error) {
+        // Failed registration, service worker won’t be installed
+        console.log(
+          "Whoops. Service worker registration failed, error:",
+          error
+        );
+      });
   });
 }
-
 
 const colors = {
   brand: {
@@ -38,7 +46,9 @@ root.render(
     <BrowserRouter>
       <ChakraProvider theme={theme}>
         <AuthProvider>
-          <App />
+          <ScrollToTop>
+            <App />
+          </ScrollToTop>
         </AuthProvider>
       </ChakraProvider>
     </BrowserRouter>

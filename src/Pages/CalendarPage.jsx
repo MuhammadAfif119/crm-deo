@@ -45,7 +45,8 @@ const CalendarPage = () => {
             end: moment(item.endDate.seconds * 1000).toDate(),
             imageUrl: item.image,
             platform: item.platform,
-            post: item.post
+            post: item.post,
+            status: item.status
           }))
         );
       } else {
@@ -151,8 +152,15 @@ const CalendarPage = () => {
         </Avatar>
 
         <Stack spacing={0}>
-          <Text noOfLines={1} fontSize={'xx-small'}>{event.title}</Text>
-            <Text noOfLines={1} fontSize={'xx-small'}>{event.post}</Text>
+          <HStack>
+            <Text noOfLines={1} fontSize={'xx-small'}>{event?.title}</Text>
+            {event?.status && (
+              <Text noOfLines={1} fontSize={'xx-small'} color='gray.300'>( {event?.status} )</Text>
+
+            )}
+
+          </HStack>
+          <Text noOfLines={1} fontSize={'xx-small'}>{event?.post}</Text>
         </Stack>
       </HStack>
     );
@@ -166,6 +174,7 @@ const CalendarPage = () => {
       <Spacer />
       <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} >
         <Stack p={10}>
+          <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}> Calendar </Text>
           <Calendar
             localizer={localizer}
             events={events}

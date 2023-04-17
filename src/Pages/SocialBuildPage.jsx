@@ -160,16 +160,18 @@ function SocialBuildPage() {
                                     profileKey
                                 })
                                 if (res.status === 200) {
-                                    if (res.data.status === "success") {
+                                    console.log(res.data, 'bleble')
+                                    if (res?.data?.status === "success" || res?.data?.posts[0].postIds.length > 0) {
                                         platformActive.forEach(async (x) => {
                                             let firebaseData = {
-                                                startDate: new Date(schedulePosting),
-                                                endDate: new Date(moment(schedulePosting).add(1, "hour")),
+                                                startDate: schedulePosting ? new Date(schedulePosting) : new Date(),
+                                                endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
                                                 image: fileImage,
                                                 uid: currentUser.uid,
                                                 name: title,
                                                 post: posting,
-                                                platform: x
+                                                platform: x, 
+                                                status: schedulePosting ? "schedule" : "active"
                                             }
                                             const ref = doc(db, "schedule", currentUser.uid);
                                             await setDoc(ref, {
@@ -227,16 +229,18 @@ function SocialBuildPage() {
                         })
                         if (res.status === 200) {
                             console.log(res.data, 'yy')
-                            if (res.data.status === "success") {
+                            if (res?.data?.status === "success" || res?.data?.posts[0].postIds.length > 0) {
                                 platformActive.forEach(async (x) => {
                                     let firebaseData = {
-                                        startDate: new Date(schedulePosting),
-                                        endDate: new Date(moment(schedulePosting).add(1, "hour")),
+                                        startDate: schedulePosting ? new Date(schedulePosting) : new Date(),
+                                                endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
                                         image: fileImage,
                                         uid: currentUser.uid,
                                         name: title,
                                         post: posting,
-                                        platform: x
+                                        platform: x,
+                                        status: schedulePosting ? "schedule" : "active"
+
                                     }
                                     const ref = doc(db, "schedule", currentUser.uid);
                                     await setDoc(ref, {
@@ -320,7 +324,7 @@ function SocialBuildPage() {
                 <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height}  >
                     <Stack p={10} >
                         <Stack>
-                            <Text fontSize={'xl'}>Create a post</Text>
+                            <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Create a post</Text>
                         </Stack>
                         <Stack borderRadius='lg' bgColor={'white'} shadow='md' spacing={3} p={5} >
                             <Text fontSize={'sm'} color='gray.500' >

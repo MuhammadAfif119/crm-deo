@@ -3,7 +3,7 @@ import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPane
 import { AiOutlineCloudUpload, AiOutlineComment, AiOutlineSave } from 'react-icons/ai';
 import { MdArrowForwardIos, MdArrowBackIos, MdOutlineAnalytics, MdOutlineCalendarToday, MdStarRate, MdLibraryAdd, MdOutlineDeleteForever, MdOutlineShare } from 'react-icons/md';
 import { IoShareSocialOutline } from 'react-icons/io5';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import logo from '../assets/1.png'
 import logokotak from '../assets/kotakputih.png'
 import { FiRss } from 'react-icons/fi';
@@ -56,12 +56,18 @@ const AppSideBarFeedV2 = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	// const [urlFeed, setUrlFeed] = useState()
 
+	let [searchParams, setSearchParams] = useSearchParams();
+
+
 
 
 	const [titleFolder, setTitleFolder] = useState("")
 
 	const [selectedFolder, setSelectedFolder] = useState('');
 	const [newData, setNewData] = useState('');
+
+	const [titleFile, setTitleFile] = useState("")
+	const [apiFile, setApiFile] = useState("")
 
 	const [folders, setFolders] = useState([]);
 
@@ -93,11 +99,13 @@ const AppSideBarFeedV2 = () => {
 		setSelectedFolder(event.target.value);
 	};
 
-	const handleDataChange = (event) => {
-		setNewData(event.target.value);
-	};
+	// const handleDataChange = (event) => {
+	// 	setNewData(event.target.value);
+	// };
 
 	const handleAddData = async () => {
+
+		const newData = `title=${titleFile}&api=${apiFile}`
 		const folderIndex = folders.findIndex((folder) => folder.name === selectedFolder);
 		const newFolderData = [...folders[folderIndex].data_folder_feed, newData];
 		const updatedFolder = { ...folders[folderIndex], data_folder_feed: newFolderData };
@@ -113,7 +121,9 @@ const AppSideBarFeedV2 = () => {
 			}, { merge: true });
 			loadingClose()
 			setSelectedFolder('');
-			setNewData('');
+			setTitleFile('');
+			setApiFile('');
+			onClose()
 			toast({
 				title: 'Deoapp.com',
 				description: 'success save folder',
@@ -306,59 +316,82 @@ const AppSideBarFeedV2 = () => {
 				</Box> */}
 
 
-				<Stack alignItems={'center'} justifyContent='space-between' h="90%"  w="100%">
+				<Stack alignItems={'center'} justifyContent='space-between' h="90%" w="100%">
 
 					<Stack h={"90%"} overflowY='scroll'>
-					<Accordion allowMultiple>
-						{folders?.map((folder, index) => (
-							<AccordionItem key={index}>
-								<h2>
-									<AccordionButton>
-										<Text as="span" flex='1' fontSize={'sm'} textAlign='left' onClick={() => console.log(folder.name, 'folder Active')}>
+						<Accordion allowMultiple>
+							{folders?.map((folder, index) => (
+								<AccordionItem key={index}>
+
+
+									<HStack>
+										<Text as="span" flex='1' fontSize={'sm'} textAlign='left' cursor={'pointer'} onClick={() => setSearchParams(`title=${folder.name}`)}>
 											{folder.name}
 										</Text>
-										<AccordionIcon />
-									</AccordionButton>
-								</h2>
+										<h2>
+											<AccordionButton>
+												<AccordionIcon />
+											</AccordionButton>
+										</h2>
+									</HStack>
 
-								<AccordionPanel onDrop={(e) => handleDrop(e, folder.id)} onDragOver={handleDragOver}>
-									<Stack w={'100%'}>
+									<AccordionPanel onDrop={(e) => handleDrop(e, folder.id)} onDragOver={handleDragOver}>
+										<Stack w={'100%'}>
 
-										<HStack>
-											<Spacer />
-											<Icon as={MdOutlineShare} color='green' />
-
-											<Icon as={MdOutlineDeleteForever} cursor='pointer' onClick={() => handleDeleteFolder(folder)} color='red' />
-										</HStack>
-
-										{folder?.data_folder_feed?.map((data) => (
-
-
-											<HStack
-												key={data}
-												draggable="true"
-												onDragStart={(e) => handleDragStart(e, data)}
-												margin={1}
-												padding={2}
-												background="gray.100"
-												borderRadius={'md'}
-												shadow="md"
-											>
-												<Text noOfLines={1} fontSize='xs' onClick={() => console.log(data, 'file active')}>{data}</Text>
+											<HStack>
 												<Spacer />
-												<ChevronRightIcon />
+												<Icon as={MdOutlineShare} color='green' />
+
+												<Icon as={MdOutlineDeleteForever} cursor='pointer' onClick={() => handleDeleteFolder(folder)} color='red' />
 											</HStack>
-										))}
 
-									</Stack>
+											{folder?.data_folder_feed?.map((data) => {
+												const dataString = data
+												const dataArray = dataString.split('&');
+												const dataObj = {};
+
+												dataArray.forEach(data => {
+													const [key, value] = data.split('=');
+													dataObj[key] = value;
+												});
+
+												const { title, api } = dataObj;
+
+												return (
+
+
+													<HStack
+														key={data}
+														draggable="true"
+														onDragStart={(e) => handleDragStart(e, data)}
+														margin={1}
+														padding={2}
+														background="gray.100"
+														borderRadius={'md'}
+														shadow="md"
+														overflow={'hidden'}
+														w='150px'
+														alignItems={'center'}
+														justifyContent='center'
+														cursor={'pointer'}
+														onClick={() => setSearchParams(`title=${title}&detail=${api}`)}
+													>
+														<Text noOfLines={1} fontSize='xs' >{title}</Text>
+														<Spacer />
+														<ChevronRightIcon />
+													</HStack>
+												)
+											})}
+
+										</Stack>
 
 
 
-								</AccordionPanel>
-							</AccordionItem>
-						))}
+									</AccordionPanel>
+								</AccordionItem>
+							))}
 
-					</Accordion>
+						</Accordion>
 					</Stack>
 
 					<Spacer />
@@ -394,15 +427,18 @@ const AppSideBarFeedV2 = () => {
 									<Button mt='1' width='full' onClick={() => handleCreateFolder()}>Add Folder</Button>
 								</TabPanel>
 								<TabPanel>
-									<Select placeholder="Select Folder" value={selectedFolder} onChange={handleFolderChange}>
-										{folders.map((folder) => (
-											<option key={folder.id} value={folder.name}>
-												{folder.name}
-											</option>
-										))}
-									</Select>
-									<Input placeholder="New Data" value={newData} onChange={handleDataChange} />
-									<Button onClick={() => handleAddData()}>Add Data</Button>
+									<Stack spacing={3}>
+										<Select placeholder="Select Folder" value={selectedFolder} onChange={handleFolderChange}>
+											{folders.map((folder) => (
+												<option key={folder.id} value={folder.name}>
+													{folder.name}
+												</option>
+											))}
+										</Select>
+										<Input placeholder="Title" value={titleFile} onChange={(e) => setTitleFile(e.target.value)} />
+										<Input placeholder="Api Feed" value={apiFile} onChange={(e) => setApiFile(e.target.value)} />
+										<Button onClick={() => handleAddData()}>Add Data</Button>
+									</Stack>
 									{/* <Input type='text' placeholder='URL here' onChange={(e) => setUrlFeed(e.target.value)} />
 									<Button mt='1' width='full' onClick={() => createRss()}>Get Feed</Button> */}
 								</TabPanel>

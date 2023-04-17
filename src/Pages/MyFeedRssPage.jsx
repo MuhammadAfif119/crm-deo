@@ -1,65 +1,122 @@
-import { Avatar, AvatarBadge, Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, } from '@chakra-ui/react'
+import { Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
-import { MdOutlinePermMedia, MdSchedule } from 'react-icons/md'
-import { FiSend } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 
-import logodeo from '../assets/1.png'
-import AppSideBar from '../Components/AppSideBar'
-import colors from '../Utils/colors'
 import axios from 'axios'
-import { FaFacebook, FaFacebookF, FaGoogle, FaInstagram, FaLinkedin, FaPinterest, FaTelegram, FaTiktok, FaTwitter, FaYoutube } from 'react-icons/fa'
-import AppHeader from '../Components/AppHeader'
 import moment from 'moment'
-import ApiBackend from '../Api/ApiBackend'
-import AppSideBarFeed from '../Components/AppSideBarFeed'
 import AppSideBarFeedV2 from '../Components/AppSideBarFeedV2'
+import AuthContext from '../Routes/hooks/AuthContext'
+import { db } from '../Config/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 
 function MyFeedRssPage() {
 
-
-	const width = window.innerWidth
 	const height = window.innerHeight
 
 	const [listData, setListData] = useState([])
-	const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 	const [barStatus, setBarStatus] = useState(false)
+	const [titlePage, setTitlePage] = useState("")
+
 	const contentWidth = "85%";
 
-	const navigate = useNavigate()
+	let [searchParams, setSearchParams] = useSearchParams();
 
-	const dataFeed = [
-		'https://rss.app/feeds/v1.1/t0k6Xf0VyyWHaKJU.json',
-		'https://rss.app/feeds/v1.1/mTUy4HvoGddBH4Nv.json',
-	]
+	const detailParams = searchParams.get("detail")
+	const titleParams = searchParams.get("title")
 
-	const getFeed = async () => {
+	const { currentUser, loadingShow, loadingClose } = useContext(AuthContext)
+
+	const getFeedFolder = async () => {
+		loadingShow()
+		setTitlePage(titleParams)
 		try {
-			const res = await axios.get('https://rss.app/feeds/v1.1/t0k6Xf0VyyWHaKJU.json')
-			if (res.status === 200) {
-				setListData(res.data.items, 'ini data user')
-				console.log(res.data.items)
+			const docRef = doc(db, "feed", currentUser.uid);
+			const docSnap = await getDoc(docRef);
+			if (docSnap.exists()) {
+				const resData = docSnap?.data()?.folder_feed
+				const resFilter = resData.find((x) => x.name === titleParams)
+				const folderArr = resFilter.data_folder_feed
+
+				const ArrData = [];
+
+				await Promise.all(folderArr.map(async (data) => {
+					const dataString = data;
+					const dataArray = dataString.split('&');
+					const dataObj = {};
+
+					dataArray.forEach(data => {
+						const [key, value] = data.split('=');
+						dataObj[key] = value;
+					});
+
+					const { title, api } = dataObj;
+
+					try {
+						const res = await axios.get(api)
+						if (res.status === 200) {
+							ArrData.push(res?.data?.items)
+						}
+					} catch (error) {
+						console.log(error, 'ini error ')
+					}
+				}));
+
+				console.log(ArrData.flat(), 'xxxx')
+				setListData(ArrData.flat())
+				loadingClose()
+			} else {
+				console.log("No such document!");
+				loadingClose()
 			}
 		} catch (error) {
-			console.log(error, 'ini error ')
+			console.log(error, 'ini error')
+			loadingClose()
 		}
+		loadingClose()
+	}
+
+	const getFeedDetail = async () => {
+		loadingShow()
+		try {
+			const res = await axios.get(detailParams)
+			if (res.status === 200) {
+				setListData(res.data.items)
+				setTitlePage(titleParams)
+			}
+			loadingClose()
+		} catch (error) {
+			console.log(error, 'ini error ')
+			loadingClose()
+		}
+		loadingClose()
+	}
+
+
+	const getFeedParams = async () => {
+		if (!detailParams) {
+			getFeedFolder()
+		}
+		if (detailParams) {
+			getFeedDetail()
+
+		}
+
 	}
 
 
 	useEffect(() => {
-		getFeed()
+		getFeedParams()
 
 		return () => {
 		}
-	}, [])
+	}, [titleParams])
 
 
 
 	return (
 		<Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
 			<Stack zIndex={100}>
-				{/* <AppSideBarFeed setBarStatus={setBarStatus} /> */}
 				<AppSideBarFeedV2 setBarStatus={setBarStatus} />
 			</Stack>
 			<Spacer
@@ -72,9 +129,10 @@ function MyFeedRssPage() {
 			>
 				<Stack transition={"0.2s ease-in-out"} minH={height}  >
 					<Stack p={10} spacing={5}>
-						<Stack >
-							<Text fontSize={'xl'}>Feeds</Text>
-						</Stack>
+						<HStack>
+							<Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Feeds</Text>
+							<Text fontSize={'md'} color='gray.500'>( {titlePage} - {listData?.length} most recent )</Text>
+						</HStack>
 						<Stack >
 							<SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={5}>
 								{listData?.length > 0 && listData?.map((x, index) => {

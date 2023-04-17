@@ -40,6 +40,7 @@ function SocialAccountPage() {
     let [searchParams, setSearchParams] = useSearchParams();
 
     const profileKey = searchParams.get("detail")
+    const nameParams = searchParams.get("name")
 
 
 
@@ -219,7 +220,7 @@ function SocialAccountPage() {
                     <Stack p={10} spacing={5}>
                         <HStack>
                             <Stack >
-                                <Text fontSize={'xl'}>Social Accounts </Text>
+                                <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Social Accounts </Text>
                             </Stack>
                             <Spacer />
                             <Stack >
@@ -295,7 +296,7 @@ function SocialAccountPage() {
                                 {socialMediaList?.length > 0 && (
                                     socialMediaList?.map((x, index) => {
                                         return (
-                                            <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={3}>
+                                            <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderWidth={2} borderColor={x?.title === nameParams ? 'green.400' : 'transparent'} p={5} spacing={3}>
                                                 <HStack>
                                                     <Text fontSize={'xs'} color='gray.600'>Name</Text>
                                                     <Spacer />

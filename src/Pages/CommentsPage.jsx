@@ -372,7 +372,7 @@ function CommentsPage() {
 
                     <HStack >
                         <HStack>
-                            <Text fontSize={'xl'}>History post</Text>
+                            <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>History post</Text>
                             <Text fontSize={'md'} color='gray.500'>( {historyList.length} most recent )</Text>
                         </HStack>
                         <Spacer />
