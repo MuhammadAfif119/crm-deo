@@ -1,4 +1,4 @@
-import { Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, } from '@chakra-ui/react'
+import { Button, Checkbox, Divider, Flex, HStack, Image, Input, Progress, SimpleGrid, Spacer, Stack, Tag, Text, Textarea, useToast, } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -8,7 +8,8 @@ import moment from 'moment'
 import AppSideBarFeedV2 from '../Components/AppSideBarFeedV2'
 import AuthContext from '../Routes/hooks/AuthContext'
 import { db } from '../Config/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { arrayUnion, doc, getDoc, setDoc } from 'firebase/firestore'
+import { BsGlobe2, BsStar, BsStarFill } from 'react-icons/bs'
 
 function MyFeedRssPage() {
 
@@ -21,6 +22,8 @@ function MyFeedRssPage() {
 	const contentWidth = "85%";
 
 	let [searchParams, setSearchParams] = useSearchParams();
+
+	const toast = useToast()
 
 	const detailParams = searchParams.get("detail")
 	const titleParams = searchParams.get("title")
@@ -104,6 +107,40 @@ function MyFeedRssPage() {
 
 	}
 
+	const handleFavorite = async (data) => {
+		loadingShow()
+		let dataFeed = {
+			id: data.id,
+			title: data.title,
+			image: data.image,
+			description: data.content_text,
+			date_published: data.date_published,
+			authors: data.authors,
+			url: data.url,
+		}
+		try {
+			const ref = doc(db, "favorite", currentUser.uid);
+			await setDoc(ref, {
+				uid: currentUser.uid,
+				feed: arrayUnion(dataFeed),
+				createdAt: new Date()
+			}, { merge: true });
+
+			toast({
+				title: 'Deoapp.com',
+				description: 'Success add new favorite feed',
+				status: 'success',
+				position: 'top-right',
+				isClosable: true,
+			})
+			loadingClose()
+		} catch (error) {
+			console.log(error, 'ini error')
+			loadingClose()
+		}
+		loadingClose()
+	}
+
 
 	useEffect(() => {
 		getFeedParams()
@@ -138,7 +175,7 @@ function MyFeedRssPage() {
 								{listData?.length > 0 && listData?.map((x, index) => {
 
 									return (
-										<Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={5} >
+										<Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
 											<HStack>
 												<Text >{x.title}</Text>
 
@@ -155,7 +192,7 @@ function MyFeedRssPage() {
 												<Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{x.content_text}</Text>
 											</Stack>
 
-											<HStack>
+											<HStack w={'100%'}>
 												<Stack>
 													{x?.authors?.length > 0 &&
 														x?.authors?.map((y, index) => {
@@ -171,11 +208,16 @@ function MyFeedRssPage() {
 												<Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(x.date_published).fromNow()}</Text>
 											</HStack>
 
-											<SimpleGrid columns={[1]} gap={2}>
+											<SimpleGrid columns={[2]} gap={2}>
+												<Stack>
+													<Button size={'sm'} colorScheme='twitter' onClick={() => handleFavorite(x)}>
+														<BsStarFill />
+													</Button>
+												</Stack>
 												<Stack>
 													<a href={x.url} target="_blank" rel="noopener noreferrer">
-														<Button size={'sm'} colorScheme='green' >
-															<Text fontSize={'xs'}>Go to website</Text>
+														<Button size={'sm'} colorScheme='twitter' >
+															<BsGlobe2 />
 														</Button>
 													</a>
 												</Stack>

@@ -417,7 +417,7 @@ function CommentsPage() {
 
 
                         return (
-                            <Stack borderRadius='lg' key={index} shadow='md' bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} >
+                            <Stack borderRadius='lg' key={index} shadow='md' bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} >
                                 <HStack>
                                     <Stack spacing={5}>
                                         <Stack>
@@ -471,7 +471,7 @@ function CommentsPage() {
 
                                                         return (
                                                             <a href={z.postUrl} key={index} target="_blank" rel="noopener noreferrer">
-                                                                <Stack color={'green'} key={z.id} cursor='pointer' onClick={() => console.log(z.postUrl)}>
+                                                                <Stack color={'blue'} key={z.id} cursor='pointer' onClick={() => console.log(z.postUrl)}>
                                                                     {resIcon}
                                                                 </Stack>
                                                             </a>

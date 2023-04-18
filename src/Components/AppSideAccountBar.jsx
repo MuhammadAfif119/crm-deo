@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Avatar, AvatarBadge, Box, Button, Flex, HStack, Icon, IconButton, Image, Popover, PopoverContent, PopoverTrigger, Spacer, Stack, Text, useColorMode, useDisclosure, VStack } from '@chakra-ui/react';
 import { MdArrowForwardIos, MdArrowBackIos,  } from 'react-icons/md';
-import { IoShareSocialOutline } from 'react-icons/io5';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { RiAccountPinBoxLine } from 'react-icons/ri';
+import {  useNavigate, useSearchParams } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../Routes/hooks/AuthContext';
-import store from 'store'
 import { db } from '../Config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { BsFillPersonFill } from 'react-icons/bs';
 
 const AppSideAccountBar = ({ setBarStatus }) => {
 
@@ -19,7 +17,6 @@ const AppSideAccountBar = ({ setBarStatus }) => {
 
   const navigate = useNavigate()
 
-  const [userStorage, setUserStorage] = useState({})
 
   const { currentUser } = useContext(AuthContext)
 
@@ -139,7 +136,7 @@ const AppSideAccountBar = ({ setBarStatus }) => {
             return (
               <Stack justifyContent={'center'} key={index} borderWidth={2} borderColor={searchParams.get("detail") === x.profileKey ? "blue.300" : 'transparent'} borderRadius={'xl'} w='100%'>
                 <NavButton
-                  icon={RiAccountPinBoxLine}
+                  icon={BsFillPersonFill}
                   label={x.title}
                   hoverColor={sidebarHoverColor[colorMode]}
                   onClick={() => setSearchParams(`detail=${x.profileKey}&name=${x.title}`)}

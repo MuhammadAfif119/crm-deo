@@ -230,7 +230,7 @@ function SocialAccountPage() {
                             </Stack>
                         </HStack>
 
-                        <Stack shadow={'md'} justifyContent='center' borderRadius='lg' bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5} spacing={3}>
+                        <Stack shadow={'md'} justifyContent='center' borderRadius='lg' bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={3}>
                             <Text fontSize={'sm'} color='gray.600'>{moment(userData?.createdAt?.seconds * 1000).format("LLLL")}</Text>
                             <HStack>
                                 <Text fontSize={'xs'} color='gray.600'>Email</Text>
@@ -296,7 +296,7 @@ function SocialAccountPage() {
                                 {socialMediaList?.length > 0 && (
                                     socialMediaList?.map((x, index) => {
                                         return (
-                                            <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderWidth={2} borderColor={x?.title === nameParams ? 'green.400' : 'transparent'} p={5} spacing={3}>
+                                            <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderWidth={2} borderColor={x?.title === nameParams ? 'blue.500' : 'transparent'} p={5} spacing={3}>
                                                 <HStack>
                                                     <Text fontSize={'xs'} color='gray.600'>Name</Text>
                                                     <Spacer />
@@ -360,7 +360,7 @@ function SocialAccountPage() {
 
 
                                                             return (
-                                                                <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5}  >
+                                                                <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5}  >
 
                                                                     <Stack>
                                                                         <Avatar src={z.userImage} alt={z.displayName}>
@@ -376,7 +376,7 @@ function SocialAccountPage() {
                                                                         <SimpleGrid columns={[1]} gap={2}>
                                                                             <Stack alignItems={'center'} justifyContent='center'>
                                                                                 <a href={z.profileUrl} target="_blank" rel="noopener noreferrer">
-                                                                                    <Button size={'sm'} colorScheme='green' >
+                                                                                    <Button size={'sm'} colorScheme='twitter' >
                                                                                         <Text fontSize={'xs'}>Go to website</Text>
                                                                                     </Button>
                                                                                 </a>

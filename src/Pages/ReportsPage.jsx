@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Button, Flex, HStack, Progress, SimpleGrid, Spacer, Stack, Text, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Button, Flex, HStack, Progress, SimpleGrid, Spacer, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom';
@@ -26,7 +26,7 @@ function ReportsPage() {
   const [platformActive, setPlatformActive] = useState("")
   const [socialMediaList, setSocialMediaList] = useState([])
   const [dataAnalytics, setDataAnalytics] = useState({})
-  // const [userData, setUserData] = useState({})
+  const [loadingView, setLoadingView] = useState(false)
 
 
   const profileKey = searchParams.get("detail")
@@ -45,6 +45,7 @@ function ReportsPage() {
       if (docSnap.exists()) {
         const filterArr = docSnap?.data()?.social_accounts?.filter((x) => x.title === nameParams)
         setSocialMediaList(filterArr)
+        handleAnalytics(filterArr[0].activeSocialAccounts)
       } else {
         console.log("No such document!");
       }
@@ -58,21 +59,23 @@ function ReportsPage() {
   useEffect(() => {
     getListSocial()
     return () => {
+      setDataAnalytics({})
     }
   }, [currentUser, profileKey])
 
   const handleAnalytics = async (platforms) => {
+    setLoadingView(true)
     setPlatformActive(platforms)
     try {
       const res = await ApiBackend.post('analyticssocial', {
         platforms,
         profileKey
       })
-
       if (res.data.status === "success") {
-        setDataAnalytics(res.data[platforms].analytics)
-        console.log(res.data[platforms].analytics)
-      }else{
+        const obj = res.data
+        const { status, ...analyticsData } = obj;
+        setDataAnalytics(analyticsData)
+      } else {
         toast({
           title: 'Deoapp.com',
           description: res.data[platforms].message,
@@ -81,10 +84,12 @@ function ReportsPage() {
           isClosable: true,
         })
       }
-
+      setLoadingView(false)
     } catch (error) {
       console.log(error, 'ini error')
+      setLoadingView(false)
     }
+    setLoadingView(false)
   }
 
 
@@ -131,7 +136,7 @@ function ReportsPage() {
               {socialMediaList?.length > 0 && (
                 socialMediaList?.map((x, index) => {
                   return (
-                    <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderWidth={2} borderColor={x?.title === nameParams ? 'green.400' : 'transparent'} p={5} spacing={3}>
+                    <Stack key={index} shadow={'md'} borderRadius='lg' bgColor={'white'} borderColor={x?.title === nameParams ? 'blue.500' : 'transparent'} p={5} spacing={3}>
                       <HStack>
                         <Text fontSize={'xs'} color='gray.600'>Name</Text>
                         <Spacer />
@@ -188,7 +193,7 @@ function ReportsPage() {
 
 
                             return (
-                              <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='green.400' p={5}  >
+                              <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5}  >
 
                                 <Stack>
                                   <Avatar src={z.userImage} alt={z.displayName}>
@@ -203,13 +208,13 @@ function ReportsPage() {
                                 <Stack >
                                   <SimpleGrid columns={[2]} gap={2}>
                                     <Stack alignItems={'center'} justifyContent='center'>
-                                      <Button size={'xs'} colorScheme='green' onClick={() => handleAnalytics(z.platform)}>
+                                      <Button size={'xs'} colorScheme='twitter' onClick={() => handleAnalytics(z.platform)}>
                                         <IoAnalyticsSharp />
                                       </Button>
                                     </Stack>
                                     <Stack alignItems={'center'} justifyContent='center'>
                                       <a href={z.profileUrl} target="_blank" rel="noopener noreferrer">
-                                        <Button size={'xs'} colorScheme='green' >
+                                        <Button size={'xs'} colorScheme='twitter' >
                                           <AiOutlineGlobal />
                                         </Button>
                                       </a>
@@ -227,10 +232,21 @@ function ReportsPage() {
                 })
               )}
             </SimpleGrid>
-
-            <Stack>
-              <AnalyticsData data={dataAnalytics} platform={platformActive}/>
-            </Stack>
+            {
+              dataAnalytics && (
+                loadingView ? (
+                  <Stack w={'100%'} h={height/2} alignItems='center' justifyContent='center'>
+                    <Spinner size={'md'} colorScheme='twitter' />
+                  </Stack>
+                ): (
+                    Object.entries(dataAnalytics).map(([key, value]) => (
+                      <Stack key={key}>
+                        <AnalyticsData data={value.analytics} platform={key} />
+                      </Stack>
+                    ))
+                )
+            )
+            }
 
           </Stack>
         </Stack>

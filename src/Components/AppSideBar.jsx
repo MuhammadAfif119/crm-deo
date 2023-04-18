@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Avatar, AvatarBadge, Box, Button, Flex, HStack, Icon, IconButton, Image, Popover, PopoverContent, PopoverTrigger, Spacer, Stack, Text, useColorMode, useDisclosure, VStack } from '@chakra-ui/react';
-import { AiOutlineCloudUpload, AiOutlineComment } from 'react-icons/ai';
-import { MdArrowForwardIos, MdArrowBackIos, MdOutlineAnalytics, MdOutlineCalendarToday } from 'react-icons/md';
+import { MdArrowForwardIos, MdArrowBackIos, MdOutlineAnalytics, MdOutlineCalendarToday, MdRssFeed } from 'react-icons/md';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/1.png'
 import logokotak from '../assets/kotakputih.png'
-import { FiRss } from 'react-icons/fi';
+import { IoMdAnalytics } from 'react-icons/io';
 import { useContext } from 'react';
 import AuthContext from '../Routes/hooks/AuthContext';
 import store from 'store'
+import { FaCalendarAlt, FaCommentDots, FaShareAlt, FaTelegramPlane } from 'react-icons/fa';
 
 const AppSideBar = ({ setBarStatus }) => {
 
@@ -114,7 +114,7 @@ const AppSideBar = ({ setBarStatus }) => {
 
 			<VStack spacing="5" px="4" alignItems={'flex-start'} minH={'90%'}  >
 				<NavButton
-					icon={FiRss}
+					icon={MdRssFeed}
 					label="My Feeds"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/my-feed`)}
@@ -123,7 +123,7 @@ const AppSideBar = ({ setBarStatus }) => {
 
 
 				<NavButton
-					icon={AiOutlineCloudUpload}
+					icon={FaTelegramPlane}
 					label="Posts"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/`)}
@@ -132,7 +132,7 @@ const AppSideBar = ({ setBarStatus }) => {
 				/>
 
 				<NavButton
-					icon={MdOutlineCalendarToday}
+					icon={FaCalendarAlt}
 					label="Calendar"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/calendar`)}
@@ -140,7 +140,7 @@ const AppSideBar = ({ setBarStatus }) => {
 				/>
 
 				<NavButton
-					icon={AiOutlineComment}
+					icon={FaCommentDots}
 					label="Comments"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/comments`)}
@@ -148,14 +148,14 @@ const AppSideBar = ({ setBarStatus }) => {
 				/>
 
 				<NavButton
-					icon={MdOutlineAnalytics}
+					icon={IoMdAnalytics}
 					label="Reports"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/reports`)}
 					isOpen={isOpen}
 				/>
 				<NavButton
-					icon={IoShareSocialOutline}
+					icon={FaShareAlt}
 					label="Social Accounts"
 					hoverColor={sidebarHoverColor[colorMode]}
 					onClick={() => navigate(`/social-account`)}

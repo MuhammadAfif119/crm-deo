@@ -48,7 +48,7 @@ function PricingPage() {
                                 <Text color={'black'} fontSize='sm' textAlign={'center'}>Our team of experts will build your app.</Text>
                             </Stack>
                             <Stack py={5} >
-                                <Button bgColor={'green.500'} size={'lg'} px={12} onClick={() => navigate('app-development')}>
+                                <Button bgColor={'blue.500'} size={'lg'} px={12} onClick={() => navigate('app-development')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
                                         <Text fontSize={'md'} color='white'>View plans</Text>
                                         <MdArrowRightAlt size={30} color='white' />
@@ -78,7 +78,7 @@ function PricingPage() {
                                 </Text>
                             </Stack>
                             <Stack py={5} >
-                                <Button bgColor={'green.500'} size={'lg'} px={12}onClick={() => navigate('app-development')}>
+                                <Button bgColor={'blue.500'} size={'lg'} px={12}onClick={() => navigate('app-development')}>
                                     <HStack alignItems={'center'} justifyContent='center'>
                                         <Text fontSize={'md'} color='white'>View plans</Text>
                                         <MdArrowRightAlt size={30} color='white'/>

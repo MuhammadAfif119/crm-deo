@@ -340,7 +340,7 @@ const AppSideBarFeedV2 = () => {
 
 											<HStack>
 												<Spacer />
-												<Icon as={MdOutlineShare} color='green' />
+												<Icon as={MdOutlineShare} color='blue' />
 
 												<Icon as={MdOutlineDeleteForever} cursor='pointer' onClick={() => handleDeleteFolder(folder)} color='red' />
 											</HStack>
@@ -397,7 +397,7 @@ const AppSideBarFeedV2 = () => {
 					<Spacer />
 
 					<Center mt='2'>
-						<Button onClick={onOpen} colorScheme='green' size={'sm'}>
+						<Button onClick={onOpen} colorScheme='twitter' size={'sm'}>
 							<Text fontSize={'xs'}>+ New Folder</Text>
 						</Button>
 					</Center>

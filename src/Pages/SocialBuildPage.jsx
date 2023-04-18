@@ -12,7 +12,8 @@ import AuthContext from '../Routes/hooks/AuthContext'
 import ApiBackend from '../Api/ApiBackend'
 import AppSideAccountBar from '../Components/AppSideAccountBar'
 import { db } from '../Config/firebase'
-import { arrayUnion, doc, getDoc, setDoc } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
+import { BsGlobe2, BsTrash } from 'react-icons/bs'
 
 function SocialBuildPage() {
 
@@ -30,6 +31,7 @@ function SocialBuildPage() {
     const [files, setFiles] = useState([]);
     const [scheduleActive, setScheduleActive] = useState(false)
     const [socialFilter, setSocialFilter] = useState([])
+    const [favoriteFeed, setFavoriteFeed] = useState([])
 
     const [barStatus, setBarStatus] = useState(false)
 
@@ -86,6 +88,52 @@ function SocialBuildPage() {
         loadingClose()
 
     }
+
+    const getDataFolderFeed = () => {
+        try {
+            onSnapshot(doc(db, "favorite", currentUser.uid), (doc) => {
+                setFavoriteFeed(doc.data().feed)
+
+            });
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteFavorite = async (data) => {
+        loadingShow()
+        try {
+            const ref = doc(db, "favorite", currentUser.uid);
+            await setDoc(ref, {
+                uid: currentUser.uid,
+                feed: arrayRemove(data),
+                createdAt: new Date()
+            }, { merge: true });
+
+            toast({
+                title: 'Deoapp.com',
+                description: 'success delete favorite',
+                status: 'success',
+                position: 'top-right',
+                isClosable: true,
+            })
+            loadingClose()
+        } catch (error) {
+            console.log(error, 'ini error')
+            loadingClose()
+        }
+        loadingClose()
+    }
+
+    useEffect(() => {
+        getDataFolderFeed()
+
+        return () => {
+        }
+    }, [currentUser])
+
+
 
     useEffect(() => {
         getListSocial()
@@ -170,7 +218,7 @@ function SocialBuildPage() {
                                                 uid: currentUser.uid,
                                                 name: title,
                                                 post: posting,
-                                                platform: x, 
+                                                platform: x,
                                                 status: schedulePosting ? "schedule" : "active"
                                             }
                                             const ref = doc(db, "schedule", currentUser.uid);
@@ -233,7 +281,7 @@ function SocialBuildPage() {
                                 platformActive.forEach(async (x) => {
                                     let firebaseData = {
                                         startDate: schedulePosting ? new Date(schedulePosting) : new Date(),
-                                                endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
+                                        endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
                                         image: fileImage,
                                         uid: currentUser.uid,
                                         name: title,
@@ -450,6 +498,71 @@ function SocialBuildPage() {
                             </HStack>
                         </Stack>
 
+                    </Stack>
+
+                    <Stack px={10} pb={10} spacing={5}>
+                        <HStack>
+                            <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Feeds Favorite</Text>
+                            <Text fontSize={'md'} color='gray.500'>( {favoriteFeed?.length} most recent )</Text>
+                        </HStack>
+                        <Stack >
+                            <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={5}>
+                                {favoriteFeed?.length > 0 && favoriteFeed?.map((x, index) => {
+
+                                    return (
+                                        <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
+                                            <HStack>
+                                                <Text >{x.title}</Text>
+
+
+                                            </HStack>
+                                            <Divider borderStyle={'dotted'} />
+                                            {x.image && (
+                                                <Stack>
+                                                    <Image crossOrigin="anonymous" src={x?.image} alt={'img'} borderRadius='md' />
+                                                </Stack>
+                                            )}
+                                            <Spacer />
+                                            <Stack>
+                                                <Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{x.description}</Text>
+                                            </Stack>
+
+                                            <HStack w={'100%'}>
+                                                <Stack>
+                                                    {x?.authors?.length > 0 &&
+                                                        x?.authors?.map((y, index) => {
+                                                            return (
+                                                                <Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y.name}</Text>
+
+                                                            )
+                                                        })
+                                                    }
+                                                </Stack>
+
+                                                <Spacer />
+                                                <Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(x.date_published).fromNow()}</Text>
+                                            </HStack>
+
+                                            <SimpleGrid columns={[2]} gap={2}>
+                                                <Stack>
+                                                    <Button size={'sm'} colorScheme='twitter' onClick={() => handleDeleteFavorite(x)}>
+                                                        <BsTrash />
+                                                    </Button>
+                                                </Stack>
+                                                <Stack>
+                                                    <a href={x.url} target="_blank" rel="noopener noreferrer">
+                                                        <Button size={'sm'} colorScheme='twitter' >
+                                                            <BsGlobe2 />
+                                                        </Button>
+                                                    </a>
+                                                </Stack>
+                                            </SimpleGrid>
+
+                                        </Stack>
+                                    )
+                                })}
+                            </SimpleGrid>
+                        </Stack>
                     </Stack>
                 </Stack>
 

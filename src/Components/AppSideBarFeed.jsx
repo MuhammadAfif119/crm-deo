@@ -94,7 +94,7 @@ const AppSideBarFeed = () => {
 						<AccordionPanel pb={4}>
 							<HStack>
 								<Spacer />
-								<Icon as={MdOutlineShare} color='green' />
+								<Icon as={MdOutlineShare} color='blue' />
 								<Icon as={MdOutlineDeleteForever} color='red' />
 							</HStack>
 							{data.map((x) =>
@@ -127,7 +127,7 @@ const AppSideBarFeed = () => {
 				</Accordion>
 
 				<Center mt='2'>
-					<Button onClick={onOpen} colorScheme='green'>Add New</Button>
+					<Button onClick={onOpen} colorScheme='blue'>Add New</Button>
 				</Center>
 
 			</Box>
