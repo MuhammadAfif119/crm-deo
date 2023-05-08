@@ -21,9 +21,7 @@ const AppSideAccountBar = ({ setBarStatus }) => {
   const { currentUser } = useContext(AuthContext)
 
 
-  const [userData, setUserData] = useState([])
   const [socialAccountList, setSocialAccountList] = useState([])
-  const [socialMediaList, setSocialMediaList] = useState([])
 
   let [searchParams, setSearchParams] = useSearchParams();
 
@@ -34,9 +32,7 @@ const AppSideAccountBar = ({ setBarStatus }) => {
       const docRef = doc(db, "users", currentUser.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setUserData(docSnap.data());
         setSocialAccountList(docSnap.data().ayrshare_account);
-        setSocialMediaList(docSnap.data().social_accounts);
         setSearchParams(`detail=${docSnap?.data()?.ayrshare_account[0].profileKey}&name=${docSnap?.data()?.ayrshare_account[0].title}`)
       } else {
         console.log("No such document!");
@@ -46,6 +42,13 @@ const AppSideAccountBar = ({ setBarStatus }) => {
     }
 
   }
+
+  useEffect(() => {
+    getDataUser()
+
+    return () => {
+    }
+  }, [currentUser])
 
   // const location = useLocation();
   // console.log(location.pathname, 'yses');
@@ -60,12 +63,7 @@ const AppSideAccountBar = ({ setBarStatus }) => {
     setBarStatus(isOpen)
   }
 
-  useEffect(() => {
-    getDataUser()
 
-    return () => {
-    }
-  }, [currentUser])
 
 
   useEffect(() => {

@@ -363,21 +363,21 @@ function CommentsPage() {
     return (
         <>
             <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-
+{/* 
                 <Stack >
                     <AppSideAccountBar setBarStatus={setBarStatus} />
                 </Stack>
-                <Spacer />
-                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} spacing={5} p={10} >
+                <Spacer /> */}
+                <Stack w={'100%'} transition={"0.2s ease-in-out"} minH={height} spacing={5} p={10} >
 
                     <HStack >
-                        <HStack>
+                        <SimpleGrid gap={2} columns={[1, null, 2]}>
                             <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>History post</Text>
                             <Text fontSize={'md'} color='gray.500'>( {historyList.length} most recent )</Text>
-                        </HStack>
+                        </SimpleGrid>
                         <Spacer />
 
-                        <HStack alignItems="center">
+                        <SimpleGrid alignItems="center" gap={2} columns={[1, 2, 3]}>
                             <Box mr={2}>
                                 <Input
                                     type="date"
@@ -410,7 +410,7 @@ function CommentsPage() {
                                     <Text>Reset</Text>
                                 </HStack>
                             </Button>
-                        </HStack>
+                        </SimpleGrid>
                     </HStack>
 
                     {historyList.length > 0 && historyList.map((x, index) => {
@@ -471,7 +471,7 @@ function CommentsPage() {
 
                                                         return (
                                                             <a href={z.postUrl} key={index} target="_blank" rel="noopener noreferrer">
-                                                                <Stack color={'blue'} key={z.id} cursor='pointer' onClick={() => console.log(z.postUrl)}>
+                                                                <Stack color={'green'} key={z.id} cursor='pointer' onClick={() => console.log(z.postUrl)}>
                                                                     {resIcon}
                                                                 </Stack>
                                                             </a>

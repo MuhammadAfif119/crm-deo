@@ -411,7 +411,7 @@ const AppSideBarFeedV2 = () => {
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Modal Title</ModalHeader>
+					<ModalHeader>New Feeds</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						<Tabs>
@@ -423,21 +423,23 @@ const AppSideBarFeedV2 = () => {
 
 							<TabPanels>
 								<TabPanel>
-									<Input type='text' placeholder='What would you like to name your folder?' onChange={(e) => setTitleFolder(e.target.value)} />
-									<Button mt='1' width='full' onClick={() => handleCreateFolder()}>Add Folder</Button>
+									<Stack spacing={3} alignItems='center' justifyContent={'center'}>
+									<Input type='text' placeholder='What would you like to name your folder?' size={'sm'} onChange={(e) => setTitleFolder(e.target.value)} />
+									<Button mt='1' colorScheme={'twitter'} w='full' onClick={() => handleCreateFolder()} size='sm'>Add Folder</Button>
+									</Stack>
 								</TabPanel>
 								<TabPanel>
 									<Stack spacing={3}>
-										<Select placeholder="Select Folder" value={selectedFolder} onChange={handleFolderChange}>
+										<Select placeholder="Select Folder" size={'sm'} value={selectedFolder} onChange={handleFolderChange}>
 											{folders.map((folder) => (
 												<option key={folder.id} value={folder.name}>
 													{folder.name}
 												</option>
 											))}
 										</Select>
-										<Input placeholder="Title" value={titleFile} onChange={(e) => setTitleFile(e.target.value)} />
-										<Input placeholder="Api Feed" value={apiFile} onChange={(e) => setApiFile(e.target.value)} />
-										<Button onClick={() => handleAddData()}>Add Data</Button>
+										<Input placeholder="Title your feed" size={'sm'} value={titleFile} onChange={(e) => setTitleFile(e.target.value)} />
+										<Input placeholder="Api your new feed" size={'sm'} value={apiFile} onChange={(e) => setApiFile(e.target.value)} />
+										<Button onClick={() => handleAddData()} size='sm' colorScheme={'twitter'}>Add Data</Button>
 									</Stack>
 									{/* <Input type='text' placeholder='URL here' onChange={(e) => setUrlFeed(e.target.value)} />
 									<Button mt='1' width='full' onClick={() => createRss()}>Get Feed</Button> */}

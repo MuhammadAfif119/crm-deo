@@ -168,11 +168,11 @@ const CalendarPage = () => {
 
   return (
     <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-      <Stack >
+      {/* <Stack >
         <AppSideAccountBar setBarStatus={setBarStatus} />
       </Stack>
-      <Spacer />
-      <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} >
+      <Spacer /> */}
+      <Stack w={'100%'}  transition={"0.2s ease-in-out"} minH={height} >
         <Stack p={10}>
           <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}> Calendar </Text>
           <Calendar

@@ -210,13 +210,13 @@ function SocialAccountPage() {
     return (
         <>
             <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-                <Stack >
+                {/* <Stack >
                     <AppSideAccountBar setBarStatus={setBarStatus} />
                 </Stack>
 
-                <Spacer />
+                <Spacer /> */}
 
-                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height} >
+                <Stack  transition={"0.2s ease-in-out"} minH={height} >
                     <Stack p={10} spacing={5}>
                         <HStack>
                             <Stack >
@@ -267,7 +267,7 @@ function SocialAccountPage() {
                                         socialAccountList?.map((x, index) => {
 
                                             return (
-                                                <HStack key={index}>
+                                                <HStack  key={index}>
                                                     <Text fontSize={'xs'} color='gray.900' fontWeight={'bold'}>{x?.title}</Text>
                                                     <Spacer />
                                                     <Button size={'sm'}>

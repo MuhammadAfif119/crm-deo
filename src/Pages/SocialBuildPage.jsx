@@ -13,7 +13,8 @@ import ApiBackend from '../Api/ApiBackend'
 import AppSideAccountBar from '../Components/AppSideAccountBar'
 import { db } from '../Config/firebase'
 import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
-import { BsGlobe2, BsTrash } from 'react-icons/bs'
+import { BsGlobe2, BsStarFill, BsTrash } from 'react-icons/bs'
+import ImageProxy from '../Components/Image/ImageProxy'
 
 function SocialBuildPage() {
 
@@ -364,12 +365,12 @@ function SocialBuildPage() {
 
             <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
 
-                <Stack >
+                {/* <Stack >
                     <AppSideAccountBar setBarStatus={setBarStatus} />
                 </Stack>
-                <Spacer />
+                <Spacer /> */}
 
-                <Stack w={contentWidth} transition={"0.2s ease-in-out"} minH={height}  >
+                <Stack w='100%' transition={"0.2s ease-in-out"} minH={height}  >
                     <Stack p={10} >
                         <Stack>
                             <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Create a post</Text>
@@ -456,7 +457,7 @@ function SocialBuildPage() {
                             <Stack>
                                 <Text color={'gray.500'} fontSize='sm'>Post the these networks</Text>
                             </Stack>
-                            <HStack spacing={10}>
+                            <SimpleGrid gap={10} columns={[3, 6, 9]}>
 
                                 <Stack>
                                     <FaTwitter size={20} cursor='pointer' onClick={() => handleAddPlatform('twitter')} color={platformActive.includes('twitter') ? "green" : 'gray'} />
@@ -495,7 +496,7 @@ function SocialBuildPage() {
                                     <FaPinterest size={20} cursor='pointer' onClick={() => handleAddPlatform('pinterest')} color={platformActive.includes('pinterest') ? "green" : 'gray'} />
                                 </Stack>
 
-                            </HStack>
+                            </SimpleGrid>
                         </Stack>
 
                     </Stack>
@@ -506,62 +507,63 @@ function SocialBuildPage() {
                             <Text fontSize={'md'} color='gray.500'>( {favoriteFeed?.length} most recent )</Text>
                         </HStack>
                         <Stack >
-                            <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={5}>
-                                {favoriteFeed?.length > 0 && favoriteFeed?.map((x, index) => {
+                        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={5}>
+								{favoriteFeed?.length > 0 && favoriteFeed?.map((item, index) => {
 
-                                    return (
-                                        <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
-                                            <HStack>
-                                                <Text >{x.title}</Text>
+									return (
+										<Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
+											<HStack>
+												<Text >{item.title[0]}</Text>
 
 
-                                            </HStack>
-                                            <Divider borderStyle={'dotted'} />
-                                            {x.image && (
-                                                <Stack>
-                                                    <Image crossOrigin="anonymous" src={x?.image} alt={'img'} borderRadius='md' />
-                                                </Stack>
-                                            )}
-                                            <Spacer />
-                                            <Stack>
-                                                <Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{x.description}</Text>
-                                            </Stack>
+											</HStack>
+											<Divider borderStyle={'dotted'} />
+											{item.enclosure[0] && (
+												<Stack>
+													<ImageProxy imageUrl={item.enclosure[0].$.url}/>
+													{/* <Image crossOrigin="anonymous" src={item.enclosure[0].$.url} alt={'img'} borderRadius='md' /> */}
+												</Stack>
+											)}
+											<Spacer />
+											<Stack>
+												<Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{item.description[0]}</Text>
+											</Stack>
 
-                                            <HStack w={'100%'}>
-                                                <Stack>
-                                                    {x?.authors?.length > 0 &&
-                                                        x?.authors?.map((y, index) => {
-                                                            return (
-                                                                <Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y.name}</Text>
+											<HStack w={'100%'}>
+												<Stack>
+													{item['dc:creator'].length > 0 &&
+														item['dc:creator'].map((y, index) => {
+															return (
+																<Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y}</Text>
 
-                                                            )
-                                                        })
-                                                    }
-                                                </Stack>
+															)
+														})
+													}
+												</Stack>
 
-                                                <Spacer />
-                                                <Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(x.date_published).fromNow()}</Text>
-                                            </HStack>
+												<Spacer />
+												<Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(item.pubDate[0]).fromNow()}</Text>
+											</HStack>
 
-                                            <SimpleGrid columns={[2]} gap={2}>
-                                                <Stack>
-                                                    <Button size={'sm'} colorScheme='twitter' onClick={() => handleDeleteFavorite(x)}>
+											<SimpleGrid columns={[2]} gap={2}>
+												<Stack>
+                                                <Button size={'sm'} colorScheme='twitter' onClick={() => handleDeleteFavorite(item)}>
                                                         <BsTrash />
                                                     </Button>
-                                                </Stack>
-                                                <Stack>
-                                                    <a href={x.url} target="_blank" rel="noopener noreferrer">
-                                                        <Button size={'sm'} colorScheme='twitter' >
-                                                            <BsGlobe2 />
-                                                        </Button>
-                                                    </a>
-                                                </Stack>
-                                            </SimpleGrid>
+												</Stack>
+												<Stack>
+													<a href={item.link[0]} target="_blank" rel="noopener noreferrer">
+														<Button size={'sm'} colorScheme='twitter' >
+															<BsGlobe2 />
+														</Button>
+													</a>
+												</Stack>
+											</SimpleGrid>
 
-                                        </Stack>
-                                    )
-                                })}
-                            </SimpleGrid>
+										</Stack>
+									)
+								})}
+							</SimpleGrid>
                         </Stack>
                     </Stack>
                 </Stack>

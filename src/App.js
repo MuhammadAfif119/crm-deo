@@ -25,7 +25,7 @@ function App() {
         />
         <Stack
           Stack
-          w={contentWidth}
+          w={["85%", null, "95%"]}
           transition={"0.2s ease-in-out"}
           minH={height}
         >
