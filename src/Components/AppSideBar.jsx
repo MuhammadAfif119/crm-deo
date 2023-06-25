@@ -116,9 +116,9 @@ const handleLogout = () => {
 }
 
 const handleActiveParams = (key, title) => {
+	setSearchParams(`detail=${activeKey}&name=${activeTitle}`)
 	setActiveKey(key)
 	setActiveTitle(title)
-	setSearchParams(`detail=${activeKey}&name=${activeTitle}`)
 }
 
 
@@ -271,10 +271,10 @@ return (
 										{socialAccountList?.length > 0 && (
 											socialAccountList?.map((x, index) => {
 												return (
-													<Stack justifyContent={'center'} p={2} key={index} borderWidth={2} borderColor={searchParams.get("detail") === x.profileKey ? "blue.300" : 'transparent'} borderRadius={'xl'} w='100%'>
+													<Stack cursor={'pointer'} onClick={() => handleActiveParams(x.profileKey, x.title)} justifyContent={'center'} p={2} key={index} borderWidth={2} borderColor={searchParams.get("detail") === x.profileKey ? "blue.300" : 'transparent'} borderRadius={'xl'} w='100%'>
 														<HStack
-															cursor={'pointer'}
-															onClick={() => handleActiveParams(x.profileKey, x.title)}
+															
+															
 														>
 															<BsFillPersonFill />
 															<Text fontSize={'xs'}>{x.title}</Text>

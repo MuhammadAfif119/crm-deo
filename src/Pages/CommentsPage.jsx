@@ -363,7 +363,7 @@ function CommentsPage() {
     return (
         <>
             <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-{/* 
+                {/* 
                 <Stack >
                     <AppSideAccountBar setBarStatus={setBarStatus} />
                 </Stack>
@@ -431,11 +431,17 @@ function CommentsPage() {
                                                 {x.mediaUrls.length > 0 && x.mediaUrls.map((y, index) => {
                                                     return (
                                                         <Stack key={index}>
-                                                            <Image borderRadius={'lg'} w={'150px'} shadow={'md'} src={y} alt={y} />
+                                                            {y.endsWith('.mp4') ? (
+                                                                <video controls width="220" height="140">
+                                                                    <source src={y} type="video/mp4" />
+                                                                    Sorry, your browser doesn't support embedded videos.
+                                                                </video>
+                                                            ) : (
+                                                                <Image borderRadius={'lg'} w={'150px'} shadow={'md'} src={y} alt={y} />
+                                                            )}
                                                         </Stack>
-                                                    )
+                                                    );
                                                 })}
-
                                             </HStack>
                                         </Stack>
 

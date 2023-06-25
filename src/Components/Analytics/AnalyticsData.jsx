@@ -7,7 +7,6 @@ import { NumberAcronym } from '../../Utils/NumberUtils';
 
 function AnalyticsData({ data, platform }) {
 
-    console.log(data, 'ini data')
     let followersCount, engagementCount, brandAwarenessCount, impressionCount;
 
     switch (platform) {
@@ -26,11 +25,14 @@ function AnalyticsData({ data, platform }) {
             break;
 
         case 'facebook':
-            followersCount = data.likes;
-            engagementCount = data.reactions.summary.total_count + data.comments.summary.total_count + data.shares.count;
+            followersCount = data.followersCount;
+            engagementCount =
+                data.reactions.total +
+                data.pagePostEngagements;
             brandAwarenessCount = followersCount * engagementCount;
-            impressionCount = followersCount * 2.5;
+            impressionCount = data.pageImpressions;
             break;
+
 
         case 'tiktok':
             followersCount = data.followerCount;
@@ -40,11 +42,12 @@ function AnalyticsData({ data, platform }) {
             break;
 
         case 'instagram':
-            followersCount = data.followers_count;
-            engagementCount = data.likes_count + data.comments_count;
+            followersCount = data.followersCount;
+            engagementCount =
+                data.likeCount + data.commentsCount;
             brandAwarenessCount = followersCount * engagementCount;
-            impressionCount = followersCount * 2.5;
-            break;
+            impressionCount = data.impressionsCount;
+            break
 
         default:
             followersCount = 0;
@@ -56,9 +59,9 @@ function AnalyticsData({ data, platform }) {
     return (
         <Stack>
             <Stack>
-                
+
                 <HStack>
-                <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Overview</Text>
+                    <Text fontSize={'xl'} fontWeight='bold' color={'gray.600'}>Overview</Text>
                     <Text fontSize={'md'} color='gray.500' textTransform={'capitalize'}>( {platform} most recent )</Text>
                 </HStack>
             </Stack>

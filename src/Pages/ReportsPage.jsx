@@ -4,15 +4,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { FaFacebook, FaFacebookF, FaGoogle, FaInstagram, FaLinkedin, FaPinterest, FaTelegram, FaTiktok, FaTwitter, FaYoutube } from 'react-icons/fa'
 
-import store from 'store'
 import ApiBackend from '../Api/ApiBackend';
-import AppSideAccountBar from '../Components/AppSideAccountBar';
-import { db } from '../Config/firebase';
+import {  db } from '../Config/firebase';
 import AuthContext from '../Routes/hooks/AuthContext';
 import { AiOutlineGlobal } from 'react-icons/ai';
 import { IoAnalyticsSharp } from 'react-icons/io5';
 import moment from 'moment';
-import AnalyticsTwitter from '../Components/Analytics/AnalyticsTwitter';
 import AnalyticsData from '../Components/Analytics/AnalyticsData';
 
 function ReportsPage() {
@@ -21,6 +18,7 @@ function ReportsPage() {
   const contentWidth = barStatus ? "85%" : "95%";
 
   const height = window.innerHeight
+
 
   let [searchParams, setSearchParams] = useSearchParams();
   const [platformActive, setPlatformActive] = useState("")
@@ -46,6 +44,7 @@ function ReportsPage() {
         const filterArr = docSnap?.data()?.social_accounts?.filter((x) => x.title === nameParams)
         setSocialMediaList(filterArr)
         handleAnalytics(filterArr[0].activeSocialAccounts)
+
       } else {
         console.log("No such document!");
       }
@@ -71,10 +70,26 @@ function ReportsPage() {
         platforms,
         profileKey
       })
-      if (res.data.status === "success") {
+      if (res.status === 200) {
         const obj = res.data
-        const { status, ...analyticsData } = obj;
-        setDataAnalytics(analyticsData)
+        const { status, code, ...analyticsData } = obj;
+        const filteredData = {};
+        for (const platform in analyticsData) {
+          if (obj[platform].status !== 'error') {
+            filteredData[platform] = obj[platform];
+          } else {
+            toast({
+              title: 'Deoapp.com',
+              description: obj[platform].message,
+              status: 'error',
+              position: 'top-right',
+              isClosable: true,
+            });
+          }
+        }
+        console.log(filteredData, 'xxx')
+        setDataAnalytics(filteredData);
+
       } else {
         toast({
           title: 'Deoapp.com',
@@ -230,17 +245,17 @@ function ReportsPage() {
             {
               dataAnalytics && (
                 loadingView ? (
-                  <Stack w={'100%'} h={height/2} alignItems='center' justifyContent='center'>
+                  <Stack w={'100%'} h={height / 2} alignItems='center' justifyContent='center'>
                     <Spinner size={'md'} colorScheme='twitter' />
                   </Stack>
-                ): (
-                    Object.entries(dataAnalytics).map(([key, value]) => (
-                      <Stack key={key}>
-                        <AnalyticsData data={value.analytics} platform={key} />
-                      </Stack>
-                    ))
+                ) : (
+                  Object.entries(dataAnalytics).map(([key, value]) => (
+                    <Stack key={key}>
+                      <AnalyticsData data={value.analytics} platform={key} />
+                    </Stack>
+                  ))
                 )
-            )
+              )
             }
 
           </Stack>

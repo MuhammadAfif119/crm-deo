@@ -364,7 +364,7 @@ const AppSideBarFeedV2 = () => {
 														key={data}
 														draggable="true"
 														onDragStart={(e) => handleDragStart(e, data)}
-														margin={1}
+														m={1}
 														padding={2}
 														background="gray.100"
 														borderRadius={'md'}

@@ -163,23 +163,28 @@ function SocialBuildPage() {
             })
         }
     };
-
     const handleFileInputChange = (event) => {
         const { files: newFiles } = event.target;
         if (newFiles.length) {
-            const newFileArray = [...files];
+            const newFileArray = [];
             for (let i = 0; i < newFiles.length; i++) {
                 const reader = new FileReader();
-                reader.readAsDataURL(newFiles[i]);
                 reader.onload = () => {
-                    newFileArray.push({ file: reader.result, fileName: newFiles[i].name, description: newFiles[i].type });
-                    setFiles(newFileArray);
+                    const fileData = {
+                        file: reader.result,
+                        fileName: newFiles[i].name,
+                        description: newFiles[i].type,
+                        isVideo: newFiles[i].type.startsWith("video/")
+                    };
+                    newFileArray.push(fileData);
+                    if (i === newFiles.length - 1) {
+                        setFiles((prevFiles) => [...prevFiles, ...newFileArray]);
+                    }
                 };
+                reader.readAsDataURL(newFiles[i]);
             }
         }
     };
-
-
     const handlePost = async () => {
         loadingShow()
 
@@ -199,7 +204,7 @@ function SocialBuildPage() {
                         fileImage.push(res.data.url)
                         if (fileImage.length === files.length) {
                             try {
-                                loadingShow()
+                                loadingShow();
                                 const res = await ApiBackend.post('post', {
                                     post: posting,
                                     platforms: platformActive,
@@ -207,57 +212,85 @@ function SocialBuildPage() {
                                     shortenLinks: shortenLinks,
                                     scheduleDate: schedulePosting,
                                     profileKey
-                                })
-                                if (res.status === 200) {
-                                    console.log(res.data, 'bleble')
-                                    if (res?.data?.status === "success" || res?.data?.posts[0].postIds.length > 0) {
-                                        platformActive.forEach(async (x) => {
-                                            let firebaseData = {
-                                                startDate: schedulePosting ? new Date(schedulePosting) : new Date(),
-                                                endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
-                                                image: fileImage,
-                                                uid: currentUser.uid,
-                                                name: title,
-                                                post: posting,
-                                                platform: x,
-                                                status: schedulePosting ? "schedule" : "active"
-                                            }
-                                            const ref = doc(db, "schedule", currentUser.uid);
-                                            await setDoc(ref, {
-                                                uid: currentUser.uid,
-                                                data: arrayUnion(firebaseData),
-                                                createdAt: new Date()
-                                            }, { merge: true });
-                                        });
+                                });
 
-                                    }
-                                    else {
-                                        toast({
-                                            title: 'Deoapp.com',
-                                            description: res.data.message,
-                                            status: 'error',
-                                            position: 'top-right',
-                                            isClosable: true,
-                                        })
-                                    }
+
+                                if (res.status === 200 && res.data.status === "error") {
+                                    // Menampilkan pesan error dan informasi platform yang dikirim
+                                    res.data.posts.forEach((post) => {
+                                        if (post.status === 'error') {
+                                            post.errors.forEach((error) => {
+                                                toast({
+                                                    title: 'Deoapp.com',
+                                                    description: `Error posting to ${error.platform}: ${error.message}`,
+                                                    status: 'error',
+                                                    position: 'top-right',
+                                                    isClosable: true,
+                                                });
+                                            });
+                                        } else if (post.status === 'success') {
+                                            platformActive.forEach(async (x) => {
+                                                let firebaseData = {
+                                                    startDate: schedulePosting ? new Date(schedulePosting) : new Date(),
+                                                    endDate: schedulePosting ? new Date(moment(schedulePosting).add(1, "hour")) : new Date(moment().add(1, "hour")),
+                                                    image: fileImage,
+                                                    uid: currentUser.uid,
+                                                    name: title,
+                                                    post: posting,
+                                                    platform: x,
+                                                    status: schedulePosting ? "schedule" : "active"
+                                                }
+                                                const ref = doc(db, "schedule", currentUser.uid);
+                                                await setDoc(ref, {
+                                                    uid: currentUser.uid,
+                                                    data: arrayUnion(firebaseData),
+                                                    createdAt: new Date()
+                                                }, { merge: true });
+                                            });
+
+                                            post.postIds.forEach((postId) => {
+                                                toast({
+                                                    title: 'Deoapp.com',
+                                                    description: `Successfully posted to ${postId.platform}. Post ID: ${postId.id}`,
+                                                    status: 'success',
+                                                    position: 'top-right',
+                                                    isClosable: true,
+                                                });
+                                            });
+                                        }
+                                    });
+
+                                    setPosting("");
+                                    setFiles([]);
+                                    setPlatformActive([]);
+                                    setShotenLinks(false);
+                                    setSchedulePosting('');
+                                } else {
+                                    // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
                                     toast({
                                         title: 'Deoapp.com',
-                                        description: 'Success posting.',
-                                        status: 'success',
+                                        description: 'Error posting: An error occurred while processing the request.',
+                                        status: 'error',
                                         position: 'top-right',
                                         isClosable: true,
-                                    })
-                                    setPosting("")
-                                    setFiles([])
-                                    setPlatformActive([])
-                                    setShotenLinks(false)
-                                    setSchedulePosting('')
-                                    loadingClose()
+                                    });
                                 }
+
+                                loadingClose();
                             } catch (error) {
-                                console.log(error, 'ini error ')
+                                console.log(error, 'ini error ');
+                                // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
+                                toast({
+                                    title: 'Deoapp.com',
+                                    description: 'Error posting: An error occurred while processing the request.',
+                                    status: 'error',
+                                    position: 'top-right',
+                                    isClosable: true,
+                                });
+
+                                loadingClose();
                             }
-                            loadingClose()
+                            loadingClose();
                         }
                         loadingClose()
                     } catch (error) {
@@ -277,7 +310,6 @@ function SocialBuildPage() {
                             profileKey
                         })
                         if (res.status === 200) {
-                            console.log(res.data, 'yy')
                             if (res?.data?.status === "success" || res?.data?.posts[0].postIds.length > 0) {
                                 platformActive.forEach(async (x) => {
                                     let firebaseData = {
@@ -365,11 +397,6 @@ function SocialBuildPage() {
 
             <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
 
-                {/* <Stack >
-                    <AppSideAccountBar setBarStatus={setBarStatus} />
-                </Stack>
-                <Spacer /> */}
-
                 <Stack w='100%' transition={"0.2s ease-in-out"} minH={height}  >
                     <Stack p={10} >
                         <Stack>
@@ -390,12 +417,13 @@ function SocialBuildPage() {
                                     Twitter thread
                                 </Text>
                             </Checkbox>
-                            <HStack spacing={2} alignItems='center' >
-
+                            <HStack spacing={2} alignItems='center'>
                                 <Stack>
                                     <Input
                                         type="file"
                                         onChange={handleFileInputChange}
+                                        accept="image/*,video/*" // Menentukan bahwa file yang diterima bisa berupa gambar atau video
+                                        multiple // Mengizinkan memilih beberapa file
                                         display="none"
                                         id="fileInput"
                                     />
@@ -403,7 +431,6 @@ function SocialBuildPage() {
                                         <HStack cursor={'pointer'}>
                                             <Stack>
                                                 <MdOutlinePermMedia />
-
                                             </Stack>
                                             <Text fontSize={'sm'}>
                                                 Add Image / Video
@@ -411,22 +438,22 @@ function SocialBuildPage() {
                                         </HStack>
                                     </label>
                                 </Stack>
-
-
                             </HStack>
                             <SimpleGrid columns={[1, 2, 3]} gap={3}>
-                                {files.length > 0 && files.map((x, index) => {
-                                    return (
-                                        // <Text fontSize={'sm'} key={index}>
-                                        //     File yang dipilih: {x.name} ({x.type}, {x.size} bytes)
-                                        // </Text>
+                                {files.length > 0 &&
+                                    files.map((x, index) => (
                                         <Stack key={index}>
-                                            <Image src={x.file} borderRadius='xl' alt={x.name} shadow='md' />
+                                            {x.isVideo ? (
+                                                <video controls width={300}>
+                                                    <source src={x.file} type={x.description} />
+                                                    Sorry, your browser doesn't support embedded videos.
+                                                </video>
+                                            ) : (
+                                                <Image src={x.file} borderRadius="xl" alt={x.fileName} shadow="md" />
+                                            )}
                                         </Stack>
-                                    )
-                                })}
+                                    ))}
                             </SimpleGrid>
-
                             <HStack spacing={5} alignItems='center' >
                                 <Button size={'sm'} p={5} shadow='lg' onClick={() => handlePost()}>
                                     <HStack spacing={2} >
@@ -507,63 +534,63 @@ function SocialBuildPage() {
                             <Text fontSize={'md'} color='gray.500'>( {favoriteFeed?.length} most recent )</Text>
                         </HStack>
                         <Stack >
-                        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={5}>
-								{favoriteFeed?.length > 0 && favoriteFeed?.map((item, index) => {
+                            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={5}>
+                                {favoriteFeed?.length > 0 && favoriteFeed?.map((item, index) => {
 
-									return (
-										<Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
-											<HStack>
-												<Text >{item.title[0]}</Text>
+                                    return (
+                                        <Stack shadow={'md'} alignItems={'center'} _hover={{ transform: "scale(1.1)", shadow: 'xl', }} transition={"0.2s ease-in-out"} justifyContent='center' borderRadius='lg' key={index} bgColor={'white'} borderTopWidth={5} borderColor='blue.500' p={5} spacing={5} >
+                                            <HStack>
+                                                <Text >{item.title[0]}</Text>
 
 
-											</HStack>
-											<Divider borderStyle={'dotted'} />
-											{item.enclosure[0] && (
-												<Stack>
-													<ImageProxy imageUrl={item.enclosure[0].$.url}/>
-													{/* <Image crossOrigin="anonymous" src={item.enclosure[0].$.url} alt={'img'} borderRadius='md' /> */}
-												</Stack>
-											)}
-											<Spacer />
-											<Stack>
-												<Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{item.description[0]}</Text>
-											</Stack>
+                                            </HStack>
+                                            <Divider borderStyle={'dotted'} />
+                                            {item.enclosure[0] && (
+                                                <Stack>
+                                                    <ImageProxy imageUrl={item.enclosure[0].$.url} />
+                                                    {/* <Image crossOrigin="anonymous" src={item.enclosure[0].$.url} alt={'img'} borderRadius='md' /> */}
+                                                </Stack>
+                                            )}
+                                            <Spacer />
+                                            <Stack>
+                                                <Text textAlign={'center'} fontSize='xs' color={'gray.600'} noOfLines={3}>{item.description[0]}</Text>
+                                            </Stack>
 
-											<HStack w={'100%'}>
-												<Stack>
-													{item['dc:creator'].length > 0 &&
-														item['dc:creator'].map((y, index) => {
-															return (
-																<Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y}</Text>
+                                            <HStack w={'100%'}>
+                                                <Stack>
+                                                    {item['dc:creator'].length > 0 &&
+                                                        item['dc:creator'].map((y, index) => {
+                                                            return (
+                                                                <Text key={index} textAlign={'center'} fontSize='xs' color={'gray.400'}>{y}</Text>
 
-															)
-														})
-													}
-												</Stack>
+                                                            )
+                                                        })
+                                                    }
+                                                </Stack>
 
-												<Spacer />
-												<Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(item.pubDate[0]).fromNow()}</Text>
-											</HStack>
+                                                <Spacer />
+                                                <Text textAlign={'center'} fontSize='xs' color={'gray.400'}>{moment(item.pubDate[0]).fromNow()}</Text>
+                                            </HStack>
 
-											<SimpleGrid columns={[2]} gap={2}>
-												<Stack>
-                                                <Button size={'sm'} colorScheme='twitter' onClick={() => handleDeleteFavorite(item)}>
+                                            <SimpleGrid columns={[2]} gap={2}>
+                                                <Stack>
+                                                    <Button size={'sm'} colorScheme='twitter' onClick={() => handleDeleteFavorite(item)}>
                                                         <BsTrash />
                                                     </Button>
-												</Stack>
-												<Stack>
-													<a href={item.link[0]} target="_blank" rel="noopener noreferrer">
-														<Button size={'sm'} colorScheme='twitter' >
-															<BsGlobe2 />
-														</Button>
-													</a>
-												</Stack>
-											</SimpleGrid>
+                                                </Stack>
+                                                <Stack>
+                                                    <a href={item.link[0]} target="_blank" rel="noopener noreferrer">
+                                                        <Button size={'sm'} colorScheme='twitter' >
+                                                            <BsGlobe2 />
+                                                        </Button>
+                                                    </a>
+                                                </Stack>
+                                            </SimpleGrid>
 
-										</Stack>
-									)
-								})}
-							</SimpleGrid>
+                                        </Stack>
+                                    )
+                                })}
+                            </SimpleGrid>
                         </Stack>
                     </Stack>
                 </Stack>

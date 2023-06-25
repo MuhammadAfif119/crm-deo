@@ -53,25 +53,6 @@ const CalendarPage = () => {
         console.log("No such document!");
       }
 
-
-      // const q = query(
-      //   collection(db, "schedule"),
-      //   where("uid", "==", currentUser.uid)
-      // );
-      // const querySnapshot = await getDocs(q);
-      // querySnapshot.forEach((doc) => {
-      //   data.push(doc.data());
-      // });
-      // setEvents(
-      //   data.map((item) => ({
-      //     title: item.name,
-      //     start: moment(item.startDate.seconds * 1000).toDate(),
-      //     // end: moment(item.dateTime).add(1, 'hour').toDate(),
-      //     end: moment(item.endDate.seconds * 1000).toDate(),
-      //     imageUrl: item.image,
-      //   }))
-      // );
-
     } catch (error) {
       console.log(error, 'ini error')
     }
