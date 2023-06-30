@@ -9,6 +9,7 @@ const useUserStore = create((set, get) => ({
     companies: [],
     projects: [],
     currentCompany: "",
+    profileKey: "",
     currentProject: "",
     uid: "",
   },

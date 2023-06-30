@@ -3,6 +3,7 @@ import {
   AvatarBadge,
   Box,
   Button,
+  Center,
   Checkbox,
   Divider,
   Flex,
@@ -23,6 +24,7 @@ import {
   Tag,
   Text,
   Textarea,
+  WrapItem,
   useToast,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -30,6 +32,7 @@ import { MdOutlinePermMedia, MdSchedule } from "react-icons/md";
 import { FiSend } from "react-icons/fi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import store from "store";
+import { capitalize } from "../../Utils/capitalizeUtil";
 import parse from "html-react-parser";
 
 // import logodeo from "../assets/1.png";
@@ -52,6 +55,7 @@ import moment from "moment";
 import ApiBackend from "../../Api/ApiBackend";
 import { TbPresentationAnalytics } from "react-icons/tb";
 import {
+  addDoc,
   arrayUnion,
   collection,
   deleteField,
@@ -79,19 +83,14 @@ function SocialAccountPage() {
   const [socialAccountList, setSocialAccountList] = useState([]);
   const [socialMediaList, setSocialMediaList] = useState([]);
 
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  console.log(userDisplay.projects.map((x) => x.data.ayrshare_account));
-
-  const profileKey = searchParams.get("detail");
-  const nameParams = searchParams.get("name");
-
   const navigate = useNavigate();
   const toast = useToast();
 
   const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
 
   const contentWidth = barStatus ? "85%" : "95%";
+
+  const profileKey = userDisplay.profileKey;
 
   const getListSocial = async () => {
     loadingShow();
@@ -144,6 +143,17 @@ function SocialAccountPage() {
         await updateDoc(doc(db, "users", currentUser.uid), {
           ayrshare_account: arrayUnion(res.data),
         });
+
+        //add to project
+        try {
+          const docRef = await addDoc(collection(db, "projects"), {
+            ayrshare_account: res.data,
+            companyId: userDisplay.currentCompany,
+          });
+          console.log("data created with ID", docRef.id);
+        } catch (error) {
+          console.log("Terjadi kesalahan:", error);
+        }
 
         loadingClose();
         setSocialAccountModal(false);
@@ -201,7 +211,8 @@ function SocialAccountPage() {
             position: "top-right",
             isClosable: true,
           });
-          // getUser()
+
+          // update data linked social media
         }
       } catch (error) {
         console.log(error, "ini error ");
@@ -217,11 +228,11 @@ function SocialAccountPage() {
     }
   };
 
-  const handleWindowConnected = async (x) => {
-    if (x.profileKey) {
+  const handleWindowConnected = async (key) => {
+    if (key) {
       const res = await ApiBackend.post("/generateJWT", {
         domain: "importir",
-        profileKey: x.profileKey,
+        profileKey: key,
       });
       const url = res.data.url + "&logout=true";
       window.open(url, "_blank", "noreferrer");
@@ -310,7 +321,7 @@ function SocialAccountPage() {
 
               <Divider />
 
-              <HStack>
+              {/* <HStack>
                 <Text fontSize={"xs"} color="gray.600">
                   User Account
                 </Text>
@@ -340,8 +351,62 @@ function SocialAccountPage() {
                       );
                     })}
                 </Stack>
-              </HStack>
+              </HStack> */}
             </Stack>
+
+            <Box>
+              <Text mb={2}>User Accounts</Text>
+              <Box borderRadius={"md"}>
+                <SimpleGrid
+                  spacing={4}
+                  columns={(2, null, 3)}
+                  borderRadius={"md"}
+                >
+                  {userDisplay.projects?.map((project, i) => (
+                    <Box
+                      borderRadius={"md"}
+                      bg={"white"}
+                      p={5}
+                      boxShadow={"md"}
+                    >
+                      <Center>
+                        <Avatar
+                          align={"center"}
+                          size="lg"
+                          name={project.data?.ayrshare_account?.title}
+                          src="#"
+                        />
+                      </Center>
+                      <Box align={"center"} mt={3}>
+                        <Text size={"xs"} fontWeight={"semibold"}>
+                          {capitalize(project.data?.ayrshare_account?.title)}
+                        </Text>
+                        <Text fontSize={"xs"} mt={2}>
+                          Profile Key:
+                        </Text>
+                        <Text fontSize={"xs"}>
+                          {project.data?.ayrshare_account?.profileKey}
+                        </Text>
+                      </Box>
+                      <Box align={"center"} mt={4}>
+                        <Button
+                          colorScheme="telegram"
+                          size={"sm"}
+                          w={100}
+                          onClick={() =>
+                            handleWindowConnected(
+                              project.data?.ayrshare_account?.profileKey
+                            )
+                          }
+                        >
+                          Connect
+                        </Button>
+                      </Box>
+                    </Box>
+                  ))}
+                </SimpleGrid>
+              </Box>
+            </Box>
 
             <Stack>
               <HStack>
@@ -363,9 +428,9 @@ function SocialAccountPage() {
                         borderRadius="lg"
                         bgColor={"white"}
                         borderWidth={2}
-                        borderColor={
-                          x?.title === nameParams ? "blue.500" : "transparent"
-                        }
+                        // borderColor={
+                        //   x?.title === nameParams ? "blue.500" : "transparent"
+                        // }
                         p={5}
                         spacing={3}
                       >
@@ -523,12 +588,13 @@ function SocialAccountPage() {
                                           <Button
                                             size={"sm"}
                                             colorScheme="blackAlpha"
-                                            onClick={() =>
-                                              handleDisconnected(z)
+                                            onClick={
+                                              () => handleDisconnected(z)
+                                              // console.log(x)
                                             }
                                           >
                                             <Text fontSize={"xs"}>
-                                              Disconnected
+                                              Disconnect
                                             </Text>
                                           </Button>
                                         </Stack>
@@ -544,23 +610,6 @@ function SocialAccountPage() {
                   })}
               </SimpleGrid>
             </Stack>
-            <Box border={"1px"} borderColor={"red"} h={200}>
-              <SimpleGrid
-                spacing={4}
-                columns={(2, null, 3)}
-                border={"1px"}
-                borderColor={"red"}
-              >
-                {userDisplay.projects?.map((project, i) => (
-                  <Box border={"1px"}>
-                    <Text>Name: {project.data?.ayrshare_account?.name}</Text>
-                    <Text>
-                      Profile Key: {project.data?.ayrshare_account?.profile_key}
-                    </Text>
-                  </Box>
-                ))}
-              </SimpleGrid>
-            </Box>
           </Stack>
         </Stack>
       </Flex>

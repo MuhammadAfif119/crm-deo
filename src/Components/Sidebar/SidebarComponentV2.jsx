@@ -1,5 +1,10 @@
 import { Icon } from "@chakra-ui/icons";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Center,
@@ -16,23 +21,17 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import {
-  FiBarChart2,
-  FiBookmark,
-  FiCheckSquare,
-  FiHelpCircle,
-  FiHome,
-  FiSearch,
-  FiSettings,
-  FiUsers,
-} from "react-icons/fi";
+import { FiHelpCircle, FiSettings, FiUsers } from "react-icons/fi";
 import {
   FcKindle,
   FcEditImage,
   FcCalendar,
   FcSms,
+  FcConferenceCall,
+  FcSettings,
   FcLineChart,
   FcShare,
+  FcSurvey,
 } from "react-icons/fc";
 import themeConfig from "../../Config/themeConfig";
 import { NavButton } from "./NavButton";
@@ -57,6 +56,8 @@ import useUserStore, {
   userDisplay,
 } from "../../Routes/Store";
 import { capitalize } from "../../Utils/capitalizeUtil";
+import { data } from "./DataMenu";
+import { isDisabled } from "@testing-library/user-event/dist/utils";
 
 // ** Theme Configuration
 
@@ -65,18 +66,11 @@ function SidebarComponentV2({ layout }) {
   const [project, setProject] = useState([]);
   const [companyId, setCompanyId] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [profileKey, setProfileKey] = useState("");
   const { setUserDisplay, userDisplay } = useUserStore();
 
   const toast = useToast();
   const navigate = useNavigate();
-
-  const handleSelectCompany = async (data) => {
-    setCompanyId(data);
-  };
-
-  const handleSelectProject = async (data) => {
-    setProjectId(data);
-  };
 
   const getProject = async () => {
     if (currentUser) {
@@ -90,7 +84,6 @@ function SidebarComponentV2({ layout }) {
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
           projectArray.push({ id: doc.id, data: doc.data() });
         });
 
@@ -101,6 +94,8 @@ function SidebarComponentV2({ layout }) {
           companies: company,
         });
 
+        getCurrentProject();
+
         //get subcollection user inside selected projects
         try {
           const docRef = doc(
@@ -110,7 +105,7 @@ function SidebarComponentV2({ layout }) {
             "users",
             currentUser?.uid
           );
-          const docSnapshot = await getDoc(docRef);
+          const docSnapshot = getDoc(docRef);
 
           if (docSnapshot.exists) {
             const docData = docSnapshot.data();
@@ -130,6 +125,27 @@ function SidebarComponentV2({ layout }) {
     }
   };
 
+  const getCurrentProject = async () => {
+    try {
+      const docRef = doc(db, "projects", projectId);
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists) {
+        const docData = docSnapshot.data();
+
+        setUserDisplay({
+          ...userDisplay,
+          profileKey: docData.ayrshare_account?.profileKey,
+        });
+        // setUserDisplay(docData.ayrshare_account?.profile_key);
+      } else {
+        console.log("Dokumen tidak ditemukan!");
+      }
+    } catch (error) {
+      console.log("Terjadi kesalahan:", error);
+    }
+  };
+
   const logout = async () => {
     try {
       await signout();
@@ -146,16 +162,23 @@ function SidebarComponentV2({ layout }) {
 
   useEffect(() => {
     getProject();
-  }, [companyId, projectId]);
+    // getCurrentProject();
+  }, [companyId]);
+
+  useEffect(() => {
+    getCurrentProject();
+    // getCurrentProject();
+  }, [projectId]);
 
   useEffect(() => {
     setUserDisplay({
-      ...userDisplay,
       uid: currentUser.uid,
     });
   }, [currentUser]);
 
-  console.log(userDisplay);
+  useEffect(() => {
+    console.log(userDisplay); // Check the updated value of userDisplay
+  }, [userDisplay]);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -163,7 +186,7 @@ function SidebarComponentV2({ layout }) {
         height="full"
         width={{
           md: "14rem",
-          xl: "18rem",
+          xl: "21rem",
         }}
         display={{
           base: "none",
@@ -207,19 +230,12 @@ function SidebarComponentV2({ layout }) {
                     <Image src={LogoDeoApp} maxH={75} />
                   </Center>
 
-                  {/* <InputGroup size={"sm"}>
-                    <InputLeftElement pointerEvents="none">
-                      <Icon as={FiSearch} color="muted" boxSize="5" />
-                    </InputLeftElement>
-                    <Input placeholder="Search" />
-                  </InputGroup> */}
-
                   <Stack>
                     <Select
                       // placeholder="Company Selection"
                       size={"sm"}
                       onChange={(e) => {
-                        handleSelectCompany(e.target.value);
+                        setCompanyId(e.target.value);
                         setUserDisplay({
                           ...userDisplay,
                           currentCompany: e.target.value,
@@ -241,7 +257,7 @@ function SidebarComponentV2({ layout }) {
                       placeholder="Project Selection"
                       size={"sm"}
                       onChange={(e) => {
-                        handleSelectProject(e.target.value);
+                        setProjectId(e.target.value);
                         setUserDisplay({
                           ...userDisplay,
                           currentProject: e.target.value,
@@ -256,31 +272,54 @@ function SidebarComponentV2({ layout }) {
                     </Select>
                   </Stack>
 
-                  <Stack spacing="1">
-                    <Link to="/my-feed">
-                      <NavButton label="My Feed" icon={FcKindle} />
-                    </Link>
-                    <Link to={"/"}>
-                      <NavButton
-                        label="Create Post"
-                        icon={FcEditImage}
-                        aria-current="page"
-                      />
-                    </Link>
-                    <Link to={"/calendar"}>
-                      <NavButton label="Calendar" icon={FcCalendar} />
-                    </Link>
-                    <Link to={"/comment"}>
-                      <NavButton label="Comments" icon={FcSms} />
-                    </Link>
-                    <Link to={"/reports"}>
-                      <NavButton label="Reports" icon={FcLineChart} />
-                    </Link>
-                    <Link to={"/social-account"}>
-                      <NavButton label="Social Account" icon={FcShare} />
-                    </Link>
+                  <Stack>
+                    <Accordion allowMultiple>
+                      {data.map((x, i) => (
+                        <AccordionItem
+                          isDisabled={
+                            x.name === "Chat" || x.name === "Form"
+                              ? true
+                              : false
+                          }
+                        >
+                          <h2>
+                            <AccordionButton>
+                              <Icon as={x.icon} boxSize={5} />
+                              <Text fontWeight={"semibold"} pl={3}>
+                                {x.name}
+                              </Text>
+                              <AccordionIcon />
+                            </AccordionButton>
+                          </h2>
+                          {x.submenu ? (
+                            <>
+                              <AccordionPanel>
+                                <Stack>
+                                  {x.submenu?.map((subitem, i) => (
+                                    <Link to={subitem.link}>
+                                      <HStack spacing="3">
+                                        <Icon
+                                          as={subitem.icon}
+                                          // boxSize="5"
+                                        />
+                                        <Text fontSize={"sm"}>
+                                          {subitem.name}
+                                        </Text>
+                                      </HStack>
+                                    </Link>
+                                  ))}
+                                </Stack>
+                              </AccordionPanel>
+                            </>
+                          ) : (
+                            <>{null}</>
+                          )}
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
                   </Stack>
                 </Stack>
+
                 <Stack
                   spacing={{
                     base: "5",

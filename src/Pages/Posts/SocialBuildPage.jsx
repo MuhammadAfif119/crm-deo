@@ -62,11 +62,15 @@ import {
   arrayUnion,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
   setDoc,
+  where,
 } from "firebase/firestore";
 import { BsGlobe2, BsStarFill, BsTrash } from "react-icons/bs";
 import ImageProxy from "../../Components/Image/ImageProxy";
+import useUserStore from "../../Routes/Store";
 
 function SocialBuildPage() {
   const width = window.innerWidth;
@@ -80,6 +84,7 @@ function SocialBuildPage() {
   const [shortenLinks, setShotenLinks] = useState(false);
   const [platformActive, setPlatformActive] = useState([]);
   const [files, setFiles] = useState([]);
+  const [projectTitle, setProjectTitle] = useState("");
   const [scheduleActive, setScheduleActive] = useState(false);
   const [socialFilter, setSocialFilter] = useState([]);
   const [favoriteFeed, setFavoriteFeed] = useState([]);
@@ -90,14 +95,33 @@ function SocialBuildPage() {
 
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const profileKey = searchParams.get("detail");
-  const title = searchParams.get("name");
+  const { userDisplay } = useUserStore();
+  const profileKey = userDisplay.profileKey;
+
+  const title = projectTitle;
 
   const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
 
   const cancelRef = React.useRef();
 
   const [schedulePosting, setSchedulePosting] = useState();
+
+  const getDataProject = async () => {
+    try {
+      const docRef = doc(db, "projects", userDisplay.currentProject);
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists) {
+        const docData = docSnapshot.data();
+        setProjectTitle(docData.ayrshare_account.title);
+      } else {
+        console.log("Dokumen tidak ditemukan!");
+      }
+    } catch (error) {
+      console.log("Terjadi kesalahan:", error);
+      return null;
+    }
+  };
 
   const handleDateChange = (event) => {
     const { value } = event.target;
@@ -119,6 +143,7 @@ function SocialBuildPage() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const socialArr = docSnap.data().social_accounts;
+          console.log(socialArr);
           const socialFilterData = socialArr.filter((x) => x.title === title);
           setSocialFilter(socialFilterData);
         } else {
@@ -180,6 +205,7 @@ function SocialBuildPage() {
 
   useEffect(() => {
     getListSocial();
+    getDataProject();
 
     return () => {};
   }, [profileKey]);
