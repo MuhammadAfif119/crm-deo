@@ -92,6 +92,8 @@ function SocialAccountPage() {
 
   const profileKey = userDisplay.profileKey;
 
+  const getUserSocialAccounts = async () => {};
+
   const getListSocial = async () => {
     loadingShow();
     try {
@@ -110,6 +112,8 @@ function SocialAccountPage() {
       loadingClose();
     }
   };
+
+  console.log(socialMediaList);
 
   const handleCreateAccount = async () => {
     const res = await store.get("userData");
@@ -235,6 +239,7 @@ function SocialAccountPage() {
         profileKey: key,
       });
       const url = res.data.url + "&logout=true";
+      console.log(res);
       window.open(url, "_blank", "noreferrer");
     }
   };
@@ -523,7 +528,7 @@ function SocialAccountPage() {
                                     shadow={"md"}
                                     alignItems={"center"}
                                     _hover={{
-                                      transform: "scale(1.1)",
+                                      transform: "scale(1.03)",
                                       shadow: "xl",
                                     }}
                                     transition={"0.2s ease-in-out"}

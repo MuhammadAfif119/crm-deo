@@ -22,6 +22,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { FiHelpCircle, FiSettings, FiUsers } from "react-icons/fi";
+import store from "store";
 import {
   FcKindle,
   FcEditImage,
@@ -62,7 +63,7 @@ import { isDisabled } from "@testing-library/user-event/dist/utils";
 // ** Theme Configuration
 
 function SidebarComponentV2({ layout }) {
-  const { currentUser, company, signout } = useContext(AuthContext);
+  const { currentUser, company, signOut } = useContext(AuthContext);
   const [project, setProject] = useState([]);
   const [companyId, setCompanyId] = useState("");
   const [projectId, setProjectId] = useState("");
@@ -136,6 +137,7 @@ function SidebarComponentV2({ layout }) {
         setUserDisplay({
           ...userDisplay,
           profileKey: docData.ayrshare_account?.profileKey,
+          projectTitle: docData.ayrshare_account?.title,
         });
         // setUserDisplay(docData.ayrshare_account?.profile_key);
       } else {
@@ -147,17 +149,20 @@ function SidebarComponentV2({ layout }) {
   };
 
   const logout = async () => {
-    try {
-      await signout();
-      toast({
-        status: "success",
-        description: "Logged out success",
-        duration: 2000,
+    signOut()
+      .then(() => {
+        toast({
+          status: "success",
+          description: "Logged out success",
+          duration: 2000,
+        });
+
+        navigate("/login");
+        store.clearAll();
+      })
+      .catch((error) => {
+        console.log(error, "ini error");
       });
-      navigate("/login");
-    } catch (error) {
-      console.log(error, "log out failed");
-    }
   };
 
   useEffect(() => {

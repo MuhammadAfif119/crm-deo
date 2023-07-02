@@ -35,36 +35,41 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { IoAnalyticsSharp } from "react-icons/io5";
 import moment from "moment";
 import AnalyticsData from "../../Components/Analytics/AnalyticsData";
+import useUserStore from "../../Routes/Store";
 
 function ReportsPage() {
+  const { userDisplay } = useUserStore();
   const [barStatus, setBarStatus] = useState(false);
   const contentWidth = barStatus ? "85%" : "95%";
 
   const height = window.innerHeight;
 
-  let [searchParams, setSearchParams] = useSearchParams();
   const [platformActive, setPlatformActive] = useState("");
   const [socialMediaList, setSocialMediaList] = useState([]);
   const [dataAnalytics, setDataAnalytics] = useState({});
   const [loadingView, setLoadingView] = useState(false);
 
-  const profileKey = searchParams.get("detail");
-  const nameParams = searchParams.get("name");
+  const profileKey = userDisplay.profileKey;
+  const projectTitle = userDisplay.projectTitle;
 
   const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
   const toast = useToast();
 
   const getListSocial = async () => {
     loadingShow();
+    // getDataProject();
+
     try {
-      const docRef = doc(db, "users", currentUser.uid);
+      const docRef = doc(db, "users", userDisplay.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const filterArr = docSnap
           ?.data()
-          ?.social_accounts?.filter((x) => x.title === nameParams);
+          ?.social_accounts?.filter((x) => x.title === projectTitle);
         setSocialMediaList(filterArr);
-        handleAnalytics(filterArr[0].activeSocialAccounts);
+        console.log(socialMediaList);
+
+        handleAnalytics(filterArr[0]?.activeSocialAccounts);
       } else {
         console.log("No such document!");
       }
@@ -75,6 +80,10 @@ function ReportsPage() {
     }
   };
 
+  // useEffect(() => {
+  //   getDataProject();
+  // }, [profileKey]);
+
   useEffect(() => {
     getListSocial();
     return () => {
@@ -83,6 +92,7 @@ function ReportsPage() {
   }, [currentUser, profileKey]);
 
   const handleAnalytics = async (platforms) => {
+    console.log(platforms);
     setLoadingView(true);
     setPlatformActive(platforms);
     try {
@@ -141,13 +151,6 @@ function ReportsPage() {
   //     }
   // }
 
-  // useEffect(() => {
-  //     getAnalytics()
-
-  //   return () => {
-  //   }
-  // }, [profileKey])
-
   return (
     <>
       <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
@@ -167,7 +170,7 @@ function ReportsPage() {
                       borderRadius="lg"
                       bgColor={"white"}
                       borderColor={
-                        x?.title === nameParams ? "blue.500" : "transparent"
+                        x?.title === projectTitle ? "blue.500" : "transparent"
                       }
                       p={5}
                       spacing={3}

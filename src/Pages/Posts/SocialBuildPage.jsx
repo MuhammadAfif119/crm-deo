@@ -14,6 +14,7 @@ import {
   Divider,
   Flex,
   HStack,
+  Icon,
   Image,
   Input,
   Modal,
@@ -71,6 +72,11 @@ import {
 import { BsGlobe2, BsStarFill, BsTrash } from "react-icons/bs";
 import ImageProxy from "../../Components/Image/ImageProxy";
 import useUserStore from "../../Routes/Store";
+import { capitalize } from "../../Utils/capitalizeUtil";
+import TwitterPosts from "./TwitterPosts";
+import YoutubePosts from "./YoutubePosts";
+import InstagramPosts from "./InstagramPosts";
+import PinterestPosts from "./PinterestPosts";
 
 function SocialBuildPage() {
   const width = window.innerWidth;
@@ -79,32 +85,37 @@ function SocialBuildPage() {
   const navigate = useNavigate();
 
   const toast = useToast();
+  const { userDisplay } = useUserStore();
+  const profileKey = userDisplay.profileKey;
+  const title = userDisplay.projectTitle;
 
   const [posting, setPosting] = useState("");
   const [shortenLinks, setShotenLinks] = useState(false);
   const [platformActive, setPlatformActive] = useState([]);
   const [files, setFiles] = useState([]);
+  const [mediaFile, setMediaFile] = useState([]);
+  // const [postTypes, setPostTypes] = useState("twitter");
   const [projectTitle, setProjectTitle] = useState("");
   const [scheduleActive, setScheduleActive] = useState(false);
   const [socialFilter, setSocialFilter] = useState([]);
   const [favoriteFeed, setFavoriteFeed] = useState([]);
-
+  const [schedulePosting, setSchedulePosting] = useState();
   const [barStatus, setBarStatus] = useState(false);
 
+  const [data, setData] = useState({
+    post: "",
+    platforms: [],
+    mediaUrls: mediaFile,
+    shortenLinks: shortenLinks,
+    scheduleDate: schedulePosting,
+    profileKey: userDisplay.profileKey,
+  });
+
   const contentWidth = barStatus ? "85%" : "95%";
-
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  const { userDisplay } = useUserStore();
-  const profileKey = userDisplay.profileKey;
-
-  const title = projectTitle;
 
   const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
 
   const cancelRef = React.useRef();
-
-  const [schedulePosting, setSchedulePosting] = useState();
 
   const getDataProject = async () => {
     try {
@@ -211,17 +222,23 @@ function SocialBuildPage() {
   }, [profileKey]);
 
   const handleAddPlatform = (media) => {
+    console.log(media);
     if (
-      socialFilter.filter((x) => x.activeSocialAccounts.includes(media))
+      socialFilter?.filter((x) => x.activeSocialAccounts?.includes(media))
         .length > 0
     ) {
       setPlatformActive([media]);
       if (!platformActive.includes(media)) {
         setPlatformActive([...platformActive, media]);
+        setData({ ...data, platforms: [...platformActive, media] });
       } else {
         setPlatformActive(
           platformActive.filter((platform) => platform !== media)
         );
+        setData({
+          ...data,
+          platforms: platformActive.filter((platform) => platform !== media),
+        });
       }
     } else {
       toast({
@@ -233,6 +250,9 @@ function SocialBuildPage() {
       });
     }
   };
+
+  console.log(platformActive);
+
   const handleFileInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles.length) {
@@ -255,6 +275,7 @@ function SocialBuildPage() {
       }
     }
   };
+
   const handlePost = async () => {
     loadingShow();
 
@@ -271,16 +292,15 @@ function SocialBuildPage() {
               description: x.description,
             });
             fileImage.push(res.data.url);
+            setMediaFile(fileImage);
+            console.log(fileImage);
+            setData({ ...data, mediaUrls: mediaFile });
             if (fileImage.length === files.length) {
               try {
                 loadingShow();
                 const res = await ApiBackend.post("post", {
-                  post: posting,
-                  platforms: platformActive,
+                  ...data,
                   mediaUrls: fileImage,
-                  shortenLinks: shortenLinks,
-                  scheduleDate: schedulePosting,
-                  profileKey,
                 });
 
                 if (res.status === 200 && res.data.status === "error") {
@@ -308,7 +328,7 @@ function SocialBuildPage() {
                           image: fileImage,
                           uid: currentUser.uid,
                           name: title,
-                          post: posting,
+                          post: data.post,
                           platform: x,
                           status: schedulePosting ? "schedule" : "active",
                         };
@@ -378,14 +398,7 @@ function SocialBuildPage() {
       } else {
         if (posting !== "" || platformActive.length !== 0) {
           try {
-            const res = await ApiBackend.post("post", {
-              post: posting,
-              platforms: platformActive,
-              mediaUrls: null,
-              shortenLinks: shortenLinks,
-              scheduleDate: schedulePosting,
-              profileKey,
-            });
+            const res = await ApiBackend.post("post", data);
             if (res.status === 200) {
               if (
                 res?.data?.status === "success" ||
@@ -475,16 +488,49 @@ function SocialBuildPage() {
     setScheduleActive(true);
   };
 
+  console.log(data);
+
   return (
     <Stack>
       <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
         <Stack w="100%" transition={"0.2s ease-in-out"} minH={height}>
-          <Stack p={10}>
-            <Stack>
+          <Stack p={10} spacing={5}>
+            {/* <Stack>
               <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
-                Create a post
+                Choose Social Media
               </Text>
-            </Stack>
+              <SimpleGrid columns={[2, null, 5]} spacing={3}>
+                {socialFilter?.activeSocialAccounts?.map((x) => (
+                  <Flex
+                    bg={"white"}
+                    borderRadius={"md"}
+                    // w={75}
+                    h={150}
+                    flexDir={"column"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    onClick={() => setPostTypes(x)}
+                  >
+                    <FaTwitter color="gray" size={50} />
+                    <Text>{capitalize(x)}</Text>
+                  </Flex>
+                ))}
+              </SimpleGrid>
+            </Stack> */}
+
+            <Box>
+              <Box>
+                {/* <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
+                  Create a {capitalize(postTypes)} post
+                </Text> */}
+              </Box>
+              {/* <Box>
+                {postTypes == "twitter" && <TwitterPosts />}
+                {postTypes == "youtube" && <YoutubePosts />}
+                {postTypes == "instagram" && <InstagramPosts />}
+                {postTypes == "pinterest" && <PinterestPosts />}
+              </Box> */}
+            </Box>
             <Stack
               borderRadius="lg"
               bgColor={"white"}
@@ -498,22 +544,9 @@ function SocialBuildPage() {
               <Textarea
                 placeholder="Here is a sample placeholder"
                 fontSize={"sm"}
-                onChange={(e) => setPosting(e.target.value)}
+                onChange={(e) => setData({ ...data, post: e.target.value })}
               />
-              <Checkbox
-                colorScheme="blue"
-                defaultChecked
-                onChange={(e) => setShotenLinks(e.target.checked)}
-              >
-                <Text fontSize={"sm"}>Shorten Links</Text>
-              </Checkbox>
-              <Checkbox
-                colorScheme="blue"
-                defaultChecked
-                onChange={(e) => console.log(e.target.checked, "shorten")}
-              >
-                <Text fontSize={"sm"}>Twitter thread</Text>
-              </Checkbox>
+
               <HStack spacing={2} alignItems="center">
                 <Stack>
                   <Input
@@ -554,6 +587,416 @@ function SocialBuildPage() {
                     </Stack>
                   ))}
               </SimpleGrid>
+
+              <Checkbox
+                colorScheme="blue"
+                defaultChecked
+                onChange={(e) =>
+                  setData({ ...data, shortenLinks: e.target.checked })
+                }
+              >
+                <Text fontSize={"sm"}>Shorten Links</Text>
+              </Checkbox>
+
+              <Stack>
+                <Box my={2}>
+                  {platformActive.includes("twitter") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Detail Post for Twitter
+                      </Text>
+                      <Stack px={2}>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            console.log(e.target.checked, "shorten")
+                          }
+                        >
+                          <Text fontSize={"sm"}>Twitter thread</Text>
+                        </Checkbox>
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("youtube") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Youtube {"(Media should be a video)"}
+                      </Text>
+                      <Stack px={2}>
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Video Title
+                        </Text>
+                        <Input
+                          placeholder="My Best Video"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              youTubeOptions: {
+                                ...data.youTubeOptions,
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                        />
+
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              youTubeOptions: {
+                                ...data.youTubeOptions,
+                                shorts: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Youtube Shorts Content</Text>
+                        </Checkbox>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              youTubeOptions: {
+                                ...data.youTubeOptions,
+                                madeForKids: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Made For Kids</Text>
+                        </Checkbox>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              youTubeOptions: {
+                                ...data.youTubeOptions,
+                                notifySubscribers: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>notifySubscribers</Text>
+                        </Checkbox>
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("pinterest") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Pinterest
+                      </Text>
+                      <Stack px={2}>
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Pin Title
+                        </Text>
+                        <Input
+                          placeholder="Limited to 100 characters"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              pinterestOptions: {
+                                ...data.pinterestOptions,
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                        />
+
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Link URL
+                        </Text>
+                        <Input
+                          placeholder="For direct link when the image is clicked"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              pinterestOptions: {
+                                ...data.pinterestOptions,
+                                link: e.target.value,
+                              },
+                            })
+                          }
+                        />
+
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Alternative Text
+                        </Text>
+                        <Input
+                          placeholder="Limited to 500 characters"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              pinterestOptions: {
+                                ...data.pinterestOptions,
+                                altText: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("linkedin") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for LinkedIn
+                      </Text>
+                      <Stack px={2}>
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Media Title
+                        </Text>
+                        <Input
+                          placeholder="Limited to 100 characters"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              pinterestOptions: {
+                                ...data.pinterestOptions,
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                        />
+
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Alternative Text {"(For image media)"}
+                        </Text>
+                        <Input
+                          placeholder="Limited to 500 characters"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              pinterestOptions: {
+                                ...data.pinterestOptions,
+                                altText: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("youtube") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Telegram
+                      </Text>
+                      <Text fontSize={"sm"} color="gray.500">
+                        Media for telegram posts can be animated gif
+                      </Text>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("tiktok") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Tiktok
+                      </Text>
+                      <Stack px={2}>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              tikTokOptions: {
+                                ...data.tikTokOptions,
+                                disableComments: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Disable Comments</Text>
+                        </Checkbox>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              tikTokOptions: {
+                                ...data.tikTokOptions,
+                                disableDuet: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Disable Duet</Text>
+                        </Checkbox>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              tikTokOptions: {
+                                ...data.tikTokOptions,
+                                disableStitch: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Disable Stitch</Text>
+                        </Checkbox>
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+
+                <Box py={2}>
+                  {platformActive.includes("facebook") ? (
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Facebook Page
+                      </Text>
+                      <Stack px={2}>
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              faceBookOptions: {
+                                ...data.faceBookOptions,
+                                reels: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Reels Content</Text>
+                        </Checkbox>
+
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Title
+                        </Text>
+                        <Input
+                          isDisabled={
+                            data?.faceBookOptions?.reels === false
+                              ? true
+                              : false
+                          }
+                          placeholder="Super title for the Reel"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              faceBookOptions: {
+                                ...data?.faceBookOptions,
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Media Caption
+                        </Text>
+                        <Input
+                          placeholder="Super title for the Reel"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              faceBookOptions: {
+                                ...data?.faceBookOptions,
+                                mediaCaptions: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </Stack>
+                    </Stack>
+                  ) : null}
+                </Box>
+              </Stack>
+
               <HStack spacing={5} alignItems="center">
                 <Button
                   size={"sm"}
@@ -591,6 +1034,7 @@ function SocialBuildPage() {
                 )}
               </HStack>
             </Stack>
+
             <Stack
               p={5}
               alignItems="center"

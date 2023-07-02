@@ -14,6 +14,7 @@ import {
   Divider,
   Flex,
   HStack,
+  Heading,
   Image,
   Input,
   Modal,
@@ -57,6 +58,7 @@ import { BiFilterAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import ApiBackend from "../../Api/ApiBackend";
 import AppSideAccountBar from "../../Components/AppSideAccountBar";
+import useUserStore from "../../Routes/Store";
 
 function CommentsPage() {
   const width = window.innerWidth;
@@ -88,9 +90,9 @@ function CommentsPage() {
 
   const contentWidth = barStatus ? "85%" : "95%";
 
-  let [searchParams, setSearchParams] = useSearchParams();
+  const { userDisplay } = useUserStore();
 
-  const profileKey = searchParams.get("detail");
+  const profileKey = userDisplay.profileKey;
 
   const cancelRef = React.useRef();
 
@@ -206,6 +208,7 @@ function CommentsPage() {
           profileKey,
         });
         const obj = res.data;
+        console.log(obj);
         const {
           id,
           status,
@@ -219,6 +222,7 @@ function CommentsPage() {
           console.log(socialMedia, "1");
           const socialMediaKeys = Object.keys(socialMedia); // mengambil array kunci properti objek socialMedia
           setSocialMediaKeysArr(socialMediaKeys);
+          console.log(socialMediaKeysArr);
           if (socialMediaKeys !== null) {
             setCommentDetailList(socialMedia);
           }
@@ -289,8 +293,8 @@ function CommentsPage() {
     if (profileKey) {
       try {
         const res = await ApiBackend.post("postcomment", {
-          id: commentActive.id,
-          platforms: commentActive.postIds.map((x) => x.platform),
+          id: commentActive?.id,
+          platforms: commentActive?.postIds?.map((x) => x.platform),
           comment: comment,
           profileKey,
         });
@@ -372,11 +376,6 @@ function CommentsPage() {
   return (
     <>
       <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-        {/* 
-                <Stack >
-                    <AppSideAccountBar setBarStatus={setBarStatus} />
-                </Stack>
-                <Spacer /> */}
         <Stack
           w={"100%"}
           transition={"0.2s ease-in-out"}
@@ -436,171 +435,181 @@ function CommentsPage() {
             </SimpleGrid>
           </HStack>
 
-          {historyList.length > 0 &&
-            historyList.map((x, index) => {
-              return (
-                <Stack
-                  borderRadius="lg"
-                  key={index}
-                  shadow="md"
-                  bgColor={"white"}
-                  borderTopWidth={5}
-                  borderColor="blue.500"
-                  p={5}
-                >
-                  <HStack>
-                    <Stack spacing={5}>
-                      <Stack>
-                        <Text fontSize={"xs"}>
-                          {moment(x.created).format("LLLL")}
-                        </Text>
-                      </Stack>
-                      <Stack>
-                        <Text fontSize={"xs"} color="gray.600">
-                          {x.post}
-                        </Text>
-                      </Stack>
-                      <Stack>
-                        <HStack gap={2}>
-                          {x.mediaUrls.length > 0 &&
-                            x.mediaUrls.map((y, index) => {
-                              return (
-                                <Stack key={index}>
-                                  {y.endsWith(".mp4") ? (
-                                    <video controls width="220" height="140">
-                                      <source src={y} type="video/mp4" />
-                                      Sorry, your browser doesn't support
-                                      embedded videos.
-                                    </video>
-                                  ) : (
-                                    <Image
-                                      borderRadius={"lg"}
-                                      w={"150px"}
-                                      shadow={"md"}
-                                      src={y}
-                                      alt={y}
-                                    />
-                                  )}
-                                </Stack>
-                              );
-                            })}
-                        </HStack>
-                      </Stack>
-
-                      <HStack spacing={5}>
-                        <Stack
-                          cursor={"pointer"}
-                          onClick={() => handleComment(x)}
-                        >
-                          <AiOutlineComment size={20} />
+          {historyList.length > 0 ? (
+            <>
+              {historyList.map((x, index) => {
+                return (
+                  <Stack
+                    borderRadius="lg"
+                    key={index}
+                    shadow="md"
+                    bgColor={"white"}
+                    borderTopWidth={5}
+                    borderColor="blue.500"
+                    p={5}
+                  >
+                    <HStack>
+                      <Stack spacing={5}>
+                        <Stack>
+                          <Text fontSize={"xs"}>
+                            {moment(x.created).format("LLLL")}
+                          </Text>
                         </Stack>
-                        <Stack
-                          cursor={"pointer"}
-                          onClick={() => handleAnalytics(x)}
-                        >
-                          <TbPresentationAnalytics size={20} />
+                        <Stack>
+                          <Text fontSize={"xs"} color="gray.600">
+                            {x.post}
+                          </Text>
                         </Stack>
-                        <Stack
-                          cursor={"pointer"}
-                          onClick={() => handleDeleteModal(x)}
-                        >
-                          <BsTrash size={18} />
-                        </Stack>
-                      </HStack>
-                    </Stack>
-
-                    <Spacer />
-                    <Stack
-                      alignItems={"flex-end"}
-                      spacing={3}
-                      justifyContent="flex-end"
-                    >
-                      <Stack>
-                        <Text color={"gray.500"} fontSize="sm">
-                          {x.errors && x.postIds
-                            ? "Response Active"
-                            : "Response Inactive"}
-                        </Text>
-                      </Stack>
-
-                      <HStack>
-                        <HStack spacing={2}>
-                          {x.postIds &&
-                            x.postIds.map((z, index) => {
-                              const filterSuccess = PlatformArr.filter((y) =>
-                                y.name.includes(z.platform)
-                              );
-                              const resIcon = filterSuccess[0]?.icon;
-
-                              return (
-                                <a
-                                  href={z.postUrl}
-                                  key={index}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <Stack
-                                    color={"green"}
-                                    key={z.id}
-                                    cursor="pointer"
-                                    onClick={() => console.log(z.postUrl)}
-                                  >
-                                    {resIcon}
+                        <Stack>
+                          <HStack gap={2}>
+                            {x.mediaUrls.length > 0 &&
+                              x.mediaUrls.map((y, index) => {
+                                return (
+                                  <Stack key={index}>
+                                    {y.endsWith(".mp4") ? (
+                                      <video controls width="220" height="140">
+                                        <source src={y} type="video/mp4" />
+                                        Sorry, your browser doesn't support
+                                        embedded videos.
+                                      </video>
+                                    ) : (
+                                      <Image
+                                        borderRadius={"lg"}
+                                        w={"150px"}
+                                        shadow={"md"}
+                                        src={y}
+                                        alt={y}
+                                      />
+                                    )}
                                   </Stack>
-                                </a>
-                              );
-                            })}
+                                );
+                              })}
+                          </HStack>
+                        </Stack>
+
+                        <HStack spacing={5}>
+                          <Stack
+                            cursor={"pointer"}
+                            onClick={() => handleComment(x)}
+                          >
+                            <AiOutlineComment size={20} />
+                          </Stack>
+                          <Stack
+                            cursor={"pointer"}
+                            onClick={() => handleAnalytics(x)}
+                          >
+                            <TbPresentationAnalytics size={20} />
+                          </Stack>
+                          <Stack
+                            cursor={"pointer"}
+                            onClick={() => handleDeleteModal(x)}
+                          >
+                            <BsTrash size={18} />
+                          </Stack>
                         </HStack>
+                      </Stack>
 
-                        <HStack spacing={2}>
-                          {x.errors &&
-                            x.errors.map((z, index) => {
-                              const filterError = PlatformArr.filter((y) =>
-                                y.name.includes(z.platform)
-                              );
-                              const resIcon = filterError[0]?.icon;
+                      <Spacer />
+                      <Stack
+                        alignItems={"flex-end"}
+                        spacing={3}
+                        justifyContent="flex-end"
+                      >
+                        <Stack>
+                          <Text color={"gray.500"} fontSize="sm">
+                            {x.errors && x.postIds
+                              ? "Response Active"
+                              : "Response Inactive"}
+                          </Text>
+                        </Stack>
 
-                              return (
-                                <Stack
-                                  key={index}
-                                  color="red"
-                                  cursor="pointer"
-                                  onClick={() => handleErrorMessage(z.message)}
-                                >
-                                  {resIcon}
-                                </Stack>
-                              );
-                            })}
-                        </HStack>
-
-                        {x.errors && x.postIds === undefined && (
+                        <HStack>
                           <HStack spacing={2}>
-                            {x.platforms &&
-                              x.platforms.map((z, index) => {
+                            {x.postIds &&
+                              x.postIds.map((z, index) => {
+                                const filterSuccess = PlatformArr.filter((y) =>
+                                  y.name.includes(z.platform)
+                                );
+                                const resIcon = filterSuccess[0]?.icon;
+
+                                return (
+                                  <a
+                                    href={z.postUrl}
+                                    key={index}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <Stack
+                                      color={"green"}
+                                      key={z.id}
+                                      cursor="pointer"
+                                      onClick={() => console.log(z.postUrl)}
+                                    >
+                                      {resIcon}
+                                    </Stack>
+                                  </a>
+                                );
+                              })}
+                          </HStack>
+
+                          <HStack spacing={2}>
+                            {x.errors &&
+                              x.errors.map((z, index) => {
                                 const filterError = PlatformArr.filter((y) =>
-                                  y.name.includes(z)
+                                  y.name.includes(z.platform)
                                 );
                                 const resIcon = filterError[0]?.icon;
 
                                 return (
                                   <Stack
                                     key={index}
+                                    color="red"
                                     cursor="pointer"
-                                    color={"gray"}
-                                    onClick={() => console.log(z.message)}
+                                    onClick={() =>
+                                      handleErrorMessage(z.message)
+                                    }
                                   >
                                     {resIcon}
                                   </Stack>
                                 );
                               })}
                           </HStack>
-                        )}
-                      </HStack>
-                    </Stack>
-                  </HStack>
-                </Stack>
-              );
-            })}
+
+                          {x.errors && x.postIds === undefined && (
+                            <HStack spacing={2}>
+                              {x.platforms &&
+                                x.platforms.map((z, index) => {
+                                  const filterError = PlatformArr.filter((y) =>
+                                    y.name.includes(z)
+                                  );
+                                  const resIcon = filterError[0]?.icon;
+
+                                  return (
+                                    <Stack
+                                      key={index}
+                                      cursor="pointer"
+                                      color={"gray"}
+                                      onClick={() => console.log(z.message)}
+                                    >
+                                      {resIcon}
+                                    </Stack>
+                                  );
+                                })}
+                            </HStack>
+                          )}
+                        </HStack>
+                      </Stack>
+                    </HStack>
+                  </Stack>
+                );
+              })}
+            </>
+          ) : (
+            <Box>
+              <Heading>No History</Heading>
+              <Spinner />
+            </Box>
+          )}
         </Stack>
       </Flex>
 
