@@ -2,8 +2,6 @@ import { useToast } from "@chakra-ui/react";
 import React from "react";
 
 export const CheckVideoResolution = async (file) => {
-  const toast = useToast();
-
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     video.preload = "metadata";

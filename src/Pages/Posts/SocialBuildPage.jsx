@@ -336,7 +336,7 @@ function SocialBuildPage() {
       if (files.length > 0) {
         files.forEach(async (x) => {
           try {
-            await CheckVideoResolution(x.file);
+            // await CheckVideoResolution(x.file);
             const res = await ApiBackend.post("upload", {
               file: x.file,
               fileName: x.fileName,
