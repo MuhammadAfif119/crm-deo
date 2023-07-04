@@ -706,58 +706,70 @@ function CommentsPage() {
 
                           // if (key === 'linkedin') {
                           return (
-                            <HStack
-                              alignItems="flex-start"
-                              justifyContent={"flex-start"}
-                              key={index}
-                            >
-                              <a
-                                href={data?.from?.url}
-                                target={"_blank"}
-                                rel="noopener noreferrer"
-                              >
-                                <Avatar
-                                  cursor={"pointer"}
-                                  size="sm"
-                                  src={data?.profileImageUrl}
-                                  alt={data?.from?.name}
-                                >
-                                  <AvatarBadge boxSize="1.7em" bg="green.500">
-                                    {resIcon && resIcon}
-                                  </AvatarBadge>
-                                </Avatar>
-                              </a>
-                              <Stack
-                                alignItems={"flex-start"}
-                                justifyContent="center"
-                                shadow={"md"}
-                                bgColor={"blue.500"}
-                                maxW="60%"
-                                minH="50px"
-                                borderRadius={"lg"}
-                                p={3}
-                              >
-                                <Stack spacing={0} color="white">
-                                  <Text
-                                    fontSize={"xs"}
-                                    fontWeight="bold"
-                                    textTransform={"capitalize"}
+                            <>
+                              {data[socialMediaKeysArr[0]]?.map(
+                                (item, itemIndex) => (
+                                  <HStack
+                                    alignItems="flex-start"
+                                    justifyContent={"flex-start"}
+                                    key={itemIndex}
                                   >
-                                    {key === "linkedin"
-                                      ? data?.from?.name
-                                      : key === "twitter"
-                                      ? `@${data?.userName}`
-                                      : ""}{" "}
-                                  </Text>
-                                  <Text fontSize={"xx-small"}>
-                                    on {moment(data?.created).format("LLLL")}
-                                  </Text>
-                                </Stack>
-                                <Stack color="white">
-                                  <Text fontSize={"xs"}>{data?.comment}</Text>
-                                </Stack>
-                              </Stack>
-                            </HStack>
+                                    <a
+                                      href={item?.from?.url}
+                                      target={"_blank"}
+                                      rel="noopener noreferrer"
+                                    >
+                                      <Avatar
+                                        cursor={"pointer"}
+                                        size="sm"
+                                        src={item?.profileImageUrl}
+                                        alt={item?.from?.name}
+                                      >
+                                        <AvatarBadge
+                                          boxSize="1.7em"
+                                          bg="green.500"
+                                        >
+                                          {resIcon && resIcon}
+                                        </AvatarBadge>
+                                      </Avatar>
+                                    </a>
+                                    <Stack
+                                      alignItems={"flex-start"}
+                                      justifyContent="center"
+                                      shadow={"md"}
+                                      bgColor={"blue.500"}
+                                      maxW="60%"
+                                      minH="50px"
+                                      borderRadius={"lg"}
+                                      p={3}
+                                    >
+                                      <Stack spacing={0} color="white">
+                                        <Text
+                                          fontSize={"xs"}
+                                          fontWeight="bold"
+                                          textTransform={"capitalize"}
+                                        >
+                                          {key === "linkedin"
+                                            ? data?.from?.name
+                                            : key === "instagram"
+                                            ? `@${item?.username}`
+                                            : ""}
+                                        </Text>
+                                        <Text fontSize={"xx-small"}>
+                                          on{" "}
+                                          {moment(item?.created).format("LLLL")}
+                                        </Text>
+                                      </Stack>
+                                      <Stack color="white">
+                                        <Text fontSize={"xs"}>
+                                          {item?.comment}
+                                        </Text>
+                                      </Stack>
+                                    </Stack>
+                                  </HStack>
+                                )
+                              )}
+                            </>
                           );
                           // }
                         })
