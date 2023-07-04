@@ -11,11 +11,12 @@ import {
   Box,
   Button,
   Checkbox,
+  CloseButton,
   Divider,
   Flex,
   HStack,
   Icon,
-  Image,
+  Img,
   Input,
   Modal,
   ModalBody,
@@ -77,6 +78,7 @@ import TwitterPosts from "./TwitterPosts";
 import YoutubePosts from "./YoutubePosts";
 import InstagramPosts from "./InstagramPosts";
 import PinterestPosts from "./PinterestPosts";
+import { CheckVideoResolution } from "../Middleware";
 
 function SocialBuildPage() {
   const width = window.innerWidth;
@@ -93,14 +95,17 @@ function SocialBuildPage() {
   const [shortenLinks, setShotenLinks] = useState(false);
   const [platformActive, setPlatformActive] = useState([]);
   const [files, setFiles] = useState([]);
+  const [platformEndpoints, setPlatformEndpoints] = useState();
   const [mediaFile, setMediaFile] = useState([]);
-  // const [postTypes, setPostTypes] = useState("twitter");
+  const [postTypes, setPostTypes] = useState();
   const [projectTitle, setProjectTitle] = useState("");
   const [scheduleActive, setScheduleActive] = useState(false);
   const [socialFilter, setSocialFilter] = useState([]);
   const [favoriteFeed, setFavoriteFeed] = useState([]);
   const [schedulePosting, setSchedulePosting] = useState();
   const [barStatus, setBarStatus] = useState(false);
+  const [imageHeight, setImageHeight] = useState();
+  const [imageWidth, setImageWidth] = useState();
 
   const [data, setData] = useState({
     post: "",
@@ -108,7 +113,7 @@ function SocialBuildPage() {
     mediaUrls: mediaFile,
     shortenLinks: shortenLinks,
     scheduleDate: schedulePosting,
-    profileKey: userDisplay.profileKey,
+    profileKey: profileKey,
   });
 
   const contentWidth = barStatus ? "85%" : "95%";
@@ -125,6 +130,7 @@ function SocialBuildPage() {
       if (docSnapshot.exists) {
         const docData = docSnapshot.data();
         setProjectTitle(docData.ayrshare_account.title);
+        setData({ ...data, profileKey: docData.ayrshare_account.profileKey });
       } else {
         console.log("Dokumen tidak ditemukan!");
       }
@@ -137,18 +143,24 @@ function SocialBuildPage() {
   const handleDateChange = (event) => {
     const { value } = event.target;
     const newDateTime = momenttz(value).format();
+    console.log(newDateTime);
     setSchedulePosting(newDateTime);
+    setData({ ...data, scheduleDate: schedulePosting });
   };
 
   const handleZoneChange = (event) => {
     const { value } = event.target;
     const newDateTime = momenttz(schedulePosting).tz(value).format();
+    console.log(newDateTime);
     setSchedulePosting(newDateTime);
+    setData({ ...data, scheduleDate: schedulePosting });
   };
+
+  console.log(data.scheduleDate);
 
   const getListSocial = async () => {
     loadingShow();
-    if (profileKey) {
+    if (userDisplay.profileKey) {
       try {
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
@@ -217,12 +229,10 @@ function SocialBuildPage() {
   useEffect(() => {
     getListSocial();
     getDataProject();
-
-    return () => {};
-  }, [profileKey]);
+  }, [userDisplay.profileKey]);
 
   const handleAddPlatform = (media) => {
-    console.log(media);
+    setPlatformEndpoints(media);
     if (
       socialFilter?.filter((x) => x.activeSocialAccounts?.includes(media))
         .length > 0
@@ -251,7 +261,7 @@ function SocialBuildPage() {
     }
   };
 
-  console.log(platformActive);
+  console.log(...data.platforms);
 
   const handleFileInputChange = (event) => {
     const { files: newFiles } = event.target;
@@ -266,12 +276,52 @@ function SocialBuildPage() {
             description: newFiles[i].type,
             isVideo: newFiles[i].type.startsWith("video/"),
           };
+
+          if (fileData.isVideo === false) {
+            const img = new Image();
+            img.onload = () => {
+              setImageHeight(img.height);
+              setImageWidth(img.width);
+            };
+            img.src = reader.result;
+          } else {
+          }
+
+          // if (imageWidth / imageHeight !== 0.5625) {
+          //   toast({
+          //     title: "Deoapp",
+          //     status: "warning",
+          //     description:
+          //       "Image for stories should be in ratio 9:16 for better result",
+          //     duration: null,
+          //     position: "top-right",
+          //   });
+          // }
+
+          console.log(fileData);
           newFileArray.push(fileData);
+
           if (i === newFiles.length - 1) {
             setFiles((prevFiles) => [...prevFiles, ...newFileArray]);
           }
         };
         reader.readAsDataURL(newFiles[i]);
+      }
+    }
+  };
+
+  const handleDeleteMedia = (x) => {
+    console.log(x);
+    console.log(files);
+    if (files.length === 1) {
+      setFiles([]);
+    } else {
+      const objectIndex = files.findIndex((item) => item.file === x.file);
+
+      if (objectIndex > -1) {
+        const newFiles = files.splice(objectIndex, 1);
+        setFiles(newFiles);
+      } else {
       }
     }
   };
@@ -286,6 +336,7 @@ function SocialBuildPage() {
       if (files.length > 0) {
         files.forEach(async (x) => {
           try {
+            await CheckVideoResolution(x.file);
             const res = await ApiBackend.post("upload", {
               file: x.file,
               fileName: x.fileName,
@@ -298,7 +349,7 @@ function SocialBuildPage() {
             if (fileImage.length === files.length) {
               try {
                 loadingShow();
-                const res = await ApiBackend.post("post", {
+                const res = await ApiBackend.post(`post/${platformEndpoints}`, {
                   ...data,
                   mediaUrls: fileImage,
                 });
@@ -306,11 +357,14 @@ function SocialBuildPage() {
                 if (res.status === 200 && res.data.status === "error") {
                   // Menampilkan pesan error dan informasi platform yang dikirim
                   res.data.posts.forEach((post) => {
+                    console.log(res.data.posts);
                     if (post.status === "error") {
                       post.errors.forEach((error) => {
                         toast({
                           title: "Deoapp.com",
                           description: `Error posting to ${error.platform}: ${error.message}`,
+                          // description: `Success posting to ${error.platform}`,
+                          // status: "success",
                           status: "error",
                           position: "top-right",
                           isClosable: true,
@@ -319,18 +373,18 @@ function SocialBuildPage() {
                     } else if (post.status === "success") {
                       platformActive.forEach(async (x) => {
                         let firebaseData = {
-                          startDate: schedulePosting
-                            ? new Date(schedulePosting)
+                          startDate: data.scheduleDate
+                            ? new Date(data.scheduleDate)
                             : new Date(),
-                          endDate: schedulePosting
-                            ? new Date(moment(schedulePosting).add(1, "hour"))
+                          endDate: data.scheduleDate
+                            ? new Date(moment(data.scheduleDate).add(1, "hour"))
                             : new Date(moment().add(1, "hour")),
                           image: fileImage,
                           uid: currentUser.uid,
                           name: title,
                           post: data.post,
                           platform: x,
-                          status: schedulePosting ? "schedule" : "active",
+                          status: data.scheduleDate ? "schedule" : "active",
                         };
                         const ref = doc(db, "schedule", currentUser.uid);
                         await setDoc(
@@ -373,14 +427,42 @@ function SocialBuildPage() {
                   });
                 }
 
+                if (data.scheduleDate !== undefined) {
+                  platformActive.forEach(async (x) => {
+                    let firebaseData = {
+                      startDate: data.scheduleDate
+                        ? new Date(data.scheduleDate)
+                        : new Date(),
+                      endDate: data.scheduleDate
+                        ? new Date(moment(data.scheduleDate).add(1, "hour"))
+                        : new Date(moment().add(1, "hour")),
+                      image: fileImage,
+                      uid: currentUser.uid,
+                      name: title,
+                      post: data.post,
+                      platform: x,
+                      status: data.scheduleDate ? "schedule" : "active",
+                    };
+                    const ref = doc(db, "schedule", currentUser.uid);
+                    await setDoc(
+                      ref,
+                      {
+                        uid: currentUser.uid,
+                        data: arrayUnion(firebaseData),
+                        createdAt: new Date(),
+                      },
+                      { merge: true }
+                    );
+                  });
+                }
+
                 loadingClose();
               } catch (error) {
                 console.log(error, "ini error ");
                 // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
                 toast({
                   title: "Deoapp.com",
-                  description:
-                    "Error posting: An error occurred while processing the request.",
+                  description: "Failed to post",
                   status: "error",
                   position: "top-right",
                   isClosable: true,
@@ -517,20 +599,6 @@ function SocialBuildPage() {
                 ))}
               </SimpleGrid>
             </Stack> */}
-
-            <Box>
-              <Box>
-                {/* <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
-                  Create a {capitalize(postTypes)} post
-                </Text> */}
-              </Box>
-              {/* <Box>
-                {postTypes == "twitter" && <TwitterPosts />}
-                {postTypes == "youtube" && <YoutubePosts />}
-                {postTypes == "instagram" && <InstagramPosts />}
-                {postTypes == "pinterest" && <PinterestPosts />}
-              </Box> */}
-            </Box>
             <Stack
               borderRadius="lg"
               bgColor={"white"}
@@ -577,12 +645,36 @@ function SocialBuildPage() {
                           Sorry, your browser doesn't support embedded videos.
                         </video>
                       ) : (
-                        <Image
-                          src={x.file}
-                          borderRadius="xl"
-                          alt={x.fileName}
-                          shadow="md"
-                        />
+                        <>
+                          {(imageWidth / imageHeight < 0.56 ||
+                            imageWidth / imageHeight > 0.62) &&
+                          (data.instagramOptions?.reels === true ||
+                            data.instagramOptions?.stories === true) ? (
+                            <>
+                              <Text color={"red"} fontSize={"sm"}>
+                                Media file aspect ratio should be 9:16
+                              </Text>
+                            </>
+                          ) : null}
+                          <Box position={"relative"}>
+                            <CloseButton
+                              onClick={() => handleDeleteMedia(x)}
+                              position={"absolute"}
+                              right={0}
+                              zIndex={999}
+                              borderRadius={"full"}
+                              size={"sm"}
+                              color={"white"}
+                              bg={"gray.400"}
+                            />
+                            <Img
+                              src={x.file}
+                              borderRadius="xl"
+                              alt={x.fileName}
+                              shadow="md"
+                            />
+                          </Box>
+                        </>
                       )}
                     </Stack>
                   ))}
@@ -599,8 +691,8 @@ function SocialBuildPage() {
               </Checkbox>
 
               <Stack>
-                <Box my={2}>
-                  {platformActive.includes("twitter") ? (
+                {platformActive.includes("twitter") ? (
+                  <Box my={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -614,18 +706,40 @@ function SocialBuildPage() {
                           colorScheme="blue"
                           defaultChecked
                           onChange={(e) =>
-                            console.log(e.target.checked, "shorten")
+                            setData({
+                              ...data,
+                              twitterOptions: {
+                                ...data.twitterOptions,
+                                thread: e.target.checked,
+                              },
+                            })
                           }
                         >
                           <Text fontSize={"sm"}>Twitter thread</Text>
                         </Checkbox>
+
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              twitterOptions: {
+                                ...data.twitterOptions,
+                                threadNumber: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Thread number</Text>
+                        </Checkbox>
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("youtube") ? (
+                {platformActive.includes("youtube") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -703,11 +817,11 @@ function SocialBuildPage() {
                         </Checkbox>
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("pinterest") ? (
+                {platformActive.includes("pinterest") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -781,11 +895,11 @@ function SocialBuildPage() {
                         />
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("linkedin") ? (
+                {platformActive.includes("linkedin") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -808,8 +922,8 @@ function SocialBuildPage() {
                           onChange={(e) =>
                             setData({
                               ...data,
-                              pinterestOptions: {
-                                ...data.pinterestOptions,
+                              linkedInOptions: {
+                                ...data.linkedInOptions,
                                 title: e.target.value,
                               },
                             })
@@ -829,8 +943,8 @@ function SocialBuildPage() {
                           onChange={(e) =>
                             setData({
                               ...data,
-                              pinterestOptions: {
-                                ...data.pinterestOptions,
+                              linkedInOptions: {
+                                ...data.linkedInOptions,
                                 altText: e.target.value,
                               },
                             })
@@ -838,11 +952,11 @@ function SocialBuildPage() {
                         />
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("youtube") ? (
+                {platformActive.includes("youtube") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -855,11 +969,11 @@ function SocialBuildPage() {
                         Media for telegram posts can be animated gif
                       </Text>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("tiktok") ? (
+                {platformActive.includes("tiktok") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -916,11 +1030,11 @@ function SocialBuildPage() {
                         </Checkbox>
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
 
-                <Box py={2}>
-                  {platformActive.includes("facebook") ? (
+                {platformActive.includes("facebook") ? (
+                  <Box py={2}>
                     <Stack>
                       <Text
                         fontSize={"sm"}
@@ -993,8 +1107,185 @@ function SocialBuildPage() {
                         />
                       </Stack>
                     </Stack>
-                  ) : null}
-                </Box>
+                  </Box>
+                ) : null}
+
+                {platformActive.includes("instagram") ? (
+                  <Box py={2}>
+                    <Stack>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Details Post for Instagram
+                      </Text>
+
+                      <Text fontSize={"sm"} color="gray.500">
+                        Select Type Post
+                      </Text>
+                      <Select
+                        size={"sm"}
+                        placeholder="Select type post"
+                        onChange={(e) => {
+                          setPostTypes(e.target.value);
+                        }}
+                      >
+                        <option value="post">Post</option>
+                        <option value="reels">Reels</option>
+                        <option value="stories">Stories</option>
+                      </Select>
+
+                      <Stack px={2}>
+                        {postTypes === "reels" ? (
+                          <>
+                            <Checkbox
+                              colorScheme="blue"
+                              defaultChecked
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  instagramOptions: {
+                                    ...data.instagramOptions,
+                                    reels: e.target.checked,
+                                  },
+                                })
+                              }
+                            >
+                              <Text fontSize={"sm"}>Reels Content</Text>
+                            </Checkbox>
+
+                            <Checkbox
+                              colorScheme="blue"
+                              defaultChecked
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  instagramOptions: {
+                                    ...data.instagramOptions,
+                                    shareReelsFeed: e.target.checked,
+                                  },
+                                })
+                              }
+                            >
+                              <Text fontSize={"sm"}>Share reels to feed</Text>
+                            </Checkbox>
+
+                            <Text>Thumbnail Offset {"miliseconds"}</Text>
+                            <Input
+                              size={"sm"}
+                              defaultValue={30000}
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  instagramOptions: {
+                                    ...data.instagramOptions,
+                                    thumbNailOffset: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+
+                            <Text>Cover URL</Text>
+                            <Input
+                              size={"sm"}
+                              placeholder="https://image"
+                              // defaultValue={30000}
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  instagramOptions: {
+                                    ...data.instagramOptions,
+                                    coverURL: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+                          </>
+                        ) : null}
+
+                        {postTypes === "stories" ? (
+                          <>
+                            <Checkbox
+                              colorScheme="blue"
+                              defaultChecked={true}
+                              onChange={(e) =>
+                                setData({
+                                  ...data,
+                                  instagramOptions: {
+                                    ...data.instagramOptions,
+                                    stories: e.target.checked,
+                                  },
+                                })
+                              }
+                            >
+                              <Text fontSize={"sm"}>Stories Content</Text>
+                            </Checkbox>
+                          </>
+                        ) : null}
+
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Locations {"Must be start with @, example: @Jakarta"}
+                        </Text>
+                        <Input
+                          placeholder="Location"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              instagramOptions: {
+                                ...data?.instagramOptions,
+                                locationId: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                        <Text
+                          fontSize={"sm"}
+                          color="gray.500"
+                          fontWeight={"semibold"}
+                        >
+                          Tag Users
+                        </Text>
+                        <Input
+                          placeholder="Super title for the Reel"
+                          fontSize={"sm"}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              instagramOptions: {
+                                ...data?.instagramOptions,
+                                userTags: [
+                                  { username: e.target.value, x: 0.5, y: 0.9 },
+                                ],
+                              },
+                            })
+                          }
+                        />
+
+                        <Checkbox
+                          colorScheme="blue"
+                          defaultChecked={true}
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              instagramOptions: {
+                                ...data.instagramOptions,
+                                autoResize: e.target.checked,
+                              },
+                            })
+                          }
+                        >
+                          <Text fontSize={"sm"}>Auto Resize</Text>
+                        </Checkbox>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                ) : null}
               </Stack>
 
               <HStack spacing={5} alignItems="center">

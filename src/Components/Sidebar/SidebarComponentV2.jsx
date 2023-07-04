@@ -126,6 +126,8 @@ function SidebarComponentV2({ layout }) {
     }
   };
 
+  console.log(project);
+
   const getCurrentProject = async () => {
     try {
       const docRef = doc(db, "projects", projectId);

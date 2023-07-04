@@ -355,8 +355,8 @@ const InstagramPosts = () => {
               onChange={(e) =>
                 setData({
                   ...data,
-                  youTubeOptions: {
-                    ...data.youTubeOptions,
+                  instagramOptions: {
+                    ...data.instagramOptions,
                     title: e.target.value,
                   },
                 })
@@ -369,8 +369,8 @@ const InstagramPosts = () => {
               onChange={(e) =>
                 setData({
                   ...data,
-                  youTubeOptions: {
-                    ...data.youTubeOptions,
+                  instagramOptions: {
+                    ...data.instagramOptions,
                     shorts: e.target.checked,
                   },
                 })
@@ -384,8 +384,8 @@ const InstagramPosts = () => {
               onChange={(e) =>
                 setData({
                   ...data,
-                  youTubeOptions: {
-                    ...data.youTubeOptions,
+                  instagramOptions: {
+                    ...data.instagramOptions,
                     madeForKids: e.target.checked,
                   },
                 })
@@ -399,8 +399,8 @@ const InstagramPosts = () => {
               onChange={(e) =>
                 setData({
                   ...data,
-                  youTubeOptions: {
-                    ...data.youTubeOptions,
+                  instagramOptions: {
+                    ...data.instagramOptions,
                     notifySubscribers: e.target.checked,
                   },
                 })

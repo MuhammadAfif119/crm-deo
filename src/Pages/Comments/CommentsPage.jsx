@@ -75,6 +75,7 @@ function CommentsPage() {
   const [deleteModal, setDeleteModal] = useState(false);
   const [analyticsModal, setAnalyticsModal] = useState(false);
   const [comment, setComment] = useState("");
+  const [displayComment, setDisplayComment] = useState();
   const [commentActive, setCommentActive] = useState("");
   const [postActive, setPostActive] = useState("");
   const [commentDetailList, setCommentDetailList] = useState([]);
@@ -198,6 +199,7 @@ function CommentsPage() {
   };
 
   const handleComment = async (idPost) => {
+    console.log(idPost);
     if (profileKey) {
       setCommentModal(true);
       setCommentActive(idPost);
@@ -222,9 +224,11 @@ function CommentsPage() {
           console.log(socialMedia, "1");
           const socialMediaKeys = Object.keys(socialMedia); // mengambil array kunci properti objek socialMedia
           setSocialMediaKeysArr(socialMediaKeys);
+          setDisplayComment([socialMedia]);
           console.log(socialMediaKeysArr);
           if (socialMediaKeys !== null) {
             setCommentDetailList(socialMedia);
+            console.log(commentDetailList);
           }
           console.log(socialMediaKeys, "2");
         } else {
@@ -693,9 +697,8 @@ function CommentsPage() {
                   socialMediaKeysArr?.length > 0 &&
                   socialMediaKeysArr?.map((key) => (
                     <Stack>
-                      {commentDetailList[key]?.length > 0 ||
-                      commentDetailList[key] !== null ? (
-                        commentDetailList[key]?.map((data, index) => {
+                      {displayComment.length > 0 || displayComment !== null ? (
+                        displayComment.map((data, index) => {
                           const filterError = PlatformArr?.filter((y) =>
                             y?.name?.includes(key && key)
                           );

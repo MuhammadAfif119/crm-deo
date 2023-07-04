@@ -33,11 +33,13 @@ import {
   FaTwitter,
   FaYoutube,
 } from "react-icons/fa";
+import useUserStore from "../../Routes/Store";
 
 const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
   const [events, setEvents] = useState([]);
+  const { userDisplay } = useUserStore();
 
   const height = window.innerHeight;
 
@@ -47,7 +49,7 @@ const CalendarPage = () => {
 
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const profileKey = searchParams.get("detail");
+  const profileKey = userDisplay.profileKey;
 
   const { currentUser } = useContext(AuthContext);
 
