@@ -14,15 +14,14 @@ import song from "../assets/CoinDrop-Notification.mp3"
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA-p2OkCT9rjeta1lQM4krUfllcSWl_E1s",
-  authDomain: "buildfire-project.firebaseapp.com",
-  projectId: "buildfire-project",
-  storageBucket: "buildfire-project.appspot.com",
-  messagingSenderId: "2213424327",
-  appId: "1:2213424327:web:9f216a47897c3209fbe2e2",
-  measurementId: "G-MMP1NFBP7C",
-  token_option: "BPdQWjdl69AqNC55m3oTZyMyUjSBMFjgkdgPAYuEdfTFtY0mEBL2V7mI3KgboDBTYccMlK6cOf5otN9HlDu4JW8", // your vapid key
-
+  apiKey: "AIzaSyDHwfzgKXqfknEy3bctrbrlu37_hKeJevo",
+  authDomain: "deoapp-indonesia.firebaseapp.com",
+  databaseURL: "https://deoapp-indonesia-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "deoapp-indonesia",
+  storageBucket: "deoapp-indonesia.appspot.com",
+  messagingSenderId: "814589130399",
+  appId: "1:814589130399:web:a0bb255936eefd57e554aa",
+  measurementId: "G-B9FPJL2RD0"
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -33,7 +32,7 @@ const storage = getStorage(app);
 const configMessage = getMessaging(app);
 auth.languageCode = 'id';
 
-export {app,analytics,auth,db}
+export {app,analytics,auth,db, storage}
 export const fetchToken = async (setTokenId) => {
   try {
     const token = await getToken(configMessage, { vapidKey: firebaseConfig.token_option });

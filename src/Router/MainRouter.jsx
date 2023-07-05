@@ -7,6 +7,7 @@ import ReportsRouter from "./ReportsRouter";
 import SocialAccountRouter from "./SocialAccountRouter";
 import HomeRouter from "./HomeRouter";
 import PipelineRouter from "./PipelineRouter";
+import ListingRouter from "./ListingRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -18,6 +19,7 @@ function MainRouter() {
     ...ReportsRouter,
     ...SocialAccountRouter,
     ...PipelineRouter,
+    ...ListingRouter,
   ];
   return (
     <Routes>
