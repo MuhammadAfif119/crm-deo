@@ -73,12 +73,14 @@ function SidebarComponentV2({ layout }) {
   const toast = useToast();
   const navigate = useNavigate();
 
+  console.log(companyId);
+
   const getProject = async () => {
     if (currentUser) {
       try {
         const q = query(
           collection(db, "projects"),
-          where("companyId", "==", companyId)
+          where("users", "array-contains", currentUser.uid)
         );
 
         const projectArray = [];
@@ -125,8 +127,6 @@ function SidebarComponentV2({ layout }) {
       }
     }
   };
-
-  console.log(project);
 
   const getCurrentProject = async () => {
     try {
@@ -239,7 +239,7 @@ function SidebarComponentV2({ layout }) {
 
                   <Stack>
                     <Select
-                      // placeholder="Company Selection"
+                      placeholder="Company Selection"
                       size={"sm"}
                       onChange={(e) => {
                         setCompanyId(e.target.value);
@@ -283,11 +283,7 @@ function SidebarComponentV2({ layout }) {
                     <Accordion allowMultiple>
                       {data.map((x, i) => (
                         <AccordionItem
-                          isDisabled={
-                            x.name === "Chat" || x.name === "Form"
-                              ? true
-                              : false
-                          }
+                          isDisabled={x.name === "Chat" ? true : false}
                         >
                           <h2>
                             <AccordionButton>
@@ -334,35 +330,20 @@ function SidebarComponentV2({ layout }) {
                   }}
                 >
                   <Stack spacing="1">
-                    <NavButton label="Help" icon={FiHelpCircle} />
-                    <NavButton label="Settings" icon={FiSettings} />
-                  </Stack>
-
-                  {/* <Box bg="bg-subtle" px="4" py="5" borderRadius="lg">
-                <Stack spacing="4">
-                  <Stack spacing="1">
-                    <Text fontSize="sm" fontWeight="medium">
-                      Almost there
-                    </Text>
-                    <Text fontSize="sm" color="muted">
-                      Fill in some more information about you and your person.
-                    </Text>
-                  </Stack>
-                  <Progress
-                    value={80}
-                    size="sm"
-                    aria-label="Profile Update Progress"
-                  />
-                  <HStack spacing="3">
-                    <Button variant="link" size="sm">
-                      Dismiss
+                    {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
+                    <Button
+                      as={Link}
+                      to={"/settings"}
+                      variant="ghost"
+                      justifyContent="start"
+                    >
+                      <HStack spacing="3">
+                        <Icon as={FiSettings} boxSize="5" color="subtle" />
+                        <Text>Setting</Text>
+                      </HStack>
                     </Button>
-                    <Button variant="link" size="sm" colorScheme="blue">
-                      Update profile
-                    </Button>
-                  </HStack>
-                </Stack>
-              </Box> */}
+                    {/* <NavButton label="Settings" icon={FiSettings} /> */}
+                  </Stack>
 
                   {layout.type === "vertical-horizontal" &&
                   layout.userProfile === "sidebar" ? (

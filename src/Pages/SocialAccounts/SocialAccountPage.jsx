@@ -92,8 +92,6 @@ function SocialAccountPage() {
 
   const profileKey = userDisplay.profileKey;
 
-  const getUserSocialAccounts = async () => {};
-
   const getListSocial = async () => {
     loadingShow();
     try {

@@ -1,8 +1,12 @@
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useState } from "react";
 import { create } from "zustand";
+import { db } from "../Config/firebase";
 
 const useUserStore = create((set, get) => ({
   //initial state
   // userDisplay: [],
+  storage: {},
   currentUser: null,
   userObject: {},
   userDisplay: {
@@ -53,6 +57,11 @@ const useUserStore = create((set, get) => ({
       setData: func,
     });
   },
+  setStorage: (func) => {
+    set({
+      setData: func,
+    });
+  },
   resetUserData: () => {
     set({
       taskData: {},
@@ -61,3 +70,24 @@ const useUserStore = create((set, get) => ({
 }));
 
 export default useUserStore;
+
+// export const getCompany = create((set, get) => {
+//   const [company, setCompany] = useState()
+
+//   try {
+//     let collectionRef = query(
+//       collection(db, "companies"),
+//       where("users", "array-contains", currentUser.uid)
+//     );
+//     const querySnapshot = getDocs(collectionRef);
+//     const collectionData = [];
+//     querySnapshot.forEach((doc) => {
+//       const docData = doc.data();
+//       // Lakukan manipulasi data atau operasi lain jika diperlukan
+//       collectionData.push({ id: doc.id, data: docData });
+//     });
+//     setCompany(collectionData);
+//   } catch (error) {
+//     console.log("Terjadi kesalahan:", error);
+//   }
+// });

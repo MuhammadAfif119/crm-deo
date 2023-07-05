@@ -697,12 +697,15 @@ function CommentsPage() {
                   socialMediaKeysArr?.length > 0 &&
                   socialMediaKeysArr?.map((key) => (
                     <Stack>
-                      {displayComment.length > 0 || displayComment !== null ? (
+                      {(displayComment.length > 0 || displayComment !== null) &&
+                      displayComment[socialMediaKeysArr[0].length === 0] ? (
                         displayComment.map((data, index) => {
                           const filterError = PlatformArr?.filter((y) =>
-                            y?.name?.includes(key && key)
+                            y?.name?.includes(key)
                           );
                           const resIcon = filterError[0]?.icon;
+
+                          console.log(displayComment);
 
                           // if (key === 'linkedin') {
                           return (
@@ -780,7 +783,7 @@ function CommentsPage() {
                           h={"200px"}
                         >
                           <Text fontSize={"xs"} color="gray.500">
-                            No have data comment
+                            No Comments
                           </Text>
                         </Stack>
                       )}

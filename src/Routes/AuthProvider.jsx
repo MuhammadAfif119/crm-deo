@@ -28,6 +28,7 @@ import { getNew, postImportirAuth } from "../Api/importirApi";
 import _axios from "../Api/AxiosBarrier";
 import { get } from "../Api/importirApi";
 import ApiBackend from "../Api/ApiBackend";
+import useUserStore from "./Store";
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState("");
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
   const [tokenId, setTokenId] = useState("");
   const [loading, setLoading] = useState(false);
   const [userStorage, setUserStorage] = useState();
+  const { setUserObject, setStorage } = useUserStore();
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -44,6 +46,7 @@ export const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password)
       .then(async (response) => {
         const user = response.user;
+        setUserObject(user);
         if (user) {
           try {
             const docRef = doc(db, "users", user.uid);
@@ -111,6 +114,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await store.get("userData");
         setUserStorage(res);
+        setStorage(res);
       } catch (error) {
         console.log(error, "error");
       }
@@ -134,25 +138,65 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
+  // const getCompany = async () => {
+  //   try {
+  //     const q = query(
+  //       collection(db, "companies"),
+  //       where("users", "array-contains", currentUser.uid)
+  //     );
+  //     const companyArray = [];
+
+  //     const querySnapshot = await getDocs(q);
+  //     querySnapshot.forEach((doc) => {
+  //       // doc.data() is never undefined for query doc snapshots
+  //       companyArray.push({ id: doc.id, data: doc.data() });
+  //     });
+  //     setCompany(companyArray);
+  //     console.log(companyArray);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const getCompany = async () => {
     try {
-      const q = query(
+      // const companyRef = db.collection("companies");
+      // const query = companyRef.where(
+      //   "users",
+      //   "array-contains",
+      //   currentUser.uid
+      // );
+
+      // query.get().then((querySnapshot) => {
+      //   querySnapshot.forEach((doc) => {
+      //     // Access the document data
+      //     setCompany("Company:", doc.id, doc.data());
+      //   });
+      // });
+
+      console.log(currentUser.uid);
+
+      const collectionRef = query(
         collection(db, "companies"),
-        where("owners", "array-contains", currentUser.uid)
+        where("owners", "array-contains", currentUser?.uid)
       );
-
-      const companyArray = [];
-
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collectionRef);
+      console.log(querySnapshot);
+      const collectionData = [];
       querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        companyArray.push({ id: doc.id, data: doc.data() });
-        setCompany(companyArray);
+        const docData = doc.data();
+        // Lakukan manipulasi data atau operasi lain jika diperlukan
+        collectionData.push({ id: doc.id, data: docData });
       });
+      setCompany(collectionData);
+      console.log(collectionData);
+      console.log(company);
     } catch (error) {
-      console.log(error, "ini error");
+      console.log("Terjadi kesalahan:", error);
     }
   };
+
+  console.log(currentUser?.uid);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

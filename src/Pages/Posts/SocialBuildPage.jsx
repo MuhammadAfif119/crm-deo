@@ -10,6 +10,7 @@ import {
   AvatarBadge,
   Box,
   Button,
+  Center,
   Checkbox,
   CloseButton,
   Divider,
@@ -79,6 +80,7 @@ import YoutubePosts from "./YoutubePosts";
 import InstagramPosts from "./InstagramPosts";
 import PinterestPosts from "./PinterestPosts";
 import { CheckVideoResolution } from "../Middleware";
+import CommentsPage from "../Comments/CommentsPage";
 
 function SocialBuildPage() {
   const width = window.innerWidth;
@@ -124,13 +126,13 @@ function SocialBuildPage() {
 
   const getDataProject = async () => {
     try {
-      const docRef = doc(db, "projects", userDisplay.currentProject);
+      const docRef = doc(db, "projects", userDisplay?.currentProject);
       const docSnapshot = await getDoc(docRef);
 
       if (docSnapshot.exists) {
-        const docData = docSnapshot.data();
-        setProjectTitle(docData.ayrshare_account.title);
-        setData({ ...data, profileKey: docData.ayrshare_account.profileKey });
+        const docData = docSnapshot?.data();
+        setProjectTitle(docData?.ayrshare_account?.title);
+        setData({ ...data, profileKey: docData?.ayrshare_account?.profileKey });
       } else {
         console.log("Dokumen tidak ditemukan!");
       }
@@ -349,7 +351,8 @@ function SocialBuildPage() {
             if (fileImage.length === files.length) {
               try {
                 loadingShow();
-                const res = await ApiBackend.post(`post/${platformEndpoints}`, {
+
+                const res = await ApiBackend.post(`post`, {
                   ...data,
                   mediaUrls: fileImage,
                 });
@@ -363,11 +366,11 @@ function SocialBuildPage() {
                         toast({
                           title: "Deoapp.com",
                           description: `Error posting to ${error.platform}: ${error.message}`,
-                          // description: `Success posting to ${error.platform}`,
-                          // status: "success",
+
                           status: "error",
                           position: "top-right",
                           isClosable: true,
+                          duration: 5000,
                         });
                       });
                     } else if (post.status === "success") {
@@ -409,7 +412,6 @@ function SocialBuildPage() {
                       });
                     }
                   });
-
                   setPosting("");
                   setFiles([]);
                   setPlatformActive([]);
@@ -417,11 +419,19 @@ function SocialBuildPage() {
                   setSchedulePosting("");
                 } else {
                   // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
+                  // toast({
+                  //   title: "Deoapp.com",
+                  //   description:
+                  //     "Error posting: An error occurred while processing the request.",
+                  //   status: "error",
+                  //   position: "top-right",
+                  //   isClosable: true,
+                  // });
+                  // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
                   toast({
                     title: "Deoapp.com",
-                    description:
-                      "Error posting: An error occurred while processing the request.",
-                    status: "error",
+                    description: "Post success",
+                    status: "success",
                     position: "top-right",
                     isClosable: true,
                   });
@@ -576,971 +586,950 @@ function SocialBuildPage() {
     <Stack>
       <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
         <Stack w="100%" transition={"0.2s ease-in-out"} minH={height}>
-          <Stack p={10} spacing={5}>
-            {/* <Stack>
-              <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
-                Choose Social Media
-              </Text>
-              <SimpleGrid columns={[2, null, 5]} spacing={3}>
-                {socialFilter?.activeSocialAccounts?.map((x) => (
-                  <Flex
-                    bg={"white"}
-                    borderRadius={"md"}
-                    // w={75}
-                    h={150}
-                    flexDir={"column"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    onClick={() => setPostTypes(x)}
-                  >
-                    <FaTwitter color="gray" size={50} />
-                    <Text>{capitalize(x)}</Text>
-                  </Flex>
-                ))}
-              </SimpleGrid>
-            </Stack> */}
+          <Stack p={5} spacing={5}>
             <Stack
-              borderRadius="lg"
-              bgColor={"white"}
-              shadow="md"
-              spacing={3}
-              p={5}
-            >
-              <Text fontSize={"sm"} color="gray.500">
-                Type your post
-              </Text>
-              <Textarea
-                placeholder="Here is a sample placeholder"
-                fontSize={"sm"}
-                onChange={(e) => setData({ ...data, post: e.target.value })}
-              />
-
-              <HStack spacing={2} alignItems="center">
-                <Stack>
-                  <Input
-                    type="file"
-                    onChange={handleFileInputChange}
-                    accept="image/*,video/*" // Menentukan bahwa file yang diterima bisa berupa gambar atau video
-                    multiple // Mengizinkan memilih beberapa file
-                    display="none"
-                    id="fileInput"
-                  />
-                  <label htmlFor="fileInput">
-                    <HStack cursor={"pointer"}>
-                      <Stack>
-                        <MdOutlinePermMedia />
-                      </Stack>
-                      <Text fontSize={"sm"}>Add Image / Video</Text>
-                    </HStack>
-                  </label>
-                </Stack>
-              </HStack>
-              <SimpleGrid columns={[1, 2, 3]} gap={3}>
-                {files.length > 0 &&
-                  files.map((x, index) => (
-                    <Stack key={index}>
-                      {x.isVideo ? (
-                        <video controls width={300}>
-                          <source src={x.file} type={x.description} />
-                          Sorry, your browser doesn't support embedded videos.
-                        </video>
-                      ) : (
-                        <>
-                          {(imageWidth / imageHeight < 0.56 ||
-                            imageWidth / imageHeight > 0.62) &&
-                          (data.instagramOptions?.reels === true ||
-                            data.instagramOptions?.stories === true) ? (
-                            <>
-                              <Text color={"red"} fontSize={"sm"}>
-                                Media file aspect ratio should be 9:16
-                              </Text>
-                            </>
-                          ) : null}
-                          <Box position={"relative"}>
-                            <CloseButton
-                              onClick={() => handleDeleteMedia(x)}
-                              position={"absolute"}
-                              right={0}
-                              zIndex={999}
-                              borderRadius={"full"}
-                              size={"sm"}
-                              color={"white"}
-                              bg={"gray.400"}
-                            />
-                            <Img
-                              src={x.file}
-                              borderRadius="xl"
-                              alt={x.fileName}
-                              shadow="md"
-                            />
-                          </Box>
-                        </>
-                      )}
-                    </Stack>
-                  ))}
-              </SimpleGrid>
-
-              <Checkbox
-                colorScheme="blue"
-                defaultChecked
-                onChange={(e) =>
-                  setData({ ...data, shortenLinks: e.target.checked })
-                }
-              >
-                <Text fontSize={"sm"}>Shorten Links</Text>
-              </Checkbox>
-
-              <Stack>
-                {platformActive.includes("twitter") ? (
-                  <Box my={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Detail Post for Twitter
-                      </Text>
-                      <Stack px={2}>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              twitterOptions: {
-                                ...data.twitterOptions,
-                                thread: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Twitter thread</Text>
-                        </Checkbox>
-
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              twitterOptions: {
-                                ...data.twitterOptions,
-                                threadNumber: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Thread number</Text>
-                        </Checkbox>
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("youtube") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Youtube {"(Media should be a video)"}
-                      </Text>
-                      <Stack px={2}>
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Video Title
-                        </Text>
-                        <Input
-                          placeholder="My Best Video"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              youTubeOptions: {
-                                ...data.youTubeOptions,
-                                title: e.target.value,
-                              },
-                            })
-                          }
-                        />
-
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              youTubeOptions: {
-                                ...data.youTubeOptions,
-                                shorts: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Youtube Shorts Content</Text>
-                        </Checkbox>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              youTubeOptions: {
-                                ...data.youTubeOptions,
-                                madeForKids: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Made For Kids</Text>
-                        </Checkbox>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              youTubeOptions: {
-                                ...data.youTubeOptions,
-                                notifySubscribers: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>notifySubscribers</Text>
-                        </Checkbox>
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("pinterest") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Pinterest
-                      </Text>
-                      <Stack px={2}>
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Pin Title
-                        </Text>
-                        <Input
-                          placeholder="Limited to 100 characters"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              pinterestOptions: {
-                                ...data.pinterestOptions,
-                                title: e.target.value,
-                              },
-                            })
-                          }
-                        />
-
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Link URL
-                        </Text>
-                        <Input
-                          placeholder="For direct link when the image is clicked"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              pinterestOptions: {
-                                ...data.pinterestOptions,
-                                link: e.target.value,
-                              },
-                            })
-                          }
-                        />
-
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Alternative Text
-                        </Text>
-                        <Input
-                          placeholder="Limited to 500 characters"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              pinterestOptions: {
-                                ...data.pinterestOptions,
-                                altText: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("linkedin") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for LinkedIn
-                      </Text>
-                      <Stack px={2}>
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Media Title
-                        </Text>
-                        <Input
-                          placeholder="Limited to 100 characters"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              linkedInOptions: {
-                                ...data.linkedInOptions,
-                                title: e.target.value,
-                              },
-                            })
-                          }
-                        />
-
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Alternative Text {"(For image media)"}
-                        </Text>
-                        <Input
-                          placeholder="Limited to 500 characters"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              linkedInOptions: {
-                                ...data.linkedInOptions,
-                                altText: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("youtube") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Telegram
-                      </Text>
-                      <Text fontSize={"sm"} color="gray.500">
-                        Media for telegram posts can be animated gif
-                      </Text>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("tiktok") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Tiktok
-                      </Text>
-                      <Stack px={2}>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              tikTokOptions: {
-                                ...data.tikTokOptions,
-                                disableComments: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Disable Comments</Text>
-                        </Checkbox>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              tikTokOptions: {
-                                ...data.tikTokOptions,
-                                disableDuet: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Disable Duet</Text>
-                        </Checkbox>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              tikTokOptions: {
-                                ...data.tikTokOptions,
-                                disableStitch: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Disable Stitch</Text>
-                        </Checkbox>
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("facebook") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Facebook Page
-                      </Text>
-                      <Stack px={2}>
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              faceBookOptions: {
-                                ...data.faceBookOptions,
-                                reels: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Reels Content</Text>
-                        </Checkbox>
-
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Title
-                        </Text>
-                        <Input
-                          isDisabled={
-                            data?.faceBookOptions?.reels === false
-                              ? true
-                              : false
-                          }
-                          placeholder="Super title for the Reel"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              faceBookOptions: {
-                                ...data?.faceBookOptions,
-                                title: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Media Caption
-                        </Text>
-                        <Input
-                          placeholder="Super title for the Reel"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              faceBookOptions: {
-                                ...data?.faceBookOptions,
-                                mediaCaptions: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-
-                {platformActive.includes("instagram") ? (
-                  <Box py={2}>
-                    <Stack>
-                      <Text
-                        fontSize={"sm"}
-                        color="gray.500"
-                        fontWeight={"semibold"}
-                      >
-                        Details Post for Instagram
-                      </Text>
-
-                      <Text fontSize={"sm"} color="gray.500">
-                        Select Type Post
-                      </Text>
-                      <Select
-                        size={"sm"}
-                        placeholder="Select type post"
-                        onChange={(e) => {
-                          setPostTypes(e.target.value);
-                        }}
-                      >
-                        <option value="post">Post</option>
-                        <option value="reels">Reels</option>
-                        <option value="stories">Stories</option>
-                      </Select>
-
-                      <Stack px={2}>
-                        {postTypes === "reels" ? (
-                          <>
-                            <Checkbox
-                              colorScheme="blue"
-                              defaultChecked
-                              onChange={(e) =>
-                                setData({
-                                  ...data,
-                                  instagramOptions: {
-                                    ...data.instagramOptions,
-                                    reels: e.target.checked,
-                                  },
-                                })
-                              }
-                            >
-                              <Text fontSize={"sm"}>Reels Content</Text>
-                            </Checkbox>
-
-                            <Checkbox
-                              colorScheme="blue"
-                              defaultChecked
-                              onChange={(e) =>
-                                setData({
-                                  ...data,
-                                  instagramOptions: {
-                                    ...data.instagramOptions,
-                                    shareReelsFeed: e.target.checked,
-                                  },
-                                })
-                              }
-                            >
-                              <Text fontSize={"sm"}>Share reels to feed</Text>
-                            </Checkbox>
-
-                            <Text>Thumbnail Offset {"miliseconds"}</Text>
-                            <Input
-                              size={"sm"}
-                              defaultValue={30000}
-                              onChange={(e) =>
-                                setData({
-                                  ...data,
-                                  instagramOptions: {
-                                    ...data.instagramOptions,
-                                    thumbNailOffset: e.target.value,
-                                  },
-                                })
-                              }
-                            />
-
-                            <Text>Cover URL</Text>
-                            <Input
-                              size={"sm"}
-                              placeholder="https://image"
-                              // defaultValue={30000}
-                              onChange={(e) =>
-                                setData({
-                                  ...data,
-                                  instagramOptions: {
-                                    ...data.instagramOptions,
-                                    coverURL: e.target.value,
-                                  },
-                                })
-                              }
-                            />
-                          </>
-                        ) : null}
-
-                        {postTypes === "stories" ? (
-                          <>
-                            <Checkbox
-                              colorScheme="blue"
-                              defaultChecked={true}
-                              onChange={(e) =>
-                                setData({
-                                  ...data,
-                                  instagramOptions: {
-                                    ...data.instagramOptions,
-                                    stories: e.target.checked,
-                                  },
-                                })
-                              }
-                            >
-                              <Text fontSize={"sm"}>Stories Content</Text>
-                            </Checkbox>
-                          </>
-                        ) : null}
-
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Locations {"Must be start with @, example: @Jakarta"}
-                        </Text>
-                        <Input
-                          placeholder="Location"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              instagramOptions: {
-                                ...data?.instagramOptions,
-                                locationId: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                        <Text
-                          fontSize={"sm"}
-                          color="gray.500"
-                          fontWeight={"semibold"}
-                        >
-                          Tag Users
-                        </Text>
-                        <Input
-                          placeholder="Super title for the Reel"
-                          fontSize={"sm"}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              instagramOptions: {
-                                ...data?.instagramOptions,
-                                userTags: [
-                                  { username: e.target.value, x: 0.5, y: 0.9 },
-                                ],
-                              },
-                            })
-                          }
-                        />
-
-                        <Checkbox
-                          colorScheme="blue"
-                          defaultChecked={true}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              instagramOptions: {
-                                ...data.instagramOptions,
-                                autoResize: e.target.checked,
-                              },
-                            })
-                          }
-                        >
-                          <Text fontSize={"sm"}>Auto Resize</Text>
-                        </Checkbox>
-                      </Stack>
-                    </Stack>
-                  </Box>
-                ) : null}
-              </Stack>
-
-              <HStack spacing={5} alignItems="center">
-                <Button
-                  size={"sm"}
-                  p={5}
-                  shadow="lg"
-                  onClick={() => handlePost()}
-                >
-                  <HStack spacing={2}>
-                    <FiSend />
-                    <Text fontSize={"sm"}>Post</Text>
-                  </HStack>
-                </Button>
-
-                <Button
-                  size={"sm"}
-                  p={5}
-                  shadow="lg"
-                  onClick={() => handleDialogSchedule()}
-                >
-                  <HStack spacing={2}>
-                    <MdSchedule />
-                    <Text fontSize={"sm"}>Schedule</Text>
-                  </HStack>
-                </Button>
-
-                {schedulePosting && (
-                  <Stack spacing={0}>
-                    <Text fontSize={"xs"} color="gray.500">
-                      Schedule
-                    </Text>
-                    <Text fontSize={"sm"} color="gray.800">
-                      {moment(schedulePosting).format("LLLL")}
-                    </Text>
-                  </Stack>
-                )}
-              </HStack>
-            </Stack>
-
-            <Stack
-              p={5}
               alignItems="center"
               justifyContent={"center"}
               spacing={5}
+              bg={"white"}
+              p={5}
+              borderRadius={"md"}
             >
               <Stack>
-                <Text color={"gray.500"} fontSize="sm">
-                  Post the these networks
+                <Text color={"gray.500"} fontSize="sm" fontWeight={"semibold"}>
+                  Choose Platform To Post
                 </Text>
               </Stack>
               <SimpleGrid gap={10} columns={[3, 6, 9]}>
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaTwitter
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("twitter")}
                     color={
                       platformActive.includes("twitter") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaYoutube
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("youtube")}
                     color={
                       platformActive.includes("youtube") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaTiktok
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("tiktok")}
                     color={platformActive.includes("tiktok") ? "green" : "gray"}
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaInstagram
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("instagram")}
                     color={
                       platformActive.includes("instagram") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaLinkedin
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("linkedin")}
                     color={
                       platformActive.includes("linkedin") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaTelegram
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("telegram")}
                     color={
                       platformActive.includes("telegram") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaFacebook
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("facebook")}
                     color={
                       platformActive.includes("facebook") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaGoogle
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("google")}
                     color={platformActive.includes("google") ? "green" : "gray"}
                   />
-                </Stack>
+                </Center>
 
-                <Stack>
+                <Center
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                  }}
+                  cursor={"pointer"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  borderRadius={"md"}
+                  w={75}
+                  h={100}
+                  boxShadow={"sm"}
+                >
                   <FaPinterest
-                    size={20}
+                    size={40}
                     cursor="pointer"
                     onClick={() => handleAddPlatform("pinterest")}
                     color={
                       platformActive.includes("pinterest") ? "green" : "gray"
                     }
                   />
-                </Stack>
+                </Center>
               </SimpleGrid>
             </Stack>
           </Stack>
 
-          <Stack px={10} pb={10} spacing={5}>
-            <HStack>
-              <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
-                Feeds Favorite
-              </Text>
-              <Text fontSize={"md"} color="gray.500">
-                ( {favoriteFeed?.length} most recent )
-              </Text>
+          <Stack
+            borderRadius="lg"
+            bgColor={"white"}
+            shadow="md"
+            spacing={3}
+            p={5}
+          >
+            <Text fontSize={"sm"} color="gray.500">
+              Type your post
+            </Text>
+            <Textarea
+              placeholder="Here is a sample placeholder"
+              fontSize={"sm"}
+              onChange={(e) => setData({ ...data, post: e.target.value })}
+            />
+
+            <HStack spacing={2} alignItems="center">
+              <Stack>
+                <Input
+                  type="file"
+                  onChange={handleFileInputChange}
+                  accept="image/*,video/*" // Menentukan bahwa file yang diterima bisa berupa gambar atau video
+                  multiple // Mengizinkan memilih beberapa file
+                  display="none"
+                  id="fileInput"
+                />
+                <label htmlFor="fileInput">
+                  <HStack cursor={"pointer"}>
+                    <Stack>
+                      <MdOutlinePermMedia />
+                    </Stack>
+                    <Text fontSize={"sm"}>Add Image / Video</Text>
+                  </HStack>
+                </label>
+              </Stack>
             </HStack>
+            <SimpleGrid columns={[1, 2, 3]} gap={3}>
+              {files.length > 0 &&
+                files.map((x, index) => (
+                  <Stack key={index}>
+                    {x.isVideo ? (
+                      <video controls width={300}>
+                        <source src={x.file} type={x.description} />
+                        Sorry, your browser doesn't support embedded videos.
+                      </video>
+                    ) : (
+                      <>
+                        {(imageWidth / imageHeight < 0.56 ||
+                          imageWidth / imageHeight > 0.62) &&
+                        (data.instagramOptions?.reels === true ||
+                          data.instagramOptions?.stories === true) ? (
+                          <>
+                            <Text color={"red"} fontSize={"sm"}>
+                              Media file aspect ratio should be 9:16
+                            </Text>
+                          </>
+                        ) : null}
+                        <Box position={"relative"}>
+                          <CloseButton
+                            onClick={() => handleDeleteMedia(x)}
+                            position={"absolute"}
+                            right={0}
+                            zIndex={999}
+                            borderRadius={"full"}
+                            size={"sm"}
+                            color={"white"}
+                            bg={"gray.400"}
+                          />
+                          <Img
+                            src={x.file}
+                            borderRadius="xl"
+                            alt={x.fileName}
+                            shadow="md"
+                          />
+                        </Box>
+                      </>
+                    )}
+                  </Stack>
+                ))}
+            </SimpleGrid>
+
+            <Checkbox
+              colorScheme="blue"
+              defaultChecked
+              onChange={(e) =>
+                setData({ ...data, shortenLinks: e.target.checked })
+              }
+            >
+              <Text fontSize={"sm"}>Shorten Links</Text>
+            </Checkbox>
+
             <Stack>
-              <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={5}>
-                {favoriteFeed?.length > 0 &&
-                  favoriteFeed?.map((item, index) => {
-                    return (
-                      <Stack
-                        shadow={"md"}
-                        alignItems={"center"}
-                        _hover={{ transform: "scale(1.1)", shadow: "xl" }}
-                        transition={"0.2s ease-in-out"}
-                        justifyContent="center"
-                        borderRadius="lg"
-                        key={index}
-                        bgColor={"white"}
-                        borderTopWidth={5}
-                        borderColor="blue.500"
-                        p={5}
-                        spacing={5}
+              {platformActive.includes("twitter") ? (
+                <Box my={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Detail Post for Twitter
+                    </Text>
+                    <Stack px={2}>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            twitterOptions: {
+                              ...data.twitterOptions,
+                              thread: e.target.checked,
+                            },
+                          })
+                        }
                       >
-                        <HStack>
-                          <Text>{item.title[0]}</Text>
-                        </HStack>
-                        <Divider borderStyle={"dotted"} />
-                        {item.enclosure[0] && (
-                          <Stack>
-                            <ImageProxy imageUrl={item.enclosure[0].$.url} />
-                            {/* <Image crossOrigin="anonymous" src={item.enclosure[0].$.url} alt={'img'} borderRadius='md' /> */}
-                          </Stack>
-                        )}
-                        <Spacer />
-                        <Stack>
-                          <Text
-                            textAlign={"center"}
-                            fontSize="xs"
-                            color={"gray.600"}
-                            noOfLines={3}
+                        <Text fontSize={"sm"}>Twitter thread</Text>
+                      </Checkbox>
+
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            twitterOptions: {
+                              ...data.twitterOptions,
+                              threadNumber: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Thread number</Text>
+                      </Checkbox>
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("youtube") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Youtube {"(Media should be a video)"}
+                    </Text>
+                    <Stack px={2}>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Video Title
+                      </Text>
+                      <Input
+                        placeholder="My Best Video"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            youTubeOptions: {
+                              ...data.youTubeOptions,
+                              title: e.target.value,
+                            },
+                          })
+                        }
+                      />
+
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            youTubeOptions: {
+                              ...data.youTubeOptions,
+                              shorts: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Youtube Shorts Content</Text>
+                      </Checkbox>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            youTubeOptions: {
+                              ...data.youTubeOptions,
+                              madeForKids: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Made For Kids</Text>
+                      </Checkbox>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            youTubeOptions: {
+                              ...data.youTubeOptions,
+                              notifySubscribers: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>notifySubscribers</Text>
+                      </Checkbox>
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("pinterest") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Pinterest
+                    </Text>
+                    <Stack px={2}>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Pin Title
+                      </Text>
+                      <Input
+                        placeholder="Limited to 100 characters"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            pinterestOptions: {
+                              ...data.pinterestOptions,
+                              title: e.target.value,
+                            },
+                          })
+                        }
+                      />
+
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Link URL
+                      </Text>
+                      <Input
+                        placeholder="For direct link when the image is clicked"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            pinterestOptions: {
+                              ...data.pinterestOptions,
+                              link: e.target.value,
+                            },
+                          })
+                        }
+                      />
+
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Alternative Text
+                      </Text>
+                      <Input
+                        placeholder="Limited to 500 characters"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            pinterestOptions: {
+                              ...data.pinterestOptions,
+                              altText: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("linkedin") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for LinkedIn
+                    </Text>
+                    <Stack px={2}>
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Media Title
+                      </Text>
+                      <Input
+                        placeholder="Limited to 100 characters"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            linkedInOptions: {
+                              ...data.linkedInOptions,
+                              title: e.target.value,
+                            },
+                          })
+                        }
+                      />
+
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Alternative Text {"(For image media)"}
+                      </Text>
+                      <Input
+                        placeholder="Limited to 500 characters"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            linkedInOptions: {
+                              ...data.linkedInOptions,
+                              altText: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("youtube") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Telegram
+                    </Text>
+                    <Text fontSize={"sm"} color="gray.500">
+                      Media for telegram posts can be animated gif
+                    </Text>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("tiktok") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Tiktok
+                    </Text>
+                    <Stack px={2}>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            tikTokOptions: {
+                              ...data.tikTokOptions,
+                              disableComments: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Disable Comments</Text>
+                      </Checkbox>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            tikTokOptions: {
+                              ...data.tikTokOptions,
+                              disableDuet: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Disable Duet</Text>
+                      </Checkbox>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            tikTokOptions: {
+                              ...data.tikTokOptions,
+                              disableStitch: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Disable Stitch</Text>
+                      </Checkbox>
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("facebook") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Facebook Page
+                    </Text>
+                    <Stack px={2}>
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            faceBookOptions: {
+                              ...data.faceBookOptions,
+                              reels: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Reels Content</Text>
+                      </Checkbox>
+
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Title
+                      </Text>
+                      <Input
+                        isDisabled={
+                          data?.faceBookOptions?.reels === false ? true : false
+                        }
+                        placeholder="Super title for the Reel"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            faceBookOptions: {
+                              ...data?.faceBookOptions,
+                              title: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Media Caption
+                      </Text>
+                      <Input
+                        placeholder="Super title for the Reel"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            faceBookOptions: {
+                              ...data?.faceBookOptions,
+                              mediaCaptions: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
+
+              {platformActive.includes("instagram") ? (
+                <Box py={2}>
+                  <Stack>
+                    <Text
+                      fontSize={"sm"}
+                      color="gray.500"
+                      fontWeight={"semibold"}
+                    >
+                      Details Post for Instagram
+                    </Text>
+
+                    <Text fontSize={"sm"} color="gray.500">
+                      Select Type Post
+                    </Text>
+                    <Select
+                      size={"sm"}
+                      placeholder="Select type post"
+                      onChange={(e) => {
+                        setPostTypes(e.target.value);
+                      }}
+                    >
+                      <option value="post">Post</option>
+                      <option value="reels">Reels</option>
+                      <option value="stories">Stories</option>
+                    </Select>
+
+                    <Stack px={2}>
+                      {postTypes === "reels" ? (
+                        <>
+                          <Checkbox
+                            colorScheme="blue"
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                instagramOptions: {
+                                  ...data.instagramOptions,
+                                  reels: e.target.checked,
+                                },
+                              })
+                            }
                           >
-                            {item.description[0]}
-                          </Text>
-                        </Stack>
+                            <Text fontSize={"sm"}>Reels Content</Text>
+                          </Checkbox>
 
-                        <HStack w={"100%"}>
-                          <Stack>
-                            {item["dc:creator"].length > 0 &&
-                              item["dc:creator"].map((y, index) => {
-                                return (
-                                  <Text
-                                    key={index}
-                                    textAlign={"center"}
-                                    fontSize="xs"
-                                    color={"gray.400"}
-                                  >
-                                    {y}
-                                  </Text>
-                                );
-                              })}
-                          </Stack>
-
-                          <Spacer />
-                          <Text
-                            textAlign={"center"}
-                            fontSize="xs"
-                            color={"gray.400"}
+                          <Checkbox
+                            colorScheme="blue"
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                instagramOptions: {
+                                  ...data.instagramOptions,
+                                  shareReelsFeed: e.target.checked,
+                                },
+                              })
+                            }
                           >
-                            {moment(item.pubDate[0]).fromNow()}
-                          </Text>
-                        </HStack>
+                            <Text fontSize={"sm"}>Share reels to feed</Text>
+                          </Checkbox>
 
-                        <SimpleGrid columns={[2]} gap={2}>
-                          <Stack>
-                            <Button
-                              size={"sm"}
-                              colorScheme="twitter"
-                              onClick={() => handleDeleteFavorite(item)}
-                            >
-                              <BsTrash />
-                            </Button>
-                          </Stack>
-                          <Stack>
-                            <a
-                              href={item.link[0]}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button size={"sm"} colorScheme="twitter">
-                                <BsGlobe2 />
-                              </Button>
-                            </a>
-                          </Stack>
-                        </SimpleGrid>
-                      </Stack>
-                    );
-                  })}
-              </SimpleGrid>
+                          <Text>Thumbnail Offset {"miliseconds"}</Text>
+                          <Input
+                            size={"sm"}
+                            defaultValue={30000}
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                instagramOptions: {
+                                  ...data.instagramOptions,
+                                  thumbNailOffset: e.target.value,
+                                },
+                              })
+                            }
+                          />
+
+                          <Text>Cover URL</Text>
+                          <Input
+                            size={"sm"}
+                            placeholder="https://image"
+                            // defaultValue={30000}
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                instagramOptions: {
+                                  ...data.instagramOptions,
+                                  coverURL: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </>
+                      ) : null}
+
+                      {postTypes === "stories" ? (
+                        <>
+                          <Checkbox
+                            colorScheme="blue"
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                instagramOptions: {
+                                  ...data.instagramOptions,
+                                  stories: e.target.checked,
+                                },
+                              })
+                            }
+                          >
+                            <Text fontSize={"sm"}>Stories Content</Text>
+                          </Checkbox>
+                        </>
+                      ) : null}
+
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Locations {"Must be start with @, example: @Jakarta"}
+                      </Text>
+                      <Input
+                        placeholder="Location"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            instagramOptions: {
+                              ...data?.instagramOptions,
+                              locationId: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                      <Text
+                        fontSize={"sm"}
+                        color="gray.500"
+                        fontWeight={"semibold"}
+                      >
+                        Tag Users
+                      </Text>
+                      <Input
+                        placeholder="Super title for the Reel"
+                        fontSize={"sm"}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            instagramOptions: {
+                              ...data?.instagramOptions,
+                              userTags: [
+                                { username: e.target.value, x: 0.5, y: 0.9 },
+                              ],
+                            },
+                          })
+                        }
+                      />
+
+                      <Checkbox
+                        colorScheme="blue"
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            instagramOptions: {
+                              ...data.instagramOptions,
+                              autoResize: e.target.checked,
+                            },
+                          })
+                        }
+                      >
+                        <Text fontSize={"sm"}>Auto Resize</Text>
+                      </Checkbox>
+                    </Stack>
+                  </Stack>
+                </Box>
+              ) : null}
             </Stack>
+
+            <HStack spacing={5} alignItems="center">
+              <Button
+                size={"sm"}
+                p={5}
+                shadow="lg"
+                onClick={() => handlePost()}
+              >
+                <HStack spacing={2}>
+                  <FiSend />
+                  <Text fontSize={"sm"}>Post</Text>
+                </HStack>
+              </Button>
+
+              <Button
+                size={"sm"}
+                p={5}
+                shadow="lg"
+                onClick={() => handleDialogSchedule()}
+              >
+                <HStack spacing={2}>
+                  <MdSchedule />
+                  <Text fontSize={"sm"}>Schedule</Text>
+                </HStack>
+              </Button>
+
+              {schedulePosting && (
+                <Stack spacing={0}>
+                  <Text fontSize={"xs"} color="gray.500">
+                    Schedule
+                  </Text>
+                  <Text fontSize={"sm"} color="gray.800">
+                    {moment(schedulePosting).format("LLLL")}
+                  </Text>
+                </Stack>
+              )}
+            </HStack>
           </Stack>
+          <Box>
+            <CommentsPage />
+          </Box>
         </Stack>
       </Flex>
 

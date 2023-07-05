@@ -45,7 +45,7 @@ export const data = [
     name: "Form",
     icon: FcSurvey,
     submenu: [
-      { name: "Form", icon: FcCalendar, link: "/form" },
+      { name: "Form", icon: FcCalendar, link: "/form-builder" },
       { name: "Settings", icon: FcComments, link: "/settings" },
     ],
   },

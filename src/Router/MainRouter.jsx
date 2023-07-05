@@ -7,6 +7,8 @@ import ReportsRouter from "./ReportsRouter";
 import SocialAccountRouter from "./SocialAccountRouter";
 import HomeRouter from "./HomeRouter";
 import PipelineRouter from "./PipelineRouter";
+import SettingRouter from "./SettingRouter";
+import FormRouter from "./FormRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -18,6 +20,8 @@ function MainRouter() {
     ...ReportsRouter,
     ...SocialAccountRouter,
     ...PipelineRouter,
+    ...SettingRouter,
+    ...FormRouter,
   ];
   return (
     <Routes>
