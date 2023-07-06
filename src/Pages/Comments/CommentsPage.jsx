@@ -701,7 +701,7 @@ function CommentsPage() {
                       displayComment[socialMediaKeysArr[0].length === 0] ? (
                         displayComment.map((data, index) => {
                           const filterError = PlatformArr?.filter((y) =>
-                            y?.name?.includes(key)
+                            y?.name?.includes(key && key)
                           );
                           const resIcon = filterError[0]?.icon;
 

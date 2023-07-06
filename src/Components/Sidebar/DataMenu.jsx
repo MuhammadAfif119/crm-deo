@@ -49,4 +49,12 @@ export const data = [
       { name: "Settings", icon: FcComments, link: "/settings" },
     ],
   },
+
+  {
+    name: "Listing",
+    icon: FcConferenceCall,
+    submenu: [
+      { name: "Listing", icon: FcEditImage, link: "/listing" },
+    ],
+  },
 ];

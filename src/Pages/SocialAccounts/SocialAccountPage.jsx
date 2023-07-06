@@ -62,12 +62,18 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import AuthContext from "../../Routes/hooks/AuthContext";
 import AppSideAccountBar from "../../Components/AppSideAccountBar";
 import useUserStore from "../../Routes/Store";
+import {
+  addDocumentFirebase,
+  getCollectionFirebase,
+  getSingleDocumentFirebase,
+} from "../../Api/firebaseApi";
 
 function SocialAccountPage() {
   const width = window.innerWidth;
@@ -94,16 +100,40 @@ function SocialAccountPage() {
 
   const getListSocial = async () => {
     loadingShow();
+    const conditions = [
+      {
+        field: "users",
+        operator: "array-contains",
+        value: userDisplay?.uid,
+      },
+    ];
+
     try {
-      const docRef = doc(db, "users", currentUser.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setUserData(docSnap.data());
-        setSocialAccountList(docSnap.data().ayrshare_account);
-        setSocialMediaList(docSnap.data().social_accounts);
+      const res = await getCollectionFirebase("projects", conditions);
+      console.log(res, "xx");
+
+      const filterSocialMedia = res.filter((x) => x.name === titleAccount);
+      console.log(filterSocialMedia);
+      setSocialAccountList(filterSocialMedia);
+
+      //get subcollection user inside project
+      const docRef = doc(
+        db,
+        "projects",
+        userDisplay.currentProject,
+        "users",
+        userDisplay.uid
+      );
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists) {
+        const docData = docSnapshot.data();
+        console.log(docData);
+        setSocialMediaList(docData.social_accounts);
       } else {
-        console.log("No such document!");
+        console.log("Dokumen tidak ditemukan!");
       }
+
       loadingClose();
     } catch (error) {
       console.log(error);
@@ -111,18 +141,26 @@ function SocialAccountPage() {
     }
   };
 
-  console.log(socialMediaList);
-
   const handleCreateAccount = async () => {
-    const res = await store.get("userData");
-    const role = res?.role;
-    if (role === "user") {
-      navigate(`/pricing/${currentUser.email}`);
-    }
-    if (role === "member") {
+    //find role in company
+    const conditions = [
+      {
+        field: "owner",
+        operator: "array-contains",
+        value: currentUser?.uid,
+      },
+    ];
+
+    const res = await getCollectionFirebase("companies", conditions);
+    console.log(res);
+
+    // if () {
+    //   navigate(`/pricing/${currentUser.email}`);
+    // }
+    if (res.length !== 0) {
       setSocialAccountModal(true);
     }
-    if (role === undefined) {
+    if (res.length === undefined) {
       toast({
         title: "Deoapp.com",
         description: "You must login",
@@ -142,15 +180,16 @@ function SocialAccountPage() {
       });
       if (res.status === 200) {
         console.log(res.data, "xxx");
-        await updateDoc(doc(db, "users", currentUser.uid), {
-          ayrshare_account: arrayUnion(res.data),
-        });
 
         //add to project
         try {
           const docRef = await addDoc(collection(db, "projects"), {
             ayrshare_account: res.data,
-            companyId: userDisplay.currentCompany,
+            companyId: userDisplay?.currentCompany,
+            modules: arrayUnion("crm"),
+            owner: arrayUnion(userDisplay?.uid),
+            users: arrayUnion(userDisplay?.uid),
+            name: titleAccount,
           });
           console.log("data created with ID", docRef.id);
         } catch (error) {
@@ -166,34 +205,65 @@ function SocialAccountPage() {
   };
 
   const handleDataAccount = async () => {
-    if (socialAccountList?.length > 0) {
-      socialAccountList?.forEach(async (x) => {
-        if (x.profileKey) {
-          loadingShow();
-          try {
-            const res = await ApiBackend.post("user", {
-              profileKey: x.profileKey,
-            });
+    try {
+      const res = await ApiBackend.post("user", {
+        profileKey: profileKey,
+      });
 
-            if (res.status === 200) {
-              console.log(res.data);
+      if (res.status === 200) {
+        console.log(res.data);
 
-              await updateDoc(doc(db, "users", currentUser.uid), {
-                social_accounts: deleteField(),
-              });
-
-              await updateDoc(doc(db, "users", currentUser.uid), {
-                social_accounts: arrayUnion(res.data),
-              });
-              getListSocial();
+        if (socialMediaList.length === 0) {
+          await setDoc(
+            doc(
+              db,
+              "projects",
+              userDisplay.currentProject,
+              "users",
+              userDisplay.uid
+            ),
+            {
+              social_accounts: arrayUnion(res.data),
+              role: "users",
+              name: userDisplay.name,
             }
-            loadingClose();
-          } catch (error) {
-            console.log(error, "ini error ");
-            loadingClose();
-          }
-          loadingClose();
+          );
+        } else {
+          await updateDoc(
+            doc(
+              db,
+              "projects",
+              userDisplay.currentProject,
+              "users",
+              userDisplay.uid
+            ),
+            {
+              social_accounts: deleteField(),
+            }
+          );
+
+          await updateDoc(
+            doc(
+              db,
+              "projects",
+              userDisplay.currentProject,
+              "users",
+              userDisplay.uid
+            ),
+            {
+              social_accounts: arrayUnion(res.data),
+            }
+          );
         }
+
+        getListSocial();
+      }
+    } catch (error) {
+      toast({
+        status: "error",
+        title: "Deoapp",
+        description: "Not Linked to any account",
+        duration: 2000,
       });
     }
   };
@@ -295,7 +365,7 @@ function SocialAccountPage() {
                 </Text>
                 <Spacer />
                 <Text fontSize={"xs"} color="gray.900" fontWeight={"bold"}>
-                  {userData?.email}
+                  {userDisplay?.email}
                 </Text>
               </HStack>
               <HStack>

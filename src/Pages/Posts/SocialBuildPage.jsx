@@ -164,13 +164,20 @@ function SocialBuildPage() {
     loadingShow();
     if (userDisplay.profileKey) {
       try {
-        const docRef = doc(db, "users", currentUser.uid);
+        const docRef = doc(
+          db,
+          "projects",
+          userDisplay.currentProject,
+          "users",
+          currentUser.uid
+        );
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const socialArr = docSnap.data().social_accounts;
           console.log(socialArr);
           const socialFilterData = socialArr.filter((x) => x.title === title);
           setSocialFilter(socialFilterData);
+          console.log(socialFilterData);
         } else {
           console.log("No such document!");
         }

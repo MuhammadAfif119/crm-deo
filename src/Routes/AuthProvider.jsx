@@ -29,6 +29,7 @@ import _axios from "../Api/AxiosBarrier";
 import { get } from "../Api/importirApi";
 import ApiBackend from "../Api/ApiBackend";
 import useUserStore from "./Store";
+import { getCollectionFirebase } from "../Api/firebaseApi";
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState("");
@@ -36,7 +37,8 @@ export const AuthProvider = ({ children }) => {
   const [tokenId, setTokenId] = useState("");
   const [loading, setLoading] = useState(false);
   const [userStorage, setUserStorage] = useState();
-  const { setUserObject, setStorage } = useUserStore();
+  const { setUserObject, setStorage, userDisplay, setUserDisplay } =
+    useUserStore();
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -47,6 +49,7 @@ export const AuthProvider = ({ children }) => {
       .then(async (response) => {
         const user = response.user;
         setUserObject(user);
+        setUserDisplay({ ...userDisplay, uid: user.uid });
         if (user) {
           try {
             const docRef = doc(db, "users", user.uid);
@@ -158,45 +161,46 @@ export const AuthProvider = ({ children }) => {
   //   }
   // };
 
+  // const getCompany = async () => {
+  //   try {
+  //     console.log(currentUser.uid);
+
+  //     const collectionRef = query(
+  //       collection(db, "companies"),
+  //       where("owners", "array-contains", currentUser?.uid)
+  //     );
+  //     const querySnapshot = await getDocs(collectionRef);
+  //     console.log(querySnapshot);
+  //     const collectionData = [];
+  //     querySnapshot.forEach((doc) => {
+  //       const docData = doc.data();
+  //       // Lakukan manipulasi data atau operasi lain jika diperlukan
+  //       collectionData.push({ id: doc.id, data: docData });
+  //     });
+  //     setCompany(collectionData);
+  //     console.log(collectionData);
+  //     console.log(company);
+  //   } catch (error) {
+  //     console.log("Terjadi kesalahan:", error);
+  //   }
+  // };
+
   const getCompany = async () => {
+    const conditions = [
+      {
+        field: "users",
+        operator: "array-contains",
+        value: currentUser.uid,
+      },
+    ];
+
     try {
-      // const companyRef = db.collection("companies");
-      // const query = companyRef.where(
-      //   "users",
-      //   "array-contains",
-      //   currentUser.uid
-      // );
-
-      // query.get().then((querySnapshot) => {
-      //   querySnapshot.forEach((doc) => {
-      //     // Access the document data
-      //     setCompany("Company:", doc.id, doc.data());
-      //   });
-      // });
-
-      console.log(currentUser.uid);
-
-      const collectionRef = query(
-        collection(db, "companies"),
-        where("owners", "array-contains", currentUser?.uid)
-      );
-      const querySnapshot = await getDocs(collectionRef);
-      console.log(querySnapshot);
-      const collectionData = [];
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
-        // Lakukan manipulasi data atau operasi lain jika diperlukan
-        collectionData.push({ id: doc.id, data: docData });
-      });
-      setCompany(collectionData);
-      console.log(collectionData);
-      console.log(company);
+      const res = await getCollectionFirebase("companies", conditions);
+      setCompany(res);
     } catch (error) {
-      console.log("Terjadi kesalahan:", error);
+      console.log(error, "ini error");
     }
   };
-
-  console.log(currentUser?.uid);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

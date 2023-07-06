@@ -9,6 +9,7 @@ import HomeRouter from "./HomeRouter";
 import PipelineRouter from "./PipelineRouter";
 import SettingRouter from "./SettingRouter";
 import FormRouter from "./FormRouter";
+import ListingRouter from "./ListingRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -22,6 +23,7 @@ function MainRouter() {
     ...PipelineRouter,
     ...SettingRouter,
     ...FormRouter,
+    ...ListingRouter,
   ];
   return (
     <Routes>

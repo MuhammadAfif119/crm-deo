@@ -59,6 +59,7 @@ import useUserStore, {
 import { capitalize } from "../../Utils/capitalizeUtil";
 import { data } from "./DataMenu";
 import { isDisabled } from "@testing-library/user-event/dist/utils";
+import { getSingleDocumentFirebase } from "../../Api/firebaseApi";
 
 // ** Theme Configuration
 
@@ -74,6 +75,20 @@ function SidebarComponentV2({ layout }) {
   const navigate = useNavigate();
 
   console.log(companyId);
+
+  const getUserData = async () => {
+    try {
+      const result = await getSingleDocumentFirebase("users", currentUser.uid);
+      console.log(result, "ini resut");
+      setUserDisplay({
+        ...userDisplay,
+        name: result.name,
+        email: result.email,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getProject = async () => {
     if (currentUser) {
@@ -181,6 +196,7 @@ function SidebarComponentV2({ layout }) {
     setUserDisplay({
       uid: currentUser.uid,
     });
+    getUserData();
   }, [currentUser]);
 
   useEffect(() => {
@@ -255,7 +271,7 @@ function SidebarComponentV2({ layout }) {
                           key={i}
                           value={select?.id}
                         >
-                          {capitalize(select.data?.name)}
+                          {capitalize(select?.name)}
                         </option>
                       ))}
                     </Select>

@@ -16,6 +16,8 @@ const useUserStore = create((set, get) => ({
     profileKey: "",
     currentProject: "",
     uid: "",
+    name: "",
+    email: "",
   },
   companies: [],
   projects: [],
