@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Stack, Text, HStack, IconButton, SimpleGrid, Divider, AbsoluteCenter } from '@chakra-ui/react';
+import { Box, Stack, Text, HStack, IconButton, SimpleGrid, Divider, AbsoluteCenter, Image, ModalFooter, Flex, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Spacer } from '@chakra-ui/react';
 import { MdDelete } from 'react-icons/md';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebase';
 import { deleteDocumentFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Routes/Store';
+import { formatFrice } from '../../Utils/numberUtil';
+import { CloseIcon } from '@chakra-ui/icons';
+import { FcPhone } from 'react-icons/fc';
 
 const ViewPageListing = () => {
   const [categoryData, setCategoryData] = useState({});
   const [categoryModule, setCategoryModules] = useState();
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
+
+  const [detailActive, setDetailActive] = useState('')
+
+  const [modalDetail, setModalDetail] = useState('')
 
 
   const { userDisplay } = useUserStore();
@@ -25,8 +33,8 @@ const ViewPageListing = () => {
   const getData = async () => {
 
     try {
-      const q = query(collection(db, 'listings'), 
-      where("projectId", "==", projectId)
+      const q = query(collection(db, 'listings'),
+        where("projectId", "==", projectId)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -48,7 +56,8 @@ const ViewPageListing = () => {
           });
         });
 
-        setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
+        // setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
+        setCategoryData(mappedData);
       });
 
       return () => {
@@ -60,20 +69,27 @@ const ViewPageListing = () => {
   };
 
   const handleCategory = async (value) => {
-    try {
-      const result = await getSingleDocumentFirebase(`categories/${projectId}/${value}`, 'data');
-      setCategoryList(result);
-      setSelectedCategory(value);
-    } catch (error) {
-      console.log(error);
+    if (categoryModule) {
+      try {
+        const result = await getSingleDocumentFirebase(`categories/${projectId}/${value}`, 'data');
+        setCategoryList(result);
+        setSelectedCategory(value);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log('category module error')
     }
+
+
   };
 
   const handleCategoryFilter = async (value) => {
+    setSelectedCategoryNiche(value)
     try {
-      const q = query(collection(db, 'listings'), 
-      where("category", "array-contains", value),
-      where("projectId", "==", projectId)
+      const q = query(collection(db, 'listings'),
+        where("category", "array-contains", value),
+        where("projectId", "==", projectId)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -123,6 +139,13 @@ const ViewPageListing = () => {
   useEffect(() => {
     getData();
     getDataCategory();
+
+    return () => {
+      setCategoryList([]);
+      setSelectedCategory(null);
+      setSelectedCategoryNiche(null)
+    }
+
   }, [userDisplay.currentProject]);
 
   const handleDelete = async (listing) => {
@@ -138,16 +161,31 @@ const ViewPageListing = () => {
     }
   };
 
+  const handleModalDetail = (value) => {
+    setModalDetail(true)
+    setDetailActive(value)
+  }
+
+  const handleCloseDetail = () => {
+    setModalDetail(false)
+    setDetailActive("")
+  }
+
   return (
     <Box>
-      <Stack>
+
+      <Stack py={2}>
+        <Text fontSize={'xl'} fontWeight={500}>Category</Text>
         {categoryModule?.data?.length > 0 && (
-          <HStack>
+          <HStack spacing={3}>
             {categoryModule?.data?.map((x, index) => (
               <Text
                 key={index}
+                cursor='pointer'
                 onClick={() => handleCategory(x)}
-                fontWeight={selectedCategory === x ? 'bold' : 'normal'}
+                textTransform='uppercase'
+                fontWeight={selectedCategory === x ? 500 : 'normal'}
+                color={selectedCategory === x ? 'blue.500' : 'gray.600'}
               >
                 {x}
               </Text>
@@ -156,21 +194,27 @@ const ViewPageListing = () => {
         )}
 
         {categoryList && (
-          <HStack>
+          <HStack spacing={3}>
             {categoryList?.category?.map((x, index) => (
               <Text
                 key={index}
                 onClick={() => handleCategoryFilter(x)}
-                fontWeight={selectedCategory === x ? 'bold' : 'normal'}
+                textTransform='capitalize'
+                fontWeight={selectedCategoryNiche === x ? 500 : 'normal'}
+                color={selectedCategoryNiche === x ? 'blue.500' : 'gray.600'}
+                cursor='pointer'
               >
                 {x}
               </Text>
             ))}
           </HStack>
         )}
+        <Divider />
       </Stack>
+
+
       {Object.entries(categoryData).map(([category, categoryListing]) => (
-        <Stack spacing={2} key={category} py={2}>
+        <Stack spacing={2} key={category} py={2} >
           <Box position="relative" padding="10">
             <Divider />
             <AbsoluteCenter bg="black" borderRadius="md" p="2">
@@ -181,36 +225,117 @@ const ViewPageListing = () => {
           </Box>
           <SimpleGrid columns={[1, 2, 3]} gap={5}>
             {categoryListing?.map((listing, index) => (
-              <Stack mb={2} key={index}>
+              <Stack mb={2} key={index} borderRadius='md' borderWidth={1} shadow='md' p={3} onClick={() => handleModalDetail(listing)} _hover={{
+                bg: "gray.100",
+                transform: "scale(1.02)",
+                transition: "0.3s",
+                cursor: "pointer"
+              }}
+                transition={"0.2s ease-in-out"}
+              >
                 {listing.image && (
-                  <Box flex="1">
-                    <img src={listing.image} alt={listing.title} />
+                  <Box flex="1" position={'relative'}>
+                    <IconButton
+                      icon={<MdDelete />}
+                      aria-label="Delete Listing"
+                      onClick={() => handleDelete(listing)}
+                      position='absolute'
+                      right={2}
+                      bottom={2}
+                    />
+                    <Image borderRadius={'md'} src={listing.image} alt={listing.title} />
                   </Box>
                 )}
-                <Box flex="1">
-                  <Text fontWeight="bold">{listing.title}</Text>
-                  <Text>{listing.description}</Text>
-                  <Text>{listing.price}</Text>
-                  <Text>Contact Person: {listing.contactPerson}</Text>
-                  <Text>Details:</Text>
+                <Stack spacing={1}>
+                  <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(listing.price))}</Text>
+
+                  <Text textTransform={'capitalize'} color='gray.500' noOfLines={1}>{listing.title}</Text>
+                  <Text color='gray.500' fontSize={'xs'} noOfLines={1}>CP: {listing.contactPerson}</Text>
+                  {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
                     <HStack key={index} spacing={2} alignItems="center">
                       <Text fontWeight="bold">{detail.key}:</Text>
                       <Text>{detail.value}</Text>
                     </HStack>
-                  ))}
-                  <Text>Project Name: {listing.projectName}</Text>
-                </Box>
-                <IconButton
-                  icon={<MdDelete />}
-                  aria-label="Delete Listing"
-                  onClick={() => handleDelete(listing)}
-                />
+                  ))} */}
+                </Stack>
+
               </Stack>
             ))}
           </SimpleGrid>
         </Stack>
       ))}
+
+      <Modal isOpen={modalDetail} onClose={() => handleCloseDetail()} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Detail</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack spacing={1} py={3}>
+              <Box flex="1" position={'relative'}>
+                <IconButton
+                  icon={<MdDelete />}
+                  aria-label="Delete Listing"
+                  onClick={() => handleDelete(detailActive)}
+                  position='absolute'
+                  right={2}
+                  bottom={2}
+                />
+                <Image borderRadius={'md'} src={detailActive.image} alt={detailActive.title} />
+              </Box>
+              <Stack spacing={1} py={2}>
+
+                <Text textTransform={'capitalize'} color='gray.800' fontSize={'lg'} fontWeight={'bold'}>{detailActive.title}</Text>
+                <Text textTransform={'capitalize'} color='gray.500'>{detailActive.description}</Text>
+                <HStack justifyContent={'space-around'} alignItems='flex-start'>
+                  <Stack>
+                    <Text color={'gray.600'}>Details:</Text>
+                    {detailActive?.details?.map((detail, index) => (
+                      <HStack key={index} spacing={2} alignItems="center">
+                        <Text fontSize={'sm'} textTransform={'capitalize'} fontWeight="bold">{detail.key}:</Text>
+                        <Text fontSize={'sm'} textTransform={'capitalize'} >{detail.value}</Text>
+                      </HStack>
+                    ))}
+                  </Stack>
+
+                  <Spacer />
+                  <Stack spacing={0} alignItems='flex-end'>
+                    <Text color={'gray.600'}>Price</Text>
+                    <Text fontWeight={'bold'} fontSize={'sm'}>Rp. {formatFrice(Number(detailActive.price))}</Text>
+                  </Stack>
+                </HStack>
+
+              </Stack>
+
+
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <HStack gap={5}>
+              <HStack spacing={2}>
+                <Text color='gray.900' fontWeight={500} fontSize={'lg'} noOfLines={1}>CP: {detailActive.contactPerson}</Text>
+                <FcPhone size={20}/>
+
+              </HStack>
+
+              <Stack>
+                <Button
+                  leftIcon={<CloseIcon boxSize={3} />}
+                  colorScheme='red'
+                  onClick={() => {
+                    handleCloseDetail();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+
     </Box>
   );
 };

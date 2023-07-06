@@ -299,7 +299,7 @@ function SidebarComponentV2({ layout }) {
                     <Accordion allowMultiple>
                       {data.map((x, i) => (
                         <AccordionItem
-                          isDisabled={x.name === "Chat" ? true : false}
+                          isDisabled={x.name === "Chat" || x.name === "Pipeline" ||  x.name === "Social Media"  ? true : false}
                         >
                           <h2>
                             <AccordionButton>
@@ -315,7 +315,7 @@ function SidebarComponentV2({ layout }) {
                               <AccordionPanel>
                                 <Stack>
                                   {x.submenu?.map((subitem, i) => (
-                                    <Link to={subitem.link}>
+                                    <Link to={subitem.link} key={i}>
                                       <HStack spacing="3">
                                         <Icon
                                           as={subitem.icon}
