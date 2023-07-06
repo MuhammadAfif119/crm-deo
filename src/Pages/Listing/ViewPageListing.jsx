@@ -4,6 +4,7 @@ import { MdDelete } from 'react-icons/md';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebase';
 import { deleteDocumentFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
+import useUserStore from '../../Routes/Store';
 
 const ViewPageListing = () => {
   const [categoryData, setCategoryData] = useState({});
@@ -11,11 +12,22 @@ const ViewPageListing = () => {
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const projectId = "yuVG8dOWY1vkGuSrqhZP";
+
+  const { userDisplay } = useUserStore();
+
+  const projectId = userDisplay.currentProject
+
+
+
+  // const companyId = userDisplay.currentProject;
+
 
   const getData = async () => {
+
     try {
-      const q = query(collection(db, 'listings'));
+      const q = query(collection(db, 'listings'), 
+      where("projectId", "==", projectId)
+      );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = [];
@@ -23,6 +35,7 @@ const ViewPageListing = () => {
           const docData = doc.data();
           data.push({ id: doc.id, ...docData });
         });
+
 
         const mappedData = {};
         data.forEach((listing) => {
@@ -58,15 +71,18 @@ const ViewPageListing = () => {
 
   const handleCategoryFilter = async (value) => {
     try {
-      const q = query(collection(db, 'listings'), where("category", "array-contains", value));
-  
+      const q = query(collection(db, 'listings'), 
+      where("category", "array-contains", value),
+      where("projectId", "==", projectId)
+      );
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = [];
         snapshot.forEach((doc) => {
           const docData = doc.data();
           data.push({ id: doc.id, ...docData });
         });
-  
+
         const mappedData = {};
         data.forEach((listing) => {
           const categories = listing.category;
@@ -77,10 +93,10 @@ const ViewPageListing = () => {
             mappedData[category].push(listing);
           });
         });
-  
+
         setCategoryData(mappedData);
       });
-  
+
       return () => {
         unsubscribe();
       };
@@ -88,7 +104,7 @@ const ViewPageListing = () => {
       console.log(error, 'ini error');
     }
   };
-  
+
 
   const getDataCategory = async () => {
     try {
@@ -107,7 +123,7 @@ const ViewPageListing = () => {
   useEffect(() => {
     getData();
     getDataCategory();
-  }, []);
+  }, [userDisplay.currentProject]);
 
   const handleDelete = async (listing) => {
     const collectionName = 'listings';

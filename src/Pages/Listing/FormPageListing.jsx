@@ -35,6 +35,7 @@ import {
   setDocumentFirebase,
   uploadFile,
 } from "../../Api/firebaseApi";
+import useUserStore from "../../Routes/Store";
 
 function FormPageListing() {
   const [projectList, setProjectList] = useState([]);
@@ -53,7 +54,11 @@ function FormPageListing() {
 
   const [categoryInput, setCategoryInput] = useState("");
 
-  const companyId = "8NCG4Qw0xVbNR6JCcJw1";
+  const { userDisplay } = useUserStore();
+
+
+
+  const companyId = userDisplay.currentCompany;
 
   // const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
 
@@ -84,7 +89,7 @@ function FormPageListing() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [userDisplay.currentCompany]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,7 +99,7 @@ function FormPageListing() {
       description: description.toLowerCase(),
       category: category.map((categories) => categories.toLowerCase()),
       price: price.toLowerCase(),
-      projectId: projectId.toLowerCase(),
+      projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
         key: detail.key.toLowerCase(),
