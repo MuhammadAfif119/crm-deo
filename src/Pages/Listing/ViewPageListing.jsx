@@ -171,6 +171,26 @@ const ViewPageListing = () => {
     setDetailActive("")
   }
 
+
+  const isLink = (value) => {
+    const pattern = /^https?:\/\//i;
+    return pattern.test(value);
+  };
+
+  const renderValue = (detail) => {
+    if (isLink(detail.value)) {
+      return (
+        <a href={detail.value} target="_blank" rel="noopener noreferrer">
+          <Text fontStyle={'italic'} color='blue.600' fontWeight={500}>
+            Click here
+          </Text>
+        </a>
+      );
+    } else {
+      return <Text fontSize="sm" textTransform="capitalize">{detail.value}</Text>;
+    }
+  };
+
   return (
     <Box>
 
@@ -266,6 +286,7 @@ const ViewPageListing = () => {
         </Stack>
       ))}
 
+
       <Modal isOpen={modalDetail} onClose={() => handleCloseDetail()} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -273,60 +294,57 @@ const ViewPageListing = () => {
           <ModalCloseButton />
           <ModalBody>
             <Stack spacing={1} py={3}>
-              <Box flex="1" position={'relative'}>
+              <Box flex="1" position="relative">
                 <IconButton
                   icon={<MdDelete />}
                   aria-label="Delete Listing"
                   onClick={() => handleDelete(detailActive)}
-                  position='absolute'
+                  position="absolute"
                   right={2}
                   bottom={2}
                 />
-                <Image borderRadius={'md'} src={detailActive.image} alt={detailActive.title} />
+                <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
               </Box>
               <Stack spacing={1} py={2}>
-
-                <Text textTransform={'capitalize'} color='gray.800' fontSize={'lg'} fontWeight={'bold'}>{detailActive.title}</Text>
-                <Text textTransform={'capitalize'} color='gray.500'>{detailActive.description}</Text>
-                <HStack justifyContent={'space-around'} alignItems='flex-start'>
+                <Text textTransform="capitalize" color="gray.800" fontSize="lg" fontWeight="bold">
+                  {detailActive.title}
+                </Text>
+                <Text textTransform="capitalize" color="gray.500">
+                  {detailActive.description}
+                </Text>
+                <HStack justifyContent="space-around" alignItems="flex-start">
                   <Stack>
-                    <Text color={'gray.600'}>Details:</Text>
+                    <Text color="gray.600">Details:</Text>
                     {detailActive?.details?.map((detail, index) => (
                       <HStack key={index} spacing={2} alignItems="center">
-                        <Text fontSize={'sm'} textTransform={'capitalize'} fontWeight="bold">{detail.key}:</Text>
-                        <Text fontSize={'sm'} textTransform={'capitalize'} >{detail.value}</Text>
+                        <Text fontSize="sm" textTransform="capitalize" fontWeight="bold">
+                          {detail.key}:
+                        </Text>
+                        {renderValue(detail)}
                       </HStack>
                     ))}
                   </Stack>
-
                   <Spacer />
-                  <Stack spacing={0} alignItems='flex-end'>
-                    <Text color={'gray.600'}>Price</Text>
-                    <Text fontWeight={'bold'} fontSize={'sm'}>Rp. {formatFrice(Number(detailActive.price))}</Text>
+                  <Stack spacing={0} alignItems="flex-end">
+                    <Text color="gray.600">Price</Text>
+                    <Text fontWeight="bold" fontSize="sm">
+                      Rp. {formatFrice(Number(detailActive.price))}
+                    </Text>
                   </Stack>
                 </HStack>
-
               </Stack>
-
-
             </Stack>
           </ModalBody>
           <ModalFooter>
             <HStack gap={5}>
               <HStack spacing={2}>
-                <Text color='gray.900' fontWeight={500} fontSize={'lg'} noOfLines={1}>CP: {detailActive.contactPerson}</Text>
-                <FcPhone size={20}/>
-
+                <Text color="gray.900" fontWeight={500} fontSize="lg" noOfLines={1}>
+                  CP: {detailActive.contactPerson}
+                </Text>
+                <FcPhone size={20} />
               </HStack>
-
               <Stack>
-                <Button
-                  leftIcon={<CloseIcon boxSize={3} />}
-                  colorScheme='red'
-                  onClick={() => {
-                    handleCloseDetail();
-                  }}
-                >
+                <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
                   Cancel
                 </Button>
               </Stack>
