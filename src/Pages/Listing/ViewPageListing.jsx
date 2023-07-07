@@ -27,6 +27,7 @@ const ViewPageListing = () => {
 
 
 
+
   // const companyId = userDisplay.currentProject;
 
 
@@ -44,6 +45,8 @@ const ViewPageListing = () => {
           data.push({ id: doc.id, ...docData });
         });
 
+        console.log(data, 'ini data')
+
 
         const mappedData = {};
         data.forEach((listing) => {
@@ -58,6 +61,7 @@ const ViewPageListing = () => {
 
         // setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
         setCategoryData(mappedData);
+        console.log(mappedData,'xxx');
       });
 
       return () => {
