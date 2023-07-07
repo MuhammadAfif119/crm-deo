@@ -16,7 +16,8 @@ import {
     Grid,
     SimpleGrid,
     Checkbox,
-    Image, // Tambahkan import untuk Checkbox
+    Image,
+    useToast, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import ViewPageListing from "./ViewPageListing";
@@ -40,6 +41,7 @@ import BackButtons from "../../Components/Buttons/BackButtons";
 
 function FormPageListing() {
     const [projectList, setProjectList] = useState([]);
+    const [loading, setLoading] = useState(false)
     const [title, setTitle] = useState("");
     const [projectId, setProjectId] = useState("");
     const [projectName, setProjectName] = useState("");
@@ -56,6 +58,7 @@ function FormPageListing() {
     const [categoryInput, setCategoryInput] = useState("");
 
     const { userDisplay } = useUserStore();
+    const toast = useToast()
 
 
 
@@ -94,6 +97,7 @@ function FormPageListing() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
 
         const newListing = {
             title: title.toLowerCase(),
@@ -175,6 +179,16 @@ function FormPageListing() {
                         } else {
                             console.log("Terjadi kesalahan:", error);
                         }
+                    }
+                    finally{
+                        setLoading(false)
+                        toast({
+                            title: "Deoapp.com",
+                            description: "success add new listing",
+                            status: "success",
+                            position: "top-right",
+                            isClosable: true,
+                          });
                     }
                 }
             }
@@ -454,9 +468,16 @@ function FormPageListing() {
                             LMS
                         </Checkbox>
                     </FormControl>
-                    <Button colorScheme="teal" onClick={handleSubmit}>
+                    {!loading ? (
+                        <Button colorScheme="teal" onClick={handleSubmit}>
                         Add Listing
                     </Button>
+                    ) : (
+                        <Button isLoading colorScheme="teal" isDisabled>
+                        Add Listing
+                    </Button>
+                    )}
+                    
                     <Divider my={4} />
                 </VStack>
             </Grid>
