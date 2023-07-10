@@ -221,7 +221,7 @@ function FormPageListing() {
     };
 
     const handleCategoryChange = (e) => {
-        setCategoryInput(e.target.value);
+        setCategoryInput((e.target.value).toLowerCase());
     };
 
     const handleCategoryAdd = () => {
