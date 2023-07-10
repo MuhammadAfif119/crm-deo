@@ -45,7 +45,6 @@ const ViewPageListing = () => {
           data.push({ id: doc.id, ...docData });
         });
 
-        console.log(data, 'ini data')
 
 
         const mappedData = {};
@@ -61,7 +60,6 @@ const ViewPageListing = () => {
 
         // setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
         setCategoryData(mappedData);
-        console.log(mappedData,'xxx');
       });
 
       return () => {
@@ -77,7 +75,7 @@ const ViewPageListing = () => {
       try {
         const result = await getSingleDocumentFirebase(`categories/${projectId}/${value}`, 'data');
         setCategoryList(result);
-        setSelectedCategory(value);
+        setSelectedCategory((value).toLowerCase());
       } catch (error) {
         console.log(error);
       }
@@ -92,7 +90,7 @@ const ViewPageListing = () => {
     setSelectedCategoryNiche(value)
     try {
       const q = query(collection(db, 'listings'),
-        where("category", "array-contains", value),
+        where("category", "array-contains", (value).toLowerCase()),
         where("projectId", "==", projectId)
       );
 
