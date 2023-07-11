@@ -29,23 +29,6 @@ function App() {
 
   return (
     <>
-      {/* <Preloader />
-      <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-        <Stack h={height} zIndex={100}>
-          <AppSideBar setBarStatus={setBarStatus} />
-        </Stack>
-        
-        <Spacer 
-        />
-        <Stack
-          Stack
-          w={["85%", null, "95%"]}
-          transition={"0.2s ease-in-out"}
-          minH={height}
-        >
-          <MainRoute />
-        </Stack>
-      </Flex> */}
 
      {isLoggedin ? (
         <Layout>

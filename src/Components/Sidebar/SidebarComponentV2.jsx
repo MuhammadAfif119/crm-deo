@@ -74,12 +74,10 @@ function SidebarComponentV2({ layout }) {
   const toast = useToast();
   const navigate = useNavigate();
 
-  console.log(companyId);
 
   const getUserData = async () => {
     try {
       const result = await getSingleDocumentFirebase("users", currentUser.uid);
-      console.log(result, "ini resut");
       setUserDisplay({
         ...userDisplay,
         name: result.name,
