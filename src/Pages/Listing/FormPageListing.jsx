@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import ViewPageListing from "./ViewPageListing";
+import CreatableSelece from 'react-select/creatable'
 import {
     collection,
     doc,
@@ -33,6 +34,7 @@ import { db } from "../../Config/firebase";
 import {
     addDocumentFirebase,
     arrayUnionFirebase,
+    getSingleDocumentFirebase,
     setDocumentFirebase,
     uploadFile,
 } from "../../Api/firebaseApi";
@@ -54,18 +56,40 @@ function FormPageListing() {
     const [contactPerson, setContactPerson] = useState("");
     const [isActive, setIsActive] = useState(true);
     const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
-
+    const [selectedCategory, setSelectedCategory] = useState('')
+    const [filesImageLogo, setFilesImageLogo] = useState([]);
+    const [filesLogo, setFilesLogo] = useState([]);
     const [categoryInput, setCategoryInput] = useState("");
+    const [categoryData, setCategoryData] = useState([])
 
+    const [categories, setCategories] = useState([])
+    const [categoryList, setCategoryList] = useState([])
+    const [queries, setQueries] = useState('')
     const { userDisplay } = useUserStore();
     const toast = useToast()
+
 
 
 
     const companyId = userDisplay.currentCompany;
 
 
-    // const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
+    const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
+
+
+    const getCategory = async () => {
+        try {
+            const unsubscribe = await onSnapshot(doc(db, "categories", companyId), (docCat) => {
+                setCategories({ id: docCat.id, ...docCat.data() });
+            });
+            return () => {
+                unsubscribe();
+            };
+        } catch (error) {
+            console.log(error, "ini error");
+        }
+    }
+
 
     const getData = async () => {
         try {
@@ -92,10 +116,40 @@ function FormPageListing() {
         }
     };
 
+    const getCategoryList = async () => {
+        try {
+            let arr = [];
+            await Promise.all(
+                categories?.data?.map(async (x) => {
+                    const result = await getSingleDocumentFirebase(
+                        `categories/${userDisplay?.currentProject}/${x}`,
+                        'data'
+                    );
+                    arr.push(...result?.category);
+                })
+            );
+            console.log(arr, 'ini result');
+            const uniqueValues = Array.from(new Set(arr)); // Filter unique values
+            setCategoryList(uniqueValues);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getSelectedCategory = (value) => {
+        setSelectedCategory(value)
+    }
+
+    const handleDBInputChange = (newValue) => {
+        setQueries(newValue);
+    };
+
     useEffect(() => {
         getData();
-    }, [userDisplay.currentCompany]);
-
+        getCategory()
+        getCategoryList()
+    }, [userDisplay.currentCompany, categories?.data?.length]);
+    console.log(selectedCategory, 'selected')
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
@@ -103,7 +157,7 @@ function FormPageListing() {
         const newListing = {
             title: title.toLowerCase(),
             description: description.toLowerCase(),
-            category: category.map((categories) => categories.toLowerCase()),
+            category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
             price: price.toLowerCase(),
             projectId: projectId,
             projectName: projectName.toLowerCase(),
@@ -120,7 +174,10 @@ function FormPageListing() {
             const resImage = await uploadFile(title, "listings", filesImage[0]);
             newListing.image = resImage;
         }
-
+        if (filesImageLogo[0]) {
+            const resImage = await uploadFile(title, "listings", filesImageLogo[0]);
+            newListing.logo = resImage;
+        }
         const collectionName = "listings";
         const data = newListing;
 
@@ -159,7 +216,7 @@ function FormPageListing() {
                     const subCollectionName = `${categoryCollectionName}/${docName}/${module}`;
                     const subDocName = "data";
                     const subField = "category";
-                    const subValues = category;
+                    const subValues = selectedCategory.map((categories) => categories?.value.toLowerCase());
 
                     try {
                         await arrayUnionFirebase(
@@ -181,7 +238,7 @@ function FormPageListing() {
                             console.log("Terjadi kesalahan:", error);
                         }
                     }
-                    finally{
+                    finally {
                         setLoading(false)
                         toast({
                             title: "Deoapp.com",
@@ -189,7 +246,7 @@ function FormPageListing() {
                             status: "success",
                             position: "top-right",
                             isClosable: true,
-                          });
+                        });
                     }
                 }
             }
@@ -203,8 +260,10 @@ function FormPageListing() {
             setPrice("");
             setProjectId("");
             setProjectName("");
+            setFilesImageLogo([])
             setFiles([]);
             setFilesImage([]);
+            setFilesLogo([])
             setDetails([]);
             setContactPerson("");
             setIsActive(true);
@@ -257,6 +316,26 @@ function FormPageListing() {
         }
     };
 
+    const handleFileLogoInputChange = (event) => {
+        const { files: newFiles } = event.target;
+        if (newFiles.length) {
+            const newFileArray = [...files];
+            for (let i = 0; i < newFiles.length; i++) {
+                const reader = new FileReader();
+                reader.readAsDataURL(newFiles[i]);
+                reader.onload = () => {
+                    newFileArray.push({
+                        file: reader.result,
+                        fileName: newFiles[i].name,
+                        description: newFiles[i].type,
+                    });
+                    setFilesLogo(newFileArray);
+                };
+            }
+            setFilesImageLogo(newFiles); // Mengubah state filesImageLogo menjadi array baru dari selectedFiles
+        }
+    };
+
     const handleAddDetail = () => {
         setDetails([...details, { key: "", value: "" }]);
     };
@@ -284,22 +363,39 @@ function FormPageListing() {
         }
     };
 
+    const loadOptionsDB = (category) => {
+        let arr = [];
+        category.map((item) => {
+            arr.push({ value: item, label: item });
+        });
+        setCategoryData(arr);
+
+    };
+
+    useEffect(() => {
+        loadOptionsDB(categoryList);
+    }, [categoryList.length])
+
     return (
-        <Stack>
+        <Stack
+
+        >
             <Stack>
                 <BackButtons />
             </Stack>
             <Grid
-                templateColumns={{ base: "1fr", md: "1fr 2fr" }}
                 gap={5}
                 p={3}
                 mt={5}
+                w="100%"
+
             >
                 <VStack spacing={4} align="start">
                     <FormControl id="title" isRequired>
                         <FormLabel>Title:</FormLabel>
                         <Input
                             type="text"
+                            w="100%"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
@@ -312,18 +408,38 @@ function FormPageListing() {
                         />
                     </FormControl>
                     <FormControl id="category">
-                        <FormLabel>Kategori</FormLabel>
-                        <HStack spacing={2}>
+                        <FormLabel>Category</FormLabel>
+                        <Box width={'full'}>
+
+                            <CreatableSelece
+                                defaultOptions
+                                isClearable={false}
+                                isMulti
+                                // value={categoryList?.find(
+                                //     (option) =>
+                                //         option.value === (selectedCategory ? selectedCategory : category)
+                                // )}
+                                name="db-react-select"
+                                className="react-select"
+                                classNamePrefix="select"
+                                onChange={getSelectedCategory}
+                                options={categoryData}
+                                onInputChange={handleDBInputChange}
+                            />
+                        </Box>
+                        {/* <HStack spacing={2}>
                             <Input
                                 type="text"
                                 value={categoryInput}
                                 onChange={handleCategoryChange}
                             />
-                            <Button colorScheme="teal" onClick={handleCategoryAdd}>
-                                Tambah
+                            <Button colorScheme="teal"
+                                onClick={handleCategoryAdd}
+                            >
+                                Add
                             </Button>
-                        </HStack>
-                        <Stack direction="row" spacing={2} mt={2}>
+                        </HStack> */}
+                        {/* <Stack direction="row" spacing={2} mt={2}>
                             {category.map((category) => (
                                 <Box
                                     key={category}
@@ -344,8 +460,10 @@ function FormPageListing() {
                                     />
                                 </Box>
                             ))}
-                        </Stack>
+                        </Stack> */}
                     </FormControl>
+
+
 
                     <FormControl id="Project" isRequired>
                         <FormLabel>Project:</FormLabel>
@@ -401,14 +519,52 @@ function FormPageListing() {
                                         <MdOutlinePermMedia />
                                     </Stack>
                                     <Text fontSize={"sm"} color="blue.600" fontStyle={"italic"}>
-                                        Add Image
+                                        Add Image thumbnail
+                                    </Text>
+                                </HStack>
+                            </label>
+                        </Stack>
+                    </FormControl>
+                    <FormControl id="logo" isRequired>
+                        <HStack>
+                            {filesLogo.length > 0 && (
+                                <Stack>
+                                    <Image
+                                        src={filesLogo[0].file}
+                                        boxSize="100%"
+                                        maxWidth={300}
+                                        borderRadius="xl"
+                                        alt={filesLogo[0].name}
+                                        shadow="sm"
+                                    />
+                                </Stack>
+                            )}
+                        </HStack>
+
+                        <Stack>
+                            <Input
+                                type="file"
+                                onChange={handleFileLogoInputChange}
+                                display="none"
+                                id="fileInputLogo"
+                            />
+
+                            <label htmlFor="fileInputLogo">
+                                <HStack cursor={"pointer"}>
+                                    <Stack>
+                                        <MdOutlinePermMedia />
+                                    </Stack>
+                                    <Text fontSize={"sm"} color="blue.600" fontStyle={"italic"}>
+                                        Add Image logo
                                     </Text>
                                 </HStack>
                             </label>
                         </Stack>
                     </FormControl>
                     {details.map((detail, index) => (
-                        <HStack key={index}>
+                        <HStack
+                            key={index}
+                        >
                             <FormControl id={`detail-key-${index}`}>
                                 <FormLabel>Key:</FormLabel>
                                 <Input
@@ -417,9 +573,12 @@ function FormPageListing() {
                                     onChange={(e) =>
                                         handleDetailChange(index, e.target.value, detail.value)
                                     }
+
                                 />
                             </FormControl>
-                            <FormControl id={`detail-value-${index}`}>
+                            <FormControl
+                                id={`detail-value-${index}`}
+                            >
                                 <FormLabel>Value:</FormLabel>
                                 <Input
                                     type="text"
@@ -436,7 +595,9 @@ function FormPageListing() {
                             />
                         </HStack>
                     ))}
-                    <Button colorScheme="teal" onClick={handleAddDetail}>
+                    <Button colorScheme="teal"
+                        onClick={handleAddDetail}
+                    >
                         Add Detail
                     </Button>
                     <FormControl id="contactPerson" isRequired>
@@ -459,26 +620,34 @@ function FormPageListing() {
                     </FormControl>
                     <FormControl id="modules">
                         <FormLabel>Modules:</FormLabel>
-                        <Checkbox value="rms" onChange={handleModulesChange}>
+                        <Checkbox value="rms"
+                            onChange={handleModulesChange}
+                        >
                             RMS
                         </Checkbox>
-                        <Checkbox value="listing" onChange={handleModulesChange}>
+                        <Checkbox value="listing"
+                            onChange={handleModulesChange}
+                        >
                             Listing
                         </Checkbox>
-                        <Checkbox value="lms" onChange={handleModulesChange}>
+                        <Checkbox value="lms"
+                            onChange={handleModulesChange}
+                        >
                             LMS
                         </Checkbox>
                     </FormControl>
                     {!loading ? (
-                        <Button colorScheme="teal" onClick={handleSubmit}>
-                        Add Listing
-                    </Button>
+                        <Button colorScheme="teal"
+                            onClick={handleSubmit}
+                        >
+                            Add Listing
+                        </Button>
                     ) : (
                         <Button isLoading colorScheme="teal" isDisabled>
-                        Add Listing
-                    </Button>
+                            Add Listing
+                        </Button>
                     )}
-                    
+
                     <Divider my={4} />
                 </VStack>
             </Grid>
