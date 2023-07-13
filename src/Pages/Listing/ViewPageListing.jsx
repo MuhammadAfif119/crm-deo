@@ -6,14 +6,14 @@ import { db } from '../../Config/firebase';
 import { deleteDocumentFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Routes/Store';
 import { formatFrice } from '../../Utils/numberUtil';
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { FcPhone } from 'react-icons/fc';
 
 const ViewPageListing = () => {
   const [categoryData, setCategoryData] = useState({});
   const [categoryModule, setCategoryModules] = useState();
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
 
   const [detailActive, setDetailActive] = useState('')
@@ -60,6 +60,7 @@ const ViewPageListing = () => {
 
         // setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
         setCategoryData(mappedData);
+        setSelectedCategory('All')
       });
 
       return () => {
@@ -200,6 +201,15 @@ const ViewPageListing = () => {
         <Text fontSize={'xl'} fontWeight={500}>Category</Text>
         {categoryModule?.data?.length > 0 && (
           <HStack spacing={3}>
+            <Text
+              cursor='pointer'
+              onClick={() => getData()}
+              textTransform='uppercase'
+              fontWeight={selectedCategory === 'All' ? 500 : 'normal'}
+              color={selectedCategory === 'All' ? 'blue.500' : 'gray.600'}
+            >
+              All
+            </Text>
             {categoryModule?.data?.map((x, index) => (
               <Text
                 key={index}
@@ -215,7 +225,7 @@ const ViewPageListing = () => {
           </HStack>
         )}
 
-        {categoryList && (
+        {categoryList && selectedCategory !== 'All' && (
           <HStack spacing={3}>
             {categoryList?.category?.map((x, index) => (
               <Text
@@ -308,9 +318,15 @@ const ViewPageListing = () => {
                 <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
               </Box>
               <Stack spacing={1} py={2}>
+                <Flex justify={'space-between'} gap='5'>
+
                 <Text textTransform="capitalize" color="gray.800" fontSize="lg" fontWeight="bold">
                   {detailActive.title}
                 </Text>
+                <Spacer/>
+                  <Text color="gray.600">Logo:</Text>
+                <Image  src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'}/>
+                </Flex>
                 <Text textTransform="capitalize" color="gray.500">
                   {detailActive.description}
                 </Text>
@@ -338,18 +354,23 @@ const ViewPageListing = () => {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <HStack gap={5}>
+            <HStack gap={3}>
               <HStack spacing={2}>
                 <Text color="gray.900" fontWeight={500} fontSize="lg" noOfLines={1}>
                   CP: {detailActive.contactPerson}
                 </Text>
                 <FcPhone size={20} />
               </HStack>
-              <Stack>
+            <HStack>
                 <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
+
                   Cancel
                 </Button>
-              </Stack>
+                <Button leftIcon={<EditIcon boxSize={3} />} colorScheme="green" onClick={() => handleCloseDetail()}>
+                  Edit
+                </Button>
+            </HStack>
+             
             </HStack>
           </ModalFooter>
         </ModalContent>

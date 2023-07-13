@@ -37,6 +37,7 @@ import {
     getSingleDocumentFirebase,
     setDocumentFirebase,
     uploadFile,
+    uploadFileLogo,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Routes/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
@@ -77,20 +78,7 @@ function FormPageListing() {
     const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
 
 
-    const getCategory = async () => {
-        try {
-            const unsubscribe = await onSnapshot(doc(db, "categories", companyId), (docCat) => {
-                setCategories({ id: docCat.id, ...docCat.data() });
-            });
-            return () => {
-                unsubscribe();
-            };
-        } catch (error) {
-            console.log(error, "ini error");
-        }
-    }
-
-
+    
     const getData = async () => {
         try {
             const q = query(
@@ -116,6 +104,19 @@ function FormPageListing() {
         }
     };
 
+    const getCategory = async () => {
+        try {
+            const unsubscribe = await onSnapshot(doc(db, "categories", companyId), (docCat) => {
+                setCategories({ id: docCat.id, ...docCat.data() });
+            });
+            return () => {
+                unsubscribe();
+            };
+        } catch (error) {
+            console.log(error, "ini error");
+        }
+    }
+
     const getCategoryList = async () => {
         try {
             let arr = [];
@@ -128,7 +129,6 @@ function FormPageListing() {
                     arr.push(...result?.category);
                 })
             );
-            console.log(arr, 'ini result');
             const uniqueValues = Array.from(new Set(arr)); // Filter unique values
             setCategoryList(uniqueValues);
         } catch (error) {
@@ -149,7 +149,7 @@ function FormPageListing() {
         getCategory()
         getCategoryList()
     }, [userDisplay.currentCompany, categories?.data?.length]);
-    console.log(selectedCategory, 'selected')
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
@@ -175,7 +175,7 @@ function FormPageListing() {
             newListing.image = resImage;
         }
         if (filesImageLogo[0]) {
-            const resImage = await uploadFile(title, "listings", filesImageLogo[0]);
+            const resImage = await uploadFileLogo(title, "listings", filesImageLogo[0]);
             newListing.logo = resImage;
         }
         const collectionName = "listings";
@@ -312,15 +312,15 @@ function FormPageListing() {
                     setFiles(newFileArray);
                 };
             }
-            setFilesImage(newFiles); // Mengubah state filesImage menjadi array baru dari selectedFiles
+            setFilesImage(newFiles);
         }
     };
 
     const handleFileLogoInputChange = (event) => {
         const { files: newFiles } = event.target;
-        if (newFiles.length) {
-            const newFileArray = [...files];
-            for (let i = 0; i < newFiles.length; i++) {
+        if (newFiles?.length) {
+            const newFileArray = [...filesLogo];
+            for (let i = 0; i < newFiles?.length; i++) {
                 const reader = new FileReader();
                 reader.readAsDataURL(newFiles[i]);
                 reader.onload = () => {
@@ -332,7 +332,7 @@ function FormPageListing() {
                     setFilesLogo(newFileArray);
                 };
             }
-            setFilesImageLogo(newFiles); // Mengubah state filesImageLogo menjadi array baru dari selectedFiles
+            setFilesImageLogo(newFiles);
         }
     };
 
@@ -351,6 +351,7 @@ function FormPageListing() {
         updatedDetails[index] = { key, value };
         setDetails(updatedDetails);
     };
+
 
     const handleModulesChange = (event) => {
         const { value, checked } = event.target;
@@ -489,7 +490,82 @@ function FormPageListing() {
                             onChange={(e) => setPrice(e.target.value)}
                         />
                     </FormControl>
+
                     <FormControl id="image" isRequired>
+                        <HStack>
+                            {files.length > 0 && (
+                                <Stack>
+                                    <Image
+                                        src={files[0].file}
+                                        boxSize="100%"
+                                        maxWidth={300}
+                                        borderRadius="xl"
+                                        alt={files[0].name}
+                                        shadow="sm"
+                                    />
+                                </Stack>
+                            )}
+                        </HStack>
+
+                        <Stack>
+                            <Input
+                                type="file"
+                                onChange={handleFileInputChange}
+                                display="none"
+                                id="fileInput"
+                            />
+
+                            <label htmlFor="fileInput">
+                                <HStack cursor="pointer">
+                                    <Stack>
+                                        <MdOutlinePermMedia />
+                                    </Stack>
+                                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                        Add Image thumbnail
+                                    </Text>
+                                </HStack>
+                            </label>
+                        </Stack>
+                    </FormControl>
+
+                    <FormControl id="logo" isRequired>
+                        <HStack>
+                            {filesLogo.length > 0 && (
+                                <Stack>
+                                    <Image
+                                        src={filesLogo[0].file}
+                                        boxSize="100%"
+                                        maxWidth={300}
+                                        borderRadius="xl"
+                                        alt={filesLogo[0].name}
+                                        shadow="sm"
+                                    />
+                                </Stack>
+                            )}
+                        </HStack>
+
+                        <Stack>
+                            <Input
+                                type="file"
+                                onChange={handleFileLogoInputChange}
+                                display="none"
+                                id="fileInputLogo"
+                            />
+
+                            <label htmlFor="fileInputLogo">
+                                <HStack cursor="pointer">
+                                    <Stack>
+                                        <MdOutlinePermMedia />
+                                    </Stack>
+                                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                        Add Image logo
+                                    </Text>
+                                </HStack>
+                            </label>
+                        </Stack>
+                    </FormControl>
+                    
+                    {/* <FormControl id="image" isRequired>
                         <HStack>
                             {files.length > 0 && (
                                 <Stack>
@@ -560,7 +636,7 @@ function FormPageListing() {
                                 </HStack>
                             </label>
                         </Stack>
-                    </FormControl>
+                    </FormControl> */}
                     {details.map((detail, index) => (
                         <HStack
                             key={index}
