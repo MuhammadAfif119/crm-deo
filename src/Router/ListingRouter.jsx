@@ -10,7 +10,7 @@ const ListingRouter = [
   },
 
   {
-    path: "/new-listing",
+    path: "/listing/:type",
     element: <FormPageListing />,
   },
 ];

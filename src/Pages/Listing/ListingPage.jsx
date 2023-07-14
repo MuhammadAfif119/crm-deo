@@ -19,7 +19,7 @@ function ListingPage() {
                 </Heading>
                 <Spacer />
                 <Stack>
-                    <Button onClick={() => navigate('/new-listing')} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
+                    <Button onClick={() => navigate('/listing/create')} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
                         <HStack>
                             <FcPlus />
                             <Text>Listing</Text>

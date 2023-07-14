@@ -300,6 +300,7 @@ export const setDocumentFirebase = async (
 // add document firebase
 
 export const addDocumentFirebase = async (collectionName, data, companyId) => {
+  console.log(companyId, 'companyId')
   if (!companyId) return "No Company ID";
 
   try {
@@ -548,32 +549,9 @@ export const uploadFile = async (title, type, file) => {
     console.log(error.message);
   }
 };
-export const uploadFileLogo = async (title, type, file) => {
-	const path = `${type}-logo/${title}`;
-	const thumbnailPath = `${type}-logo/${title}_800x800`;
-	const storageRef = ref(storage, path);
 
-	try {
-		await uploadBytes(storageRef, file);
-
-		// const originalURL = await getDownloadURL(storageRef);
-		const thumbnailURL = `https://firebasestorage.googleapis.com/v0/b/deoapp-indonesia.appspot.com/o/${encodeURIComponent(
-			thumbnailPath
-		)}?alt=media`;
-
-		const returnData = thumbnailURL;
-		// {
-		//   image_original: originalURL,
-		//   image_thumbnail: thumbnailURL,
-		// };
-
-		return returnData;
-	} catch (error) {
-		console.log(error.message);
-	}
-};
 export const deleteFileFirebase = async (fileName, location) => {
-  const desertRef = ref(storage, "images/desert.jpg");
+  const desertRef = ref(storage, `${location}/${fileName}`);
   deleteObject(desertRef)
     .then(() => {
       // File deleted successfully TOAST
@@ -671,3 +649,60 @@ export const updateProfileFirebase = async (data) => {
 // }
 
 //Finish
+
+export const getCollectionWhereFirebase = async (
+	collectionName,
+	whereKey,
+	operator,
+	whereValue
+) => {
+	const ref = collection(db, collectionName);
+	const q = query(ref, where(whereKey, operator, whereValue));
+	const querySnapshot = await getDocs(q);
+	const data = [];
+	querySnapshot.forEach((doc) => {
+		const obj = { id: doc.id, ...doc.data() };
+		data.push(obj);
+	});
+	return data;
+};
+
+
+export const UploadBlob = async (
+	file,
+	folder,
+	subFolder,
+	name,
+	setProgress
+) => {
+	// console.log("inside upload");
+	if (!file) {
+		alert("Please upload an image first!");
+	}
+
+	const storageRef = ref(storage, `${folder}/${subFolder}/${name}`);
+
+	// progress can be paused and resumed. It also exposes progress updates.
+
+	// Receives the storage reference and the file to upload.
+
+	return new Promise((resolve, reject) => {
+		//   uploadBytes(storageRef, file)
+		uploadBytes(storageRef, file)
+			.then((snapshot) => {
+				const percent = Math.round(
+					(snapshot.bytesTransferred / snapshot.totalBytes) * 100
+				);
+				setProgress(percent);
+				// update progress
+				getDownloadURL(snapshot.ref).then((downloadURL) => {
+					resolve({
+						percent: percent,
+						url: downloadURL,
+					});
+					// console.log("Uploaded file!");
+				});
+			})
+			.catch((error) => reject(error.message));
+	});
+};

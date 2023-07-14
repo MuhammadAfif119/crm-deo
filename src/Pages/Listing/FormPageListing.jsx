@@ -34,15 +34,21 @@ import { db } from "../../Config/firebase";
 import {
     addDocumentFirebase,
     arrayUnionFirebase,
+    getCollectionFirebase,
     getSingleDocumentFirebase,
     setDocumentFirebase,
+    updateDocumentFirebase,
     uploadFile,
-    uploadFileLogo,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Routes/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 
 function FormPageListing() {
+    let [searchParams, setSearchParams] = useSearchParams();
+
+    const idProject = searchParams.get("id");
+
     const [projectList, setProjectList] = useState([]);
     const [loading, setLoading] = useState(false)
     const [title, setTitle] = useState("");
@@ -57,7 +63,7 @@ function FormPageListing() {
     const [contactPerson, setContactPerson] = useState("");
     const [isActive, setIsActive] = useState(true);
     const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
-    const [selectedCategory, setSelectedCategory] = useState('')
+    const [selectedCategory, setSelectedCategory] = useState([])
     const [filesImageLogo, setFilesImageLogo] = useState([]);
     const [filesLogo, setFilesLogo] = useState([]);
     const [categoryInput, setCategoryInput] = useState("");
@@ -78,7 +84,27 @@ function FormPageListing() {
     const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
 
 
-    
+    const getListing = async () => {
+        const res = await getSingleDocumentFirebase('listings', idProject)
+        setTitle(res.title)
+        setContactPerson(res.contactPerson)
+        setDescription(res.description)
+        setPrice(res.price)
+        setFiles(res.image)
+        setFilesLogo(res.logo)
+        setModules(res.modules)
+        setIsActive(res.is_active)
+        setProjectName(res.projectName)
+        setProjectId(res.projectId)
+        let cat =res.category
+        let arr = []
+        cat.map((c)=>{
+            arr.push({value:c, label: c})
+        })
+        setSelectedCategory(arr)
+    }
+
+
     const getData = async () => {
         try {
             const q = query(
@@ -148,8 +174,11 @@ function FormPageListing() {
         getData();
         getCategory()
         getCategoryList()
+        if (idProject) {
+            getListing()
+        }
     }, [userDisplay.currentCompany, categories?.data?.length]);
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
@@ -175,7 +204,7 @@ function FormPageListing() {
             newListing.image = resImage;
         }
         if (filesImageLogo[0]) {
-            const resImage = await uploadFileLogo(title, "listings", filesImageLogo[0]);
+            const resImage = await uploadFile(`${title}-logo`, "listings", filesImageLogo[0]);
             newListing.logo = resImage;
         }
         const collectionName = "listings";
@@ -267,6 +296,7 @@ function FormPageListing() {
             setDetails([]);
             setContactPerson("");
             setIsActive(true);
+            setSelectedCategory([])
             setModules([]);
         } catch (error) {
             console.log("Terjadi kesalahan:", error);
@@ -315,6 +345,114 @@ function FormPageListing() {
             setFilesImage(newFiles);
         }
     };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true)
+
+        const newListing = {
+            title: title.toLowerCase(),
+            description: description.toLowerCase(),
+            category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
+            price: price.toLowerCase(),
+            projectId: projectId,
+            projectName: projectName.toLowerCase(),
+            details: details.map((detail) => ({
+                key: detail.key.toLowerCase(),
+                value: detail.value.toLowerCase(),
+            })),
+            contactPerson: contactPerson.toLowerCase(),
+            is_active: isActive,
+            modules: modules.map((module) => module.toLowerCase()),
+        };
+
+        if (filesImage[0]) {
+            const resImage = await uploadFile(title, "listings", filesImage[0]);
+            newListing.image = resImage;
+        }
+        if (filesImageLogo[0]) {
+            const resImage = await uploadFile(`${title}-logo`, "listings", filesImageLogo[0]);
+            newListing.logo = resImage;
+        }
+        const collectionName = "listings";
+        const data = newListing;
+
+        try {
+            const docID = await updateDocumentFirebase(collectionName, idProject, data);
+            console.log("ID Dokumen Baru:", docID);
+
+            if (docID) {
+                const categoryCollectionName = "categories";
+                const docName = projectId;
+                const categoryField = "data";
+                const categoryValues = modules;
+
+                try {
+                    await arrayUnionFirebase(
+                        categoryCollectionName,
+                        docName,
+                        categoryField,
+                        categoryValues
+                    );
+                } catch (error) {
+                    // Jika dokumen belum ada, tambahkan dokumen baru dengan nilai awal
+                    if (error.message.includes("No document to update")) {
+                        await setDocumentFirebase(
+                            categoryCollectionName,
+                            docName,
+                            { [categoryField]: categoryValues },
+                            companyId
+                        );
+                    } else {
+                        console.log("Terjadi kesalahan:", error);
+                    }
+                }
+
+                for (const module of modules) {
+                    const subCollectionName = `${categoryCollectionName}/${docName}/${module}`;
+                    const subDocName = "data";
+                    const subField = "category";
+                    const subValues = selectedCategory.map((categories) => categories?.value.toLowerCase());
+
+                    try {
+                        await arrayUnionFirebase(
+                            subCollectionName,
+                            subDocName,
+                            subField,
+                            subValues
+                        );
+                    } catch (error) {
+                        // Jika dokumen belum ada, tambahkan dokumen baru dengan nilai awal
+                        if (error.message.includes("No document to update")) {
+                            await setDocumentFirebase(
+                                subCollectionName,
+                                subDocName,
+                                { [subField]: subValues },
+                                companyId
+                            );
+                        } else {
+                            console.log("Terjadi kesalahan:", error);
+                        }
+                    }
+                    finally {
+                        setLoading(false)
+                        toast({
+                            title: "Deoapp.com",
+                            description: "success edit listing",
+                            status: "success",
+                            position: "top-right",
+                            isClosable: true,
+                        });
+                    }
+                }
+            }
+
+            console.log("berhasil");
+        } catch (error) {
+            console.log("Terjadi kesalahan:", error);
+        }
+    };
+
 
     const handleFileLogoInputChange = (event) => {
         const { files: newFiles } = event.target;
@@ -373,9 +511,10 @@ function FormPageListing() {
 
     };
 
+
     useEffect(() => {
         loadOptionsDB(categoryList);
-    }, [categoryList.length])
+    }, [categoryList.length, selectedCategory.length])
 
     return (
         <Stack
@@ -408,23 +547,22 @@ function FormPageListing() {
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl id="category">
+                    <FormControl id="category" isRequired>
                         <FormLabel>Category</FormLabel>
                         <Box width={'full'}>
 
                             <CreatableSelece
-                                defaultOptions
                                 isClearable={false}
+                                value={selectedCategory.filter(
+                                    (option) =>
+                                        option.value
+                                )}
                                 isMulti
-                                // value={categoryList?.find(
-                                //     (option) =>
-                                //         option.value === (selectedCategory ? selectedCategory : category)
-                                // )}
                                 name="db-react-select"
+                                options={categoryData}
                                 className="react-select"
                                 classNamePrefix="select"
                                 onChange={getSelectedCategory}
-                                options={categoryData}
                                 onInputChange={handleDBInputChange}
                             />
                         </Box>
@@ -470,12 +608,12 @@ function FormPageListing() {
                         <FormLabel>Project:</FormLabel>
                         <Select
                             borderRadius="lg"
-                            placeholder="Project"
+                            placeholder={idProject ? '' : 'Project'}
                             onChange={(e) => handleProjectChange(e.target.value)}
                         >
                             {projectList?.length > 0 &&
                                 projectList?.map((x, index) => (
-                                    <option value={x.id} key={index}>
+                                    <option value={x.id} key={index} selected={x.id === projectId}>
                                         <Text textTransform={"capitalize"}>{x.name}</Text>
                                     </option>
                                 ))}
@@ -493,14 +631,14 @@ function FormPageListing() {
 
                     <FormControl id="image" isRequired>
                         <HStack>
-                            {files.length > 0 && (
+                            {files?.length > 0 && (
                                 <Stack>
                                     <Image
-                                        src={files[0].file}
+                                        src={idProject ? files : files[0].file}
                                         boxSize="100%"
                                         maxWidth={300}
                                         borderRadius="xl"
-                                        alt={files[0].name}
+                                        alt={idProject ? title : files[0].name}
                                         shadow="sm"
                                     />
                                 </Stack>
@@ -530,14 +668,14 @@ function FormPageListing() {
 
                     <FormControl id="logo" isRequired>
                         <HStack>
-                            {filesLogo.length > 0 && (
+                            {filesLogo?.length > 0 && (
                                 <Stack>
                                     <Image
-                                        src={filesLogo[0].file}
+                                        src={idProject ? filesLogo : filesLogo[0].file}
                                         boxSize="100%"
                                         maxWidth={300}
                                         borderRadius="xl"
-                                        alt={filesLogo[0].name}
+                                        alt={idProject ? `${title}-logo` : filesLogo[0].name}
                                         shadow="sm"
                                     />
                                 </Stack>
@@ -564,7 +702,7 @@ function FormPageListing() {
                             </label>
                         </Stack>
                     </FormControl>
-                    
+
                     {/* <FormControl id="image" isRequired>
                         <HStack>
                             {files.length > 0 && (
@@ -698,21 +836,27 @@ function FormPageListing() {
                         <FormLabel>Modules:</FormLabel>
                         <Checkbox value="rms"
                             onChange={handleModulesChange}
+                            isChecked={modules.includes('rms')}
+
                         >
                             RMS
                         </Checkbox>
                         <Checkbox value="listing"
                             onChange={handleModulesChange}
+                            isChecked={modules.includes('listing')}
+
                         >
                             Listing
                         </Checkbox>
                         <Checkbox value="lms"
                             onChange={handleModulesChange}
+                            isChecked={modules.includes('lms')}
                         >
                             LMS
                         </Checkbox>
                     </FormControl>
-                    {!loading ? (
+
+                    {!idProject ? (!loading ? (
                         <Button colorScheme="teal"
                             onClick={handleSubmit}
                         >
@@ -722,7 +866,19 @@ function FormPageListing() {
                         <Button isLoading colorScheme="teal" isDisabled>
                             Add Listing
                         </Button>
-                    )}
+                    )) :
+                        (!loading ? (
+                            <Button colorScheme="teal"
+                                onClick={handleEditSubmit}
+                            >
+                                Edit Listing
+                            </Button>
+                        ) : (
+                            <Button isLoading colorScheme="teal" isDisabled>
+                                Edit Listing
+                            </Button>
+                        ))
+                    }
 
                     <Divider my={4} />
                 </VStack>

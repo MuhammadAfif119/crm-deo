@@ -10,6 +10,7 @@ import PipelineRouter from "./PipelineRouter";
 import SettingRouter from "./SettingRouter";
 import FormRouter from "./FormRouter";
 import ListingRouter from "./ListingRouter";
+import NewsRouter from "./NewsRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -24,6 +25,7 @@ function MainRouter() {
     ...SettingRouter,
     ...FormRouter,
     ...ListingRouter,
+    ...NewsRouter
   ];
   return (
     <Routes>

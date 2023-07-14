@@ -5,6 +5,7 @@ import {
   FcEditImage,
   FcKindle,
   FcLineChart,
+  FcNews,
   FcSettings,
   FcShare,
   FcSms,
@@ -55,6 +56,13 @@ export const data = [
     icon: FcConferenceCall,
     submenu: [
       { name: "Listing", icon: FcEditImage, link: "/listing" },
+    ],
+  },
+  {
+    name: "News",
+    icon: FcNews,
+    submenu: [
+      { name: "News", icon: FcEditImage, link: "/news" },
     ],
   },
 ];

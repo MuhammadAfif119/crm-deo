@@ -8,8 +8,11 @@ import useUserStore from '../../Routes/Store';
 import { formatFrice } from '../../Utils/numberUtil';
 import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { FcPhone } from 'react-icons/fc';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const ViewPageListing = () => {
+  const navigate = useNavigate()
+
   const [categoryData, setCategoryData] = useState({});
   const [categoryModule, setCategoryModules] = useState();
   const [categoryList, setCategoryList] = useState([]);
@@ -180,6 +183,7 @@ const ViewPageListing = () => {
     return pattern.test(value);
   };
 
+
   const renderValue = (detail) => {
     if (isLink(detail.value)) {
       return (
@@ -275,7 +279,7 @@ const ViewPageListing = () => {
                       right={2}
                       bottom={2}
                     />
-                    <Image borderRadius={'md'} src={listing.image} alt={listing.title} />
+                    <Image minH='150px' objectFit={'fill'} borderRadius={'md'} src={listing.image} alt={listing.title} />
                   </Box>
                 )}
                 <Stack spacing={1}>
@@ -320,12 +324,12 @@ const ViewPageListing = () => {
               <Stack spacing={1} py={2}>
                 <Flex justify={'space-between'} gap='5'>
 
-                <Text textTransform="capitalize" color="gray.800" fontSize="lg" fontWeight="bold">
-                  {detailActive.title}
-                </Text>
-                <Spacer/>
+                  <Text textTransform="capitalize" color="gray.800" fontSize="lg" fontWeight="bold">
+                    {detailActive.title}
+                  </Text>
+                  <Spacer />
                   <Text color="gray.600">Logo:</Text>
-                <Image  src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'}/>
+                  <Image src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'} />
                 </Flex>
                 <Text textTransform="capitalize" color="gray.500">
                   {detailActive.description}
@@ -361,16 +365,16 @@ const ViewPageListing = () => {
                 </Text>
                 <FcPhone size={20} />
               </HStack>
-            <HStack>
+              <HStack>
                 <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
 
                   Cancel
                 </Button>
-                <Button leftIcon={<EditIcon boxSize={3} />} colorScheme="green" onClick={() => handleCloseDetail()}>
+                <Button leftIcon={<EditIcon boxSize={3} />} colorScheme="green" onClick={() => navigate(`/listing/edit?id=${detailActive.id}`)}>
                   Edit
                 </Button>
-            </HStack>
-             
+              </HStack>
+
             </HStack>
           </ModalFooter>
         </ModalContent>
