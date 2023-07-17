@@ -64,6 +64,7 @@ const ViewPageListing = () => {
         // setCategoryData((prevData) => ({ ...prevData, ...mappedData }));
         setCategoryData(mappedData);
         setSelectedCategory('All')
+        setSelectedCategoryNiche(null)
       });
 
       return () => {
@@ -249,58 +250,63 @@ const ViewPageListing = () => {
       </Stack>
 
 
-      {Object.entries(categoryData).map(([category, categoryListing]) => (
-        <Stack spacing={2} key={category} py={2} >
-          <Box position="relative" padding="10">
-            <Divider />
-            <AbsoluteCenter bg="black" borderRadius="md" p="2">
-              <Text fontWeight={500} fontSize={23} color="white">
-                {category?.toUpperCase()}
-              </Text>
-            </AbsoluteCenter>
-          </Box>
-          <SimpleGrid columns={[1, 2, 3]} gap={5}>
-            {categoryListing?.map((listing, index) => (
-              <Stack mb={2} key={index} borderRadius='md' borderWidth={1} shadow='md' p={3} onClick={() => handleModalDetail(listing)} _hover={{
-                bg: "gray.100",
-                transform: "scale(1.02)",
-                transition: "0.3s",
-                cursor: "pointer"
-              }}
-                transition={"0.2s ease-in-out"}
-              >
-                {listing.image && (
-                  <Box flex="1" position={'relative'}>
-                    <IconButton
-                      icon={<MdDelete />}
-                      aria-label="Delete Listing"
-                      onClick={() => handleDelete(listing)}
-                      position='absolute'
-                      right={2}
-                      bottom={2}
-                    />
-                    <Image minH='150px' objectFit={'fill'} borderRadius={'md'} src={listing.image} alt={listing.title} />
-                  </Box>
-                )}
-                <Stack spacing={1}>
-                  <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(listing.price))}</Text>
+      {Object.entries(categoryData).map(([category, categoryListing]) => {
+        return (
+          (!selectedCategoryNiche || selectedCategoryNiche === category) &&
+          <Stack spacing={2} key={category} py={2} >
+            <Box position="relative" padding="10">
+              <Divider />
+              <AbsoluteCenter bg="black" borderRadius="md" p="2">
+                <Text fontWeight={500} fontSize={23} color="white">
+                  {category?.toUpperCase()}
+                </Text>
+              </AbsoluteCenter>
+            </Box>
+            <SimpleGrid columns={[1, 2, 3]} gap={5}>
+              {categoryListing?.map((listing, index) => {
+                return (
+                  <Stack mb={2} key={index} borderRadius='md' borderWidth={1} shadow='md' p={3} onClick={() => handleModalDetail(listing)} _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                    cursor: "pointer"
+                  }}
+                    transition={"0.2s ease-in-out"}
+                  >
+                    {listing.image && (
+                      <Box flex="1" position={'relative'}>
+                        <IconButton
+                          icon={<MdDelete />}
+                          aria-label="Delete Listing"
+                          onClick={() => handleDelete(listing)}
+                          position='absolute'
+                          right={2}
+                          bottom={2}
+                        />
+                        <Image minH='150px' objectFit={'fill'} borderRadius={'md'} src={listing.image} alt={listing.title} />
+                      </Box>
+                    )}
+                    <Stack spacing={1}>
+                      <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(listing.price))}</Text>
 
-                  <Text textTransform={'capitalize'} color='gray.500' noOfLines={1}>{listing.title}</Text>
-                  <Text color='gray.500' fontSize={'xs'} noOfLines={1}>CP: {listing.contactPerson}</Text>
-                  {/* <Text>Details:</Text>
+                      <Text textTransform={'capitalize'} color='gray.500' noOfLines={1}>{listing.title}</Text>
+                      <Text color='gray.500' fontSize={'xs'} noOfLines={1}>CP: {listing.contactPerson}</Text>
+                      {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
                     <HStack key={index} spacing={2} alignItems="center">
                       <Text fontWeight="bold">{detail.key}:</Text>
                       <Text>{detail.value}</Text>
                     </HStack>
                   ))} */}
-                </Stack>
+                    </Stack>
 
-              </Stack>
-            ))}
-          </SimpleGrid>
-        </Stack>
-      ))}
+                  </Stack>
+                )
+              })}
+            </SimpleGrid>
+          </Stack>
+        )
+      })}
 
 
       <Modal isOpen={modalDetail} onClose={() => handleCloseDetail()} isCentered>
@@ -327,11 +333,14 @@ const ViewPageListing = () => {
                   <Text textTransform="capitalize" color="gray.800" fontSize="lg" fontWeight="bold">
                     {detailActive.title}
                   </Text>
-                  <Spacer />
-                  <Text color="gray.600">Logo:</Text>
-                  <Image src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'} />
+                  {detailActive.logo ?
+                    <>
+                      <Spacer />
+                      <Text color="gray.600">Logo:</Text>
+                      <Image src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'} />
+                    </> : <></>}
                 </Flex>
-                <Text textTransform="capitalize" color="gray.500">
+                <Text  color="gray.500">
                   {detailActive.description}
                 </Text>
                 <HStack justifyContent="space-around" alignItems="flex-start">
@@ -360,8 +369,8 @@ const ViewPageListing = () => {
           <ModalFooter>
             <HStack gap={3}>
               <HStack spacing={2}>
-                <Text color="gray.900" fontWeight={500} fontSize="lg" noOfLines={1}>
-                  CP: {detailActive.contactPerson}
+                <Text color="gray.900" fontWeight={500} fontSize="md" >
+                  CP:{detailActive.contactPerson}
                 </Text>
                 <FcPhone size={20} />
               </HStack>

@@ -185,7 +185,7 @@ function FormPageListing() {
 
         const newListing = {
             title: title.toLowerCase(),
-            description: description.toLowerCase(),
+            description: description,
             category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
             price: price.toLowerCase(),
             projectId: projectId,
@@ -352,7 +352,7 @@ function FormPageListing() {
 
         const newListing = {
             title: title.toLowerCase(),
-            description: description.toLowerCase(),
+            description: description,
             category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
             price: price.toLowerCase(),
             projectId: projectId,
@@ -844,7 +844,7 @@ function FormPageListing() {
                         <Checkbox value="listing"
                             onChange={handleModulesChange}
                             isChecked={modules.includes('listing')}
-
+                                    mx='5'
                         >
                             Listing
                         </Checkbox>

@@ -190,7 +190,7 @@ export const AuthProvider = ({ children }) => {
       {
         field: "users",
         operator: "array-contains",
-        value: currentUser.uid,
+        value: currentUser?.uid,
       },
     ];
 

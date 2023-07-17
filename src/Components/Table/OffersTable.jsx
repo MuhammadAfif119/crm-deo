@@ -44,7 +44,6 @@ export const NewsTableComponent = (props) => {
 		setDeleteActive(x)
 		onOpen(x)
 	};
-	console.log(userDisplay)
 
 	const splitArr = deleteActive?.thumbnail && deleteActive?.thumbnail[0]?.split("?");
 	const secondSplit = splitArr && splitArr[0]?.split("%2F");
@@ -80,11 +79,9 @@ export const NewsTableComponent = (props) => {
 	};
 
 	const handleEdit = (x) => {
-		navigate(`/offers/${x.id}`)
-		console.log(x, 'ini datanya');
+		navigate(`/news/edit?id=${x.id}`)
 	};
 
-	console.log(props.data)
 	return (
 		<>
 			<Table {...props} bgColor={'white'}>
