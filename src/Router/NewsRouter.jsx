@@ -10,7 +10,7 @@ const NewsRouter = [
      },
 
      {
-          path: "/news/create",
+          path: "/news/:type",
           element: <CreateNewsPage />,
      },
 ];

@@ -80,6 +80,7 @@ function SidebarComponentV2({ layout }) {
       const result = await getSingleDocumentFirebase("users", currentUser.uid);
       setUserDisplay({
         ...userDisplay,
+        uid: currentUser.uid,
         name: result.name,
         email: result.email,
       });
