@@ -74,7 +74,6 @@ function SidebarComponentV2({ layout }) {
   const toast = useToast();
   const navigate = useNavigate();
 
-
   const getUserData = async () => {
     try {
       const result = await getSingleDocumentFirebase("users", currentUser.uid);
@@ -84,19 +83,19 @@ function SidebarComponentV2({ layout }) {
         name: result.name,
         email: result.email,
       });
+
     } catch (error) {
       console.log(error);
     }
   };
-
   const getProject = async () => {
     if (currentUser) {
+
       try {
         const q = query(
           collection(db, "projects"),
           where("users", "array-contains", currentUser.uid)
         );
-
         const projectArray = [];
 
         const querySnapshot = await getDocs(q);
@@ -109,6 +108,8 @@ function SidebarComponentV2({ layout }) {
           ...userDisplay,
           projects: projectArray,
           companies: company,
+          currentCompany: company[0]?.id,
+          currentProject: project[0]?.id
         });
 
         getCurrentProject();
@@ -183,8 +184,9 @@ function SidebarComponentV2({ layout }) {
 
   useEffect(() => {
     getProject();
+
     // getCurrentProject();
-  }, [companyId]);
+  }, [companyId, project.length, company?.length]);
 
   useEffect(() => {
     getCurrentProject();
@@ -196,7 +198,7 @@ function SidebarComponentV2({ layout }) {
       uid: currentUser.uid,
     });
     getUserData();
-  }, [currentUser]);
+  }, [currentUser, companyId]);
 
   useEffect(() => {
     console.log(userDisplay); // Check the updated value of userDisplay
@@ -254,7 +256,7 @@ function SidebarComponentV2({ layout }) {
 
                   <Stack>
                     <Select
-                      placeholder="Company Selection"
+                      // placeholder="Company Selection"
                       size={"sm"}
                       onChange={(e) => {
                         setCompanyId(e.target.value);
@@ -266,9 +268,9 @@ function SidebarComponentV2({ layout }) {
                     >
                       {company?.map((select, i) => (
                         <option
-                          defaultValue={company[0].id}
                           key={i}
                           value={select?.id}
+                          defaultValue={company[0].id}
                         >
                           {capitalize(select?.name)}
                         </option>
@@ -276,7 +278,7 @@ function SidebarComponentV2({ layout }) {
                     </Select>
 
                     <Select
-                      placeholder="Project Selection"
+                      // placeholder="Project Selection"
                       size={"sm"}
                       onChange={(e) => {
                         setProjectId(e.target.value);
@@ -287,7 +289,10 @@ function SidebarComponentV2({ layout }) {
                       }}
                     >
                       {project?.map((select, i) => (
-                        <option key={i} value={select?.id}>
+                        <option key={i} value={select?.id}
+                          defaultValue={project[0].id}
+
+                        >
                           {select.data?.name}
                         </option>
                       ))}
@@ -298,7 +303,7 @@ function SidebarComponentV2({ layout }) {
                     <Accordion allowMultiple>
                       {data.map((x, i) => (
                         <AccordionItem
-                          isDisabled={x.name === "Chat" || x.name === "Pipeline" ||  x.name === "Social Media"  ? true : false}
+                          isDisabled={x.name === "Chat" || x.name === "Pipeline" || x.name === "Social Media" ? true : false}
                         >
                           <h2>
                             <AccordionButton>
@@ -318,7 +323,7 @@ function SidebarComponentV2({ layout }) {
                                       <HStack spacing="3">
                                         <Icon
                                           as={subitem.icon}
-                                          // boxSize="5"
+                                        // boxSize="5"
                                         />
                                         <Text fontSize={"sm"}>
                                           {subitem.name}
@@ -361,7 +366,7 @@ function SidebarComponentV2({ layout }) {
                   </Stack>
 
                   {layout.type === "vertical-horizontal" &&
-                  layout.userProfile === "sidebar" ? (
+                    layout.userProfile === "sidebar" ? (
                     <>
                       <Divider />
 
@@ -374,7 +379,7 @@ function SidebarComponentV2({ layout }) {
                                 ? "https://tinyurl.com/yhkm2ek8"
                                 : currentUser.photoURL
                             }
-                            // email={currentUser.email}
+                          // email={currentUser.email}
                           />
                           <Button
                             w={"full"}
@@ -411,7 +416,7 @@ function SidebarComponentV2({ layout }) {
                                 ? "https://tinyurl.com/yhkm2ek8"
                                 : currentUser.photoURL
                             }
-                            // email={currentUser.email}
+                          // email={currentUser.email}
                           />
                           <Button
                             w={"full"}
