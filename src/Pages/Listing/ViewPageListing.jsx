@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Stack, Text, HStack, IconButton, SimpleGrid, Divider, AbsoluteCenter, Image, ModalFooter, Flex, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Spacer } from '@chakra-ui/react';
+import { Box, Stack, Text, HStack, IconButton, SimpleGrid, Divider, AbsoluteCenter, Image, ModalFooter, Flex, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Spacer, useToast } from '@chakra-ui/react';
 import { MdDelete } from 'react-icons/md';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebase';
@@ -12,7 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const ViewPageListing = () => {
   const navigate = useNavigate()
-
+  const toast = useToast()
   const [categoryData, setCategoryData] = useState({});
   const [categoryModule, setCategoryModules] = useState();
   const [categoryList, setCategoryList] = useState([]);
@@ -22,6 +22,8 @@ const ViewPageListing = () => {
   const [detailActive, setDetailActive] = useState('')
 
   const [modalDetail, setModalDetail] = useState('')
+  const [modalDelete, setModalDelete] = useState('')
+
 
 
   const { userDisplay } = useUserStore();
@@ -161,13 +163,29 @@ const ViewPageListing = () => {
 
     try {
       const result = await deleteDocumentFirebase(collectionName, docName);
-      console.log(result); // Pesan toast yang berhasil
-      console.log('berhasil menghapus');
+      toast({
+        title: 'Deleted!',
+        description: result,
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+      setModalDelete(false)
+     
     } catch (error) {
       console.log('Terjadi kesalahan:', error);
     }
   };
 
+  const handleModalDelete = (value) => {
+    setModalDelete(true)
+    setDetailActive(value)
+  }
+  const handleCloseDelete = () =>{
+    setModalDelete(false)
+    setDetailActive("")
+
+  }
   const handleModalDetail = (value) => {
     setModalDetail(true)
     setDetailActive(value)
@@ -265,7 +283,7 @@ const ViewPageListing = () => {
             <SimpleGrid columns={[1, 2, 3]} gap={5}>
               {categoryListing?.map((listing, index) => {
                 return (
-                  <Stack mb={2} key={index} borderRadius='md' borderWidth={1} shadow='md' p={3} onClick={() => handleModalDetail(listing)} _hover={{
+                  <Stack mb={2} key={index} borderRadius='md' borderWidth={1} shadow='md' p={3} _hover={{
                     bg: "gray.100",
                     transform: "scale(1.02)",
                     transition: "0.3s",
@@ -278,16 +296,23 @@ const ViewPageListing = () => {
                         <IconButton
                           icon={<MdDelete />}
                           aria-label="Delete Listing"
-                          onClick={() => handleDelete(listing)}
+                          onClick={() => handleModalDelete(listing)}
                           position='absolute'
                           right={2}
                           bottom={2}
                         />
-                        <Image minH='150px' objectFit={'fill'} borderRadius={'md'} src={listing.image} alt={listing.title} />
+                        <Image minH='150px' objectFit={'fill'} borderRadius={'md'} src={listing.image} alt={listing.title} onClick={() => handleModalDetail(listing)} />
                       </Box>
                     )}
-                    <Stack spacing={1}>
-                      <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(listing.price))}</Text>
+                    <Stack spacing={1} onClick={() => handleModalDetail(listing)} >
+                      <HStack>
+
+                        <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(listing.price))}</Text>
+
+                        {listing.priceEnd &&
+                          <Text fontWeight={'bold'} fontSize='lg' mx='1'> - Rp. {formatFrice(Number(listing.priceEnd))} </Text>
+                        }
+                      </HStack>
 
                       <Text textTransform={'capitalize'} color='gray.500' noOfLines={1}>{listing.title}</Text>
                       <Text color='gray.500' fontSize={'xs'} noOfLines={1}>CP: {listing.contactPerson}</Text>
@@ -316,7 +341,7 @@ const ViewPageListing = () => {
           <ModalCloseButton />
           <ModalBody>
             <Stack spacing={1} py={3}>
-              <Box flex="1" position="relative">
+              {/* <Box flex="1" position="relative">
                 <IconButton
                   icon={<MdDelete />}
                   aria-label="Delete Listing"
@@ -324,9 +349,9 @@ const ViewPageListing = () => {
                   position="absolute"
                   right={2}
                   bottom={2}
-                />
+                /> */}
                 <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
-              </Box>
+              {/* </Box> */}
               <Stack spacing={1} py={2}>
                 <Flex justify={'space-between'} gap='5'>
 
@@ -340,7 +365,7 @@ const ViewPageListing = () => {
                       <Image src={detailActive.logo} alt={detailActive.title} w='100px' h='50px' objectFit={'contain'} />
                     </> : <></>}
                 </Flex>
-                <Text  color="gray.500">
+                <Text color="gray.500">
                   {detailActive.description}
                 </Text>
                 <HStack justifyContent="space-around" alignItems="flex-start">
@@ -358,9 +383,14 @@ const ViewPageListing = () => {
                   <Spacer />
                   <Stack spacing={0} alignItems="flex-end">
                     <Text color="gray.600">Price</Text>
-                    <Text fontWeight="bold" fontSize="sm">
-                      Rp. {formatFrice(Number(detailActive.price))}
-                    </Text>
+                    <HStack>
+
+                      <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(detailActive.price))}</Text>
+
+                      {detailActive?.priceEnd &&
+                        <Text fontWeight={'bold'} fontSize='lg' mx='1'> - Rp. {formatFrice(Number(detailActive.priceEnd))} </Text>
+                      }
+                    </HStack>
                   </Stack>
                 </HStack>
               </Stack>
@@ -375,10 +405,10 @@ const ViewPageListing = () => {
                 <FcPhone size={20} />
               </HStack>
               <HStack>
-                <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
+                {/* <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
 
                   Cancel
-                </Button>
+                </Button> */}
                 <Button leftIcon={<EditIcon boxSize={3} />} colorScheme="green" onClick={() => navigate(`/listing/edit?id=${detailActive.id}`)}>
                   Edit
                 </Button>
@@ -389,7 +419,23 @@ const ViewPageListing = () => {
         </ModalContent>
       </Modal>
 
+      <Modal isOpen={modalDelete} onClose={() => handleCloseDelete()} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Are you sure want to delete listing <b>{detailActive.title}</b>?
+          </ModalBody>
+          <ModalFooter>
 
+            <Button leftIcon={<MdDelete boxSize={3} />} colorScheme="red" onClick={() => handleDelete(detailActive)}>
+              Delete
+            </Button>
+
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

@@ -68,10 +68,11 @@ function FormPageListing() {
     const [filesLogo, setFilesLogo] = useState([]);
     const [categoryInput, setCategoryInput] = useState("");
     const [categoryData, setCategoryData] = useState([])
-
+    const [checkPrice, setCheckPrice] = useState(false)
     const [categories, setCategories] = useState([])
     const [categoryList, setCategoryList] = useState([])
     const [queries, setQueries] = useState('')
+    const [priceEnd, setPriceEnd] = useState('')
     const { userDisplay } = useUserStore();
     const toast = useToast()
 
@@ -95,15 +96,19 @@ function FormPageListing() {
         setModules(res.modules)
         setIsActive(res.is_active)
         setProjectName(res.projectName)
+        setPriceEnd(res.priceEnd)
         setProjectId(res.projectId)
-        let cat =res.category
+        let cat = res.category
         let arr = []
-        cat.map((c)=>{
-            arr.push({value:c, label: c})
+        cat.map((c) => {
+            arr.push({ value: c, label: c })
         })
         setSelectedCategory(arr)
+        setDetails(res.details)
+        if(res.priceEnd){
+            setCheckPrice(true)
+        }
     }
-
 
     const getData = async () => {
         try {
@@ -130,9 +135,10 @@ function FormPageListing() {
         }
     };
 
+
     const getCategory = async () => {
         try {
-            const unsubscribe = await onSnapshot(doc(db, "categories", companyId), (docCat) => {
+            const unsubscribe = await onSnapshot(doc(db, "categories", userDisplay?.currentProject), (docCat) => {
                 setCategories({ id: docCat.id, ...docCat.data() });
             });
             return () => {
@@ -184,10 +190,11 @@ function FormPageListing() {
         setLoading(true)
 
         const newListing = {
-            title: title.toLowerCase(),
+            title: title,
             description: description,
             category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
             price: price.toLowerCase(),
+            priceEnd: priceEnd.toLowerCase(),
             projectId: projectId,
             projectName: projectName.toLowerCase(),
             details: details.map((detail) => ({
@@ -298,6 +305,7 @@ function FormPageListing() {
             setIsActive(true);
             setSelectedCategory([])
             setModules([]);
+            setPriceEnd('')
         } catch (error) {
             console.log("Terjadi kesalahan:", error);
         }
@@ -351,10 +359,11 @@ function FormPageListing() {
         setLoading(true)
 
         const newListing = {
-            title: title.toLowerCase(),
+            title: title,
             description: description,
             category: selectedCategory.map((categories) => categories?.value.toLowerCase()),
             price: price.toLowerCase(),
+            priceEnd: priceEnd.toLowerCase(),
             projectId: projectId,
             projectName: projectName.toLowerCase(),
             details: details.map((detail) => ({
@@ -511,7 +520,6 @@ function FormPageListing() {
 
     };
 
-
     useEffect(() => {
         loadOptionsDB(categoryList);
     }, [categoryList.length, selectedCategory.length])
@@ -619,15 +627,35 @@ function FormPageListing() {
                                 ))}
                         </Select>
                     </FormControl>
+                    <HStack w='100%' gap='5'>
+                        <FormControl
+                            w='25%'
 
-                    <FormControl id="price" isRequired>
-                        <FormLabel>Price:</FormLabel>
-                        <Input
-                            type="number"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                        />
-                    </FormControl>
+                            id="price" isRequired>
+                            <FormLabel>Price:</FormLabel>
+                            <Input
+                                type="number"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                            />
+                        </FormControl>
+                        <Checkbox
+                        isChecked={checkPrice}
+                            onChange={(e)=>setCheckPrice(e.target.checked)}
+                        >Add Price</Checkbox>
+                        {checkPrice && <FormControl
+                            w='25%'
+
+                            id="price" isRequired>
+                            <FormLabel>Price End</FormLabel>
+                            <Input
+                                type="number"
+                                value={priceEnd}
+                                onChange={(e) => setPriceEnd(e.target.value)}
+                            />
+                        </FormControl>}
+                    </HStack>
+
 
                     <FormControl id="image" isRequired>
                         <HStack>
@@ -844,7 +872,7 @@ function FormPageListing() {
                         <Checkbox value="listing"
                             onChange={handleModulesChange}
                             isChecked={modules.includes('listing')}
-                                    mx='5'
+                            mx='5'
                         >
                             Listing
                         </Checkbox>
