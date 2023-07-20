@@ -201,7 +201,6 @@ function SidebarComponentV2({ layout }) {
   }, [currentUser, companyId]);
 
   useEffect(() => {
-    console.log(userDisplay); // Check the updated value of userDisplay
   }, [userDisplay]);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")

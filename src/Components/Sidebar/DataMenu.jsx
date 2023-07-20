@@ -13,24 +13,17 @@ import {
 } from "react-icons/fc";
 
 export const data = [
-  {
-    name: "Pipeline",
-    icon: FcKindle,
-    submenu: [
-      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-      { name: "Settings", icon: FcSettings, link: "/chat" },
-    ],
-  },
-  {
-    name: "Chat",
-    icon: FcSms,
-    submenu: [
-      { name: "Chat", icon: FcEditImage, link: "/chat" },
-      { name: "WhatsApp Settings", icon: FcSettings, link: "/chat" },
-      { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-      { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-    ],
-  },
+
+  // {
+  //   name: "Chat",
+  //   icon: FcSms,
+  //   submenu: [
+  //     { name: "Chat", icon: FcEditImage, link: "/chat" },
+  //     { name: "WhatsApp Settings", icon: FcSettings, link: "/chat" },
+  //     { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+  //     { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+  //   ],
+  // },
   {
     name: "Social Media",
     icon: FcConferenceCall,
@@ -63,6 +56,14 @@ export const data = [
     icon: FcNews,
     submenu: [
       { name: "News", icon: FcEditImage, link: "/news" },
+    ],
+  },
+  {
+    name: "Event",
+    icon: FcKindle,
+    submenu: [
+      { name: "Ticketing", icon: FcEditImage, link: "/pipeline" },
+      { name: "Membership", icon: FcSettings, link: "/chat" },
     ],
   },
 ];
