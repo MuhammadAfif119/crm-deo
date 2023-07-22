@@ -1,11 +1,6 @@
-import { Box, Container, Flex, Spacer, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import AppFooter from "./Components/AppFooter";
-import AppHeader from "./Components/AppHeader";
-import AppSideBar from "./Components/AppSideBar";
-import Preloader from "./Components/Basic/Preloader";
 
-import MainRoute from "./Routes/MainRoute";
+
 import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";

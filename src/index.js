@@ -12,29 +12,25 @@ import * as Sentry from "@sentry/react";
 // import WebConfigProvider from './Hooks/Contexts/WebConfig/WebConfigProvider';
 // import WebConfig from './Hooks/Contexts/WebConfig/WebConfigProvider';
 
-// const isLocalhost = () => {
-// 	return (
-// 		window.location.hostname === "localhost" ||
-// 		window.location.hostname === "127.0.0.1"
-// 	);
-// };
+const isLocalhost = () => {
+	return (
+		window.location.hostname === "localhost" ||
+		window.location.hostname === "127.0.0.1"
+	);
+};
 
-// if (!isLocalhost()) {
-	Sentry.init({
-		dsn: "https://649bf87c1b5b49828274a19362ce3f73@o1121849.ingest.sentry.io/4505526450782208",
-		integrations: [
-			new Sentry.BrowserTracing(),
-			new Sentry.Replay(),
-		],
-		// Performance Monitoring
-		tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-		// Session Replay
-		replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-		replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-    tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/]
-	});
-// }
-
+if (!isLocalhost()) {
+Sentry.init({
+  dsn: "https://649bf87c1b5b49828274a19362ce3f73@o1121849.ingest.sentry.io/4505526450782208",
+  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+  // Session Replay
+  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
+});
+}
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

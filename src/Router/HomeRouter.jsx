@@ -1,10 +1,11 @@
 import React from "react";
-import MyFeedRssPage from "../Pages/MyFeeds/MyFeedRssPage";
+import HomePage from "../Pages/Home/HomePage";
+
 
 const HomeRouter = [
   {
-    path: "/my-feed",
-    element: <MyFeedRssPage />,
+    path: "/",
+    element: <HomePage />,
   },
 ];
 

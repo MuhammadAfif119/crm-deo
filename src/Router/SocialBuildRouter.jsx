@@ -3,7 +3,7 @@ import SocialBuildPage from "../Pages/Posts/SocialBuildPage";
 
 const SocialBuildRouter = [
   {
-    path: "/",
+    path: "/social",
     element: <SocialBuildPage />,
   },
 ];

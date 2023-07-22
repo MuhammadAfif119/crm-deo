@@ -1,10 +1,10 @@
 import React from "react";
-import FormPage from "../Pages/Form/FormPage";
+import FormBuilderPage from "../Pages/Form/FormBuilderPage";
 
 const FormRouter = [
   {
     path: "/form-builder",
-    element: <FormPage />,
+    element: <FormBuilderPage />,
   },
 ];
 
