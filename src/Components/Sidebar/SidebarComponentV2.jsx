@@ -302,7 +302,7 @@ function SidebarComponentV2({ layout }) {
                     <Accordion allowMultiple>
                       {data.map((x, i) => (
                         <AccordionItem
-                          isDisabled={x.name === "Chat" || x.name === "Pipeline" || x.name === "Social Media" ? true : false}
+                          key={i} isDisabled={x.name === "Chat" || x.name === "Pipeline" || x.name === "Social Media" ? true : false}
                         >
                           <h2>
                             <AccordionButton>

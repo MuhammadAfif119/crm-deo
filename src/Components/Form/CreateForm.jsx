@@ -22,6 +22,7 @@ function CreateForm({ setFormFields, formFields }) {
     // };
 
     const renderFormFields = () => {
+        if(formFields?.length > 0 )
         return formFields.map((field, index) => {
             const { label, type, name, placeholder, isRequired, options, idform } = field;
 
