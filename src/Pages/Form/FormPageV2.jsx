@@ -107,7 +107,7 @@ function FormPageV2() {
             </HStack>
 
             <Stack>
-                <SimpleGrid columns={[1, 2 ,3]}>
+                <SimpleGrid columns={[1, 2 ,3]} gap={3}>
                 {dataForm.length > 0 && dataForm.map((x, index) => {
                     return(
                         <Stack key={index} borderWidth='1px' p={3} cursor='pointer' onClick={() => navigate(`/form-builder/${x.id}`)}>
