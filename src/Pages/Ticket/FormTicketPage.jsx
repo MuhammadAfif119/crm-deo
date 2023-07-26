@@ -387,30 +387,30 @@ const FormTicketPage = () => {
      const handleDeleteCategory = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
                const updatedCategoryDetails = [...prevCategoryDetails];
-               updatedCategoryDetails.splice(categoryIndex, 1); // Remove the category at the specified index
+               updatedCategoryDetails.splice(categoryIndex, 1); 
                return updatedCategoryDetails;
           });
 
           setTicketCounts((prevTicketCounts) => {
                const updatedTicketCounts = [...prevTicketCounts];
-               updatedTicketCounts.splice(categoryIndex, 1); // Remove the ticket count for the corresponding category
+               updatedTicketCounts.splice(categoryIndex, 1);
                return updatedTicketCounts;
           });
 
-          setCategoryCount((prevCategoryCount) => prevCategoryCount - 1); // Decrease the category count by 1
+          setCategoryCount((prevCategoryCount) => prevCategoryCount - 1);
      }
 
 
      const handleDeleteTicket = (categoryIndex, ticketIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
                const updatedCategoryDetails = [...prevCategoryDetails];
-               updatedCategoryDetails[categoryIndex].tickets.splice(ticketIndex, 1); // Remove the ticket at the specified index
+               updatedCategoryDetails[categoryIndex].tickets.splice(ticketIndex, 1);
                return updatedCategoryDetails;
           });
 
           setTicketCounts((prevTicketCounts) => {
                const updatedTicketCounts = [...prevTicketCounts];
-               updatedTicketCounts[categoryIndex] = updatedTicketCounts[categoryIndex] - 1; // Decrease the ticket count for the corresponding category
+               updatedTicketCounts[categoryIndex] = updatedTicketCounts[categoryIndex] - 1;
                return updatedTicketCounts;
           });
      }
@@ -435,15 +435,13 @@ const FormTicketPage = () => {
                               newFileArray.push(newFileItem);
                               setFiles(newFileArray);
                          } else if (type === 'logo') {
-                              // Assuming you have a separate state variable for logo files, like `logoFiles`
                               newLogoArray.push(newFileItem);
                               setLogo(newLogoArray);
                          }
                     };
                }
 
-               // If you want to update the total image files state with newFiles (both thumbnail and logo)
-               // you can do that outside the for loop like this:
+
                const allNewFiles = [...files, ...newFiles];
                const allNewLogo = [...logo, ...newFiles]
                setFilesImage(allNewFiles);

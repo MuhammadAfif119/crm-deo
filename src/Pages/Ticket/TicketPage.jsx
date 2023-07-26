@@ -97,7 +97,6 @@ const TicketPage = () => {
                       <DeleteIcon />
                     </Button>
                   </Flex>
-                  {/* <Text color={fontCol} fontSize={'sm'}>{item?.notes}</Text> */}
                   <Box onClick={() => handleModal('read', item)}>
                     <Flex gap={2} align={'center'}>
                       <FiCalendar />
