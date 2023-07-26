@@ -146,7 +146,7 @@ const TicketPage = () => {
               <>
                 <Image src={selectedData?.item?.thumbnail || selectedData?.item?.thumbnaill} aspectRatio={16 / 9} objectFit={'contain'} maxH={'300px'} />
                 <Text fontWeight={'bold'} fontSize='lg'>{selectedData?.item?.title}</Text>
-                <Text fontWeight={'bold'} fontSize='lg'>{selectedData?.item?.description}</Text>
+                <Text>{selectedData?.item?.description}</Text>
                 <Flex gap={2} align={'center'}>
                   <FiCalendar />
                   <Text size={'sm'}>{moment(selectedData?.item?.dateStart).format("DD")} {monthNames[moment(selectedData?.item?.dateStart).month()]} {moment(selectedData?.item?.dateStart).format("YYYY")}</Text>
