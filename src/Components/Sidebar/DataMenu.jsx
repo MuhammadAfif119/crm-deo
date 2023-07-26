@@ -10,6 +10,7 @@ import {
   FcShare,
   FcSms,
   FcSurvey,
+  FcCloseUpMode
 } from "react-icons/fc";
 
 export const data = [
@@ -58,11 +59,18 @@ export const data = [
     ],
   },
   {
-    name: "Event",
+    name: "Pipeline",
     icon: FcKindle,
     submenu: [
-      { name: "Ticketing", icon: FcEditImage, link: "/pipeline" },
+      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
       { name: "Membership", icon: FcSettings, link: "/chat" },
+    ],
+  },
+  {
+    name: "Event",
+    icon: FcCloseUpMode,
+    submenu: [
+      { name: "Ticketing", icon: FcEditImage, link: "/ticket" },
     ],
   },
 ];

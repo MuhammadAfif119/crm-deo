@@ -353,6 +353,25 @@ function FormPageListing() {
             setFilesImage(newFiles);
         }
     };
+    const handleFileLogoInputChange = (event) => {
+        const { files: newFiles } = event.target;
+        if (newFiles?.length) {
+            const newFileArray = [...filesLogo];
+            for (let i = 0; i < newFiles?.length; i++) {
+                const reader = new FileReader();
+                reader.readAsDataURL(newFiles[i]);
+                reader.onload = () => {
+                    newFileArray.push({
+                        file: reader.result,
+                        fileName: newFiles[i].name,
+                        description: newFiles[i].type,
+                    });
+                    setFilesLogo(newFileArray);
+                };
+            }
+            setFilesImageLogo(newFiles);
+        }
+    };
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
@@ -463,26 +482,7 @@ function FormPageListing() {
     };
 
 
-    const handleFileLogoInputChange = (event) => {
-        const { files: newFiles } = event.target;
-        if (newFiles?.length) {
-            const newFileArray = [...filesLogo];
-            for (let i = 0; i < newFiles?.length; i++) {
-                const reader = new FileReader();
-                reader.readAsDataURL(newFiles[i]);
-                reader.onload = () => {
-                    newFileArray.push({
-                        file: reader.result,
-                        fileName: newFiles[i].name,
-                        description: newFiles[i].type,
-                    });
-                    setFilesLogo(newFileArray);
-                };
-            }
-            setFilesImageLogo(newFiles);
-        }
-    };
-
+   
     const handleAddDetail = () => {
         setDetails([...details, { key: "", value: "" }]);
     };
