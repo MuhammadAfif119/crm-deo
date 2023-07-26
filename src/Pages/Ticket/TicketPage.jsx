@@ -1,5 +1,5 @@
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons'
-import { Box, Button, Divider, Flex, HStack, Heading, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Text, VStack, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, Divider, Flex, HStack, Heading, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Stack, Text, VStack, useDisclosure, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
@@ -81,7 +81,7 @@ const TicketPage = () => {
           </Heading>
         </Box>
       </Flex>
-      <SimpleGrid columns={data.length !== 0 ? [2,3] : 1} gap='5'>
+      <SimpleGrid columns={data.length !== 0 ? [2, 3] : 1} gap='5'>
         {data.length !== 0 ? data?.filter((item) =>
           active
             ? active === item?.isActive && today.isBefore(item?.dateStart)
@@ -143,7 +143,28 @@ const TicketPage = () => {
           <ModalCloseButton />
           <ModalBody>
             {selectedData?.type === 'read' ?
-              <Image src={selectedData?.item?.thumbnail || selectedData?.item?.thumbnaill} aspectRatio={16 / 9} objectFit={'contain'} maxH={'300px'} />
+              <>
+                <Image src={selectedData?.item?.thumbnail || selectedData?.item?.thumbnaill} aspectRatio={16 / 9} objectFit={'contain'} maxH={'300px'} />
+                <Text fontWeight={'bold'} fontSize='lg'>{selectedData?.item?.title}</Text>
+                <Text fontWeight={'bold'} fontSize='lg'>{selectedData?.item?.description}</Text>
+                <Flex gap={2} align={'center'}>
+                  <FiCalendar />
+                  <Text size={'sm'}>{moment(selectedData?.item?.dateStart).format("DD")} {monthNames[moment(selectedData?.item?.dateStart).month()]} {moment(selectedData?.item?.dateStart).format("YYYY")}</Text>
+                  {selectedData?.item?.dateEnd &&
+
+                    <Text size={'sm'}>- {moment(selectedData?.item?.dateEnd).format("DD")} {monthNames[moment(selectedData?.item?.dateEnd).month()]} {moment(selectedData?.item?.dateEnd).format("YYYY")}</Text>
+                  }
+                </Flex>
+                <Flex align={'center'} gap='2'>
+                  <FiClock />
+                  <Text size={'sm'}>{selectedData?.item?.time}</Text>
+                  <Text size='sm'> - {selectedData?.item?.timeEnd}</Text>
+                </Flex>
+                <Flex align={'center'} gap={2}>
+                  <FiMapPin />
+                  <Text size={'sm'}>{selectedData?.item?.address || 'Zoom'}</Text>
+                </Flex>
+              </>
               : <Text>Are you sure want to delete ticket <b>{selectedData?.item?.title}</b>?</Text>
             }
           </ModalBody>
