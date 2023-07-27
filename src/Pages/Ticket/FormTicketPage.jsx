@@ -36,7 +36,7 @@ const LocationComponent = ({ type, data, setData }) => {
 const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, key }) => {
 
      return (
-          <Flex border={'1px solid black'} pl='5' rounded={5} gap={5} mt='5'key={key}>
+          <Flex border={'1px solid black'} pl='5' rounded={5} gap={5} mt='5' key={key}>
                <Box w='90%' paddingBottom='5'>
                     <FormControl py='5' isRequired>
                          <FormLabel>Title</FormLabel>
@@ -203,9 +203,9 @@ const FormTicketPage = () => {
      const [detailTicket, setDetailTicket] = useState(false);
      const [categoryCount, setCategoryCount] = useState(1);
      const [ticketCounts, setTicketCounts] = useState([1]);
-     const [files, setFiles] = useState('')
+     const [files, setFiles] = useState([])
      const [filesImage, setFilesImage] = useState('')
-     const [logo, setLogo] = useState('')
+     const [logo, setLogo] = useState([])
      const [filesLogo, setFilesLogo] = useState('')
      const [checkboxDate, setCheckboxDate] = useState(false)
      const [checkboxPrice, setCheckboxPrice] = useState(false)
@@ -242,39 +242,43 @@ const FormTicketPage = () => {
 
      const getTickets = async () => {
           const res = await getSingleDocumentFirebase('tickets', idProject)
-          setData({
-               title: res.title,
-               description: res.description,
-               dateStart: res.dateStart,
-               time: res.time,
-               timeEnd: res.timeEnd,
-               tnc: res.tnc,
-               isActive: res.isActive,
-          })
-          if (res.dateEnd) {
-               setCheckboxDate(true)
-               setData({...data, dateEnd: res.dateEnd})
+          if (res) {
+               const newData = {
+                    title: res.title,
+                    description: res.description,
+                    dateStart: res.dateStart,
+                    time: res.time,
+                    timeEnd: res.timeEnd,
+                    tnc: res.tnc,
+                    isActive: res.isActive,
+               }
+             
+               if (res.dateEnd) {
+                    setCheckboxDate(true)
+                    newData.dataEnd = res.dateEnd 
+               }
+               if (res.location) {
+                    newData.location = res.location 
+               }
+               if (res.address) {
+                    newData.address = res.address 
+               }
+               setData(newData)
+               setProjectId(res.projectId)
+               setProjectName(res.projectName)
+               setLogo(res.logo)
+               setFiles(res.thumbnail)
+               setCategoryDetails(res.category)
           }
-          if(res.location){
-               setData({
-                    ...data,
-                    location: res.location
-               })
-          }
-          if(res.address){
-               setData({...data, address:res.address})
-          }
-          setProjectId(res.projectId)
-          setProjectName(res.projectName)
-          setLogo(res.logo)
-          setFiles(res.thumbnail)
-          setCategoryDetails(res.category)
      }
 
      useEffect(() => {
           getData()
           getTickets()
      }, [userDisplay.currentCompany])
+
+     console.log(data)
+
 
      const handleAddTicket = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
@@ -363,7 +367,7 @@ const FormTicketPage = () => {
                          position: "top-right",
                          isClosable: true,
                     });
-               }else{
+               } else {
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({
                          title: "Deoapp.com",
@@ -387,7 +391,7 @@ const FormTicketPage = () => {
      const handleDeleteCategory = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
                const updatedCategoryDetails = [...prevCategoryDetails];
-               updatedCategoryDetails.splice(categoryIndex, 1); 
+               updatedCategoryDetails.splice(categoryIndex, 1);
                return updatedCategoryDetails;
           });
 
@@ -415,37 +419,42 @@ const FormTicketPage = () => {
           });
      }
 
-     const handleFileInputChange = (type, event) => {
+     const handleFileInputChange = (event) => {
           const { files: newFiles } = event.target;
           if (newFiles.length) {
                const newFileArray = [...files];
-               const newLogoArray = [...logo]
                for (let i = 0; i < newFiles.length; i++) {
                     const reader = new FileReader();
                     reader.readAsDataURL(newFiles[i]);
-
                     reader.onload = () => {
-                         const newFileItem = {
+                         newFileArray.push({
                               file: reader.result,
                               fileName: newFiles[i].name,
                               description: newFiles[i].type,
-                         };
-
-                         if (type === 'thumbnail') {
-                              newFileArray.push(newFileItem);
-                              setFiles(newFileArray);
-                         } else if (type === 'logo') {
-                              newLogoArray.push(newFileItem);
-                              setLogo(newLogoArray);
-                         }
+                         });
+                         setFiles(newFileArray);
                     };
                }
-
-
-               const allNewFiles = [...files, ...newFiles];
-               const allNewLogo = [...logo, ...newFiles]
-               setFilesImage(allNewFiles);
-               setFilesLogo(allNewLogo);
+               setFilesImage(newFiles);
+          }
+     };
+     const handleFileLogoInputChange = (event) => {
+          const { files: newFiles } = event.target;
+          if (newFiles?.length) {
+               const newFileArray = [...logo];
+               for (let i = 0; i < newFiles?.length; i++) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(newFiles[i]);
+                    reader.onload = () => {
+                         newFileArray.push({
+                              file: reader.result,
+                              fileName: newFiles[i].name,
+                              description: newFiles[i].type,
+                         });
+                         setLogo(newFileArray);
+                    };
+               }
+               setFilesLogo(newFiles);
           }
      };
 
@@ -487,7 +496,7 @@ const FormTicketPage = () => {
                                         type="file"
                                         display="none"
                                         id="fileInput"
-                                        onChange={(e) => handleFileInputChange('thumbnail', e)}
+                                        onChange={handleFileInputChange}
                                    />
 
                                    <label htmlFor="fileInput">
@@ -501,6 +510,14 @@ const FormTicketPage = () => {
                                         </HStack>
                                    </label>
                               </Stack>
+                         </FormControl>
+                         <FormControl w='25%' id="price" isRequired pt='5'>
+                              <FormLabel>Price</FormLabel>
+                              <Input
+                                   type="number"
+                                   value={data?.price}
+                                   onChange={(e) =>setData({...data, price: e.target.value})}
+                              />
                          </FormControl>
                          <HStack align={'center'}>
 
@@ -563,7 +580,7 @@ const FormTicketPage = () => {
                                         type="file"
                                         display="none"
                                         id="logoInput"
-                                        onChange={(e) => handleFileInputChange('logo', e)}
+                                        onChange={handleFileLogoInputChange}
                                    />
 
                                    <label htmlFor="logoInput">
