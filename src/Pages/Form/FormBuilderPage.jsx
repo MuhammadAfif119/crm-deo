@@ -151,6 +151,7 @@ function FormBuilderPage() {
 
     const renderFormFields = () => {
         if (formFields?.length > 0 ) {
+            console.log(formFields)
             return formFields?.map((field) => {
                 const { label, type, name, placeholder, isRequired, options } = field;
                 const inputPlaceholder = placeholder || '';
@@ -159,6 +160,7 @@ function FormBuilderPage() {
 
                 const handleSubmit = () => {
                     console.log('Form values:', formValues);
+                    console.log('Form Id:',param.id)
                     // Implement your form submission logic here
                 };
 

@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, Select, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
+import { Box, Button, Checkbox, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, Select, SimpleGrid, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import { MdOutlinePermMedia } from 'react-icons/md'
@@ -97,7 +97,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
 }
 
 
-const DetailTicketComponent = ({ idProject, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
+const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
      return (
           <>
                <Box mt='5'>
@@ -176,8 +176,53 @@ const DetailTicketComponent = ({ idProject, setCheckboxPrice, checkboxPrice, han
                          )
                     })}
                </Box>
-               <Flex justify={'space-between'} mt='5'>
+               <Flex align='end' justify={'space-between'} mt='5' >
+                    <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>
+                         Back
+                    </Button>
+                    <Button rightIcon={<FiChevronRight />} onClick={() => { setDetailTicket(false); setFormPage(true) }}>
+                         Next
+                    </Button>
+               </Flex>
+               {/* <Flex justify={'space-between'} mt='5'>
                     <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>Back</Button>
+                    {idProject ?
+                         <Button onClick={() => handleSubmit('edit')}>Edit</Button>
+                         :
+                         <Button onClick={() => handleSubmit('create')}>Submit</Button>
+                    }
+
+               </Flex> */}
+          </>
+
+     )
+}
+
+const FormPage = ({data, setData, handleSubmit, idProject, setFormPage, setDetailTicket, dataForm }) => {
+     return (
+          <>
+               <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }}>Back</Button>
+
+               <Stack my='5'>
+                    <Heading size='md' pb='5'>Pick form builder for this tickets</Heading>
+                    <SimpleGrid columns={[1, 2, 3]} gap={3}>
+                         {dataForm.length > 0 && dataForm.map((x, index) => {
+                              return (
+                                   <Stack key={index} borderWidth='1px' p={3} cursor='pointer'onClick={()=>setData({...data, formId: x.id})} rounded={5} borderColor={data?.formId === x.id && 'black'}>
+                                        <Text>{x.title}</Text>
+                                        {x.category.length > 0 && x.category.map((y, index) => {
+                                             return (
+                                                  <Text key={index}>{y}</Text>
+                                             )
+                                        })}
+                                   </Stack>
+                              )
+                         })}
+                    </SimpleGrid>
+               </Stack>
+
+               <Flex justify={'space-between'} mt='5'>
+                    <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }}>Back</Button>
                     {idProject ?
                          <Button onClick={() => handleSubmit('edit')}>Edit</Button>
                          :
@@ -186,9 +231,9 @@ const DetailTicketComponent = ({ idProject, setCheckboxPrice, checkboxPrice, han
 
                </Flex>
           </>
-
      )
 }
+
 const FormTicketPage = () => {
      const { userDisplay } = useUserStore();
      const companyId = userDisplay?.currentCompany;
@@ -214,6 +259,8 @@ const FormTicketPage = () => {
      ]);
      const [data, setData] = useState({ isActive: true })
      const [eventType, setEventType] = useState([]);
+     const [formPage, setFormPage] = useState(false)
+     const [dataForm, setDataForm] = useState({})
 
      const getData = async () => {
           try {
@@ -251,17 +298,19 @@ const FormTicketPage = () => {
                     timeEnd: res.timeEnd,
                     tnc: res.tnc,
                     isActive: res.isActive,
+                    price: res.price,
+                    formId: res.formId
                }
-             
+
                if (res.dateEnd) {
                     setCheckboxDate(true)
-                    newData.dataEnd = res.dateEnd 
+                    newData.dataEnd = res.dateEnd
                }
                if (res.location) {
-                    newData.location = res.location 
+                    newData.location = res.location
                }
                if (res.address) {
-                    newData.address = res.address 
+                    newData.address = res.address
                }
                setData(newData)
                setProjectId(res.projectId)
@@ -272,13 +321,35 @@ const FormTicketPage = () => {
           }
      }
 
+     const getDataForms = async () => {
+          try {
+               const q = query(collection(db, 'forms'),
+                    where("projectId", "==", userDisplay.currentProject)
+               );
+
+               const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const data = [];
+                    snapshot.forEach((doc) => {
+                         const docData = doc.data();
+                         data.push({ id: doc.id, ...docData });
+                    });
+
+                    setDataForm(data);
+               });
+
+               return () => {
+                    unsubscribe();
+               };
+          } catch (error) {
+               console.log(error, 'ini error');
+          }
+     };
+
      useEffect(() => {
           getData()
+          getDataForms()
           getTickets()
      }, [userDisplay.currentCompany])
-
-     console.log(data)
-
 
      const handleAddTicket = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
@@ -461,7 +532,7 @@ const FormTicketPage = () => {
 
      return (
           <Box pb='5'>
-               {detailTicket === false ?
+               {detailTicket === false && formPage === false ?
                     <>
                          <BackButtons />
                          <Flex justify={'space-between'} align={'center'}>
@@ -516,7 +587,7 @@ const FormTicketPage = () => {
                               <Input
                                    type="number"
                                    value={data?.price}
-                                   onChange={(e) =>setData({...data, price: e.target.value})}
+                                   onChange={(e) => setData({ ...data, price: e.target.value })}
                               />
                          </FormControl>
                          <HStack align={'center'}>
@@ -641,22 +712,33 @@ const FormTicketPage = () => {
                               </Button>
                          </Flex>
                     </>
-                    :
-                    <DetailTicketComponent
-                         categoryDetails={categoryDetails}
-                         handleCategoryChange={handleCategoryChange}
-                         handleTicketChange={handleTicketChange}
-                         handleAddTicket={handleAddTicket}
-                         handleIncrement={handleIncrement}
-                         setDetailTicket={setDetailTicket}
-                         ticketCounts={ticketCounts}
-                         handleSubmit={handleSubmit}
-                         handleDeleteTicket={handleDeleteTicket}
-                         handleDeleteCategory={handleDeleteCategory}
-                         setCheckboxPrice={setCheckboxPrice}
-                         checkboxPrice={checkboxPrice}
-                         idProject={idProject}
-                    />
+                    : formPage === false ?
+                         <DetailTicketComponent
+                              categoryDetails={categoryDetails}
+                              handleCategoryChange={handleCategoryChange}
+                              handleTicketChange={handleTicketChange}
+                              handleAddTicket={handleAddTicket}
+                              handleIncrement={handleIncrement}
+                              setDetailTicket={setDetailTicket}
+                              ticketCounts={ticketCounts}
+                              handleSubmit={handleSubmit}
+                              handleDeleteTicket={handleDeleteTicket}
+                              handleDeleteCategory={handleDeleteCategory}
+                              setCheckboxPrice={setCheckboxPrice}
+                              checkboxPrice={checkboxPrice}
+                              idProject={idProject}
+                              setFormPage={setFormPage}
+                              formPage={formPage}
+                         /> :
+                         <FormPage
+                              handleSubmit={handleSubmit}
+                              idProject={idProject}
+                              setFormPage={setFormPage}
+                              setDetailTicket={setDetailTicket}
+                              dataForm={dataForm}
+                              setData={setData}
+                              data={data}
+                         />
                }
 
 
