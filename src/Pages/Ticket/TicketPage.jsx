@@ -3,7 +3,7 @@ import { Box, Button, Divider, Flex, HStack, Heading, Image, Modal, ModalBody, M
 import React, { useEffect, useState } from 'react'
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { deleteDocumentFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
+import { deleteDocumentFirebase, deleteFileFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
 import useUserStore from '../../Routes/Store'
 import moment from 'moment';
 
@@ -33,18 +33,25 @@ const TicketPage = () => {
     setSelectedData({ type: type, item: item })
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (x) => {
     try {
-      const res = await deleteDocumentFirebase('tickets', id)
-      toast({
-        title: "Deoapp.com",
-        description: res,
-        status: "success",
-        position: "top-right",
-        isClosable: true,
-      });
-      getData()
-      onClose()
+      console.log(x)
+      deleteFileFirebase(`${x.title}_800x800`, `tickets`).then(() => {
+        deleteFileFirebase(`${x.title}-logo_800x800`, `tickets`).then(() => {
+          deleteDocumentFirebase('tickets', x?.id).then((res) => {
+            toast({
+              title: "Deoapp.com",
+              description: res,
+              status: "success",
+              position: "top-right",
+              isClosable: true,
+            });
+            getData()
+            onClose()
+          })
+        })
+      })
+
     } catch (error) {
       toast({
         title: "Deoapp.com",
@@ -174,7 +181,7 @@ const TicketPage = () => {
               <Button colorScheme='blue' mr={3} leftIcon={<EditIcon />} onClick={() => navigate(`/ticket/edit?id=${selectedData?.item?.id}`)}>
                 Edit
               </Button> :
-              <Button colorScheme='red' mr={3} leftIcon={<DeleteIcon />} onClick={() => handleDelete(selectedData?.item?.id)}>
+              <Button colorScheme='red' mr={3} leftIcon={<DeleteIcon />} onClick={() => handleDelete(selectedData?.item)}>
                 Delete
               </Button>
             }
