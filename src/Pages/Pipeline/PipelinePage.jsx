@@ -16,7 +16,7 @@ import useUserStore from "../../Routes/Store";
 import { capitalize } from "../../Utils/capitalizeUtil";
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
 
-const Pipeline = () => {
+const PipelinePage = () => {
   const { userDisplay } = useUserStore();
 
   const [dataProject, setDataProject] = useState();
@@ -94,4 +94,4 @@ const Pipeline = () => {
   );
 };
 
-export default Pipeline;
+export default PipelinePage;
