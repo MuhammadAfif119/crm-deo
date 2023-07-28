@@ -1,5 +1,5 @@
 import React from "react";
-import FormBuilderPage from "../Pages/Form/FormBuilderPage";
+import FormBuilderPage from "../Pages/Form/FormBuilderPageV2";
 import FormPageV2 from "../Pages/Form/FormPageV2";
 
 const FormRouter = [
