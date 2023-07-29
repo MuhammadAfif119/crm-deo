@@ -12,6 +12,7 @@ import {
   FcSurvey,
   FcCloseUpMode,
   FcPodiumWithSpeaker,
+  FcParallelTasks,
   FcPackage,
   FcDatabase
 } from "react-icons/fc";
@@ -50,7 +51,7 @@ export const data = [
     submenu: [
       { name: "Form", icon: FcSurvey, link: "/form-builder" },
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
-      { name: "Listing", icon: FcConferenceCall, link: "/listing" },
+      { name: "Listing", icon: FcParallelTasks, link: "/listing" },
       { name: "News", icon: FcNews, link: "/news" },
     ],
   },

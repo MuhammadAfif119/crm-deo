@@ -1,13 +1,13 @@
-import { Box, Button, Checkbox, Container, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, Select, SimpleGrid, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
+import { Box, Button, Checkbox, Container, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, SimpleGrid, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import { MdOutlinePermMedia } from 'react-icons/md'
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { addDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
-import { collection, limit, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '../../Config/firebase'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useUserStore from '../../Hooks/Zustand/Store'
 
 const LocationComponent = ({ type, data, setData }) => {
@@ -97,7 +97,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
 }
 
 
-const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
+const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
 
      return (
           <>
@@ -167,7 +167,7 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                    }
 
                                    {
-                                   categoryDetails[categoryIndex]?.tickets?.length ? 
+                                        categoryDetails[categoryIndex]?.tickets?.length ?
                                              categoryDetails[categoryIndex]?.tickets?.map((_, ticketIndex) => (
                                                   <TicketComponent
                                                        key={`ticket-${categoryIndex}-${ticketIndex}`}
@@ -178,17 +178,17 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                                        handleDeleteTicket={handleDeleteTicket}
                                                   />
                                              ))
-                                   : 
-                                   Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => (
-                                        <TicketComponent
-                                             key={`ticket-${categoryIndex}-${ticketIndex}`}
-                                             categoryIndex={categoryIndex}
-                                             category={category}
-                                             ticketIndex={ticketIndex}
-                                             handleTicketChange={handleTicketChange}
-                                             handleDeleteTicket={handleDeleteTicket}
-                                        />
-                                   ))
+                                             :
+                                             Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => (
+                                                  <TicketComponent
+                                                       key={`ticket-${categoryIndex}-${ticketIndex}`}
+                                                       categoryIndex={categoryIndex}
+                                                       category={category}
+                                                       ticketIndex={ticketIndex}
+                                                       handleTicketChange={handleTicketChange}
+                                                       handleDeleteTicket={handleDeleteTicket}
+                                                  />
+                                             ))
                                    }
                               </div>
                          )
@@ -256,11 +256,11 @@ const FormTicketPage = () => {
      const globalState = useUserStore();
      const companyId = globalState?.currentCompany;
      const toast = useToast()
+     const navigate = useNavigate()
 
      let [searchParams, setSearchParams] = useSearchParams();
      const idProject = searchParams.get("id");
 
-     const [projectList, setProjectList] = useState([]);
      const [projectId, setProjectId] = useState("");
      const [projectName, setProjectName] = useState("");
      const [detailTicket, setDetailTicket] = useState(false);
@@ -280,35 +280,15 @@ const FormTicketPage = () => {
      const [formPage, setFormPage] = useState(false)
      const [dataForm, setDataForm] = useState({})
 
-     const getData = async () => {
-          try {
-               const q = query(
-                    collection(db, "projects"),
-                    where("companyId", "==", companyId),
-                    limit(25)
-               );
-
-               const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const datas = [];
-                    snapshot.forEach((doc) => {
-                         const docData = doc.data();
-                         datas.push({ id: doc.id, ...docData });
-                    });
-                    setProjectList(datas);
-               });
-
-               return () => {
-                    unsubscribe();
-               };
-          } catch (error) {
-               console.log(error, "ini error");
-          }
-     };
-
+     const getProject = () => {
+          const res = globalState?.projects?.find(e => e.id === globalState?.currentProject)
+          setProjectId(res?.id)
+          setProjectName(res?.name)
+     }
      const getTickets = async () => {
           const res = await getSingleDocumentFirebase('tickets', idProject)
           if (res) {
-               const newData = {
+               let newData = {
                     title: res.title,
                     description: res.description,
                     dateStart: res.dateStart,
@@ -329,6 +309,9 @@ const FormTicketPage = () => {
                }
                if (res.address) {
                     newData.address = res.address
+               }
+               if (res.zoomId) {
+                    newData = res.zoomId
                }
                setData(newData)
                setProjectId(res.projectId)
@@ -361,15 +344,23 @@ const FormTicketPage = () => {
                     unsubscribe();
                };
           } catch (error) {
-               console.log(error, 'ini error');
+               toast({
+                    title: "Error",
+                    description: error,
+                    status: "error",
+                    position: "top-right",
+                    isClosable: true,
+               });
           }
      };
 
      useEffect(() => {
-          getData()
           getDataForms()
+          if (!idProject) {
+               getProject()
+          }
           getTickets()
-     }, [globalState.currentCompany])
+     }, [globalState.currentProject])
 
      const handleAddTicket = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {
@@ -425,12 +416,6 @@ const FormTicketPage = () => {
           });
      };
 
-     const handleProjectChange = (value) => {
-          const projectFind = projectList.find((x) => x.id === value);
-          setProjectId(projectFind.id);
-          setProjectName(projectFind.name);
-     };
-
      const handleSubmit = async (type) => {
           const newData = {
                ...data,
@@ -458,6 +443,8 @@ const FormTicketPage = () => {
                          position: "top-right",
                          isClosable: true,
                     });
+
+                    navigate('/ticket')
                } else {
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({
@@ -467,6 +454,7 @@ const FormTicketPage = () => {
                          position: "top-right",
                          isClosable: true,
                     })
+                    navigate('/ticket')
                }
           } catch (error) {
                toast({
@@ -637,18 +625,7 @@ const FormTicketPage = () => {
                          </HStack>
                          <FormControl mt='5' id="Project" isRequired>
                               <FormLabel>Project</FormLabel>
-                              <Select
-                                   borderRadius="lg"
-                                   placeholder={idProject ? '' : 'Project'}
-                                   onChange={(e) => handleProjectChange(e.target.value)}
-                              >
-                                   {projectList?.length > 0 &&
-                                        projectList?.map((x, index) => (
-                                             <option value={x.id} key={index} selected={x.id === projectId}>
-                                                  <Text textTransform={"capitalize"}>{x.name}</Text>
-                                             </option>
-                                        ))}
-                              </Select>
+                              <Input value={projectName} variant={'unstyled'} disabled />
                          </FormControl>
                          <FormControl id="image-peaker" pt='5'>
                               <HStack>
@@ -730,7 +707,7 @@ const FormTicketPage = () => {
                               <FormLabel>Activate this Event</FormLabel>
                               <Flex align={'center'} gap={2}>
                                    <Text>No</Text>
-                                   <Switch  id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
+                                   <Switch id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
                                    <Text>Yes</Text>
 
                               </Flex>

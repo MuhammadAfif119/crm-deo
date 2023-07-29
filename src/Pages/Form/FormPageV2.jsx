@@ -1,4 +1,4 @@
-import { Button, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spacer, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { Button, HStack, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spacer, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { addDocumentFirebase } from '../../Api/firebaseApi';
 import { db } from '../../Config/firebase';
 import { checkIdSelect } from '../../Hooks/Middleware/UserMiddleWare';
 import useUserStore from "../../Hooks/Zustand/Store";
+import { FcPlus } from 'react-icons/fc';
 
 
 function FormPageV2() {
@@ -100,11 +101,16 @@ function FormPageV2() {
     };
 
     return (
-        <Stack>
+        <Stack p={[1, 1, 5]}>
             <HStack>
-            <Text>Form page</Text>
+            <Heading size='md'>Form page</Heading>
             <Spacer />
-            <Button onClick={onOpen}>New Form</Button>
+                <Button onClick={onOpen} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
+                    <HStack>
+                        <FcPlus  />
+                        <Text>Form</Text>
+                    </HStack>
+                </Button>
             </HStack>
 
             <Stack>
