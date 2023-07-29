@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, Select, SimpleGrid, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
+import { Box, Button, Checkbox, Container, Flex, FormControl, FormLabel, HStack, Heading, Image, Input, Select, SimpleGrid, Spacer, Stack, Switch, Text, Textarea, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import { MdOutlinePermMedia } from 'react-icons/md'
@@ -47,7 +47,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
                     <HStack>
                          <FormControl py='5' isRequired w='33.3%'>
                               <FormLabel>Price</FormLabel>
-                              <Input onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'price', e.target.value)}
+                              <Input type='number' onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'price', e.target.value)}
                                    value={category?.tickets[ticketIndex]?.price}
 
                               />
@@ -123,7 +123,7 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                              </FormControl>
                                              <HStack w='100%' gap='5' mt='5'>
                                                   <FormControl w='25%' id="price" isRequired>
-                                                       <FormLabel>Price</FormLabel>
+                                                       <FormLabel>Price Start</FormLabel>
                                                        <Input
                                                             type="number"
                                                             value={category?.price}
@@ -133,7 +133,7 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                                   <Checkbox
                                                        isChecked={checkboxPrice}
                                                        onChange={(e) => setCheckboxPrice(e.target.checked)}
-                                                  >Add Price</Checkbox>
+                                                  >Add Range Price</Checkbox>
                                                   {checkboxPrice &&
                                                        <FormControl
                                                             w='25%'
@@ -198,7 +198,7 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
      )
 }
 
-const FormPage = ({data, setData, handleSubmit, idProject, setFormPage, setDetailTicket, dataForm }) => {
+const FormPage = ({ data, setData, handleSubmit, idProject, setFormPage, setDetailTicket, dataForm }) => {
      return (
           <>
                <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }}>Back</Button>
@@ -208,7 +208,7 @@ const FormPage = ({data, setData, handleSubmit, idProject, setFormPage, setDetai
                     <SimpleGrid columns={[1, 2, 3]} gap={3}>
                          {dataForm.length > 0 && dataForm.map((x, index) => {
                               return (
-                                   <Stack key={index} borderWidth='1px' p={3} cursor='pointer'onClick={()=>setData({...data, formId: x.id})} rounded={5} borderColor={data?.formId === x.id && 'black'}>
+                                   <Stack key={index} borderWidth='1px' p={3} cursor='pointer' onClick={() => setData({ ...data, formId: x.id })} rounded={5} borderColor={data?.formId === x.id && 'black'}>
                                         <Text>{x.title}</Text>
                                         {x.category.length > 0 && x.category.map((y, index) => {
                                              return (
@@ -318,8 +318,10 @@ const FormTicketPage = () => {
                setLogo(res.logo)
                setFiles(res.thumbnail)
                setCategoryDetails(res.category)
+               setEventType(res.eventType)
           }
      }
+
 
      const getDataForms = async () => {
           try {
@@ -531,14 +533,13 @@ const FormTicketPage = () => {
 
 
      return (
-          <Box pb='5'>
+          <Container pb='5' maxW={'container.lg'}>
                {detailTicket === false && formPage === false ?
                     <>
                          <BackButtons />
-                         <Flex justify={'space-between'} align={'center'}>
-                              <Heading size='md' mt='5'>Event</Heading>
-                              <Switch mt='5' id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
-                         </Flex>
+
+                         <Heading size='md' mt='5'>Event</Heading>
+
                          <FormControl py='5' isRequired>
                               <FormLabel>Event Name</FormLabel>
                               <Input onChange={(e) => setData({ ...data, title: e.target.value })} value={data?.title} />
@@ -706,6 +707,16 @@ const FormTicketPage = () => {
                               <FormLabel>Terms & Conditions</FormLabel>
                               <Textarea onChange={(e) => setData({ ...data, tnc: e.target.value })} value={data?.tnc} />
                          </FormControl>
+
+                         <FormControl isRequired mt='5'>
+                              <FormLabel>Activate this Event</FormLabel>
+                              <Flex align={'center'} gap={2}>
+                                   <Text>No</Text>
+                                   <Switch  id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
+                                   <Text>Yes</Text>
+
+                              </Flex>
+                         </FormControl>
                          <Flex align='end' justify={'end'} mt='5' >
                               <Button rightIcon={<FiChevronRight />} onClick={() => setDetailTicket(true)}>
                                    Next
@@ -742,7 +753,7 @@ const FormTicketPage = () => {
                }
 
 
-          </Box >
+          </Container >
      )
 }
 

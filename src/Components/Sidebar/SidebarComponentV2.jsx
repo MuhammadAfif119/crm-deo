@@ -33,6 +33,9 @@ import {
   FcLineChart,
   FcShare,
   FcSurvey,
+  FcNext,
+  FcPrevious,
+  FcDatabase
 } from "react-icons/fc";
 import themeConfig from "../../Config/themeConfig";
 import { NavButton } from "./NavButton";
@@ -70,6 +73,7 @@ function SidebarComponentV2({ layout }) {
   const [projectId, setProjectId] = useState("");
   const [profileKey, setProfileKey] = useState("");
   const { setUserDisplay, userDisplay } = useUserStore();
+  const [sideBarOpen, setSideBarOpen] = useState(true)
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -205,258 +209,309 @@ function SidebarComponentV2({ layout }) {
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
-      <Box
-        height="full"
-        width={{
-          md: "14rem",
-          xl: "21rem",
-        }}
-        display={{
-          base: "none",
-          lg: "initial",
-        }}
-        overflowY="auto"
-        //   borderRightWidth="1px"
-        shadow={"base"}
-        roundedBottomRight={"lg"}
-        roundedTopRight={"lg"}
-      >
-        <Box position="sticky" overflowY="auto">
-          <Flex as="section" minH="100vh" bg="white">
-            <Flex
-              flex="1"
-              bg="bg-surface"
-              boxShadow="sm"
-              maxW={{
-                base: "full",
-                sm: "xs",
-              }}
-              py={{
-                base: "4",
-                sm: "6",
-              }}
-              px={{
-                base: "4",
-                sm: "6",
-              }}
-            >
-              <Stack justify="space-between" spacing="1">
-                <Stack
-                  spacing={{
-                    base: "5",
-                    sm: "6",
-                  }}
-                  shouldWrapChildren
-                >
-                  {/* <Logo /> */}
-                  <Center>
-                    <Image src={LogoDeoApp} maxH={75} />
-                  </Center>
+      <>
 
-                  <Stack>
-                    <Select
-                      // placeholder="Company Selection"
-                      size={"sm"}
-                      onChange={(e) => {
-                        setCompanyId(e.target.value);
-                        setUserDisplay({
-                          ...userDisplay,
-                          currentCompany: e.target.value,
-                        });
-                      }}
-                    >
-                      {company?.map((select, i) => (
-                        <option
-                          key={i}
-                          value={select?.id}
-                          defaultValue={company[0].id}
-                        >
-                          {capitalize(select?.name)}
-                        </option>
-                      ))}
-                    </Select>
+        {sideBarOpen === true ?
 
-                    <Select
-                      // placeholder="Project Selection"
-                      size={"sm"}
-                      onChange={(e) => {
-                        setProjectId(e.target.value);
-                        setUserDisplay({
-                          ...userDisplay,
-                          currentProject: e.target.value,
-                        });
-                      }}
-                    >
-                      {project?.map((select, i) => (
-                        <option key={i} value={select?.id}
-                          defaultValue={project[0].id}
+          <Box
+            height="full"
+            width={{
+              md: "14rem",
+              xl: "18rem",
+            }}
+            display={{
+              base: "none",
+              lg: "initial",
+            }}
+            overflowY="auto"
+            //   borderRightWidth="1px"
+            // shadow={"base"}
+            roundedBottomRight={"lg"}
+            roundedTopRight={"lg"}
+          >
+            <>
+              <Box position="sticky" overflowY="auto">
+                <Flex align={'right'} justify={'right'} onClick={() => setSideBarOpen(!sideBarOpen)} cursor={'pointer'} position={'relative'} top={5}>
+                  <Box position={'absolute'} boxShadow={'md'} p='3'>
 
-                        >
-                          {select.data?.name}
-                        </option>
-                      ))}
-                    </Select>
-                  </Stack>
+                    <FcPrevious />
+                  </Box>
+                </Flex>
 
-                  <Stack>
-                    <Accordion allowMultiple>
-                      {data.map((x, i) => (
-                        <AccordionItem
-                          key={i} isDisabled={x.name === "Chat" || x.name === "Social Media"? true : false}
-                        >
-                          <h2>
-                            <AccordionButton>
-                              <Icon as={x.icon} boxSize={5} />
-                              <Text fontWeight={"semibold"} pl={3}>
-                                {x.name}
-                              </Text>
-                              <AccordionIcon />
-                            </AccordionButton>
-                          </h2>
-                          {x.submenu ? (
-                            <>
-                              <AccordionPanel>
-                                <Stack>
-                                  {x.submenu?.map((subitem, i) => (
-                                    <Link to={subitem.link} key={i}>
-                                      <HStack spacing="3">
-                                        <Icon
-                                          as={subitem.icon}
-                                        // boxSize="5"
-                                        />
-                                        <Text fontSize={"sm"}>
-                                          {subitem.name}
-                                        </Text>
-                                      </HStack>
-                                    </Link>
-                                  ))}
-                                </Stack>
-                              </AccordionPanel>
-                            </>
-                          ) : (
-                            <>{null}</>
-                          )}
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  spacing={{
-                    base: "5",
-                    sm: "6",
-                  }}
-                >
-                  <Stack spacing="1">
-                    {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
-                    <Button
-                      as={Link}
-                      to={"/settings"}
-                      variant="ghost"
-                      justifyContent="start"
-                    >
-                      <HStack spacing="3">
-                        <Icon as={FiSettings} boxSize="5" color="subtle" />
-                        <Text>Setting</Text>
-                      </HStack>
-                    </Button>
-                    {/* <NavButton label="Settings" icon={FiSettings} /> */}
-                  </Stack>
-
-                  {layout.type === "vertical-horizontal" &&
-                    layout.userProfile === "sidebar" ? (
-                    <>
-                      <Divider />
-
-                      {currentUser ? (
-                        <>
-                          <UserProfile
-                            name={currentUser.displayName}
-                            image={
-                              currentUser.photoURL === null
-                                ? "https://tinyurl.com/yhkm2ek8"
-                                : currentUser.photoURL
-                            }
-                          // email={currentUser.email}
-                          />
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            onClick={() => console.log(userDisplay)}
-                          >
-                            Check state
-                          </Button>
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            onClick={logout}
-                          >
-                            Logout
-                          </Button>
-                        </>
-                      ) : (
-                        <Box>
-                          <Button>Login</Button>
-                        </Box>
-                      )}
-                    </>
-                  ) : layout.type === "vertical" ? (
-                    <>
-                      <Divider />
-                      {currentUser ? (
-                        <>
-                          <UserProfile
-                            name={currentUser.displayName}
-                            image={
-                              currentUser.photoURL === null
-                                ? "https://tinyurl.com/yhkm2ek8"
-                                : currentUser.photoURL
-                            }
-                          // email={currentUser.email}
-                          />
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            onClick={logout}
-                          >
-                            Logout
-                          </Button>
-                        </>
-                      ) : (
-                        <Box>
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            as={Link}
-                            to={"/login"}
-                          >
-                            Login
-                          </Button>
-                        </Box>
-                      )}
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  <Button
-                    w={"full"}
-                    colorScheme="telegram"
-                    size={"sm"}
-                    onClick={() => console.log(userDisplay)}
+                <Flex as="section" minH="100vh" bg="white">
+                  <Flex
+                    flex="1"
+                    bg="bg-surface"
+                    boxShadow="sm"
+                    maxW={{
+                      base: "full",
+                      sm: "xs",
+                    }}
+                    py={{
+                      base: "4",
+                      sm: "6",
+                    }}
+                    px={{
+                      base: "4",
+                      sm: "6",
+                    }}
                   >
-                    Check state
-                  </Button>
-                </Stack>
-              </Stack>
+
+                    <Stack justify="space-between" spacing="1">
+
+                      <Stack
+                        spacing={{
+                          base: "5",
+                          sm: "6",
+                        }}
+                        shouldWrapChildren
+                      >
+
+
+                        {/* <Logo /> */}
+                        <Center>
+                          <Image src={LogoDeoApp} maxH={75} />
+                        </Center>
+
+                        <Stack>
+                          <Select
+                            // placeholder="Company Selection"
+                            size={"sm"}
+                            onChange={(e) => {
+                              setCompanyId(e.target.value);
+                              setUserDisplay({
+                                ...userDisplay,
+                                currentCompany: e.target.value,
+                              });
+                            }}
+                          >
+                            {company?.map((select, i) => (
+                              <option
+                                key={i}
+                                value={select?.id}
+                                defaultValue={company[0].id}
+                              >
+                                {capitalize(select?.name)}
+                              </option>
+                            ))}
+                          </Select>
+
+                          <Select
+                            // placeholder="Project Selection"
+                            size={"sm"}
+                            onChange={(e) => {
+                              setProjectId(e.target.value);
+                              setUserDisplay({
+                                ...userDisplay,
+                                currentProject: e.target.value,
+                              });
+                            }}
+                          >
+                            {project?.map((select, i) => (
+                              <option key={i} value={select?.id}
+                                defaultValue={project[0].id}
+
+                              >
+                                {select.data?.name}
+                              </option>
+                            ))}
+                          </Select>
+                        </Stack>
+
+                        <Stack>
+                          {/* <HStack>
+                            <Icon as={FcDatabase} boxSize={5} />
+                            <Text fontWeight={"semibold"} pl={3}>
+                              Dashboard
+                            </Text>
+                          </HStack> */}
+                          <Accordion>
+
+                            {data.map((x, i) => (
+                              <AccordionItem
+                                key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
+                              >
+                                <h2>
+                                  <AccordionButton>
+                                    {x.name === 'Dashboard' ?
+                                      <Flex m='0' p='0' gap='0' onClick={()=>navigate(x?.link)}>
+                                        <Icon as={x.icon} boxSize={5} />
+                                        <Text fontWeight={"semibold"} pl={3}>
+                                          {x.name}
+                                        </Text>
+                                      </Flex>
+                                      :
+                                      <>
+                                        <Icon as={x.icon} boxSize={5} />
+                                        <Text fontWeight={"semibold"} pl={3}>
+                                          {x.name}
+                                        </Text>
+                                        <AccordionIcon />
+
+                                      </>
+                                    }
+                                  </AccordionButton>
+                                </h2>
+                                {x.submenu ? (
+                                  <>
+                                    <AccordionPanel>
+                                      <Stack>
+                                        {x.submenu?.map((subitem, i) => (
+                                          <Link to={subitem.link} key={i}>
+                                            <HStack spacing="3">
+                                              <Icon
+                                                as={subitem.icon}
+                                              // boxSize="5"
+                                              />
+                                              <Text fontSize={"sm"}>
+                                                {subitem.name}
+                                              </Text>
+                                            </HStack>
+                                          </Link>
+                                        ))}
+                                      </Stack>
+                                    </AccordionPanel>
+                                  </>
+                                ) : (
+                                  <>{null}</>
+                                )}
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
+                        </Stack>
+                      </Stack>
+
+                      <Stack
+                        spacing={{
+                          base: "5",
+                          sm: "6",
+                        }}
+                      >
+
+                        <Stack spacing="1">
+                          {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
+                          <Button
+                            as={Link}
+                            to={"/settings"}
+                            variant="ghost"
+                            justifyContent="start"
+                          >
+                            <HStack spacing="3">
+                              <Icon as={FiSettings} boxSize="5" color="subtle" />
+                              <Text>Setting</Text>
+                            </HStack>
+                          </Button>
+                          {/* <NavButton label="Settings" icon={FiSettings} /> */}
+                        </Stack>
+
+                        {layout.type === "vertical-horizontal" &&
+                          layout.userProfile === "sidebar" ? (
+                          <>
+                            <Divider />
+
+                            {currentUser ? (
+                              <>
+                                <UserProfile
+                                  name={currentUser.displayName}
+                                  image={
+                                    currentUser.photoURL === null
+                                      ? "https://tinyurl.com/yhkm2ek8"
+                                      : currentUser.photoURL
+                                  }
+                                // email={currentUser.email}
+                                />
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  onClick={() => console.log(userDisplay)}
+                                >
+                                  Check state
+                                </Button>
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  onClick={logout}
+                                >
+                                  Logout
+                                </Button>
+                              </>
+                            ) : (
+                              <Box>
+                                <Button>Login</Button>
+                              </Box>
+                            )}
+                          </>
+                        ) : layout.type === "vertical" ? (
+                          <>
+                            <Divider />
+                            {currentUser ? (
+                              <>
+                                <UserProfile
+                                  name={currentUser.displayName}
+                                  image={
+                                    currentUser.photoURL === null
+                                      ? "https://tinyurl.com/yhkm2ek8"
+                                      : currentUser.photoURL
+                                  }
+                                // email={currentUser.email}
+                                />
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  onClick={logout}
+                                >
+                                  Logout
+                                </Button>
+                              </>
+                            ) : (
+                              <Box>
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  as={Link}
+                                  to={"/login"}
+                                >
+                                  Login
+                                </Button>
+                              </Box>
+                            )}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                        <Button
+                          w={"full"}
+                          colorScheme="telegram"
+                          size={"sm"}
+                          onClick={() => console.log(userDisplay)}
+                        >
+                          Check state
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Flex>
+                </Flex>
+              </Box>
+            </>
+
+
+          </Box>
+          :
+          <Box >
+            <Flex align={'right'} justify={'right'} onClick={() => setSideBarOpen(!sideBarOpen)} cursor={'pointer'} position={'relative'} top={5}>
+              <Box boxShadow={'md'} p='3'>
+
+                <FcNext />
+              </Box>
             </Flex>
-          </Flex>
-        </Box>
-      </Box>
+          </Box>
+
+        }
+      </>
     );
 
   return <></>;
