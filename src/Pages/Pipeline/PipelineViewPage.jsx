@@ -12,7 +12,6 @@ function PipelineViewPage() {
         try {
             const result = await getSingleDocumentFirebase('pipelines', param.id)
             setPipelineList(result)
-            console.log(result, 'res')
         } catch (error) {
             console.log(error)
         }
