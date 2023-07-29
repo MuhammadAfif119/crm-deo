@@ -325,7 +325,7 @@ function SidebarComponentV2({ layout }) {
                               Dashboard
                             </Text>
                           </HStack> */}
-                          <Accordion>
+                          <Accordion allowMultiple>
 
                             {data.map((x, i) => (
                               <AccordionItem
@@ -334,7 +334,7 @@ function SidebarComponentV2({ layout }) {
                                 <h2>
                                   <AccordionButton>
                                     {x.name === 'Dashboard' ?
-                                      <Flex m='0' p='0' gap='0' onClick={()=>navigate(x?.link)}>
+                                      <Flex onClick={()=>navigate(x?.link)}>
                                         <Icon as={x.icon} boxSize={5} />
                                         <Text fontWeight={"semibold"} pl={3}>
                                           {x.name}

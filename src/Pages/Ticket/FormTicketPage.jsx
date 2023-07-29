@@ -98,10 +98,13 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
 
 
 const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
+
      return (
           <>
                <Box mt='5'>
                     <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>Back</Button>
+                    <Heading size='md' py='5' borderBottom={'1px green solid'} rounded={5}>Input your category and ticket for your event</Heading>
+
                     {categoryDetails.map((category, categoryIndex) => {
                          return (
                               <div key={`category-${categoryIndex}`}>
@@ -162,7 +165,21 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                              </Flex>
                                         </>
                                    }
-                                   {Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => (
+
+                                   {
+                                   categoryDetails[categoryIndex]?.tickets?.length ? 
+                                             categoryDetails[categoryIndex]?.tickets?.map((_, ticketIndex) => (
+                                                  <TicketComponent
+                                                       key={`ticket-${categoryIndex}-${ticketIndex}`}
+                                                       categoryIndex={categoryIndex}
+                                                       category={category}
+                                                       ticketIndex={ticketIndex}
+                                                       handleTicketChange={handleTicketChange}
+                                                       handleDeleteTicket={handleDeleteTicket}
+                                                  />
+                                             ))
+                                   : 
+                                   Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => (
                                         <TicketComponent
                                              key={`ticket-${categoryIndex}-${ticketIndex}`}
                                              categoryIndex={categoryIndex}
@@ -171,7 +188,8 @@ const DetailTicketComponent = ({ setFormPage, formPage, idProject, setCheckboxPr
                                              handleTicketChange={handleTicketChange}
                                              handleDeleteTicket={handleDeleteTicket}
                                         />
-                                   ))}
+                                   ))
+                                   }
                               </div>
                          )
                     })}
