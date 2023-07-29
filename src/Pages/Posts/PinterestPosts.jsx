@@ -14,12 +14,11 @@ import {
 import React, { useContext, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdOutlinePermMedia, MdSchedule } from "react-icons/md";
-import useUserStore from "../../Routes/Store";
-import AuthContext from "../../Routes/hooks/AuthContext";
+import useUserStore from "../../Hooks/Zustand/Store";
 import ApiBackend from "../../Api/ApiBackend";
 import moment from "moment";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
-import { db } from "../../Config/firebase";
+import { auth, db } from "../../Config/firebase";
 
 const PinterestPosts = () => {
   const [files, setFiles] = useState([]);
@@ -47,8 +46,8 @@ const PinterestPosts = () => {
   const profileKey = userDisplay.profileKey;
   const title = userDisplay.projectTitle;
 
-  const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
-
+  const currentUser = auth.currentUser
+  
   const handleFileInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles.length) {
@@ -76,12 +75,12 @@ const PinterestPosts = () => {
   console.log(files);
 
   const handlePost = async () => {
-    loadingShow();
+    ;
 
     let fileImage = [];
 
     if (profileKey) {
-      loadingShow();
+      ;
       if (files.length > 0) {
         files.forEach(async (x) => {
           try {
@@ -95,7 +94,7 @@ const PinterestPosts = () => {
             setData({ ...data, mediaUrls: [res.data.url] });
             if (fileImage.length === files.length) {
               try {
-                loadingShow();
+                ;
                 const res = await ApiBackend.post("post", data);
 
                 if (res.status === 200 && res.data.status === "error") {
@@ -168,7 +167,7 @@ const PinterestPosts = () => {
                   });
                 }
 
-                loadingClose();
+                ;
               } catch (error) {
                 console.log(error, "ini error ");
                 // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
@@ -181,11 +180,11 @@ const PinterestPosts = () => {
                   isClosable: true,
                 });
 
-                loadingClose();
+                ;
               }
-              loadingClose();
+              ;
             }
-            loadingClose();
+            ;
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -248,14 +247,14 @@ const PinterestPosts = () => {
               setPlatformActive([]);
               setShortVideo(false);
               setSchedulePosting("");
-              loadingClose();
+              ;
             }
           } catch (error) {
             console.log(error, "ini error ");
           }
-          loadingClose();
+          ;
         } else {
-          loadingClose();
+          ;
           toast({
             title: "Deoapp.com",
             description: "please check your posting",
@@ -264,7 +263,7 @@ const PinterestPosts = () => {
             isClosable: true,
           });
         }
-        loadingClose();
+        ;
       }
     } else {
       toast({
@@ -274,9 +273,9 @@ const PinterestPosts = () => {
         position: "top-right",
         isClosable: true,
       });
-      loadingClose();
+      ;
     }
-    loadingClose();
+    ;
   };
 
   const handleDialogSchedule = () => {

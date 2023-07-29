@@ -40,7 +40,7 @@ import {
     updateDocumentFirebase,
     uploadFile,
 } from "../../Api/firebaseApi";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 
@@ -73,13 +73,13 @@ function FormPageListing() {
     const [categoryList, setCategoryList] = useState([])
     const [queries, setQueries] = useState('')
     const [priceEnd, setPriceEnd] = useState('')
-    const { userDisplay } = useUserStore();
+    const globalState = useUserStore();
     const toast = useToast()
 
 
 
 
-    const companyId = userDisplay.currentCompany;
+    const companyId = globalState.currentCompany;
 
 
     const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
@@ -138,7 +138,7 @@ function FormPageListing() {
 
     const getCategory = async () => {
         try {
-            const unsubscribe = await onSnapshot(doc(db, "categories", userDisplay?.currentProject), (docCat) => {
+            const unsubscribe = await onSnapshot(doc(db, "categories", globalState?.currentProject), (docCat) => {
                 setCategories({ id: docCat.id, ...docCat.data() });
             });
             return () => {
@@ -155,7 +155,7 @@ function FormPageListing() {
             await Promise.all(
                 categories?.data?.map(async (x) => {
                     const result = await getSingleDocumentFirebase(
-                        `categories/${userDisplay?.currentProject}/${x}`,
+                        `categories/${globalState?.currentProject}/${x}`,
                         'data'
                     );
                     arr.push(...result?.category);
@@ -183,7 +183,7 @@ function FormPageListing() {
         if (idProject) {
             getListing()
         }
-    }, [userDisplay.currentCompany, categories?.data?.length]);
+    }, [globalState.currentCompany, categories?.data?.length]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

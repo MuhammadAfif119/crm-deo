@@ -1,10 +1,22 @@
 import React from "react";
-import Pipeline from "../Pages/Pipeline/Pipeline";
+import PipelinePage from "../Pages/Pipeline/PipelinePage";
+import PipelineCreatePage from "../Pages/Pipeline/PipelineCreatePage";
+import PipelineViewPage from "../Pages/Pipeline/PipelineViewPage";
 
 const PipelineRouter = [
   {
     path: "/pipeline",
-    element: <Pipeline />,
+    element: <PipelinePage />,
+  },
+
+  {
+    path: "/pipeline/create",
+    element: <PipelineCreatePage />,
+  },
+
+  {
+    path: "/pipeline/view/:id",
+    element: <PipelineViewPage />,
   },
 ];
 

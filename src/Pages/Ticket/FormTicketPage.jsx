@@ -5,10 +5,10 @@ import { MdOutlinePermMedia } from 'react-icons/md'
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { addDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
-import useUserStore from '../../Routes/Store'
 import { collection, limit, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '../../Config/firebase'
 import { useSearchParams } from 'react-router-dom'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 const LocationComponent = ({ type, data, setData }) => {
      if (type === 'offline') {
@@ -253,8 +253,8 @@ const FormPage = ({ data, setData, handleSubmit, idProject, setFormPage, setDeta
 }
 
 const FormTicketPage = () => {
-     const { userDisplay } = useUserStore();
-     const companyId = userDisplay?.currentCompany;
+     const globalState = useUserStore();
+     const companyId = globalState?.currentCompany;
      const toast = useToast()
 
      let [searchParams, setSearchParams] = useSearchParams();
@@ -344,7 +344,7 @@ const FormTicketPage = () => {
      const getDataForms = async () => {
           try {
                const q = query(collection(db, 'forms'),
-                    where("projectId", "==", userDisplay.currentProject)
+                    where("projectId", "==", globalState.currentProject)
                );
 
                const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -369,7 +369,7 @@ const FormTicketPage = () => {
           getData()
           getDataForms()
           getTickets()
-     }, [userDisplay.currentCompany])
+     }, [globalState.currentCompany])
 
      const handleAddTicket = (categoryIndex) => {
           setCategoryDetails((prevCategoryDetails) => {

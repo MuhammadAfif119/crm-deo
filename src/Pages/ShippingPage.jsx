@@ -7,7 +7,6 @@ import { IoCaretBackOutline, IoHelpCircleOutline } from 'react-icons/io5'
 import { SlArrowDown } from 'react-icons/sl'
 import { useNavigate } from 'react-router-dom'
 import _axios from '../Api/AxiosBarrier'
-import AuthContext from '../Routes/hooks/AuthContext'
 import colors from '../Utils/colors'
 import { formatFrice } from '../Utils/Helper'
 
@@ -34,10 +33,8 @@ function ShippingPage() {
     const navigate = useNavigate()
     const toast = useToast()
 
-    const { loadingShow, loadingClose } = useContext(AuthContext)
 
     const getData = async () => {
-        loadingShow()
         let productArr = []
         try {
             const res = await _axios.get(`api/blj-shipping?page=${count}`)
@@ -50,12 +47,9 @@ function ShippingPage() {
             } else {
                 setShippingData(productArr)
             }
-            loadingClose()
         } catch (error) {
             console.log(error)
-            loadingClose()
         }
-        loadingClose()
     }
 
     const handleModalDetail = async (id) => {
@@ -63,7 +57,6 @@ function ShippingPage() {
         setInvoiceDetail({})
         // setDetailPrice('')
         setDetailModal(true)
-        loadingShow()
         if (id !== undefined) {
             try {
                 const res = await _axios.get(`api/blj-shipping/${id}/detail`)
@@ -74,10 +67,10 @@ function ShippingPage() {
                 //         return Number(prev) + Number(next);
                 //     }, 0)
                 // setDetailPrice(map)
-                loadingClose()
+                // loadingClose()
             } catch (error) {
                 console.log(error)
-                loadingClose()
+                // loadingClose()
             }
         }
     }

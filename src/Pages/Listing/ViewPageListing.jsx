@@ -4,7 +4,8 @@ import { MdDelete } from 'react-icons/md';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebase';
 import { deleteDocumentFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
-import useUserStore from '../../Routes/Store';
+import useUserStore from "../../Hooks/Zustand/Store";
+
 import { formatFrice } from '../../Utils/numberUtil';
 import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { FcPhone } from 'react-icons/fc';
@@ -26,9 +27,9 @@ const ViewPageListing = () => {
 
 
 
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
 
-  const projectId = userDisplay.currentProject
+  const projectId = globalState.currentProject
 
 
 
@@ -155,7 +156,7 @@ const ViewPageListing = () => {
       setSelectedCategoryNiche(null)
     }
 
-  }, [userDisplay.currentProject]);
+  }, [globalState.currentProject]);
 
   const handleDelete = async (listing) => {
     const collectionName = 'listings';

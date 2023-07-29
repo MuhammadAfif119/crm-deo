@@ -4,7 +4,6 @@ import { MdSearch } from 'react-icons/md';
 import { BiFilterAlt } from 'react-icons/bi';
 import { HiOutlineHeart } from 'react-icons/hi';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../Routes/hooks/AuthContext';
 import colors from '../Utils/colors';
 import { AiFillStar } from 'react-icons/ai';
 import { get } from '../Api/importirApi';

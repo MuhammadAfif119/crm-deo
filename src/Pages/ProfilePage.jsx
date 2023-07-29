@@ -1,7 +1,6 @@
 import { Box, HStack, Spacer, Stack, Text, VStack } from '@chakra-ui/react'
 import React, { useContext } from 'react'
 import { MdAccountCircle, MdArrowForwardIos } from 'react-icons/md'
-import AuthContext from '../Routes/hooks/AuthContext'
 import {CiBoxList, CiShoppingTag, CiStickyNote, CiShoppingBasket } from 'react-icons/ci'
 import { IoHelpCircleOutline } from 'react-icons/io5'
 import {IoIosLogOut} from 'react-icons/io'

@@ -56,10 +56,9 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import moment from "moment";
-import AuthContext from "../../Routes/hooks/AuthContext";
 import ApiBackend from "../../Api/ApiBackend";
 import AppSideAccountBar from "../../Components/AppSideAccountBar";
-import { db } from "../../Config/firebase";
+import { auth, db } from "../../Config/firebase";
 import {
   arrayRemove,
   arrayUnion,
@@ -73,7 +72,7 @@ import {
 } from "firebase/firestore";
 import { BsGlobe2, BsStarFill, BsTrash } from "react-icons/bs";
 import ImageProxy from "../../Components/Image/ImageProxy";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 import { capitalize } from "../../Utils/capitalizeUtil";
 import TwitterPosts from "./TwitterPosts";
 import YoutubePosts from "./YoutubePosts";
@@ -120,7 +119,8 @@ function SocialBuildPage() {
 
   const contentWidth = barStatus ? "85%" : "95%";
 
-  const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
+
+  const currentUser = auth.currentUser
 
   const cancelRef = React.useRef();
 
@@ -161,7 +161,6 @@ function SocialBuildPage() {
   console.log(data.scheduleDate);
 
   const getListSocial = async () => {
-    loadingShow();
     if (userDisplay.profileKey) {
       try {
         const docRef = doc(
@@ -181,13 +180,10 @@ function SocialBuildPage() {
         } else {
           console.log("No such document!");
         }
-        loadingClose();
       } catch (error) {
         console.log(error);
-        loadingClose();
       }
     }
-    loadingClose();
   };
 
   const getDataFolderFeed = () => {
@@ -201,7 +197,6 @@ function SocialBuildPage() {
   };
 
   const handleDeleteFavorite = async (data) => {
-    loadingShow();
     try {
       const ref = doc(db, "favorite", currentUser.uid);
       await setDoc(
@@ -221,12 +216,9 @@ function SocialBuildPage() {
         position: "top-right",
         isClosable: true,
       });
-      loadingClose();
     } catch (error) {
       console.log(error, "ini error");
-      loadingClose();
     }
-    loadingClose();
   };
 
   useEffect(() => {
@@ -336,12 +328,10 @@ function SocialBuildPage() {
   };
 
   const handlePost = async () => {
-    loadingShow();
 
     let fileImage = [];
 
     if (profileKey) {
-      loadingShow();
       if (files.length > 0) {
         files.forEach(async (x) => {
           try {
@@ -357,7 +347,6 @@ function SocialBuildPage() {
             setData({ ...data, mediaUrls: mediaFile });
             if (fileImage.length === files.length) {
               try {
-                loadingShow();
 
                 const res = await ApiBackend.post(`post`, {
                   ...data,
@@ -473,7 +462,7 @@ function SocialBuildPage() {
                   });
                 }
 
-                loadingClose();
+                ;
               } catch (error) {
                 console.log(error, "ini error ");
                 // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
@@ -485,11 +474,11 @@ function SocialBuildPage() {
                   isClosable: true,
                 });
 
-                loadingClose();
+                ;
               }
-              loadingClose();
+              ;
             }
-            loadingClose();
+            ;
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -551,14 +540,14 @@ function SocialBuildPage() {
               setPlatformActive([]);
               setShotenLinks(false);
               setSchedulePosting("");
-              loadingClose();
+              ;
             }
           } catch (error) {
             console.log(error, "ini error ");
           }
-          loadingClose();
+          ;
         } else {
-          loadingClose();
+          ;
           toast({
             title: "Deoapp.com",
             description: "please check your posting",
@@ -567,7 +556,7 @@ function SocialBuildPage() {
             isClosable: true,
           });
         }
-        loadingClose();
+        ;
       }
     } else {
       toast({
@@ -577,9 +566,9 @@ function SocialBuildPage() {
         position: "top-right",
         isClosable: true,
       });
-      loadingClose();
+      ;
     }
-    loadingClose();
+    ;
   };
 
   const handleDialogSchedule = () => {

@@ -21,15 +21,16 @@ import { getCollectionWhereFirebase } from '../../Api/firebaseApi';
 // import BreadCrumbComponent from '../../Components/BreadCrumbs/BreadCrumbComponent';
 import { useNavigate } from 'react-router-dom';
 import { NewsTableComponent } from '../../Components/Table/OffersTable';
-import useUserStore from '../../Routes/Store';
+import useUserStore from "../../Hooks/Zustand/Store";
+
 // import { NewsTable } from '../Offers/OffersTable';
 
 const NewsPage = () => {
     const [news, setNews] = useState([]);
 
-    const { userDisplay } = useUserStore();
+    const globalState = useUserStore();
 
-    const projectId = userDisplay.currentProject
+    const projectId = globalState.currentProject
 
 
     const navigate = useNavigate();

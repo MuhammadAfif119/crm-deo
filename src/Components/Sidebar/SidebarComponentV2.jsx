@@ -12,11 +12,8 @@ import {
   Flex,
   HStack,
   Image,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Progress,
   Select,
+  Spacer,
   Stack,
   Text,
   useToast,
@@ -42,32 +39,17 @@ import { NavButton } from "./NavButton";
 import { UserProfile } from "./UserProfile";
 import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import AuthContext from "../../Routes/hooks/AuthContext";
-import { db } from "../../Config/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import useUserStore, {
-  useUserData,
-  userData,
-  setUserDisplay,
-  userDisplay,
-} from "../../Routes/Store";
-import { capitalize } from "../../Utils/capitalizeUtil";
+import { auth } from "../../Config/firebase";
+
+
 import { data } from "./DataMenu";
-import { isDisabled } from "@testing-library/user-event/dist/utils";
-import { getSingleDocumentFirebase } from "../../Api/firebaseApi";
+import useUserStore from "../../Hooks/Zustand/Store";
+import { signOut } from "firebase/auth";
+import { useState } from "react";
 
 // ** Theme Configuration
 
 function SidebarComponentV2({ layout }) {
-  const { currentUser, company, signOut } = useContext(AuthContext);
   const [project, setProject] = useState([]);
   const [companyId, setCompanyId] = useState("");
   const [projectId, setProjectId] = useState("");
@@ -75,110 +57,60 @@ function SidebarComponentV2({ layout }) {
   const { setUserDisplay, userDisplay } = useUserStore();
   const [sideBarOpen, setSideBarOpen] = useState(true)
 
-  const toast = useToast();
-  const navigate = useNavigate();
+  const globalState = useUserStore();
 
-  const getUserData = async () => {
-    try {
-      const result = await getSingleDocumentFirebase("users", currentUser.uid);
-      setUserDisplay({
-        ...userDisplay,
-        uid: currentUser.uid,
-        name: result.name,
-        email: result.email,
-      });
+  const handleCompanySelect = (e) => {
+    const dataCompany = globalState.companies;
 
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getProject = async () => {
-    if (currentUser) {
+    const findCompany = dataCompany.find((x) => x.id === e);
 
-      try {
-        const q = query(
-          collection(db, "projects"),
-          where("users", "array-contains", currentUser.uid)
-        );
-        const projectArray = [];
+    globalState.setCurrentCompany(findCompany.id || e);
+    globalState.setCurrentXenditId(findCompany?.xenditId);
 
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          projectArray.push({ id: doc.id, data: doc.data() });
-        });
-
-        setProject(projectArray);
-        setUserDisplay({
-          ...userDisplay,
-          projects: projectArray,
-          companies: company,
-          currentCompany: company[0]?.id,
-          currentProject: project[0]?.id
-        });
-
-        getCurrentProject();
-
-        //get subcollection user inside selected projects
-        try {
-          const docRef = doc(
-            db,
-            "projects",
-            projectId,
-            "users",
-            currentUser?.uid
-          );
-          const docSnapshot = getDoc(docRef);
-
-          if (docSnapshot.exists) {
-            const docData = docSnapshot.data();
-            setUserDisplay({
-              ...userDisplay,
-              user_data: docData,
-            });
-          } else {
-            console.log("Dokumen tidak ditemukan!");
-          }
-        } catch (error) {
-          console.log(error, "ini error");
-        }
-      } catch (error) {
-        console.log("Terjadi kesalahan:", error);
-      }
+    if (findCompany.owner && findCompany.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findCompany.managers && findCompany.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
     }
   };
 
-  const getCurrentProject = async () => {
-    try {
-      const docRef = doc(db, "projects", projectId);
-      const docSnapshot = await getDoc(docRef);
+  const handleProjectSelect = (e) => {
+    const dataProject = globalState.projects;
 
-      if (docSnapshot.exists) {
-        const docData = docSnapshot.data();
+    const findProject = dataProject.find((x) => x.id === e);
 
-        setUserDisplay({
-          ...userDisplay,
-          profileKey: docData.ayrshare_account?.profileKey,
-          projectTitle: docData.ayrshare_account?.title,
-        });
-        // setUserDisplay(docData.ayrshare_account?.profile_key);
-      } else {
-        console.log("Dokumen tidak ditemukan!");
-      }
-    } catch (error) {
-      console.log("Terjadi kesalahan:", error);
+    globalState.setCurrentProject(findProject.id || e);
+
+    if (findProject.owner && findProject.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findProject.managers && findProject.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
     }
   };
+
+  const navigate = useNavigate()
+
+  const toast = useToast()
+
 
   const logout = async () => {
-    signOut()
+    signOut(auth)
       .then(() => {
+        // Sign-out successful.
         toast({
           status: "success",
           description: "Logged out success",
           duration: 2000,
         });
 
-        navigate("/login");
+        globalState.setIsLoggedIn(false);
+        navigate("/");
         store.clearAll();
       })
       .catch((error) => {
@@ -186,26 +118,8 @@ function SidebarComponentV2({ layout }) {
       });
   };
 
-  useEffect(() => {
-    getProject();
 
-    // getCurrentProject();
-  }, [companyId, project.length, company?.length]);
 
-  useEffect(() => {
-    getCurrentProject();
-    // getCurrentProject();
-  }, [projectId]);
-
-  useEffect(() => {
-    setUserDisplay({
-      uid: currentUser.uid,
-    });
-    getUserData();
-  }, [currentUser, companyId]);
-
-  useEffect(() => {
-  }, [userDisplay]);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -257,7 +171,6 @@ function SidebarComponentV2({ layout }) {
                     }}
                   >
 
-                    <Stack justify="space-between" spacing="1">
 
                       <Stack
                         spacing={{
@@ -274,52 +187,55 @@ function SidebarComponentV2({ layout }) {
                         </Center>
 
                         <Stack>
-                          <Select
-                            // placeholder="Company Selection"
-                            size={"sm"}
-                            onChange={(e) => {
-                              setCompanyId(e.target.value);
-                              setUserDisplay({
-                                ...userDisplay,
-                                currentCompany: e.target.value,
-                              });
-                            }}
-                          >
-                            {company?.map((select, i) => (
-                              <option
-                                key={i}
-                                value={select?.id}
-                                defaultValue={company[0].id}
-                              >
-                                {capitalize(select?.name)}
-                              </option>
-                            ))}
-                          </Select>
+                          <Stack alignItems={"center"}>
+                            <Select
+                              w={["100%", "100%", "100%"]}
+                              size={"sm"}
+                              defaultValue={globalState.companies[0]}
+                              onChange={(e) => {
+                                handleCompanySelect(e.target.value);
+                              }}
+                            >
+                              {globalState.companies?.map((select, i) => (
+                                <option
+                                  defaultValue={globalState.currentCompany}
+                                  key={i}
+                                  value={select?.id}
+                                >
+                                  <Text textTransform={"capitalize"}>
+                                    {select?.name}
+                                  </Text>
+                                </option>
+                              ))}
+                            </Select>
+                          </Stack>
 
-                          <Select
-                            // placeholder="Project Selection"
-                            size={"sm"}
-                            onChange={(e) => {
-                              setProjectId(e.target.value);
-                              setUserDisplay({
-                                ...userDisplay,
-                                currentProject: e.target.value,
-                              });
-                            }}
-                          >
-                            {project?.map((select, i) => (
-                              <option key={i} value={select?.id}
-                                defaultValue={project[0].id}
+                          <Stack alignItems={"center"}>
+                            <Select
+                              w={["100%", "100%", "100%"]}
+                              size={"sm"}
+                              defaultValue={globalState.projects[0]}
+                              onChange={(e) => {
+                                handleProjectSelect(e.target.value);
+                              }}
+                            >
+                              {globalState?.projects?.map((select, i) => (
+                                <option
+                                  defaultValue={globalState?.currentProject}
+                                  key={i}
+                                  value={select?.id}
+                                >
+                                  <Text textTransform={"capitalize"}>
+                                    {select?.name}
+                                  </Text>
+                                </option>
+                              ))}
+                            </Select>
+                          </Stack>
 
-                              >
-                                {select.data?.name}
-                              </option>
-                            ))}
-                          </Select>
-                        </Stack>
 
-                        <Stack>
-                          {/* <HStack>
+                          <Stack>
+                            {/* <HStack>
                             <Icon as={FcDatabase} boxSize={5} />
                             <Text fontWeight={"semibold"} pl={3}>
                               Dashboard
@@ -348,151 +264,154 @@ function SidebarComponentV2({ layout }) {
                                         </Text>
                                         <AccordionIcon />
 
-                                      </>
-                                    }
-                                  </AccordionButton>
-                                </h2>
-                                {x.submenu ? (
-                                  <>
-                                    <AccordionPanel>
-                                      <Stack>
-                                        {x.submenu?.map((subitem, i) => (
-                                          <Link to={subitem.link} key={i}>
-                                            <HStack spacing="3">
-                                              <Icon
-                                                as={subitem.icon}
-                                              // boxSize="5"
-                                              />
-                                              <Text fontSize={"sm"}>
-                                                {subitem.name}
-                                              </Text>
-                                            </HStack>
-                                          </Link>
-                                        ))}
-                                      </Stack>
-                                    </AccordionPanel>
-                                  </>
-                                ) : (
-                                  <>{null}</>
-                                )}
-                              </AccordionItem>
-                            ))}
-                          </Accordion>
-                        </Stack>
-                      </Stack>
-
-                      <Stack
-                        spacing={{
-                          base: "5",
-                          sm: "6",
-                        }}
-                      >
-
-                        <Stack spacing="1">
-                          {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
-                          <Button
-                            as={Link}
-                            to={"/settings"}
-                            variant="ghost"
-                            justifyContent="start"
-                          >
-                            <HStack spacing="3">
-                              <Icon as={FiSettings} boxSize="5" color="subtle" />
-                              <Text>Setting</Text>
-                            </HStack>
-                          </Button>
-                          {/* <NavButton label="Settings" icon={FiSettings} /> */}
+                                        </>
+                                      }
+                                    </AccordionButton>
+                                  </h2>
+                                  {x.submenu ? (
+                                    <>
+                                      <AccordionPanel>
+                                        <Stack>
+                                          {x.submenu?.map((subitem, i) => (
+                                            <Link to={subitem.link} key={i}>
+                                              <HStack spacing="3">
+                                                <Icon
+                                                  as={subitem.icon}
+                                                // boxSize="5"
+                                                />
+                                                <Text fontSize={"sm"}>
+                                                  {subitem.name}
+                                                </Text>
+                                              </HStack>
+                                            </Link>
+                                          ))}
+                                        </Stack>
+                                      </AccordionPanel>
+                                    </>
+                                  ) : (
+                                    <>{null}</>
+                                  )}
+                                </AccordionItem>
+                              ))}
+                            </Accordion>
+                          </Stack>
                         </Stack>
 
-                        {layout.type === "vertical-horizontal" &&
-                          layout.userProfile === "sidebar" ? (
-                          <>
-                            <Divider />
-
-                            {currentUser ? (
-                              <>
-                                <UserProfile
-                                  name={currentUser.displayName}
-                                  image={
-                                    currentUser.photoURL === null
-                                      ? "https://tinyurl.com/yhkm2ek8"
-                                      : currentUser.photoURL
-                                  }
-                                // email={currentUser.email}
-                                />
-                                <Button
-                                  w={"full"}
-                                  colorScheme="telegram"
-                                  size={"sm"}
-                                  onClick={() => console.log(userDisplay)}
-                                >
-                                  Check state
-                                </Button>
-                                <Button
-                                  w={"full"}
-                                  colorScheme="telegram"
-                                  size={"sm"}
-                                  onClick={logout}
-                                >
-                                  Logout
-                                </Button>
-                              </>
-                            ) : (
-                              <Box>
-                                <Button>Login</Button>
-                              </Box>
-                            )}
-                          </>
-                        ) : layout.type === "vertical" ? (
-                          <>
-                            <Divider />
-                            {currentUser ? (
-                              <>
-                                <UserProfile
-                                  name={currentUser.displayName}
-                                  image={
-                                    currentUser.photoURL === null
-                                      ? "https://tinyurl.com/yhkm2ek8"
-                                      : currentUser.photoURL
-                                  }
-                                // email={currentUser.email}
-                                />
-                                <Button
-                                  w={"full"}
-                                  colorScheme="telegram"
-                                  size={"sm"}
-                                  onClick={logout}
-                                >
-                                  Logout
-                                </Button>
-                              </>
-                            ) : (
-                              <Box>
-                                <Button
-                                  w={"full"}
-                                  colorScheme="telegram"
-                                  size={"sm"}
-                                  as={Link}
-                                  to={"/login"}
-                                >
-                                  Login
-                                </Button>
-                              </Box>
-                            )}
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                        <Button
-                          w={"full"}
-                          colorScheme="telegram"
-                          size={"sm"}
-                          onClick={() => console.log(userDisplay)}
+                        <Stack
+                          spacing={{
+                            base: "5",
+                            sm: "6",
+                          }}
                         >
-                          Check state
-                        </Button>
+
+                          <Stack spacing="1">
+                            {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
+                            <Button
+                              as={Link}
+                              to={"/settings"}
+                              variant="ghost"
+                              justifyContent="start"
+                            >
+                              <HStack spacing="3">
+                                <Icon as={FiSettings} boxSize="5" color="subtle" />
+                                <Text>Setting</Text>
+                              </HStack>
+                            </Button>
+                            {/* <NavButton label="Settings" icon={FiSettings} /> */}
+                          </Stack>
+
+                          <Spacer  />
+
+                          {layout.type === "vertical-horizontal" &&
+                            layout.userProfile === "sidebar" ? (
+                            <>
+                              <Divider />
+
+                              {globalState.setIsLoggedIn ? (
+                                <>
+                                  <UserProfile
+                                    name={globalState.name}
+                                    image={
+                                      globalState.email === null
+                                        ? "https://tinyurl.com/yhkm2ek8"
+                                        : globalState.email
+                                    }
+                                  email={globalState.email}
+                                  />
+                                  <Button
+                                    w={"full"}
+                                    colorScheme="telegram"
+                                    size={"sm"}
+                                    onClick={() => console.log(userDisplay)}
+                                  >
+                                    Check state
+                                  </Button>
+                                  <Button
+                                    w={"full"}
+                                    colorScheme="red"
+                                    variant={'outline'}
+                                    size={"sm"}
+                                    onClick={logout}
+                                  >
+                                    Logout
+                                  </Button>
+                                </>
+                              ) : (
+                                <Box>
+                                  <Button>Login</Button>
+                                </Box>
+                              )}
+                            </>
+                          ) : layout.type === "vertical" ? (
+                            <>
+                              <Divider />
+                              {globalState.isLoggedIn ? (
+                                <>
+                                  <UserProfile
+                                    name={globalState.name}
+                                    image={
+                                      globalState.email === null
+                                        ? "https://tinyurl.com/yhkm2ek8"
+                                        : globalState.email
+                                    }
+                                  email={globalState.email}
+                                  />
+                                  <Button
+                                    w={"full"}
+                                    colorScheme="telegram"
+                                    size={"sm"}
+                                    onClick={logout}
+                                  >
+                                    Logout
+                                  </Button>
+                                </>
+                              ) : (
+                                <Box>
+                                  <Button
+                                    w={"full"}
+                                    colorScheme="telegram"
+                                    size={"sm"}
+                                    as={Link}
+                                    to={"/login"}
+                                  >
+                                    Login
+                                  </Button>
+                                </Box>
+                              )}
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                          <Button
+                            w={"full"}
+                            colorScheme="telegram"
+                            size={"sm"}
+                            onClick={() => console.log(userDisplay)}
+                          >
+                            Check state
+                          </Button>
+                        </Stack>
                       </Stack>
-                    </Stack>
                   </Flex>
                 </Flex>
               </Box>

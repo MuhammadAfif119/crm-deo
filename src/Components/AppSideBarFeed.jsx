@@ -8,7 +8,6 @@ import logo from '../assets/1.png'
 import logokotak from '../assets/kotakputih.png'
 import { FiRss } from 'react-icons/fi';
 import { useContext } from 'react';
-import AuthContext from '../Routes/hooks/AuthContext';
 import store from 'store'
 import { async } from '@firebase/util';
 import { createRssFetch } from '../Api/FetchRss';

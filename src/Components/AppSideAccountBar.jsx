@@ -3,8 +3,7 @@ import { Avatar, AvatarBadge, Box, Button, Flex, HStack, Icon, IconButton, Image
 import { MdArrowForwardIos, MdArrowBackIos,  } from 'react-icons/md';
 import {  useNavigate, useSearchParams } from 'react-router-dom';
 import { useContext } from 'react';
-import AuthContext from '../Routes/hooks/AuthContext';
-import { db } from '../Config/firebase';
+import { auth, db } from '../Config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { BsFillPersonFill } from 'react-icons/bs';
 
@@ -18,13 +17,14 @@ const AppSideAccountBar = ({ setBarStatus }) => {
   const navigate = useNavigate()
 
 
-  const { currentUser } = useContext(AuthContext)
 
 
   const [socialAccountList, setSocialAccountList] = useState([])
 
   let [searchParams, setSearchParams] = useSearchParams();
 
+
+  const currentUser = auth.currentUser
 
 
   const getDataUser = async () => {

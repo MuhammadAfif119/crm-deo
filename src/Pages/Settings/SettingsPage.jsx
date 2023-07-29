@@ -30,8 +30,6 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { FiUser } from "react-icons/fi";
-import AuthContext from "../../Routes/hooks/AuthContext";
 import {
   addDoc,
   arrayUnion,
@@ -42,16 +40,15 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../Config/firebase";
+import { auth, db } from "../../Config/firebase";
 import { capitalize } from "../../Utils/capitalizeUtil";
-import useUserStore, { useUserData, userDisplay } from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 // import BreadCrumbComponent from "../../Components/BreadCrumbs"
 // import IconCardComponent from "../../Components/Cards/IconCardComponent";
 
 function SettingsPage() {
   const toast = useToast();
-  const { currentUser } = useContext(AuthContext);
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
   const [userData, setUserData] = useState();
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [allUser, setAllUser] = useState();
@@ -64,6 +61,8 @@ function SettingsPage() {
     phone: "",
     role: "member",
   });
+
+  const currentUser = auth.currentUser
 
   const getDataUser = async () => {
     try {
@@ -220,7 +219,7 @@ function SettingsPage() {
           <Text mb={2}>User Accounts</Text>
           <Box borderRadius={"md"}>
             <SimpleGrid spacing={4} columns={(2, null, 3)} borderRadius={"md"}>
-              {userDisplay.projects?.map((project, i) => (
+              {globalState.projects?.map((project, i) => (
                 <Box borderRadius={"md"} bg={"white"} p={5} boxShadow={"md"}>
                   <Center>
                     <Avatar

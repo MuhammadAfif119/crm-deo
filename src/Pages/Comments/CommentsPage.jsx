@@ -53,12 +53,11 @@ import {
 import moment from "moment";
 import { AiOutlineComment } from "react-icons/ai";
 import { TbPresentationAnalytics } from "react-icons/tb";
-import AuthContext from "../../Routes/hooks/AuthContext";
 import { BiFilterAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import ApiBackend from "../../Api/ApiBackend";
-import AppSideAccountBar from "../../Components/AppSideAccountBar";
-import useUserStore from "../../Routes/Store";
+
+import useUserStore from "../../Hooks/Zustand/Store";
 
 function CommentsPage() {
   const width = window.innerWidth;
@@ -85,7 +84,6 @@ function CommentsPage() {
 
   const [loadingComment, setLoadingComment] = useState(false);
 
-  const { loadingShow, loadingClose } = useContext(AuthContext);
 
   const [barStatus, setBarStatus] = useState(false);
 
@@ -111,7 +109,7 @@ function CommentsPage() {
     if (profileKey) {
       if (startDate && endDate) {
         try {
-          loadingShow();
+          ;
           const res = await ApiBackend.post("history", {
             lastRecords: lastRecords,
             lastDays: lastDays,
@@ -127,14 +125,14 @@ function CommentsPage() {
             );
           });
           setHistoryList(filtered);
-          loadingClose();
+          ;
         } catch (error) {
           console.log(error, "ini error");
-          loadingClose();
+          ;
         }
       } else {
         try {
-          loadingShow();
+          ;
           const res = await ApiBackend.post("history", {
             lastRecords: lastRecords,
             lastDays: lastDays,
@@ -150,14 +148,14 @@ function CommentsPage() {
             });
           }
           setHistoryList(res.data);
-          loadingClose();
+          ;
         } catch (error) {
           console.log(error, "ini error");
-          loadingClose();
+          ;
         }
       }
     }
-    loadingClose();
+    ;
   };
 
   const handleDeleteModal = (idPost) => {

@@ -45,7 +45,6 @@ import logowhite from '../assets/2.png'
 
 import { useNavigate } from "react-router-dom";
 import colors from "../Utils/colors";
-import AuthContext from "../Routes/hooks/AuthContext";
 import { AiOutlineLogout } from "react-icons/ai";
 
 export default function AppHeader() {
@@ -61,7 +60,6 @@ export default function AppHeader() {
 
 
 
-  const { currentUser, signOut, getUserStorage } = useContext(AuthContext);
 
 
   const height = window.innerHeight
@@ -85,29 +83,29 @@ export default function AppHeader() {
     };
   }, []);
 
-  const getUserData = () => {
-    const data = getUserStorage();
-    setSubscripUser(data);
-    setProfileData(data);
-  };
+  // const getUserData = () => {
+  //   const data = getUserStorage();
+  //   setSubscripUser(data);
+  //   setProfileData(data);
+  // };
 
-  const handleLogOut = () => {
-    signOut()
-      .then(() => {
-        navigate("/", { replace: true });
-        store.clearAll();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const handleLogOut = () => {
+  //   signOut()
+  //     .then(() => {
+  //       navigate("/", { replace: true });
+  //       store.clearAll();
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
 
 
-  useEffect(() => {
-    getUserData();
+  // useEffect(() => {
+  //   getUserData();
 
-    return () => { };
-  }, []);
+  //   return () => { };
+  // }, []);
 
 
 
@@ -130,7 +128,7 @@ export default function AppHeader() {
           position={'fixed'}
           w={'100%'}
         >
-           {currentUser === null ? (
+           {/* {currentUser === null ? (
           <Alert status="error" w={width} alignItems='center' justifyContent={'center'} size='xs' h={'10px'}>
             <AlertIcon />
             <AlertTitle color="black" fontSize={'xs'}>
@@ -142,7 +140,7 @@ export default function AppHeader() {
           </Alert>
         ) : (
           <></>
-        )}
+        )} */}
           <HStack spacing={10} justifyContent="space-evenly" alignItems="center">
             <Flex
               flex={{ base: 1, md: "auto" }}
@@ -174,7 +172,7 @@ export default function AppHeader() {
             </Flex>
             <Spacer />
             <Flex display={{ base: "flex", md: "flex" }}>
-              <AccountNav currentUser={currentUser} profileData={profileData} navigate={navigate} handleLogOut={handleLogOut} subscripUser={subscripUser} />
+              {/* <AccountNav currentUser={currentUser} profileData={profileData} navigate={navigate} handleLogOut={handleLogOut} subscripUser={subscripUser} /> */}
             </Flex>
           </HStack>
         </Stack>

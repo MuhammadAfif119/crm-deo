@@ -6,7 +6,6 @@ import { Box, Button, Heading, HStack, Image, Input, InputGroup, InputLeftAddon,
 import colors from '../Utils/colors'
 import { FaHome } from 'react-icons/fa';
 import { MdAccountCircle, MdEmail, MdFlag, MdLock, MdOutlinePhoneIphone } from 'react-icons/md';
-import AuthContext from '../Routes/hooks/AuthContext';
 import { sendEmailVerification, updateProfile } from 'firebase/auth';
 import AppHeader from '../Components/AppHeader';
 import { useNavigate } from 'react-router-dom';

@@ -12,35 +12,33 @@ import {
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../Config/firebase";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 import { capitalize } from "../../Utils/capitalizeUtil";
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
+import { getCollectionFirebase } from "../../Api/firebaseApi";
+import { Link } from "react-router-dom";
 
-const Pipeline = () => {
-  const { userDisplay } = useUserStore();
+const PipelinePage = () => {
+  const globalState = useUserStore();
 
   const [dataProject, setDataProject] = useState();
 
   const getDataProject = async () => {
-    try {
-      const q = query(collection(db, "projects"));
 
-      const projectArray = [];
-
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        projectArray.push({ id: doc.id, data: doc.data() });
-      });
-
-      setDataProject(projectArray);
-    } catch (error) {
-      console.log(error, "ini error");
-    }
+	getCollectionFirebase('pipelines')
+		.then((x)=>setDataProject(x))
+		.catch((err)=>console.log(err.message))
   };
 
+
   useEffect(() => {
-    getDataProject();
-  }, []);
+	getDataProject()
+  
+	return () => {
+		setDataProject()
+	}
+  }, [])
+  
 
   return (
     <Box>
@@ -63,7 +61,7 @@ const Pipeline = () => {
 
       <Box bg={"white"} my={4} p={3} boxShadow={"sm"}>
         <SimpleGrid columns={[2, null, 4]} spacing={3}>
-          {dataProject?.map((project, i) => (
+          {dataProject?.map((x, i) => (
             <Box
               key={i}
               border={"1px"}
@@ -75,17 +73,21 @@ const Pipeline = () => {
               borderRadius={"sm"}
               cursor={"pointer"}
               _hover={{ transform: "scale(1.02)", transition: "0.3s" }}
-              onClick={() => console.log(project)}
+            //   onClick={() => console.log(project)}
             >
-              <Text fontSize={"sm"}>Test</Text>
+			<Link to={`view/${x.id}`}>
               <Box my={3}>
                 <Text fontWeight={"semibold"}>
-                  {capitalize(project?.data.ayrshare_account?.name)}
+                  {
+				//   capitalize(project?.data.ayrshare_account?.name)
+				x.title
+				  }
                 </Text>
                 <Text fontSize={"xs"}>
-                  {project?.data.ayrshare_account?.profile_key}
+                  {x.title}
                 </Text>
               </Box>
+			  </Link>
             </Box>
           ))}
         </SimpleGrid>
@@ -94,4 +96,4 @@ const Pipeline = () => {
   );
 };
 
-export default Pipeline;
+export default PipelinePage;

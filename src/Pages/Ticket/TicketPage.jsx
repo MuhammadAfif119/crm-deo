@@ -4,15 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { deleteDocumentFirebase, deleteFileFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
-import useUserStore from '../../Routes/Store'
 import moment from 'moment';
+import useUserStore from '../../Hooks/Zustand/Store'
 
 const TicketPage = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const today = moment();
   const monthNames = moment.monthsShort();
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [data, setData] = useState([])
   const [selectedData, setSelectedData] = useState([])
@@ -20,7 +20,7 @@ const TicketPage = () => {
 
   const getData = async () => {
     try {
-      const res = await getCollectionWhereFirebase('tickets', 'projectId', '==', userDisplay?.currentProject)
+      const res = await getCollectionWhereFirebase('tickets', 'projectId', '==', globalState?.currentProject)
       setData(res)
 
     } catch (error) {
@@ -68,7 +68,7 @@ const TicketPage = () => {
 
   useEffect(() => {
     getData()
-  }, [userDisplay?.currentProject])
+  }, [globalState?.currentProject])
 
   return (
     <Box >
