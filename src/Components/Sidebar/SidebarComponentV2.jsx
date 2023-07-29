@@ -342,7 +342,7 @@ function SidebarComponentV2({ layout }) {
                                     w={"full"}
                                     colorScheme="telegram"
                                     size={"sm"}
-                                    onClick={() => console.log(userDisplay)}
+                                    onClick={() => console.log(globalState)}
                                   >
                                     Check state
                                   </Button>
@@ -378,8 +378,9 @@ function SidebarComponentV2({ layout }) {
                                   />
                                   <Button
                                     w={"full"}
-                                    colorScheme="telegram"
+                                    colorScheme="red"
                                     size={"sm"}
+                                    variant='outline'
                                     onClick={logout}
                                   >
                                     Logout
@@ -406,7 +407,7 @@ function SidebarComponentV2({ layout }) {
                             w={"full"}
                             colorScheme="telegram"
                             size={"sm"}
-                            onClick={() => console.log(userDisplay)}
+                            onClick={() => console.log(globalState)}
                           >
                             Check state
                           </Button>
