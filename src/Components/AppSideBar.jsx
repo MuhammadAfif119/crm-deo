@@ -32,8 +32,6 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import logo from "../assets/1.png";
 // import logokotak from "../assets/kotakputih.png";
 import { IoMdAnalytics } from "react-icons/io";
-import { useContext } from "react";
-import AuthContext from "../Routes/hooks/AuthContext";
 import store from "store";
 import {
   FaCalendarAlt,
@@ -42,7 +40,7 @@ import {
   FaTelegramPlane,
 } from "react-icons/fa";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../Config/firebase";
+import { auth, db } from "../Config/firebase";
 import { BsFillPersonFill } from "react-icons/bs";
 
 const AppSideBar = ({ setBarStatus }) => {
@@ -55,7 +53,6 @@ const AppSideBar = ({ setBarStatus }) => {
 
   const [userStorage, setUserStorage] = useState({});
 
-  const { currentUser, signOut } = useContext(AuthContext);
   const [openAvatar, setOpenAvatar] = useState(false);
 
   const firstFieldRef = React.useRef(null);
@@ -70,6 +67,8 @@ const AppSideBar = ({ setBarStatus }) => {
   const [activeTitle, setActiveTitle] = useState("");
 
   let [searchParams, setSearchParams] = useSearchParams();
+
+  const currentUser = auth.currentUser
 
   const getDataUser = async () => {
     try {

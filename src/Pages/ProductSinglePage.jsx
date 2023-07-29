@@ -9,7 +9,6 @@ import AppCarosel from '../Components/AppCarosel';
 import AppHeader from '../Components/AppHeader'
 import ButtonQuantity from '../Components/Basic/ButtonQuantity';
 import { db } from '../Config/firebase';
-import AuthContext from '../Routes/hooks/AuthContext';
 import { getCountry } from '../Utils/country';
 import { formatFrice } from '../Utils/Helper';
 import  {IoCaretBackOutline } from 'react-icons/io5'

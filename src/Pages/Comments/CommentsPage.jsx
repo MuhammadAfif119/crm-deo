@@ -53,12 +53,11 @@ import {
 import moment from "moment";
 import { AiOutlineComment } from "react-icons/ai";
 import { TbPresentationAnalytics } from "react-icons/tb";
-import AuthContext from "../../Routes/hooks/AuthContext";
 import { BiFilterAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import ApiBackend from "../../Api/ApiBackend";
-import AppSideAccountBar from "../../Components/AppSideAccountBar";
-import useUserStore from "../../Routes/Store";
+
+import useUserStore from "../../Hooks/Zustand/Store";
 
 function CommentsPage() {
   const width = window.innerWidth;

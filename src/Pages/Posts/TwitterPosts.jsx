@@ -13,8 +13,7 @@ import {
 import React, { useContext, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdOutlinePermMedia, MdSchedule } from "react-icons/md";
-import useUserStore from "../../Routes/Store";
-import AuthContext from "../../Routes/hooks/AuthContext";
+import useUserStore from "../../Hooks/Zustand/Store";
 import ApiBackend from "../../Api/ApiBackend";
 import moment from "moment";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";

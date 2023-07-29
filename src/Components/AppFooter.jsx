@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react'
 import { IoAppsOutline, IoCartOutline, IoHeartOutline, IoHomeOutline, IoPersonOutline } from "react-icons/io5";
 import { Link } from 'react-router-dom';
 import logobelanja from '../assets/logokotak.png'
-import AuthContext from '../Routes/hooks/AuthContext';
 
 function AppFooter() {
 

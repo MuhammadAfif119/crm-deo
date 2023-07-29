@@ -1,7 +1,8 @@
 import { Button, FormControl, HStack, Input, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, SimpleGrid } from '@chakra-ui/react'
 import { FiFilter } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react'
-import useUserStore from '../../Routes/Store';
+import useUserStore from "../../Hooks/Zustand/Store";
+
 import { addDocumentFirebase, getCollectionFirebase, getCollectionWithSnapshotFirebase } from '../../Api/firebaseApi';
 import { useNavigate } from 'react-router-dom';
 

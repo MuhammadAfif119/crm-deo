@@ -6,7 +6,6 @@ import { SlArrowRight } from 'react-icons/sl'
 import { useNavigate } from 'react-router-dom'
 import AppImageSlideAgain from '../Components/Carousel/AppImageSlideAgain'
 import { auth, db } from '../Config/firebase'
-import AuthContext from '../Routes/hooks/AuthContext'
 import logodeo from '../assets/1.png'
 
 function SignupDeo() {
@@ -16,7 +15,7 @@ function SignupDeo() {
 
   const navigate = useNavigate()
 
-  const { signUp } = useContext(AuthContext);
+  // const { signUp } = useContext(AuthContext);
 
 
 
@@ -184,7 +183,7 @@ function SignupDeo() {
       if (email !== "" && password !== ""  && numberPhone !== "" && industry !== "" && name !== ""  ) {
         try {
           setLoading(true)
-          signUp(email, password)
+          // signUp(email, password)
             .then(async (userCredential) => {
               await updateProfile(auth.currentUser, {
                 displayName,

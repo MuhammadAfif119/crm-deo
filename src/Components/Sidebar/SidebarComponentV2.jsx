@@ -12,169 +12,81 @@ import {
   Flex,
   HStack,
   Image,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Progress,
   Select,
   Stack,
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FiHelpCircle, FiSettings, FiUsers } from "react-icons/fi";
-import store from "store";
-import {
-  FcKindle,
-  FcEditImage,
-  FcCalendar,
-  FcSms,
-  FcConferenceCall,
-  FcSettings,
-  FcLineChart,
-  FcShare,
-  FcSurvey,
-} from "react-icons/fc";
-import themeConfig from "../../Config/themeConfig";
-import { NavButton } from "./NavButton";
+import { FiLogOut, FiSettings,} from "react-icons/fi";
+
 import { UserProfile } from "./UserProfile";
 import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import AuthContext from "../../Routes/hooks/AuthContext";
-import { db } from "../../Config/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import useUserStore, {
-  useUserData,
-  userData,
-  setUserDisplay,
-  userDisplay,
-} from "../../Routes/Store";
-import { capitalize } from "../../Utils/capitalizeUtil";
+import { auth } from "../../Config/firebase";
+import store from 'store'
+
+
 import { data } from "./DataMenu";
-import { isDisabled } from "@testing-library/user-event/dist/utils";
-import { getSingleDocumentFirebase } from "../../Api/firebaseApi";
+import useUserStore from "../../Hooks/Zustand/Store";
+import { signOut } from "firebase/auth";
 
 // ** Theme Configuration
 
 function SidebarComponentV2({ layout }) {
-  const { currentUser, company, signOut } = useContext(AuthContext);
-  const [project, setProject] = useState([]);
-  const [companyId, setCompanyId] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [profileKey, setProfileKey] = useState("");
-  const { setUserDisplay, userDisplay } = useUserStore();
 
-  const toast = useToast();
-  const navigate = useNavigate();
+  const globalState = useUserStore();
 
-  const getUserData = async () => {
-    try {
-      const result = await getSingleDocumentFirebase("users", currentUser.uid);
-      setUserDisplay({
-        ...userDisplay,
-        uid: currentUser.uid,
-        name: result.name,
-        email: result.email,
-      });
+  const handleCompanySelect = (e) => {
+    const dataCompany = globalState.companies;
 
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getProject = async () => {
-    if (currentUser) {
+    const findCompany = dataCompany.find((x) => x.id === e);
 
-      try {
-        const q = query(
-          collection(db, "projects"),
-          where("users", "array-contains", currentUser.uid)
-        );
-        const projectArray = [];
+    globalState.setCurrentCompany(findCompany.id || e);
+    globalState.setCurrentXenditId(findCompany?.xenditId);
 
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          projectArray.push({ id: doc.id, data: doc.data() });
-        });
-
-        setProject(projectArray);
-        setUserDisplay({
-          ...userDisplay,
-          projects: projectArray,
-          companies: company,
-          currentCompany: company[0]?.id,
-          currentProject: project[0]?.id
-        });
-
-        getCurrentProject();
-
-        //get subcollection user inside selected projects
-        try {
-          const docRef = doc(
-            db,
-            "projects",
-            projectId,
-            "users",
-            currentUser?.uid
-          );
-          const docSnapshot = getDoc(docRef);
-
-          if (docSnapshot.exists) {
-            const docData = docSnapshot.data();
-            setUserDisplay({
-              ...userDisplay,
-              user_data: docData,
-            });
-          } else {
-            console.log("Dokumen tidak ditemukan!");
-          }
-        } catch (error) {
-          console.log(error, "ini error");
-        }
-      } catch (error) {
-        console.log("Terjadi kesalahan:", error);
-      }
+    if (findCompany.owner && findCompany.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findCompany.managers && findCompany.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
     }
   };
 
-  const getCurrentProject = async () => {
-    try {
-      const docRef = doc(db, "projects", projectId);
-      const docSnapshot = await getDoc(docRef);
+  const handleProjectSelect = (e) => {
+    const dataProject = globalState.projects;
 
-      if (docSnapshot.exists) {
-        const docData = docSnapshot.data();
+    const findProject = dataProject.find((x) => x.id === e);
 
-        setUserDisplay({
-          ...userDisplay,
-          profileKey: docData.ayrshare_account?.profileKey,
-          projectTitle: docData.ayrshare_account?.title,
-        });
-        // setUserDisplay(docData.ayrshare_account?.profile_key);
-      } else {
-        console.log("Dokumen tidak ditemukan!");
-      }
-    } catch (error) {
-      console.log("Terjadi kesalahan:", error);
+    globalState.setCurrentProject(findProject.id || e);
+
+    if (findProject.owner && findProject.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findProject.managers && findProject.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
     }
   };
+
+  const navigate = useNavigate()
+
+  const toast = useToast()
 
   const logout = async () => {
-    signOut()
+    signOut(auth)
       .then(() => {
+        // Sign-out successful.
         toast({
           status: "success",
           description: "Logged out success",
           duration: 2000,
         });
 
-        navigate("/login");
+        globalState.setIsLoggedIn(false);
+        navigate("/");
         store.clearAll();
       })
       .catch((error) => {
@@ -182,26 +94,7 @@ function SidebarComponentV2({ layout }) {
       });
   };
 
-  useEffect(() => {
-    getProject();
 
-    // getCurrentProject();
-  }, [companyId, project.length, company?.length]);
-
-  useEffect(() => {
-    getCurrentProject();
-    // getCurrentProject();
-  }, [projectId]);
-
-  useEffect(() => {
-    setUserDisplay({
-      uid: currentUser.uid,
-    });
-    getUserData();
-  }, [currentUser, companyId]);
-
-  useEffect(() => {
-  }, [userDisplay]);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -253,46 +146,47 @@ function SidebarComponentV2({ layout }) {
                     <Image src={LogoDeoApp} maxH={75} />
                   </Center>
 
-                  <Stack>
+                  <Stack alignItems={"center"}>
                     <Select
-                      // placeholder="Company Selection"
+                      w={["100%", "100%", "100%"]}
                       size={"sm"}
+                      defaultValue={globalState.companies[0]}
                       onChange={(e) => {
-                        setCompanyId(e.target.value);
-                        setUserDisplay({
-                          ...userDisplay,
-                          currentCompany: e.target.value,
-                        });
+                        handleCompanySelect(e.target.value);
                       }}
                     >
-                      {company?.map((select, i) => (
+                      {globalState.companies?.map((select, i) => (
                         <option
+                          defaultValue={globalState.currentCompany}
                           key={i}
                           value={select?.id}
-                          defaultValue={company[0].id}
                         >
-                          {capitalize(select?.name)}
+                          <Text textTransform={"capitalize"}>
+                            {select?.name}
+                          </Text>
                         </option>
                       ))}
                     </Select>
+                  </Stack>
 
+                  <Stack alignItems={"center"}>
                     <Select
-                      // placeholder="Project Selection"
+                      w={["100%", "100%", "100%"]}
                       size={"sm"}
+                      defaultValue={globalState.projects[0]}
                       onChange={(e) => {
-                        setProjectId(e.target.value);
-                        setUserDisplay({
-                          ...userDisplay,
-                          currentProject: e.target.value,
-                        });
+                        handleProjectSelect(e.target.value);
                       }}
                     >
-                      {project?.map((select, i) => (
-                        <option key={i} value={select?.id}
-                          defaultValue={project[0].id}
-
+                      {globalState?.projects?.map((select, i) => (
+                        <option
+                          defaultValue={globalState?.currentProject}
+                          key={i}
+                          value={select?.id}
                         >
-                          {select.data?.name}
+                          <Text textTransform={"capitalize"}>
+                            {select?.name}
+                          </Text>
                         </option>
                       ))}
                     </Select>
@@ -369,14 +263,14 @@ function SidebarComponentV2({ layout }) {
                     <>
                       <Divider />
 
-                      {currentUser ? (
+                      {globalState.isLoggedIn ? (
                         <>
                           <UserProfile
-                            name={currentUser.displayName}
+                            name={globalState.name}
                             image={
-                              currentUser.photoURL === null
+                              globalState.email === null
                                 ? "https://tinyurl.com/yhkm2ek8"
-                                : currentUser.photoURL
+                                : globalState.email
                             }
                           // email={currentUser.email}
                           />
@@ -384,47 +278,49 @@ function SidebarComponentV2({ layout }) {
                             w={"full"}
                             colorScheme="telegram"
                             size={"sm"}
-                            onClick={() => console.log(userDisplay)}
+                            onClick={() => console.log(globalState)}
                           >
                             Check state
                           </Button>
-                          <Button
+                          {/* <Button
                             w={"full"}
                             colorScheme="telegram"
                             size={"sm"}
                             onClick={logout}
                           >
                             Logout
-                          </Button>
+                          </Button> */}
                         </>
                       ) : (
                         <Box>
-                          <Button>Login</Button>
+                          <Button
+                          >Login</Button>
                         </Box>
                       )}
                     </>
                   ) : layout.type === "vertical" ? (
                     <>
                       <Divider />
-                      {currentUser ? (
+                      {globalState.isLoggedIn ? (
                         <>
                           <UserProfile
-                            name={currentUser.displayName}
+                            name={globalState.name}
                             image={
-                              currentUser.photoURL === null
+                              globalState.email === null
                                 ? "https://tinyurl.com/yhkm2ek8"
-                                : currentUser.photoURL
+                                : globalState.email
                             }
-                          // email={currentUser.email}
+                          email={globalState.email}
                           />
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            onClick={logout}
-                          >
-                            Logout
-                          </Button>
+                         
+                      <Button
+                        icon={FiLogOut}
+                        onClick={() => logout()}
+                        size="sm"
+                        colorScheme={"red"}
+                      >
+                        Logout
+                      </Button>
                         </>
                       ) : (
                         <Box>
@@ -447,7 +343,7 @@ function SidebarComponentV2({ layout }) {
                     w={"full"}
                     colorScheme="telegram"
                     size={"sm"}
-                    onClick={() => console.log(userDisplay)}
+                    onClick={() => console.log(globalState)}
                   >
                     Check state
                   </Button>

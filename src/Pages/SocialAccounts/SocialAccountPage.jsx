@@ -65,10 +65,8 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../Config/firebase";
-import AuthContext from "../../Routes/hooks/AuthContext";
-import AppSideAccountBar from "../../Components/AppSideAccountBar";
-import useUserStore from "../../Routes/Store";
+import { auth, db } from "../../Config/firebase";
+import useUserStore from "../../Hooks/Zustand/Store";
 import {
   addDocumentFirebase,
   getCollectionFirebase,
@@ -79,7 +77,7 @@ function SocialAccountPage() {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  const { userDisplay } = useUserStore();
+  const globalState= useUserStore();
 
   const [barStatus, setBarStatus] = useState(false);
 
@@ -92,19 +90,19 @@ function SocialAccountPage() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
+  const currentUser = auth.currentUser
 
-  const contentWidth = barStatus ? "85%" : "95%";
 
-  const profileKey = userDisplay.profileKey;
+
+  const profileKey = globalState.profileKey;
 
   const getListSocial = async () => {
-    loadingShow();
+    ;
     const conditions = [
       {
         field: "users",
         operator: "array-contains",
-        value: userDisplay?.uid,
+        value: globalState?.uid,
       },
     ];
 
@@ -120,9 +118,9 @@ function SocialAccountPage() {
       const docRef = doc(
         db,
         "projects",
-        userDisplay.currentProject,
+        globalState.currentProject,
         "users",
-        userDisplay.uid
+        globalState.uid
       );
       const docSnapshot = await getDoc(docRef);
 
@@ -134,10 +132,10 @@ function SocialAccountPage() {
         console.log("Dokumen tidak ditemukan!");
       }
 
-      loadingClose();
+      ;
     } catch (error) {
       console.log(error);
-      loadingClose();
+      ;
     }
   };
 
@@ -173,7 +171,7 @@ function SocialAccountPage() {
   };
 
   const handleSubmitAccount = async () => {
-    loadingShow();
+    ;
     try {
       const res = await ApiBackend.post("createprofile", {
         title: titleAccount,
@@ -185,10 +183,10 @@ function SocialAccountPage() {
         try {
           const docRef = await addDoc(collection(db, "projects"), {
             ayrshare_account: res.data,
-            companyId: userDisplay?.currentCompany,
+            companyId: globalState?.currentCompany,
             modules: arrayUnion("crm"),
-            owner: arrayUnion(userDisplay?.uid),
-            users: arrayUnion(userDisplay?.uid),
+            owner: arrayUnion(globalState?.uid),
+            users: arrayUnion(globalState?.uid),
             name: titleAccount,
           });
           console.log("data created with ID", docRef.id);
@@ -196,7 +194,7 @@ function SocialAccountPage() {
           console.log("Terjadi kesalahan:", error);
         }
 
-        loadingClose();
+        ;
         setSocialAccountModal(false);
       }
     } catch (error) {
@@ -218,14 +216,14 @@ function SocialAccountPage() {
             doc(
               db,
               "projects",
-              userDisplay.currentProject,
+              globalState.currentProject,
               "users",
-              userDisplay.uid
+              globalState.uid
             ),
             {
               social_accounts: arrayUnion(res.data),
               role: "users",
-              name: userDisplay.name,
+              name: globalState.name,
             }
           );
         } else {
@@ -233,9 +231,9 @@ function SocialAccountPage() {
             doc(
               db,
               "projects",
-              userDisplay.currentProject,
+              globalState.currentProject,
               "users",
-              userDisplay.uid
+              globalState.uid
             ),
             {
               social_accounts: deleteField(),
@@ -246,9 +244,9 @@ function SocialAccountPage() {
             doc(
               db,
               "projects",
-              userDisplay.currentProject,
+              globalState.currentProject,
               "users",
-              userDisplay.uid
+              globalState.uid
             ),
             {
               social_accounts: arrayUnion(res.data),
@@ -365,7 +363,7 @@ function SocialAccountPage() {
                 </Text>
                 <Spacer />
                 <Text fontSize={"xs"} color="gray.900" fontWeight={"bold"}>
-                  {userDisplay?.email}
+                  {globalState?.email}
                 </Text>
               </HStack>
               <HStack>
@@ -435,7 +433,7 @@ function SocialAccountPage() {
                   columns={(2, null, 3)}
                   borderRadius={"md"}
                 >
-                  {userDisplay.projects?.map((project, i) => (
+                  {globalState.projects?.map((project, i) => (
                     <Box
                       borderRadius={"md"}
                       bg={"white"}

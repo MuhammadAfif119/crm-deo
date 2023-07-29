@@ -13,7 +13,7 @@ export function checkIdSelect(companyId, projectId) {
     return {
       error: {
         title: "Warning",
-        description: "Please, Check your select company !",
+        description: "Please, Check your select project !",
         status: "warning",
       },
       success: false,

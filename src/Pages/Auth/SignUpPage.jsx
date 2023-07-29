@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react'
 import logo from '../../assets/1.png'
 import { MdEmail, MdAccountCircle, MdOutlinePhoneIphone, MdFlag, MdLock } from 'react-icons/md'
 import colors from '../../Utils/colors'
-import AuthContext from '../../Routes/hooks/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../../Config/firebase'
 import { doc, setDoc } from 'firebase/firestore'
@@ -25,7 +24,6 @@ function SignUpPage() {
 	// const [instagram, setInstagram] = useState("");
 	const [loading, setLoading] = useState(false)
 
-	const { signUp } = useContext(AuthContext);
 
 	const navigate = useNavigate()
 	const toast = useToast()
@@ -45,7 +43,7 @@ function SignUpPage() {
 		if (email !== "" && password !== "" && nohp !== "" && name !== "") {
 			try {
 				setLoading(true)
-				signUp(email, password)
+				// signUp(email, password)
 					.then(async (userCredential) => {
 						await updateProfile(auth.currentUser, {
 							displayName,

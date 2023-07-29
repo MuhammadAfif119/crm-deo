@@ -40,7 +40,7 @@ import {
     updateDocumentFirebase,
     uploadFile,
 } from "../../Api/firebaseApi";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 
@@ -73,13 +73,13 @@ function FormPageListing() {
     const [categoryList, setCategoryList] = useState([])
     const [queries, setQueries] = useState('')
     const [priceEnd, setPriceEnd] = useState('')
-    const { userDisplay } = useUserStore();
+    const globalState = useUserStore();
     const toast = useToast()
 
 
 
 
-    const companyId = userDisplay.currentCompany;
+    const companyId = globalState.currentCompany;
 
 
     const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"

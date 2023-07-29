@@ -1,12 +1,10 @@
 import { HStack, Image, Spinner } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import AuthContext from "../../Routes/hooks/AuthContext";
-import gif from '../../assets/belanjafix.gif'
 
 export default function Preloader() {
   const screenHeight = window.innerHeight;
 
-  const { loading } = useContext(AuthContext);
+ const loading = true
 
   return (
     loading && (

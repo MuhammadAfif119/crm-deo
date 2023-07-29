@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addDocumentFirebase } from '../../Api/firebaseApi';
 import { db } from '../../Config/firebase';
-import { checkIdSelect } from '../../Routes/hooks/Middleware/UserMiddleWare';
-import useUserStore from '../../Routes/Store';
+import { checkIdSelect } from '../../Hooks/Middleware/UserMiddleWare';
+import useUserStore from "../../Hooks/Zustand/Store";
+
 
 function FormPageV2() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { userDisplay } = useUserStore();
+    const globalState = useUserStore();
 
     const [dataForm, setDataForm] = useState([]);
 
@@ -30,7 +31,7 @@ function FormPageV2() {
     const getData = async () => {
         try {
             const q = query(collection(db, 'forms'),
-                where("projectId", "==", userDisplay.currentProject)
+                where("projectId", "==", globalState.currentProject)
             );
 
             const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -57,7 +58,7 @@ function FormPageV2() {
         return () => {
 
         };
-    }, [userDisplay.currentProject]);
+    }, [globalState.currentProject]);
 
     const handleAddData = (e) => {
         const { name, value } = e.target;
@@ -71,8 +72,8 @@ function FormPageV2() {
 
     const handleSubmitModal = async () => {
         const validationResult = checkIdSelect(
-            userDisplay.currentCompany,
-            userDisplay.currentProject
+            globalState.currentCompany,
+            globalState.currentProject
         );
 
         if (!validationResult.success) {
@@ -84,13 +85,13 @@ function FormPageV2() {
         const data = {
             isActive: true,
             title: dataInput.title,
-            projectId: userDisplay.currentProject,
+            projectId: globalState.currentProject,
             category: dataInput.category,
             description: dataInput.description,
         };
 
         try {
-            const docID = await addDocumentFirebase(collectionName, data, userDisplay.currentCompany);
+            const docID = await addDocumentFirebase(collectionName, data, globalState.currentCompany);
             console.log('ID Dokumen Baru:', docID);
             onClose();
         } catch (error) {

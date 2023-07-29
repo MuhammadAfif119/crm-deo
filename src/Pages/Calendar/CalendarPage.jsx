@@ -11,8 +11,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import AuthContext from "../../Routes/hooks/AuthContext";
-import { db } from "../../Config/firebase";
+import { auth, db } from "../../Config/firebase";
 import {
   collection,
   doc,
@@ -33,13 +32,13 @@ import {
   FaTwitter,
   FaYoutube,
 } from "react-icons/fa";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 
 const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
   const [events, setEvents] = useState([]);
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
 
   const height = window.innerHeight;
 
@@ -49,10 +48,8 @@ const CalendarPage = () => {
 
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const profileKey = userDisplay.profileKey;
 
-  const { currentUser } = useContext(AuthContext);
-
+  const currentUser = auth.currentUser
   const fetchEvents = async () => {
     try {
       const docRef = doc(db, "schedule", currentUser.uid);

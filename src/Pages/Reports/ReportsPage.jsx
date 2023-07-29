@@ -29,16 +29,15 @@ import {
 } from "react-icons/fa";
 
 import ApiBackend from "../../Api/ApiBackend";
-import { db } from "../../Config/firebase";
-import AuthContext from "../../Routes/hooks/AuthContext";
+import { auth, db } from "../../Config/firebase";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { IoAnalyticsSharp } from "react-icons/io5";
 import moment from "moment";
 import AnalyticsData from "../../Components/Analytics/AnalyticsData";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 
 function ReportsPage() {
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
   const [barStatus, setBarStatus] = useState(false);
   const contentWidth = barStatus ? "85%" : "95%";
 
@@ -49,18 +48,19 @@ function ReportsPage() {
   const [dataAnalytics, setDataAnalytics] = useState({});
   const [loadingView, setLoadingView] = useState(false);
 
-  const profileKey = userDisplay.profileKey;
-  const projectTitle = userDisplay.projectTitle;
+  const profileKey = globalState.profileKey;
+  const projectTitle = globalState.projectTitle;
 
-  const { currentUser, loadingShow, loadingClose } = useContext(AuthContext);
+  const currentUser = auth.currentUser
+
   const toast = useToast();
 
   const getListSocial = async () => {
-    loadingShow();
+    
     // getDataProject();
 
     try {
-      const docRef = doc(db, "users", userDisplay.uid);
+      const docRef = doc(db, "users", globalState.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const filterArr = docSnap
@@ -73,10 +73,10 @@ function ReportsPage() {
       } else {
         console.log("No such document!");
       }
-      loadingClose();
+      ;
     } catch (error) {
       console.log(error);
-      loadingClose();
+      ;
     }
   };
 

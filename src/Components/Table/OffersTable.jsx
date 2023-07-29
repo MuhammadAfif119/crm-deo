@@ -29,7 +29,7 @@ import { IoArrowDown } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { deleteDocumentFirebase, deleteFileFirebase } from '../../Api/firebaseApi'
-import useUserStore from '../../Routes/Store'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 
 export const NewsTableComponent = (props) => {
@@ -39,7 +39,7 @@ export const NewsTableComponent = (props) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const cancelRef = React.useRef();
 	const toast = useToast()
-	const { userDisplay } = useUserStore()
+	const globalState = useUserStore()
 	const handleDelete = (x) => {
 		setDeleteActive(x)
 		onOpen(x)

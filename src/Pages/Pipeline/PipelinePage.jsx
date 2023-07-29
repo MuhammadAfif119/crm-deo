@@ -12,12 +12,12 @@ import {
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../Config/firebase";
-import useUserStore from "../../Routes/Store";
+import useUserStore from "../../Hooks/Zustand/Store";
 import { capitalize } from "../../Utils/capitalizeUtil";
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
 
 const PipelinePage = () => {
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
 
   const [dataProject, setDataProject] = useState();
 
