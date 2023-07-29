@@ -122,16 +122,7 @@ const AppSideBar = ({ setBarStatus }) => {
     return () => {};
   }, [isOpen]);
 
-  const handleLogout = () => {
-    signOut()
-      .then(() => {
-        navigate("/", { replace: true });
-        store.clearAll();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+
 
   const handleActiveParams = (key, title) => {
     setSearchParams(`detail=${activeKey}&name=${activeTitle}`);
@@ -275,15 +266,7 @@ const AppSideBar = ({ setBarStatus }) => {
                       </Stack>
 
                       <Spacer />
-                      <Button
-                        size={"sm"}
-                        bgColor={"red.600"}
-                        onClick={() => handleLogout()}
-                      >
-                        <Text fontSize={"xs"} color="twitter.100">
-                          Logout
-                        </Text>
-                      </Button>
+                    
                     </HStack>
 
                     <Divider />
