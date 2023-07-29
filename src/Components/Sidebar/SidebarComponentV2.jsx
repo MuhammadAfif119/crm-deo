@@ -11,6 +11,7 @@ import {
   Divider,
   Flex,
   HStack,
+  Heading,
   Image,
   Select,
   Spacer,
@@ -131,7 +132,7 @@ function SidebarComponentV2({ layout }) {
             height="full"
             width={{
               md: "14rem",
-              xl: "18rem",
+              xl: "25rem",
             }}
             display={{
               base: "none",
@@ -172,97 +173,122 @@ function SidebarComponentV2({ layout }) {
                   >
 
 
-                      <Stack
-                        spacing={{
-                          base: "5",
-                          sm: "6",
-                        }}
-                        shouldWrapChildren
-                      >
+                    <Stack
+                      spacing={{
+                        base: "5",
+                        sm: "6",
+                      }}
+                      shouldWrapChildren
+                    >
 
 
-                        {/* <Logo /> */}
-                        <Center>
-                          <Image src={LogoDeoApp} maxH={75} />
-                        </Center>
+                      {/* <Logo /> */}
+                      <Center>
+                        <Image src={LogoDeoApp} maxH={75} />
+                      </Center>
 
-                        <Stack>
-                          <Stack alignItems={"center"}>
-                            <Select
-                              w={["100%", "100%", "100%"]}
-                              size={"sm"}
-                              defaultValue={globalState.companies[0]}
-                              onChange={(e) => {
-                                handleCompanySelect(e.target.value);
-                              }}
-                            >
-                              {globalState.companies?.map((select, i) => (
-                                <option
-                                  defaultValue={globalState.currentCompany}
-                                  key={i}
-                                  value={select?.id}
-                                >
-                                  <Text textTransform={"capitalize"}>
-                                    {select?.name}
-                                  </Text>
-                                </option>
-                              ))}
-                            </Select>
-                          </Stack>
+                      <Stack>
+                        <Stack alignItems={"center"}>
+                          <Select
+                            w={["100%", "100%", "100%"]}
+                            size={"sm"}
+                            defaultValue={globalState.companies[0]}
+                            onChange={(e) => {
+                              handleCompanySelect(e.target.value);
+                            }}
+                          >
+                            {globalState.companies?.map((select, i) => (
+                              <option
+                                defaultValue={globalState.currentCompany}
+                                key={i}
+                                value={select?.id}
+                              >
+                                <Text textTransform={"capitalize"}>
+                                  {select?.name}
+                                </Text>
+                              </option>
+                            ))}
+                          </Select>
+                        </Stack>
 
-                          <Stack alignItems={"center"}>
-                            <Select
-                              w={["100%", "100%", "100%"]}
-                              size={"sm"}
-                              defaultValue={globalState.projects[0]}
-                              onChange={(e) => {
-                                handleProjectSelect(e.target.value);
-                              }}
-                            >
-                              {globalState?.projects?.map((select, i) => (
-                                <option
-                                  defaultValue={globalState?.currentProject}
-                                  key={i}
-                                  value={select?.id}
-                                >
-                                  <Text textTransform={"capitalize"}>
-                                    {select?.name}
-                                  </Text>
-                                </option>
-                              ))}
-                            </Select>
-                          </Stack>
+                        <Stack alignItems={"center"}>
+                          <Select
+                            w={["100%", "100%", "100%"]}
+                            size={"sm"}
+                            defaultValue={globalState.projects[0]}
+                            onChange={(e) => {
+                              handleProjectSelect(e.target.value);
+                            }}
+                          >
+                            {globalState?.projects?.map((select, i) => (
+                              <option
+                                defaultValue={globalState?.currentProject}
+                                key={i}
+                                value={select?.id}
+                              >
+                                <Text textTransform={"capitalize"}>
+                                  {select?.name}
+                                </Text>
+                              </option>
+                            ))}
+                          </Select>
+                        </Stack>
 
 
-                          <Stack>
-                            {/* <HStack>
+                        <Stack mt='5'>
+                          {/* <HStack>
                             <Icon as={FcDatabase} boxSize={5} />
                             <Text fontWeight={"semibold"} pl={3}>
                               Dashboard
                             </Text>
                           </HStack> */}
-                          <Accordion allowMultiple>
+                          {data.map((x, i) => (
+                            <>
+                              {x.name === 'Dashboard' ?
+                                <Button onClick={() => navigate(x?.link)} variant={'ghost'} alignItems={'center'} justifyContent={'left'} key={i}>
+                                  <Icon as={x.icon} boxSize={5} mr='2' />
 
-                            {data.map((x, i) => (
-                              <AccordionItem
-                                key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
-                              >
-                                <h2>
-                                  <AccordionButton>
-                                    {x.name === 'Dashboard' ?
-                                      <Flex onClick={()=>navigate(x?.link)}>
-                                        <Icon as={x.icon} boxSize={5} />
-                                        <Text fontWeight={"semibold"} pl={3}>
-                                          {x.name}
-                                        </Text>
-                                      </Flex>
-                                      :
-                                      <>
-                                        <Icon as={x.icon} boxSize={5} />
-                                        <Text fontWeight={"semibold"} pl={3}>
-                                          {x.name}
-                                        </Text>
-                                        <AccordionIcon />
+                                  {x.name}
+                                </Button> :
+                                <Box mx='5' py={2} key={i}>
+                                  <Text fontWeight={'medium'} size='sm' mx='4'>
+                                    <Icon as={x.icon} boxSize={5} mr='2' />
+
+                                    {x.name}</Text>
+
+                                  {x.submenu.map((subitem, i) => (
+                                    <Button fontWeight={'medium'} w='90%' mx='7' key={i} variant={'ghost'} alignItems={'center'} justifyContent={'left'} onClick={() => navigate(subitem?.link)} >
+                                      <Icon as={subitem.icon} boxSize={5} mr='2' />
+
+                                      {subitem.name}</Button>
+                                  ))}
+                                </Box>
+                              }
+
+                            </>
+                          ))}
+                          {/* <Accordion>
+
+                              {data.map((x, i) => (
+                                <AccordionItem
+                                  key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
+                                >
+                                  <h2>
+                                    <AccordionButton>
+                                      {x.name === 'Dashboard' ?
+                                        <Flex m='0' p='0' gap='0' onClick={() => navigate(x?.link)}>
+                                          <Icon as={x.icon} boxSize={5} />
+                                          <Text fontWeight={"semibold"} pl={3}>
+                                            {x.name}
+                                          </Text>
+                                        </Flex>
+                                        :
+                                        <>
+                                          <Icon as={x.icon} boxSize={5} />
+                                          <Text fontWeight={"semibold"} pl={3}>
+                                            {x.name}
+                                          </Text>
+                                          <AccordionIcon />
 
                                         </>
                                       }
@@ -293,126 +319,125 @@ function SidebarComponentV2({ layout }) {
                                   )}
                                 </AccordionItem>
                               ))}
-                            </Accordion>
-                          </Stack>
-                        </Stack>
-
-                        <Stack
-                          spacing={{
-                            base: "5",
-                            sm: "6",
-                          }}
-                        >
-
-                          <Stack spacing="1">
-                            {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
-                            <Button
-                              as={Link}
-                              to={"/settings"}
-                              variant="ghost"
-                              justifyContent="start"
-                            >
-                              <HStack spacing="3">
-                                <Icon as={FiSettings} boxSize="5" color="subtle" />
-                                <Text>Setting</Text>
-                              </HStack>
-                            </Button>
-                            {/* <NavButton label="Settings" icon={FiSettings} /> */}
-                          </Stack>
-
-                          <Spacer  />
-
-                          {layout.type === "vertical-horizontal" &&
-                            layout.userProfile === "sidebar" ? (
-                            <>
-                              <Divider />
-
-                              {globalState.setIsLoggedIn ? (
-                                <>
-                                  <UserProfile
-                                    name={globalState.name}
-                                    image={
-                                      globalState.email === null
-                                        ? "https://tinyurl.com/yhkm2ek8"
-                                        : globalState.email
-                                    }
-                                  email={globalState.email}
-                                  />
-                                  <Button
-                                    w={"full"}
-                                    colorScheme="telegram"
-                                    size={"sm"}
-                                    onClick={() => console.log(globalState)}
-                                  >
-                                    Check state
-                                  </Button>
-                                  <Button
-                                    w={"full"}
-                                    colorScheme="red"
-                                    variant={'outline'}
-                                    size={"sm"}
-                                    onClick={logout}
-                                  >
-                                    Logout
-                                  </Button>
-                                </>
-                              ) : (
-                                <Box>
-                                  <Button>Login</Button>
-                                </Box>
-                              )}
-                            </>
-                          ) : layout.type === "vertical" ? (
-                            <>
-                              <Divider />
-                              {globalState.isLoggedIn ? (
-                                <>
-                                  <UserProfile
-                                    name={globalState.name}
-                                    image={
-                                      globalState.email === null
-                                        ? "https://tinyurl.com/yhkm2ek8"
-                                        : globalState.email
-                                    }
-                                  email={globalState.email}
-                                  />
-                                  <Button
-                                    w={"full"}
-                                    colorScheme="red"
-                                    size={"sm"}
-                                    variant='outline'
-                                    onClick={logout}
-                                  >
-                                    Logout
-                                  </Button>
-                                </>
-                              ) : (
-                                <Box>
-                                  <Button
-                                    w={"full"}
-                                    colorScheme="telegram"
-                                    size={"sm"}
-                                    as={Link}
-                                    to={"/login"}
-                                  >
-                                    Login
-                                  </Button>
-                                </Box>
-                              )}
-                            </>
-                          ) : (
-                            <></>
-                          )}
-                          <Button
-                            w={"full"}
-                            colorScheme="telegram"
-                            size={"sm"}
-                            onClick={() => console.log(globalState)}
-                          >
-                            Check state
-                          </Button>
+                            </Accordion> */}
                         </Stack>
                       </Stack>
+
+                      <Stack
+                        spacing={{
+                          base: "5",
+                          sm: "6",
+                        }}
+                      >
+
+                        <Stack spacing="1">
+                          {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
+                          <Button
+                            as={Link}
+                            to={"/settings"}
+                            variant="ghost"
+                            justifyContent="start"
+                          >
+                            <HStack spacing="3">
+                              <Icon as={FiSettings} boxSize="5" color="subtle" />
+                              <Text>Setting</Text>
+                            </HStack>
+                          </Button>
+                          {/* <NavButton label="Settings" icon={FiSettings} /> */}
+                        </Stack>
+
+                        <Spacer />
+
+                        {layout.type === "vertical-horizontal" &&
+                          layout.userProfile === "sidebar" ? (
+                          <>
+                            <Divider />
+
+                            {globalState.setIsLoggedIn ? (
+                              <>
+                                <UserProfile
+                                  name={globalState.name}
+                                  image={
+                                    globalState.email === null
+                                      ? "https://tinyurl.com/yhkm2ek8"
+                                      : globalState.email
+                                  }
+                                  email={globalState.email}
+                                />
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  onClick={() => console.log(userDisplay)}
+                                >
+                                  Check state
+                                </Button>
+                                <Button
+                                  w={"full"}
+                                  colorScheme="red"
+                                  variant={'outline'}
+                                  size={"sm"}
+                                  onClick={logout}
+                                >
+                                  Logout
+                                </Button>
+                              </>
+                            ) : (
+                              <Box>
+                                <Button>Login</Button>
+                              </Box>
+                            )}
+                          </>
+                        ) : layout.type === "vertical" ? (
+                          <>
+                            <Divider />
+                            {globalState.isLoggedIn ? (
+                              <>
+                                <UserProfile
+                                  name={globalState.name}
+                                  image={
+                                    globalState.email === null
+                                      ? "https://tinyurl.com/yhkm2ek8"
+                                      : globalState.email
+                                  }
+                                  email={globalState.email}
+                                />
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  onClick={logout}
+                                >
+                                  Logout
+                                </Button>
+                              </>
+                            ) : (
+                              <Box>
+                                <Button
+                                  w={"full"}
+                                  colorScheme="telegram"
+                                  size={"sm"}
+                                  as={Link}
+                                  to={"/login"}
+                                >
+                                  Login
+                                </Button>
+                              </Box>
+                            )}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                        <Button
+                          w={"full"}
+                          colorScheme="telegram"
+                          size={"sm"}
+                          onClick={() => console.log(userDisplay)}
+                        >
+                          Check state
+                        </Button>
+                      </Stack>
+                    </Stack>
                   </Flex>
                 </Flex>
               </Box>
