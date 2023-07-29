@@ -56,7 +56,7 @@ function App() {
 
 
     } catch (error) {
-      console.log(error, "ini error");
+      console.log(error, "ini err");
     }
   };
 
