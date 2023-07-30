@@ -43,10 +43,10 @@ const CreateNewsPage = () => {
     const { onOpen, isOpen, onClose } = useDisclosure();
     // const { currentProject } = useGlobalState();
 
-    const { userDisplay } = useUserStore();
+    const globalState = useUserStore();
 
-    const projectId = userDisplay.currentProject
-    const companyId = userDisplay.currentCompany
+    const projectId = globalState.currentProject
+    const companyId = globalState.currentCompany
 
 
     const [newTag, setNewTag] = useState('');

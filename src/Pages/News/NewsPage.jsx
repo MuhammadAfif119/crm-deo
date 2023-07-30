@@ -13,6 +13,7 @@ import {
     ButtonGroup, 
     Input,
     useBreakpointValue,
+    Spacer,
 } from '@chakra-ui/react'
 import { FiSearch } from 'react-icons/fi'
 import React, { useEffect, useState } from 'react'
@@ -22,6 +23,7 @@ import { getCollectionWhereFirebase } from '../../Api/firebaseApi';
 import { useNavigate } from 'react-router-dom';
 import { NewsTableComponent } from '../../Components/Table/OffersTable';
 import useUserStore from "../../Hooks/Zustand/Store";
+import { FcPlus } from 'react-icons/fc';
 
 // import { NewsTable } from '../Offers/OffersTable';
 
@@ -53,10 +55,19 @@ const NewsPage = () => {
 
     return (
         <>
-            <Flex justifyContent='space-between'>
-                <Heading>News</Heading>
-                <Button colorScheme='green' onClick={()=>navigate('/news/create') }>+  Add New News</Button>
-            </Flex>
+            <HStack
+                p={[1, 1, 5]}
+            >
+                <Heading size='md'>News</Heading>
+                <Spacer />
+                <Button onClick={() => navigate('/news/create')} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
+                    <HStack>
+                        <FcPlus />
+                        <Text>News</Text>
+                    </HStack>
+                </Button>
+            </HStack>
+          
             {/* <BreadCrumbComponent data={breadcrumbData} /> */}
 
            <NewsComponent news={news} getNews={getNews}/>

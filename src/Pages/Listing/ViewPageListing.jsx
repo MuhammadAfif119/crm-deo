@@ -250,7 +250,21 @@ const ViewPageListing = () => {
         )}
 
         {categoryList && selectedCategory !== 'All' && (
-          <HStack spacing={3}>
+          <HStack spacing={3} overflowY={'auto'} css={{
+            '&::-webkit-scrollbar': {
+              height: '0rem',
+              width: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              width: '6px',
+              // backgroundColor: 'whitesmoke'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              // background: 'DarkGray',
+              height: '2px',
+              // borderRadius: '24px',
+            },
+          }}>
             {categoryList?.category?.map((x, index) => (
               <Text
                 key={index}
@@ -273,9 +287,9 @@ const ViewPageListing = () => {
         return (
           (!selectedCategoryNiche || selectedCategoryNiche === category) &&
           <Stack spacing={2} key={category} py={2} >
-            <Box position="relative" padding="10">
+            <Box position="relative" padding="10" >
               <Divider />
-              <AbsoluteCenter bg="black" borderRadius="md" p="2">
+              <AbsoluteCenter bg="black" borderRadius="md" p="2" >
                 <Text fontWeight={500} fontSize={23} color="white">
                   {category?.toUpperCase()}
                 </Text>
