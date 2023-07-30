@@ -1,4 +1,5 @@
 import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading, HStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Spacer } from '@chakra-ui/react';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
@@ -69,7 +70,7 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
     let jsScript = '';
 
     jsScript += ` <script>
-    function submitForm(idform) {
+    async function submitForm(idform) {
       const inputElements = document.querySelectorAll('input');
       const textAreaElements = document.querySelectorAll('textarea');
       const selectElements = document.querySelectorAll('select');
@@ -99,7 +100,13 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '${apiSubmitUrl}', true);
         xhr.setRequestHeader('Content-Type', 'application/json'); // Set header untuk JSON
-        xhr.send(jsonData); // Mengirim dataForm dalam format JSON
+
+        try {
+            const res = await xhr.send(jsonData);
+            console.log(res, 'ini res');
+          } catch (error) {
+            console.log(error, 'ini error');
+          }
         
     }
   </script>`
@@ -165,14 +172,24 @@ function FormBuilderPage() {
     const renderFormFields = () => {
         if (formFields?.length > 0) {
             return formFields?.map((field) => {
-                const { label, type, name, placeholder, isRequired, options } = field;
+                const { label, type, name, placeholder, isRequired, options, idform } = field;
                 const inputPlaceholder = placeholder || '';
                 const inputIsRequired = isRequired || false;
                 const inputProps = { name, onChange: handleInputChange, value: formValues[name] || '' };
 
-                const handleSubmit = (e) => {
-                    console.log('Form values:', formValues);
-                    console.log('Form Id:', param.id)
+                const handleSubmit = async () => {
+
+
+                    let updateData = formValues
+                    updateData.formId = idform
+
+                    const data = updateData
+                    try {
+                    const res =  await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', data) 
+                    console.log(res, 'ini ress')
+                    } catch (error) {
+                     console.log(error, 'ini error')   
+                    }
                     // Implement your form submission logic here
                 };
 
