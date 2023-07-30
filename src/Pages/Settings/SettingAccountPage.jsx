@@ -164,7 +164,6 @@ export const SettingAccountPage = () => {
       const totalTokens = res.reduce((accumulator, currentObject) => {
         return accumulator + currentObject.tokenUsage;
       }, 0);
-      console.log(res, "xx");
       setTokens(totalTokens);
     } catch (error) {
       console.log(error, "ini error");
@@ -300,6 +299,7 @@ export const SettingAccountPage = () => {
         px={2}
         borderRadius="md"
         shadow="md"
+        bgColor={'white'}
       >
         <Tabs variant="enclosed">
           <TabList>
@@ -568,6 +568,7 @@ export const SettingAccountPage = () => {
         px={2}
         borderRadius="md"
         shadow="md"
+        bgColor={'white'}
       >
         <Heading mt={2} mb={4} align={"center"}>
           Profile

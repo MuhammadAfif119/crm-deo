@@ -220,7 +220,7 @@ function FormPageV2() {
                             </Stack>
 
                             <Stack>
-                                <Text>Descrption</Text>
+                                <Text>Description</Text>
                                 <Input name="description" type="text" placeholder="Deskripsi Form" onChange={handleAddData} />
                             </Stack>
 
