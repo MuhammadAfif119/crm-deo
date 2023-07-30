@@ -1,11 +1,22 @@
 import React from "react";
-import SettingsPage from "../Pages/Settings/SettingsPage";
+import { SettingAccountPage } from "../Pages/Settings/SettingAccountPage";
+import SettingPasswordPage from "../Pages/Settings/SettingPasswordPage";
 
-const SocialAccountRouter = [
+
+
+const SettingRouter = [
+  {
+    path: "/change-password",
+    element: (
+        <SettingPasswordPage />
+    ),
+  },
   {
     path: "/settings",
-    element: <SettingsPage />,
+    element: (
+        <SettingAccountPage />
+    ),
   },
 ];
 
-export default SocialAccountRouter;
+export default SettingRouter;

@@ -1,5 +1,7 @@
 import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useParams } from 'react-router-dom';
 import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import CreateForm from '../../Components/Form/CreateForm';
@@ -150,7 +152,7 @@ function FormBuilderPage() {
     };
 
     const renderFormFields = () => {
-        if (formFields?.length > 0 ) {
+        if (formFields?.length > 0) {
             console.log(formFields)
             return formFields?.map((field) => {
                 const { label, type, name, placeholder, isRequired, options } = field;
@@ -160,7 +162,7 @@ function FormBuilderPage() {
 
                 const handleSubmit = () => {
                     console.log('Form values:', formValues);
-                    console.log('Form Id:',param.id)
+                    console.log('Form Id:', param.id)
                     // Implement your form submission logic here
                 };
 
@@ -293,7 +295,7 @@ function FormBuilderPage() {
                 setEnableFacebookPixel(result?.enableFacebookPixel)
                 setFacebookPixelId(result?.facebookPixelId)
 
-            }else{
+            } else {
                 setFormFields([
                     { label: 'Nama', type: 'text', name: 'nama', placeholder: 'Masukkan nama lengkap', isRequired: true },
                     { label: 'Email', type: 'email', name: 'email', placeholder: 'Masukkan alamat email', isRequired: true },
@@ -385,7 +387,10 @@ function FormBuilderPage() {
             <Divider py={5} />
             <Grid templateColumns={{ base: '1fr', md: '1.5fr 1fr' }} gap={10}>
                 <Stack>
-                    <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
+                    <Stack bgColor={'white'} p={5}>
+                        <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
+                    </Stack>
+
                 </Stack>
                 <Stack>
                     {renderFormFields()}
@@ -396,7 +401,7 @@ function FormBuilderPage() {
 
             <Stack>
                 <Button onClick={() => console.log('form fields:', formFields)} colorScheme="teal">
-                    Check Form Fields
+                    Check Form Fieldsasdasdsa
                 </Button>
             </Stack>
 

@@ -1,7 +1,8 @@
-import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading } from '@chakra-ui/react';
+import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading, HStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Spacer } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
+import BackButtons from '../../Components/Buttons/BackButtons';
 import CreateForm from '../../Components/Form/CreateForm';
 
 
@@ -11,6 +12,7 @@ function generateHTML(formFields) {
     formFields.forEach((field) => {
         const { label, type, name, placeholder, options, idform, isRequired } = field;
 
+
         switch (type) {
             case 'text':
             case 'email':
@@ -18,37 +20,40 @@ function generateHTML(formFields) {
             case 'date':
             case 'file':
                 html += `
-            <div>
-              <label for="${name}">${label}${isRequired ? ' *' : ''}</label>
-              <input type="${type}" name="${name}" placeholder="${placeholder}" style="/* Isi dengan CSS inline sesuai dengan tampilan input Anda */"  ${isRequired ? 'required' : ''}/>
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? ' *' : ''}</label>
+              <input type="${type}" name="${name}" placeholder="${placeholder}" style="width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"   ${isRequired ? 'required' : ''}/>
             </div>`;
                 break;
 
             case 'textarea':
                 html += `
-            <div>
-              <label for="${name}">${label}${isRequired ? ' *' : ''}</label>
-              <textarea name="${name}" placeholder="${placeholder}" style="/* Isi dengan CSS inline sesuai dengan tampilan textarea Anda */"></textarea>
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? ' *' : ''}</label>
+              <textarea name="${name}" placeholder="${placeholder}" style="width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
             </div>`;
                 break;
 
             case 'select':
                 html += `
-            <div>
-              <label for="${name}">${label}${isRequired ? ' *' : ''}</label>
-              <select name="${name}" style="/* Isi dengan CSS inline sesuai dengan tampilan select Anda */">
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? ' *' : ''}</label>
+              <select name="${name}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                 <option value="" disabled selected>Pilih opsi</option>`;
                 options.forEach((option) => {
                     html += `<option value="${option}">${option}</option>`;
                 });
                 html += `
               </select>
-            </div>`;
+            </div style="margin-bottom: 10px;">`;
                 break;
 
             case 'button':
                 html += `
-            <button type="${type}" name="${name}" onclick="submitForm('${idform}')">${label}</button>`;
+                <div onclick="submitForm('${idform}')" style="display: flex; align-items: center; justify-content: center; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+            <button type="${type}" name="${name}"  style="padding: 10px; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">${label}</button>
+            </div>
+            `;
 
                 break;
 
@@ -57,7 +62,7 @@ function generateHTML(formFields) {
         }
     });
 
-    return `<form>${html}</form>`;
+    return `<form  style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">${html}</form>`;
 }
 
 function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
@@ -81,23 +86,21 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
       selectElements.forEach(select => {
         dataForm[select.name] = select.value;
       }); 
+
+      dataForm.idform = idform
       
     
   
-        const jsonData = JSON.stringify(dataForm); // Mengonversi objek dataForm menjadi JSON
+        const jsonData = JSON.stringify(dataForm);
 
         console.log('ID Form:', idform)
         console.log('JSON Form:', jsonData)
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '${apiSubmitUrl}/' + idform, true);
+        xhr.open('POST', '${apiSubmitUrl}', true);
         xhr.setRequestHeader('Content-Type', 'application/json'); // Set header untuk JSON
         xhr.send(jsonData); // Mengirim dataForm dalam format JSON
-    
-        // Add Facebook Pixel event here
-        fbq('track', 'Lead', {
-          content_name: 'FormSubmission',
-        });
+        
     }
   </script>`
 
@@ -107,6 +110,10 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
         
         <script>
         !function (f, b, e, v, n, t, s) {
+            fbq('track', 'Lead', {
+              content_name: 'FormSubmission',
+            });
+
             if (f.fbq) return; n = f.fbq = function () { n.callMethod ?
                 n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
             if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
@@ -131,15 +138,21 @@ function FormBuilderPage() {
     const param = useParams()
     const toast = useToast();
 
+    const [modalEmbedCode, setModalEmbedCode] = useState(false)
+
     const [formData, setFormData] = useState('')
 
+    const [loading, setLoading] = useState(false)
+
     const [formFields, setFormFields] = useState([]);
+    const navigate = useNavigate()
 
     const [formValues, setFormValues] = useState({});
     const [enableFacebookPixel, setEnableFacebookPixel] = useState(false);
     const [facebookPixelId, setFacebookPixelId] = useState('');
+    const [isActive, setIsActive] = useState(false);
 
-    const [apiSubmitUrl, setApiSubmitUrl] = useState('https://deoapp.com/kodok');
+    const [apiSubmitUrl, setApiSubmitUrl] = useState('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead');
 
     const [embedCode, setEmbedCode] = useState('');
 
@@ -150,17 +163,16 @@ function FormBuilderPage() {
     };
 
     const renderFormFields = () => {
-        if (formFields?.length > 0 ) {
-            console.log(formFields)
+        if (formFields?.length > 0) {
             return formFields?.map((field) => {
                 const { label, type, name, placeholder, isRequired, options } = field;
                 const inputPlaceholder = placeholder || '';
                 const inputIsRequired = isRequired || false;
                 const inputProps = { name, onChange: handleInputChange, value: formValues[name] || '' };
 
-                const handleSubmit = () => {
+                const handleSubmit = (e) => {
                     console.log('Form values:', formValues);
-                    console.log('Form Id:',param.id)
+                    console.log('Form Id:', param.id)
                     // Implement your form submission logic here
                 };
 
@@ -186,9 +198,10 @@ function FormBuilderPage() {
                         {type === 'date' && <Input type="date" placeholder={inputPlaceholder} {...inputProps} />}
                         {type === 'time' && <Input type="time" placeholder={inputPlaceholder} {...inputProps} />}
                         {type === 'file' && <Input type="file" placeholder={inputPlaceholder} {...inputProps} />}
-                        <Stack>
-                            {type === 'button' && <Button onClick={handleSubmit} colorScheme="teal">{label}</Button>}
-                        </Stack>
+
+                        <Box textAlign={'center'}>
+                            {type === 'button' && <Button onClick={handleSubmit} colorScheme="blue">{label}</Button>}
+                        </Box>
                     </FormControl>
                 );
             });
@@ -197,12 +210,11 @@ function FormBuilderPage() {
     };
 
     const handleEmbedCode = () => {
+        setModalEmbedCode(true)
         const formHTML = generateHTML(formFields);
         const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl);
 
-        // Mencetak hasil kode HTML dan JS ke konsol
-        console.log('Hasil HTML embed dengan inline CSS dan script:', formHTML);
-        console.log('Hasil JS script:', jsScript);
+
 
         // Menggabungkan elemen-elemen HTML menjadi satu teks lengkap dengan head dan body
         const fullHTML = `
@@ -222,12 +234,14 @@ function FormBuilderPage() {
         setEmbedCode(fullHTML);
     };
     const handleSaveForm = async () => {
+        setLoading(true)
         const collectionName = 'forms';
         const docName = param.id;
         const data = {
             form_fields: formFields,
             facebookPixelId,
             enableFacebookPixel,
+            isActive,
             apiSubmitUrl: `${apiSubmitUrl}/${param.id}`,
 
         };
@@ -243,9 +257,15 @@ function FormBuilderPage() {
                 position: "top-right",
                 isClosable: true,
             });
+
+            navigate(-1)
+
             // Pesan toast yang berhasil
         } catch (error) {
             console.log('Terjadi kesalahan:', error);
+        }
+        finally {
+            setLoading(false)
         }
     }
 
@@ -292,8 +312,9 @@ function FormBuilderPage() {
                 setFormFields(result?.form_fields)
                 setEnableFacebookPixel(result?.enableFacebookPixel)
                 setFacebookPixelId(result?.facebookPixelId)
+                setIsActive(result?.isActive)
 
-            }else{
+            } else {
                 setFormFields([
                     { label: 'Nama', type: 'text', name: 'nama', placeholder: 'Masukkan nama lengkap', isRequired: true },
                     { label: 'Email', type: 'email', name: 'email', placeholder: 'Masukkan alamat email', isRequired: true },
@@ -302,7 +323,7 @@ function FormBuilderPage() {
                     { label: 'Pilihan', type: 'select', name: 'pilihan', options: ['Pilihan 1', 'Pilihan 2', 'Pilihan 3'] },
                     { label: 'date', type: 'date', name: 'date', isRequired: true },
                     { label: 'File', type: 'file', name: 'bukti transfer', isRequired: true },
-                    { label: 'Submit', type: 'button', name: 'submit_button', idform: param.id },
+                    { label: 'Submit', type: 'button', name: 'submit_button', idform: result.token },
                 ])
                 setEnableFacebookPixel(false)
                 setFacebookPixelId('YOUR_PIXEL_ID_HERE')
@@ -322,83 +343,104 @@ function FormBuilderPage() {
 
 
     return (
-        <Stack>
-            <Stack>
-                <SimpleGrid columns={[1, null, 2]} gap={4}>
-                    <Stack spacing={2}>
-                        <Heading size={'md'}>{formData.title}</Heading>
-                        <FormControl>
-                            <Text>Facebook Pixel ID</Text>
-                            <Input
-                                type="text"
-                                value={facebookPixelId}
-                                onChange={(e) => setFacebookPixelId(e.target.value)}
-                                placeholder="Masukkan Facebook Pixel ID"
-                            />
-                        </FormControl>
+        <Stack spacing={5}>
+            <BackButtons />
 
-                        <FormControl>
-                            <Text>Enable Facebook Pixel</Text>
+
+            <Heading size={'lg'} textTransform='capitalize'>{formData.title}</Heading>
+
+            <Divider />
+            <Grid templateColumns={{ base: '1fr', md: '1.3fr 1fr' }} gap={4} py={5}>
+                <Stack >
+                    <Stack minH={'500px'} bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
+                        <HStack>
+                            <Heading size={'md'}>Form Costumize</Heading>
+                            <Spacer />
                             <Switch
-                                isChecked={enableFacebookPixel}
-                                onChange={(e) => setEnableFacebookPixel(e.target.checked)}
+                                isChecked={isActive}
+                                onChange={(e) => setIsActive(e.target.checked)}
                             />
-                        </FormControl>
+                        </HStack>
 
-                        <Stack>
-                            <Button onClick={handleEmbedCode} colorScheme="teal">
-                                Generate Embed Code
-                            </Button>
+                            <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
+
+                        <Heading size={'md'}>Facebook Pixel ID</Heading>
+
+
+                        <Stack spacing={5} px={[1, 1, 5]}>
+                            <FormControl>
+                                <Stack>
+                                    <HStack>
+                                        <Input
+                                            type="text"
+                                            value={facebookPixelId}
+                                            onChange={(e) => setFacebookPixelId(e.target.value)}
+                                            placeholder="Masukkan Facebook Pixel ID"
+                                        />
+                                        <Switch
+                                            isChecked={enableFacebookPixel}
+                                            onChange={(e) => setEnableFacebookPixel(e.target.checked)}
+                                        />
+                                    </HStack>
+                                </Stack>
+                            </FormControl>
+
+                            <HStack alignItems={'flex-end'} justifyContent='flex-end'>
+                                <Button variant={'outline'} onClick={handleEmbedCode} colorScheme="blue">
+                                    Show Embed Code
+                                </Button>
+
+                                <Button variant={'outline'} isLoading={loading} onClick={handleSaveForm} colorScheme="blue">
+                                    Save Form
+                                </Button>
+
+                            </HStack>
+
+
                         </Stack>
-
-                        <Button onClick={handleSaveForm} colorScheme="teal">
-                            Save Form
-                        </Button>
                     </Stack>
 
-                    <Stack>
-
-                        {/* Kotak kode kecil untuk menampilkan hasil embed code */}
-                        <Box borderWidth="1px" bgColor={'blackAlpha.800'} color='whiteAlpha.800' borderRadius="md" padding="4" maxH={'300px'} fontSize='sm' overflowY='scroll'>
-                            {/* Isi dengan hasil elemen HTML lengkap */}
-                            <pre>
-                                {`Hasil HTML embed dengan inline CSS dan script: \n`}
-                                {embedCode}
-                            </pre>
-                        </Box>
-
-
-                        {/* Tombol untuk menyalin kode embed */}
-                        <Stack>
-                            <Button onClick={handleCopyCode} colorScheme="teal">
-                                Copy Embed Code
-                            </Button>
-                        </Stack>
-
-                    </Stack>
-
-
-                </SimpleGrid>
-
-
-            </Stack>
-            <Divider py={5} />
-            <Grid templateColumns={{ base: '1fr', md: '1.5fr 1fr' }} gap={10}>
-                <Stack>
-                    <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
                 </Stack>
-                <Stack>
-                    {renderFormFields()}
+                <Stack  >
+                    <Stack p={[1, 1, 5]} bgColor={'white'} minH={'500px'} spacing={5} borderRadius='md' shadow={'md'}>
+                        <Stack>
+                            <Heading size={'md'}>Data penerima: </Heading>
+                        </Stack>
+                        <Stack spacing={3} p={[1, 1, 5]}>
+                            {renderFormFields()}
+                        </Stack>
+                    </Stack>
                 </Stack>
             </Grid>
 
+            <Modal isOpen={modalEmbedCode} onClose={() => setModalEmbedCode(false)}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Embed Code</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Stack>
 
+                            <Box borderWidth="1px" bgColor={'blackAlpha.800'} color='whiteAlpha.800' borderRadius="md" padding="4" maxH={'300px'} fontSize='sm' overflowY='scroll'>
+                                <pre>
+                                    {embedCode}
+                                </pre>
+                            </Box>
 
-            <Stack>
-                <Button onClick={() => console.log('form fields:', formFields)} colorScheme="teal">
-                    Check Form Fields
-                </Button>
-            </Stack>
+                        </Stack>
+
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button colorScheme="blue" variant={'outline'} size='sm' mr={3} onClick={handleCopyCode}>
+                            Copy embed code
+                        </Button>
+                        <Button colorScheme="red" variant={'outline'} size='sm' mr={3} onClick={() => setModalEmbedCode(false)}>
+                            Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
 
         </Stack>
     );
