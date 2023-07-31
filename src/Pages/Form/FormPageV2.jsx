@@ -12,6 +12,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 import sha256 from 'crypto-js/sha256';
 
 import CryptoJS from "crypto-js"
+import { FcPlus } from 'react-icons/fc';
 
 
 
@@ -156,16 +157,28 @@ function FormPageV2() {
     return (
         <Stack p={[1, 1, 5]} spacing={5}>
             <HStack>
-                <Heading>Form Builder</Heading>
+                <Heading size='md'>Form Builder</Heading>
                 <Spacer />
-                <Button onClick={onOpen} variant='outline' colorScheme={'blue'}>New Form</Button>
+                <Button onClick={onOpen} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
+                    <HStack>
+                        <FcPlus />
+                        <Text>Form</Text>
+                    </HStack>
+                </Button>
             </HStack>
 
             <Stack p={[1, 1, 5]}>
                 <SimpleGrid columns={[1, 2, 3]} gap={3}>
                     {dataForm?.length > 0 && dataForm.map((x, index) => {
                         return (
-                            <Stack key={index} borderWidth='1px' p={3} bgColor='white' shadow={'md'} cursor='pointer' onClick={() => navigate(`/form-builder/${x.id}`)}>
+                            <Stack key={index} borderWidth='1px' p={3} bgColor='white' shadow={'md'} rounded={5} cursor='pointer' onClick={() => navigate(`/form-builder/${x.id}`)}
+                                _hover={{
+                                    bg: "gray.100",
+                                    transform: "scale(1.02)",
+                                    transition: "0.3s",
+                                    cursor: "pointer"
+                                }}
+                            >
                                 <Heading textTransform={'capitalize'} size='sm'>{x.title}</Heading>
                                 <Text color={'gray.700'}>{x.description}</Text>
                                 <Spacer />

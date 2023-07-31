@@ -109,7 +109,14 @@ const TicketPage = () => {
           return (
             <>
               <Box pos={'relative'} key={index} >
-                <VStack border={'1px solid black'} cursor={'pointer'} _hover={{ shadow: 'lg' }} rounded={8} bgColor={'transparent'} h={'auto'} p={5} my='2' justify={'left'} align={'left'} >
+                <VStack rounded={5} borderWidth='1px' p={3} bgColor='white' shadow={'md'} align={'left'} justify={'space-between'} cursor={'pointer'}
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                    cursor: "pointer"
+                  }}
+                >
                   <Flex justify={'space-between'} align={'center'}>
                     <Heading size={'sm'} onClick={() => handleModal('read', item)}>{item?.title}</Heading>
                     <Button variant={'unstyled'} onClick={() => handleModal('delete', item)}>
@@ -146,8 +153,7 @@ const TicketPage = () => {
                     </Flex>
                   </Box>
                 </VStack>
-                <Box position={'absolute'} w='20px' h='32px' borderLeftRadius={'75px'} border={'1px solid black'} bottom={'50%'} right={0} bgColor={"gray.50"} borderRight={0} zIndex={2}></Box>
-                <Box position={'absolute'} w='20px' h='32px' borderRightRadius={'75px'} border={'1px solid black'} bottom={'50%'} left={0} bgColor={"gray.50"} borderLeft={0} zIndex={2}></Box>
+              
               </Box>
             </>
 

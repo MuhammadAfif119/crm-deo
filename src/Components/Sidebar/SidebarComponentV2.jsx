@@ -43,7 +43,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Config/firebase";
 
 
-import { data } from "./DataMenu";
+import { data, dataApps } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
 import { useState } from "react";
@@ -145,7 +145,9 @@ function SidebarComponentV2({ layout }) {
             roundedTopRight={"lg"}
           >
             <>
-              <Box position="sticky" overflowY="auto">
+              <Box position="sticky" overflowY="auto"
+
+              >
                 <Flex align={'right'} justify={'right'} onClick={() => setSideBarOpen(!sideBarOpen)} cursor={'pointer'} position={'relative'} top={5}>
                   <Box position={'absolute'} boxShadow={'md'} p='3'>
 
@@ -244,7 +246,7 @@ function SidebarComponentV2({ layout }) {
                           </HStack> */}
                           {data.map((x, i) => (
                             <>
-                              {x.name === 'Dashboard' ?
+                              {x.name === 'Scoreboard' || x.name === 'Contacts' ?
                                 <Button onClick={() => navigate(x?.link)} variant={'ghost'} alignItems={'center'} justifyContent={'left'} key={i}>
                                   <Icon as={x.icon} boxSize={5} mr='2' />
 
@@ -257,7 +259,7 @@ function SidebarComponentV2({ layout }) {
                                     {x.name}</Text>
 
                                   {x.submenu.map((subitem, i) => (
-                                    <Button fontWeight={'medium'} w='90%' mx='7' key={i} variant={'ghost'} alignItems={'center'} justifyContent={'left'} onClick={() => navigate(subitem?.link)} >
+                                    <Button fontWeight={'medium'} w='90%' ml='7' key={i} variant={'ghost'} alignItems={'center'} justifyContent={'left'} onClick={() => navigate(subitem?.link)} >
                                       <Icon as={subitem.icon} boxSize={5} mr='2' />
 
                                       {subitem.name}</Button>
@@ -267,6 +269,17 @@ function SidebarComponentV2({ layout }) {
 
                             </>
                           ))}
+                          <Button
+                            as={Link}
+                            to={"/settings"}
+                            variant="ghost"
+                            justifyContent="start"
+                          >
+                            <HStack spacing="3">
+                              <Icon as={FiSettings} boxSize="5" color="subtle" />
+                              <Text>Setting</Text>
+                            </HStack>
+                          </Button>
                           {/* <Accordion>
 
                               {data.map((x, i) => (
@@ -328,10 +341,15 @@ function SidebarComponentV2({ layout }) {
                           base: "5",
                           sm: "6",
                         }}
+                        bottom={5}
+                        pos={'absolute'}
+                        width={{
+                          md: "14rem",
+                          xl: "17rem",
+                        }}
                       >
 
-                        <Stack spacing="1">
-                          {/* <NavButton label="Help"  icon={FiHelpCircle} /> */}
+                        {/* <Stack spacing="1">
                           <Button
                             as={Link}
                             to={"/settings"}
@@ -343,8 +361,7 @@ function SidebarComponentV2({ layout }) {
                               <Text>Setting</Text>
                             </HStack>
                           </Button>
-                          {/* <NavButton label="Settings" icon={FiSettings} /> */}
-                        </Stack>
+                        </Stack> */}
 
                         <Spacer />
 
@@ -410,6 +427,30 @@ function SidebarComponentV2({ layout }) {
                                 >
                                   Logout
                                 </Button>
+                                  <HStack overflowY={'auto'} justify={'center'} align={'center'} gap={5} css={{
+                                    '&::-webkit-scrollbar': {
+                                      height: '0rem',
+                                      width: '4px',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                      width: '6px',
+                                      // backgroundColor: 'whitesmoke'
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                      // background: 'DarkGray',
+                                      height: '2px',
+                                      // borderRadius: '24px',
+                                    },
+                                  }}>  
+                                  {dataApps.map((x, id) => (
+                                    <a href={x.link} target="_blank" rel="noopener noreferrer" >
+                                      <Stack key={id} justify={'center'} align={'center'} cursor={'pointer'} >
+                                        <Icon as={x.icon} fontSize={'25px'} />
+                                        <Text fontWeight={'medium'} size={'sm'}>{x.name}</Text>
+                                      </Stack>
+                                    </a>
+                                  ))}
+                                </HStack>
                               </>
                             ) : (
                               <Box>
@@ -428,14 +469,14 @@ function SidebarComponentV2({ layout }) {
                         ) : (
                           <></>
                         )}
-                        <Button
+                        {/* <Button
                           w={"full"}
                           colorScheme="telegram"
                           size={"sm"}
                           onClick={() => console.log(globalState)}
                         >
                           Check state
-                        </Button>
+                        </Button> */}
                       </Stack>
                     </Stack>
                   </Flex>

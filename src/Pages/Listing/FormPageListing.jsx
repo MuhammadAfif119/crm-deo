@@ -84,6 +84,11 @@ function FormPageListing() {
 
     const projectIdDummy = "LWqxaSw9jytN9MPWi1m8"
 
+    const getProject = () => {
+        const res = globalState?.projects?.find(e => e.id === globalState?.currentProject)
+        setProjectId(res?.id)
+        setProjectName(res?.name)
+    }
 
     const getListing = async () => {
         const res = await getSingleDocumentFirebase('listings', idProject)
@@ -180,6 +185,7 @@ function FormPageListing() {
         getData();
         getCategory()
         getCategoryList()
+        getProject()
         if (idProject) {
             getListing()
         }
@@ -294,8 +300,6 @@ function FormPageListing() {
             setDescription("");
             setCategory([]);
             setPrice("");
-            setProjectId("");
-            setProjectName("");
             setFilesImageLogo([])
             setFiles([]);
             setFilesImage([]);
@@ -612,7 +616,7 @@ function FormPageListing() {
 
 
 
-                    <FormControl id="Project" isRequired>
+                    {/* <FormControl id="Project" isRequired>
                         <FormLabel>Project:</FormLabel>
                         <Select
                             borderRadius="lg"
@@ -626,6 +630,10 @@ function FormPageListing() {
                                     </option>
                                 ))}
                         </Select>
+                    </FormControl> */}
+                    <FormControl mt='5' id="Project" isRequired>
+                        <FormLabel>Project</FormLabel>
+                        <Input value={projectName} variant={'unstyled'} disabled />
                     </FormControl>
                     <HStack w='100%' gap='5'>
                         <FormControl
