@@ -184,8 +184,9 @@ function FormBuilderPage() {
                     updateData.formId = idform
 
                     const data = updateData
+                    console.log(data, 'ini data')
                     try {
-                    const res =  await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', data) 
+                    const res =  await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', {data}) 
                     console.log(res, 'ini ress')
                     } catch (error) {
                      console.log(error, 'ini error')   
