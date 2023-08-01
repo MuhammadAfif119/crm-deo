@@ -14,7 +14,8 @@ import {
   FcPodiumWithSpeaker,
   FcParallelTasks,
   FcPackage,
-  FcDatabase
+  FcDatabase,
+  FcGlobe
 } from "react-icons/fc";
 
 export const data = [
@@ -83,6 +84,13 @@ export const data = [
     submenu: [
       { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
       { name: "Membership", icon: FcSettings, link: "/chat" },
+    ],
+  },
+  {
+    name: "Configuration",
+    icon: FcSettings,
+    submenu: [
+      { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
     ],
   },
 

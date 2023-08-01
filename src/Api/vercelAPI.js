@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const ApiVercel = axios.create({
-  baseURL: "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/",
-  // baseURL: "https://deoapp-docial-backend-y6he3ms5qq-uc.a.run.app/",
-});
+const baseURL='https://asia-southeast2-deoapp-indonesia.cloudfunctions.net'
+// const baseURL='http://localhost:5001/deoapp-indonesia/asia-southeast2'
 
 // ApiVercel.interceptors.request.use(config => {
 //     config.headers.Authorization = `Bearer ${process.env.REACT_APP_VERCEL_API}`;
@@ -12,8 +10,8 @@ const ApiVercel = axios.create({
 
 // export default ApiVercel;
 
-export const deleteDomainCustom = async(domainName) => {
-  const url = `https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/vercelDeleteDomain`
+export const deleteDomainCustom = async(domainName, projectVercel = "domainview-react") => {
+  const url = `${baseURL}/vercelDeleteDomain`
   const configTest = {
     headers: {
       'Content-Type': 'application/json',
@@ -25,27 +23,42 @@ export const deleteDomainCustom = async(domainName) => {
   console.log("configtest", configTest)
   const newData = {
     domain_name: domainName,
-    projectName: "domainview-react"
+    projectName: projectVercel
   }
   return axios.post(url, newData, configTest)
-  .then((x) => x.status)
+  .then((x) => x.data)
   .catch((err) => console.log(err))
 }
 
-export const addDomainCustom = async(domainName) => {
-  const url = `https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/vercelCreateDomain`
+export const createDomainCustom = async(data) => {
+  const url = `${baseURL}/vercelCreateDomain`
   const configTest = {
     headers: {
       'Content-Type': 'application/json',
-      // 'Authorization': process.env.REACT_APP_VERCEL_API
+      'Authorization': process.env.REACT_APP_VERCEL_API
     },
   }
 
   console.log("configtest", configTest)
   const newData = {
-    domain_name: domainName
+    domain_name: data.name,
+    projectName: data.projectVercel
   }
   return axios.post(url, newData, configTest)
   .then((x) => x.data)
   .catch((err) => console.log(err))
+}
+
+export const checkDomainCustom = async(domainName, projectVercel = "domainview-react")=>{
+	const url = `${baseURL}/vercelCheckDomain`
+	const configtest = {headers : {
+		'Content-Type': 'application/json',
+		'Authorization': 'pFa08EJkVRoT7GDiqk1'}}
+	const newData = {
+		domain_name: domainName,
+		projectName:projectVercel
+	}
+	return axios.post(url, newData, configtest)
+		.then((x)=>x.data)
+		.catch((err)=>console.log(err))
 }

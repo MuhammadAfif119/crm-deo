@@ -12,6 +12,7 @@ import FormRouter from "./FormRouter";
 import ListingRouter from "./ListingRouter";
 import NewsRouter from "./NewsRouter";
 import TicketRouter from "./TicketRouter";
+import ConfigurationRouter from "./ConfigurationRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -27,7 +28,8 @@ function MainRouter() {
     ...FormRouter,
     ...ListingRouter,
     ...NewsRouter,
-    ...TicketRouter
+    ...TicketRouter,
+    ...ConfigurationRouter,
   ];
   return (
     <Routes>
