@@ -1,17 +1,12 @@
 import { Icon } from "@chakra-ui/icons";
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
+
   Box,
   Button,
   Center,
   Divider,
   Flex,
   HStack,
-  Heading,
   Image,
   Select,
   Spacer,
@@ -19,24 +14,12 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FiHelpCircle, FiSettings, FiUsers } from "react-icons/fi";
+import { FiSettings } from "react-icons/fi";
 import store from "store";
 import {
-  FcKindle,
-  FcEditImage,
-  FcCalendar,
-  FcSms,
-  FcConferenceCall,
-  FcSettings,
-  FcLineChart,
-  FcShare,
-  FcSurvey,
   FcNext,
   FcPrevious,
-  FcDatabase
 } from "react-icons/fc";
-import themeConfig from "../../Config/themeConfig";
-import { NavButton } from "./NavButton";
 import { UserProfile } from "./UserProfile";
 import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -46,17 +29,15 @@ import { auth } from "../../Config/firebase";
 import { data } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCollectionFirebase } from "../../Api/firebaseApi";
 
 // ** Theme Configuration
 
 function SidebarComponentV2({ layout }) {
-  const [project, setProject] = useState([]);
-  const [companyId, setCompanyId] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [profileKey, setProfileKey] = useState("");
-  const { setUserDisplay, userDisplay } = useUserStore();
   const [sideBarOpen, setSideBarOpen] = useState(true)
+
+  const [listProject, setListProject] = useState([])
 
   const globalState = useUserStore();
 
@@ -68,6 +49,10 @@ function SidebarComponentV2({ layout }) {
     globalState.setCurrentCompany(findCompany.id || e);
     globalState.setCurrentXenditId(findCompany?.xenditId);
 
+    if(findCompany.id || e){
+      getProjectList(findCompany.id || e)
+    }
+
     if (findCompany.owner && findCompany.owner.includes(e)) {
       // Jika iya, tambahkan field "owner" ke dalam objek data[0]
       globalState.setRoleProject("owner");
@@ -78,8 +63,55 @@ function SidebarComponentV2({ layout }) {
     }
   };
 
+  const getProjectList = async (id) => {
+
+    const conditions = [
+      {
+        field: "users",
+        operator: "array-contains",
+        value: globalState?.uid,
+      },
+      {
+        field: "companyId",
+        operator: "==",
+        value: id,
+      },
+    ];
+
+    try {
+
+      const projects = await getCollectionFirebase("projects", conditions);
+
+      globalState.setProjects(projects);
+      globalState.setCurrentProject(projects[0]?.id);
+
+      if (projects.length > 0 && projects[0].owner?.includes(globalState?.uid)) {
+        globalState.setRoleProject("owner");
+      } else if (projects.length > 0 && projects[0].managers?.includes(globalState?.uid)) {
+        globalState.setRoleProject("managers");
+      } else {
+        globalState.setRoleProject("user");
+      }
+
+      setListProject(projects)
+
+
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getProjectList(globalState.currentCompany)
+  
+    return () => {
+    }
+  }, [globalState.currentCompany])
+  
+
   const handleProjectSelect = (e) => {
-    const dataProject = globalState.projects;
+    const dataProject = listProject
 
     const findProject = dataProject.find((x) => x.id === e);
 
@@ -215,12 +247,12 @@ function SidebarComponentV2({ layout }) {
                           <Select
                             w={["100%", "100%", "100%"]}
                             size={"sm"}
-                            defaultValue={globalState.projects[0]}
+                            defaultValue={globalState?.projects[0]}
                             onChange={(e) => {
                               handleProjectSelect(e.target.value);
                             }}
                           >
-                            {globalState?.projects?.map((select, i) => (
+                            {listProject?.map((select, i) => (
                               <option
                                 defaultValue={globalState?.currentProject}
                                 key={i}
@@ -244,7 +276,7 @@ function SidebarComponentV2({ layout }) {
                           </HStack> */}
                           {data.map((x, i) => (
                             <>
-                              {x.name === 'Dashboard' ?
+                              {x.name === 'Dashboard' || x.name === 'Contacts'?
                                 <Button onClick={() => navigate(x?.link)} variant={'ghost'} alignItems={'center'} justifyContent={'left'} key={i}>
                                   <Icon as={x.icon} boxSize={5} mr='2' />
 

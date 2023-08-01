@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 
-
 import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./Config/firebase";
-import { getCollectionFirebase } from "./Api/firebaseApi";
+import { auth, fetchToken } from "./Config/firebase";
+import { arrayUnionFirebase, getCollectionFirebase } from "./Api/firebaseApi";
 import useUserStore from "./Hooks/Zustand/Store";
 
 function App() {
-
   const globalState = useUserStore();
 
-
+  const [tokenId, setTokenId] = useState("");
 
   const fetchProjectsAndCompanies = async (uid) => {
     const conditions = [
@@ -25,21 +23,8 @@ function App() {
     ];
 
     try {
-      const projects = await getCollectionFirebase("projects", conditions);
       const companies = await getCollectionFirebase("companies", conditions);
-
-
-
-      globalState.setProjects(projects);
-      globalState.setCurrentProject(projects[0]?.id);
-
-      if (projects.length > 0 && projects[0].owner?.includes(uid)) {
-        globalState.setRoleProject("owner");
-      } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
-        globalState.setRoleProject("managers");
-      } else {
-        globalState.setRoleProject("user");
-      }
+      // const projects = await getCollectionFirebase("projects", conditions);
 
       globalState.setCompanies(companies);
       globalState.setCurrentCompany(companies[0]?.id);
@@ -54,16 +39,92 @@ function App() {
       }
 
 
+      if(companies[0]?.id){
+        return getProjectData(companies[0]?.id, uid)
+      }
+
+
+      // globalState.setProjects(projects);
+      // globalState.setCurrentProject(projects[0]?.id);
+
+      // if (projects.length > 0 && projects[0].owner?.includes(uid)) {
+      //   globalState.setRoleProject("owner");
+      // } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
+      //   globalState.setRoleProject("managers");
+      // } else {
+      //   globalState.setRoleProject("user");
+      // }
+
 
     } catch (error) {
       console.log(error, "ini err");
     }
   };
 
-  useEffect(() => {
+  const getProjectData = async (id, uid) => {
 
-    onAuthStateChanged(auth, (user) => {
+    const conditions = [
+      {
+        field: "users",
+        operator: "array-contains",
+        value: uid,
+      },
+      {
+        field: "companyId",
+        operator: "==",
+        value: id,
+      },
+    ];
+
+
+    try {
+
+      const projects = await getCollectionFirebase("projects", conditions);
+
+
+      globalState.setProjects(projects);
+      globalState.setCurrentProject(projects[0]?.id);
+
+      if (projects.length > 0 && projects[0].owner?.includes(uid)) {
+        globalState.setRoleProject("owner");
+      } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
+        globalState.setRoleProject("managers");
+      } else {
+        globalState.setRoleProject("user");
+      }
+
+      
+    } catch (error) {
+      console.log(error, 'ini error')
+    }
+  }
+
+  const uploadTokenToFirebase = async (token, user) => {
+    if (token !== "") {
+      const collectionName = "users";
+      const docName = user.uid;
+      const field = "tokenId";
+      const values = [token];
+
+      try {
+        const result = await arrayUnionFirebase(
+          collectionName,
+          docName,
+          field,
+          values
+        );
+        console.log(result, token, 'ini token'); // Pesan toast yang berhasil
+      } catch (error) {
+        console.log("Terjadi kesalahan:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const token = await fetchToken();
+        uploadTokenToFirebase(token, user);
         globalState.setIsLoggedIn(true);
         globalState.setUid(user.uid);
         globalState.setName(user.displayName);
@@ -77,17 +138,15 @@ function App() {
     return () => {};
   }, []);
 
-
   return (
     <>
-
-     {globalState.isLoggedIn ? (
+      {globalState.isLoggedIn ? (
         <Layout>
           <MainRouter />
         </Layout>
-       ) : (
+      ) : (
         <AuthRouter />
-       )}
+      )}
     </>
   );
 }

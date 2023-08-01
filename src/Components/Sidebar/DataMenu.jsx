@@ -15,7 +15,9 @@ import {
   FcParallelTasks,
   FcPackage,
   FcDatabase,
-  FcGlobe
+  FcGlobe,
+  FcContacts,
+  FcBusinessContact
 } from "react-icons/fc";
 
 export const data = [
@@ -45,6 +47,19 @@ export const data = [
     name: "Dashboard",
     icon: FcDatabase,
     link: '/'
+  },
+  {
+    name: "Contacts",
+    icon: FcBusinessContact,
+    link: '/contacts'
+  },
+  {
+    name: "Pipeline",
+    icon: FcKindle,
+    submenu: [
+      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+      { name: "Membership", icon: FcSettings, link: "/chat" },
+    ],
   },
   {
     name: "Products",
@@ -93,6 +108,7 @@ export const data = [
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
     ],
   },
+
 
   // {
   //   name: "Event",

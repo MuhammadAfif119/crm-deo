@@ -4,9 +4,11 @@ import { collection, limit, onSnapshot, orderBy, query, where } from 'firebase/f
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getCollectionFirebase } from '../../Api/firebaseApi';
 // import { addDocumentFirebase, getCollectionFirebase } from '../../Apis/firebaseApi';
 // import { clientTypesense } from '../../Apis/typeSense';
 import { db } from '../../Config/firebase';
+import TaskCardComponent from '../Card/TaskCardComponent';
 
 const ColumnColorScheme = {
 	TODOS: 'blue',
@@ -16,19 +18,61 @@ const ColumnColorScheme = {
 	DONE: 'gray',
 };
 
-function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterData,index }) {
+function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterData, index, formId }) {
 	const [columnsData, setColumnsData] = useState([])
 	const [columnsData2, setColumnsData2] = useState([])
 	const param = useParams()
 	const navigate = useNavigate()
+
 
 	const handleNewTask = () => {
 
 	}
 
 	const handleLoad = () => {
-	
+		const conditions = [
+			{ field: "formId", operator: "==", value: formId },
+			{ field: "column", operator: "==", value: column },
+		];
+		const sortBy = { field: "lastUpdated", direction: "desc" };
+		const limitValue = 5;
+		let startAfter = ''
+		if (columnsData2.length > 0) {
+			// console.log('kedua kali dan seterusnya')
+			startAfter = columnsData2[columnsData2.length - 1].lastUpdated
+			// if (filterData?.category)
+			// 	conditions.push({ field: "category", operator: "==", value: filterData?.category })
+
+			// if (filterData?.label)
+			// 	conditions.push({ field: "label", operator: "==", value: filterData?.label })
+
+
+			// if (filterData?.asignee)
+			// 	conditions.push({ field: "asignee", operator: "==", value: filterData?.asignee })
+
+		} else {
+			// console.log('pertama kali')
+			startAfter = columnsData[columnsData.length - 1].lastUpdated
+			// if (filterData?.category)
+			// 	conditions.push({ field: "category", operator: "==", value: filterData?.category })
+
+			// if (filterData?.label)
+			// 	conditions.push({ field: "label", operator: "==", value: filterData?.label })
+
+
+			// if (filterData?.asignee)
+			// 	conditions.push({ field: "asignee", operator: "==", value: filterData?.asignee })
+		}
+
+
+		getCollectionFirebase('leads', {conditions}, {sortBy}, {limitValue}, {startAfterData : startAfter})
+			.then((x) => {
+				const updateData = [...columnsData2, ...x]
+				setColumnsData2(updateData)
+			})
+
 	}
+
 
 
 	const handleTypesenseSearch = (q) => {
@@ -50,14 +94,45 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		// 	});
 	}
 
+
 	useEffect(() => {
-	
+		let unsubscribe = () => { }
+
+		if (filterData?.search)
+			setTimeout(function () {
+				handleTypesenseSearch(filterData.search)
+			}, 300);
+
+		if (!filterData?.search) {
+
+			let collectionRef = collection(db, "leads");
+			collectionRef = query(collectionRef, where("formId", "==", formId));
+			collectionRef = query(collectionRef, where("column", "==", column));
+
+			collectionRef = query(collectionRef, orderBy("lastUpdated", "desc"));
+			collectionRef = query(collectionRef, limit(5));
+
+
+			unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+				const addTask = [];
+
+				querySnapshot.forEach((doc) => {
+					addTask.push({ id: doc.id, ...doc.data() });
+				});
+
+				setColumnsData(addTask)
+			});
+		}
+
 
 		return () => {
-
+			unsubscribe()
+			setColumnsData([])
+			setColumnsData2([])
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [filterData])
+
 
 	const [{ canDrop, isOver }, drop] = useDrop(
 		() => ({
@@ -79,20 +154,19 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		if (x.id)
 			return (
 				<Fade in={true} initialscale={0.9} key={index}>
-					{/* <TaskCardComponent
+					<TaskCardComponent
 						key={index}
 						task={x}
-						index={index}
+						indexNumber={index}
 						setData={type === 'snapshot' ? setColumnsData : setColumnsData2}
 						columnsData={datas}
-						kanbanData={kanbanData}
-					/> */}
+					/>
 				</Fade>
 			)
 	});
 
 	return (
-		<Box w='3xs' m='1' >
+		<Box w='xs' m='1' >
 			<Heading fontSize="md" mb={1} letterSpacing="wide" textAlign='center'>
 				<Badge
 					w='full'
@@ -100,7 +174,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 					px={2}
 					py={1}
 					rounded="lg"
-					bgColor={`green.${index?index*100:50}`}
+					bgColor={`green.${index ? index * 100 : 50}`}
 				>
 					{column}
 				</Badge>
@@ -117,25 +191,8 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 				rounded="lg"
 				boxShadow="md"
 				overflow="auto"
-			// opacity={isOver ? 0.85 : 1}
+				opacity={isOver ? 0.85 : 1}
 			>
-				{/* {column !== 'done' && (filterData?.assignee === "" || filterData?.category === "" || filterData?.label === "") ?
-					<IconButton
-						size="xs"
-						w="full"
-						color={'gray.500'}
-						bgColor={'gray.100'}
-						_hover={{ bgColor: 'gray.200' }}
-						py={2}
-						variant="solid"
-						onClick={() => handleNewTask()}
-						colorScheme="black"
-						aria-label="add-task"
-						icon={<AddIcon />}
-					/>
-					:
-					<></>
-				} */}
 				{ColumnTasks(columnsData, 'snapshot')}
 				{columnsData2?.length ? ColumnTasks(columnsData2, 'manual') : <></>}
 				{columnsData?.length > 4 && columnsData2?.length === 0 ?

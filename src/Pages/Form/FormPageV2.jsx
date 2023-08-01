@@ -9,9 +9,9 @@ import { addDocumentFirebase, getCollectionFirebase, updateDocumentFirebase } fr
 import { db } from '../../Config/firebase';
 import { checkIdSelect } from '../../Hooks/Middleware/UserMiddleWare';
 import useUserStore from "../../Hooks/Zustand/Store";
-import sha256 from 'crypto-js/sha256';
 
 import CryptoJS from "crypto-js"
+import { encryptToken } from '../../Utils/encrypToken';
 
 
 
@@ -22,13 +22,6 @@ function FormPageV2() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const globalState = useUserStore();
     const [loading, setLoading] = useState(false)
-    const secretKey = process.env.REACT_APP_ACCOUNT_KEY
-
-
-
-
-
-
 
     const [dataForm, setDataForm] = useState([]);
 
@@ -120,7 +113,7 @@ function FormPageV2() {
         try {
             const docID = await addDocumentFirebase(collectionName, data, globalState.currentCompany);
             if (docID) {
-                const token = CryptoJS.AES.encrypt(docID, secretKey).toString()
+                const token = encryptToken(docID)
 
                 const collectionNameUpdate = 'forms';
                 const docName = docID;

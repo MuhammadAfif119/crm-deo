@@ -76,6 +76,7 @@ function SettingTeamPage() {
     const getDataProjects = async () => {
         const q = query(
             collection(db, "projects"),
+            where("companyId", "==", globalState.currentCompany),
             where("users", "array-contains", globalState.uid)
         );
 
@@ -407,7 +408,7 @@ function SettingTeamPage() {
         return () => {
 
         };
-    }, []);
+    }, [globalState.currentCompany]);
 
 
 
