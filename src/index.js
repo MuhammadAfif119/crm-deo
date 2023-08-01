@@ -18,6 +18,19 @@ const isLocalhost = () => {
 	);
 };
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('../firebase-messaging-sw.js')
+    .then(function (registration) {
+      // Successful registration
+      console.log('Hooray. Registration successful, scope is:', registration.scope);
+    }).catch(function (error) {
+      // Failed registration, service worker won’t be installed
+      console.log('Whoops. Service worker registration failed, error:', error);
+    });
+  });
+}
+
 if (!isLocalhost()) {
 Sentry.init({
   dsn: "https://649bf87c1b5b49828274a19362ce3f73@o1121849.ingest.sentry.io/4505526450782208",

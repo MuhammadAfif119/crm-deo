@@ -289,7 +289,7 @@ export const setDocumentFirebase = async (
 // };
 
 // try {
-//   const result = await setDocumentFirebase(collectionName, docName, data);
+//   const result = await setDocumentFirebase(collectionName, docName, data, companyId);
 //   console.log(result); // Pesan toast yang berhasil
 // } catch (error) {
 //   console.log('Terjadi kesalahan:', error);

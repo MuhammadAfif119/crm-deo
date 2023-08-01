@@ -21,7 +21,8 @@ const firebaseConfig = {
   storageBucket: "deoapp-indonesia.appspot.com",
   messagingSenderId: "814589130399",
   appId: "1:814589130399:web:a0bb255936eefd57e554aa",
-  measurementId: "G-B9FPJL2RD0"
+  measurementId: "G-B9FPJL2RD0",
+  token_option: "BHcgLCKeUP3IkJIIMaGoVhFzbnjWx6-sSJ6JWQNKAU9nXMN3xK2TOmVEHVsqSJ1V9M_JGKW2rs0SbHZw1CDE3dA", // your vapid key
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -33,12 +34,11 @@ const configMessage = getMessaging(app);
 auth.languageCode = 'id';
 
 export {app,analytics,auth,db, storage}
-export const fetchToken = async (setTokenId) => {
+export const fetchToken = async () => {
   try {
     const token = await getToken(configMessage, { vapidKey: firebaseConfig.token_option });
     if (token) {
-      // console.log(token, "this is push notif token");
-      setTokenId(token);
+      return token
     } else {
       console.log("no push notif token for now");
     }
