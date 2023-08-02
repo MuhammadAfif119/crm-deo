@@ -1,12 +1,12 @@
-import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons'
-import { Box, Button, Divider, Flex, HStack, Heading, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spacer, Stack, Text, VStack, useDisclosure, useToast } from '@chakra-ui/react'
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
+import { Box, Button, Flex, Heading, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Text, VStack, useDisclosure, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import { deleteDocumentFirebase, deleteFileFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
 import moment from 'moment';
 import useUserStore from '../../Hooks/Zustand/Store'
-import { FcPlus } from 'react-icons/fc'
+import AddButtons from '../../Components/Buttons/AddButtons'
 
 const TicketPage = () => {
   const navigate = useNavigate()
@@ -73,21 +73,7 @@ const TicketPage = () => {
 
   return (
     <Box p={[1, 1, 5]} >
-      <HStack>
-        <Heading size={'md'}>
-          Ticket
-        </Heading>
-        <Spacer />
-        <Stack>
-          <Button onClick={() => navigate('/ticket/create')} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
-            <HStack>
-              <FcPlus />
-              <Text>Ticket</Text>
-            </HStack>
-          </Button>
-        </Stack>
-      </HStack>
-    
+      <AddButtons type={'Tickets'} link={'/ticket/create'} />
       <Flex textAlign={'center'} my={5} >
         <Box w='50%' onClick={() => setActive(true)} p='3' cursor={'pointer'} borderTopWidth={3} rounded={5} borderLeftWidth={3} borderColor={active === true ? 'green' : 'transparent'} shadow={active === false ? 'md' : 'none'}>
           <Heading size='sm'>
@@ -109,7 +95,14 @@ const TicketPage = () => {
           return (
             <>
               <Box pos={'relative'} key={index} >
-                <VStack border={'1px solid black'} cursor={'pointer'} _hover={{ shadow: 'lg' }} rounded={8} bgColor={'transparent'} h={'auto'} p={5} my='2' justify={'left'} align={'left'} >
+                <VStack rounded={5} borderWidth='1px' p={3} bgColor='white' shadow={'md'} align={'left'} justify={'space-between'} cursor={'pointer'}
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                    cursor: "pointer"
+                  }}
+                >
                   <Flex justify={'space-between'} align={'center'}>
                     <Heading size={'sm'} onClick={() => handleModal('read', item)}>{item?.title}</Heading>
                     <Button variant={'unstyled'} onClick={() => handleModal('delete', item)}>
@@ -146,8 +139,7 @@ const TicketPage = () => {
                     </Flex>
                   </Box>
                 </VStack>
-                <Box position={'absolute'} w='20px' h='32px' borderLeftRadius={'75px'} border={'1px solid black'} bottom={'50%'} right={0} bgColor={"gray.50"} borderRight={0} zIndex={2}></Box>
-                <Box position={'absolute'} w='20px' h='32px' borderRightRadius={'75px'} border={'1px solid black'} bottom={'50%'} left={0} bgColor={"gray.50"} borderLeft={0} zIndex={2}></Box>
+              
               </Box>
             </>
 

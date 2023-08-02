@@ -13,6 +13,7 @@ import ListingRouter from "./ListingRouter";
 import NewsRouter from "./NewsRouter";
 import TicketRouter from "./TicketRouter";
 import ConfigurationRouter from "./ConfigurationRouter";
+import ContactsRouter from "./ContactsRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -30,6 +31,7 @@ function MainRouter() {
     ...NewsRouter,
     ...TicketRouter,
     ...ConfigurationRouter,
+    ...ContactsRouter
   ];
   return (
     <Routes>
