@@ -18,8 +18,8 @@ const ProjectCard = ({ projectData, handleOpenModalProject, handleOpenModaProjec
 
   const getNotifActive =  async () => {
         try {
-      const result = await getSingleDocumentFirebase('users', globalState.uid)
-      setTopicList(result.topics)
+      const result = await getSingleDocumentFirebase('users', globalState?.uid)
+      setTopicList(result?.topics)
     } catch (error) {
       console.log(error)
     }
@@ -83,7 +83,7 @@ const ProjectCard = ({ projectData, handleOpenModalProject, handleOpenModaProjec
         <SimpleGrid columns={[1, 2, 3]} gap={3}>
           {projectData.map((x, index) => {
 
-              const isActive = topicsList.includes(`${globalState.currentCompany}-${x.id}`);
+              const isActive = topicsList?.includes(`${globalState.currentCompany}-${x.id}`);
 
             return(
             <Stack key={index} p={4} bgColor={"white"} borderRadius={'lg'} shadow='md'>
