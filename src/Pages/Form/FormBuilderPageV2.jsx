@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import BackButtons from '../../Components/Buttons/BackButtons';
 import CreateForm from '../../Components/Form/CreateForm';
+import { decryptToken } from '../../Utils/encrypToken';
 
 
 function generateHTML(formFields) {
@@ -184,7 +185,6 @@ function FormBuilderPage() {
                     updateData.formId = idform
 
                     const data = updateData
-                    console.log(data, 'ini data')
                     try {
                     const res =  await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', {data}) 
                     console.log(res, 'ini ress')
