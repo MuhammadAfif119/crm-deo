@@ -4,7 +4,7 @@ import BackButtons from '../../Components/Buttons/BackButtons'
 import { MdOutlinePermMedia } from 'react-icons/md'
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { addDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
+import { addDocumentFirebase, arrayUnionFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '../../Config/firebase'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -106,10 +106,10 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                     my={5}
                >
                     <HStack gap={5}>
-                         <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}
+                         {/* <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}
                               variant={'outline'} colorScheme="blue"
                               w='fit-content'
-                         >Back to Event Form</Button>
+                         >Back to Event Form</Button> */}
                          <Heading size='md' >Input your category and ticket for your event</Heading>
                     </HStack>
 
@@ -231,7 +231,7 @@ const FormPage = ({ data, setData, handleSubmit, idProject, setFormPage, setDeta
                my='5'
           >
                <HStack align={'center'} gap={5}>
-                    <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }} variant={'outline'} colorScheme='blue' w='fit-content'>Back to Ticket Form</Button>
+                    {/* <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }} variant={'outline'} colorScheme='blue' w='fit-content'>Back to Ticket Form</Button> */}
                     <Heading size='md'>Pick form builder for this tickets</Heading>
                </HStack>
 
@@ -452,15 +452,34 @@ const FormTicketPage = () => {
           try {
                if (type === 'create') {
                     const res = await addDocumentFirebase('tickets', newData, companyId)
-                    toast({
-                         title: "Deoapp.com",
-                         description: `success add new ticket with document id ${res}`,
-                         status: "success",
-                         position: "top-right",
-                         isClosable: true,
-                    });
+                   
 
+                    if (res && newData.formId) {
+                         console.log(res)
+                         const collectionName = 'forms';
+                         const docName = newData.formId;
+                         const field = 'ticket_used';
+                         const values = [res];
+
+                         try {
+                           const result = await arrayUnionFirebase(collectionName, docName, field, values);
+                           console.log(result); // Pesan toast yang berhasil
+                           toast({
+                              title: "Deoapp.com",
+                              description: `success add new ticket with document id ${res}`,
+                              status: "success",
+                              position: "top-right",
+                              isClosable: true,
+                         });
                     navigate('/ticket')
+
+                         } catch (error) {
+                           console.log('Terjadi kesalahan:', error);
+                         }
+                    }
+
+                    console.log(newData, 'ini new')
+
                } else {
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({

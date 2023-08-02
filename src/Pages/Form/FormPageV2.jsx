@@ -46,6 +46,7 @@ function FormPageV2() {
     const getData = async () => {
 
         const conditions = [
+            { field: "companyId", operator: "==", value: globalState.currentCompany },
             { field: "projectId", operator: "==", value: globalState.currentProject },
         ];
         const sortBy = { field: "createdAt", direction: "desc" };
@@ -64,6 +65,7 @@ function FormPageV2() {
         }
     };
 
+
     const handleLoadMore = () => {
         setStartIndex(prev => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
     };
@@ -75,7 +77,7 @@ function FormPageV2() {
         return () => {
 
         };
-    }, [globalState.currentProject, startIndex]);
+    }, [globalState.currentCompany, globalState.currentProject, startIndex]);
 
     const handleAddData = (e) => {
         const { name, value } = e.target;

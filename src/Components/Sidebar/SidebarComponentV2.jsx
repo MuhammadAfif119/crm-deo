@@ -340,14 +340,14 @@ function SidebarComponentV2({ layout }) {
                               <Text>Setting</Text>
                             </HStack>
                           </Button> */}
-                          <Accordion>
+                          <Accordion allowToggle>
 
                             {data.map((x, i) => (
                               <AccordionItem
                                 key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
                               >
                                 <h2>
-                                  <AccordionButton>
+                                  <AccordionButton >
                                     {x.name === 'Scoreboard' || x.name === 'Contacts' ?
                                       <Flex m='0' p='0' gap='0' onClick={() => navigate(x?.link)}>
                                         <Icon as={x.icon} boxSize={5} />

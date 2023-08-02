@@ -8,6 +8,7 @@ import { getCollectionFirebase } from '../../Api/firebaseApi';
 // import { addDocumentFirebase, getCollectionFirebase } from '../../Apis/firebaseApi';
 // import { clientTypesense } from '../../Apis/typeSense';
 import { db } from '../../Config/firebase';
+import { encryptToken } from '../../Utils/encrypToken';
 import TaskCardComponent from '../Card/TaskCardComponent';
 
 const ColumnColorScheme = {
@@ -30,6 +31,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 	}
 
 	const handleLoad = () => {
+		
 		const conditions = [
 			{ field: "formId", operator: "==", value: formId },
 			{ field: "column", operator: "==", value: column },
@@ -104,6 +106,8 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 			}, 300);
 
 		if (!filterData?.search) {
+
+
 
 			let collectionRef = collection(db, "leads");
 			collectionRef = query(collectionRef, where("formId", "==", formId));

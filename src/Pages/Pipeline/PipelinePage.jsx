@@ -1,11 +1,13 @@
-import { Button, FormControl, HStack, Input, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, SimpleGrid, Spacer, InputGroup, InputLeftElement, Box, Link, useToast } from '@chakra-ui/react'
-import { FiFilter } from 'react-icons/fi';
+import { Button, FormControl, HStack, Input, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, SimpleGrid, Spacer, InputGroup, InputLeftElement, Box, Link, useToast, Grid, Heading } from '@chakra-ui/react'
+import { FiCheck, FiFilter } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react'
 import useUserStore from "../../Hooks/Zustand/Store";
 
 import { addDocumentFirebase, getCollectionFirebase, getCollectionWithSnapshotFirebase } from '../../Api/firebaseApi';
 import { useNavigate } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
+import moment from 'moment';
+import { encryptToken } from '../../Utils/encrypToken';
 
 
 
@@ -16,6 +18,11 @@ function PipelinePage() {
     name: "",
     stages: [],
   });
+
+  const [selectedFormId, setSelectedFormId] = useState(null);
+
+
+  const [formList, setFormList] = useState([])
 
   const toast = useToast()
 
@@ -72,8 +79,24 @@ function PipelinePage() {
   };
 
   const handleSubmitPipeline = async () => {
-    let dataUpdate = dataPipeline
-    dataUpdate.projectId = globalState.currentProject
+
+    if (!selectedFormId) {
+      toast({
+        title: "Error",
+        description: "Please select a form to connect with the pipeline.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    let dataUpdate = dataPipeline;
+    dataUpdate.projectId = globalState.currentProject;
+    dataUpdate.formId = [selectedFormId]
+
+    console.log(dataUpdate, 'xxx')
+
 
 
     const collectionName = 'pipelines';
@@ -81,6 +104,10 @@ function PipelinePage() {
     try {
       const docID = await addDocumentFirebase(collectionName, data, globalState?.currentCompany);
       console.log('ID Dokumen Baru:', docID);
+
+
+      fetchData()
+      handleCloseModal()
 
       toast({
         title: "Success",
@@ -117,17 +144,31 @@ function PipelinePage() {
       { field: "projectId", operator: "==", value: globalState.currentProject },
     ];
     const sortBy = { field: "createdAt", direction: "desc" };
+    const limitValue = 10
     try {
       const res = await getCollectionFirebase(
         "pipelines",
         conditions,
+        sortBy,
+        limitValue
+      );
+
+      const resForm = await getCollectionFirebase(
+        "forms",
+        conditions,
         sortBy
       );
       setListPipeline(res);
+      setFormList(resForm)
+
     } catch (error) {
       console.log(error, "ini error");
     }
   }
+
+  const handleFormToggle = (formId) => {    
+    setSelectedFormId((prev) => (prev === formId ? null : formId));
+  };
 
   useEffect(() => {
     fetchData()
@@ -141,7 +182,7 @@ function PipelinePage() {
     <Stack p={[1, 1, 5]}>
       <Stack>
         <HStack>
-          <Text fontWeight={"semibold"}>PIPELINE</Text>
+          <Heading size={'md'} textTransform='capitalize'>pipeline</Heading>
           <Spacer />
           <HStack>
             <InputGroup>
@@ -159,33 +200,31 @@ function PipelinePage() {
 
         <Box bg={"white"} my={4} p={3} boxShadow={"sm"}>
           <SimpleGrid columns={[2, null, 4]} spacing={3}>
-            {listPipeline?.map((x, i) => (
-              <Box
-                key={i}
-                border={"1px"}
-                borderColor={"gray.200"}
-                p={2}
-                my={3}
-                bg={"white"}
-                boxShadow={"sm"}
-                borderRadius={"sm"}
-                cursor={"pointer"}
-                _hover={{ transform: "scale(1.02)", transition: "0.3s" }}
+            {listPipeline?.map((x, i) => {
+              return (
+                <Stack key={i} borderWidth='1px' p={3} bgColor='white' shadow={'md'} rounded={5} cursor='pointer'                 
                 onClick={() => navigate(`/pipeline/view/${x.id}`, { state: x })}
-              >
-                <Box my={3}>
-                  <Text fontWeight={"semibold"}>
-                    {
-                      //   capitalize(project?.data.ayrshare_account?.name)
-                      x.name
-                    }
-                  </Text>
-                  <Text fontSize={"xs"}>
-                    {x.name}
-                  </Text>
-                </Box>
-              </Box>
-            ))}
+
+                  _hover={{
+                    bg: "gray.100",
+                    transform: "scale(1.02)",
+                    transition: "0.3s",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Heading textTransform={'capitalize'} size='sm'>{x.name}</Heading>
+                  <Text color={'gray.700'}>{x.project}</Text>
+                  <Spacer />
+
+
+                  <HStack>
+
+                    <Spacer />
+                    <Text fontSize={'xs'} color={'gray.500'}>{moment(x.createdAt.seconds * 1000).fromNow()}</Text>
+                  </HStack>
+                </Stack>
+              )
+            })}
           </SimpleGrid>
         </Box>
       </Stack>
@@ -193,6 +232,7 @@ function PipelinePage() {
       <Modal
         isOpen={pipelineModal}
         onClose={handleCloseModal}
+
       >
         <ModalOverlay />
         <ModalContent>
@@ -203,43 +243,66 @@ function PipelinePage() {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Stack>
-              <Text>Pipeline name</Text>
-              <Input
-                size={"sm"}
-                placeholder="name"
-                onChange={(e) => setDataPipeline({ ...dataPipeline, name: e.target.value })}
-              />
+            <Stack spacing={4}>
+              <Stack>
+                <Text>Pipeline name</Text>
+                <Input
+                  size={"sm"}
+                  placeholder="name"
+                  onChange={(e) => setDataPipeline({ ...dataPipeline, name: e.target.value })}
+                />
+              </Stack>
+              <Stack spacing={2}>
+                <Text>Form Active</Text>
+                {formList?.length > 0 && (
+                  formList?.map((x, index) => (
+                    <HStack key={index} p={2} borderRadius='md' borderWidth={1} borderColor='blackAlpha.200'>
+                      <Text>{x.title}</Text>
+                      <Spacer />
+                      <IconButton
+                        size="sm"
+                        icon={<FiCheck size={20} />}
+                        bgColor={x.token === selectedFormId ? "green.300" : "gray.200"}
+                        onClick={() => handleFormToggle(x.token)}
+                      />
+                    </HStack>
+                  ))
+                )}
+              </Stack>
+              {dataPipeline?.stages?.map((stage, index) => (
+                <Grid gap={4} templateColumns={{ base: '2fr 1fr', md: '2fr 1fr' }} key={index} >
+
+                  <Stack spacing={2}>
+                    <Text>Stage Name</Text>
+                    <Input
+                      size={"sm"}
+                      w='100%'
+                      placeholder="name"
+                      value={stage.stageName}
+                      onChange={(e) => handleStageNameChange(index, (e.target.value).toLowerCase())}
+                    />
+                  </Stack>
+
+                  <Stack>
+                    <Text >Actions</Text>
+
+                    <HStack>
+
+                      <IconButton
+                        size="sm"
+                        icon={<FiFilter />}
+                        color={stage.filter ? "blue" : "gray"}
+                        onClick={() => handleFilterToggle(index)}
+                      />
+                      <Button colorScheme={'red'} size="sm" onClick={() => handleDeleteStage(index)}>Delete</Button>
+
+                    </HStack>
+                  </Stack>
+
+                </Grid>
+              ))}
+              <Button colorScheme={'blue'} variant='outline' size={'sm'} onClick={handleAddNewStage}>Add Stage</Button>
             </Stack>
-            {dataPipeline.stages.map((stage, index) => (
-              <HStack key={index}>
-                <Stack>
-                  <Text>Stage Name</Text>
-                  <Input
-                    size={"sm"}
-                    placeholder="name"
-                    value={stage.stageName}
-                    onChange={(e) => handleStageNameChange(index, (e.target.value).toLowerCase())}
-                  />
-                </Stack>
-
-                <Stack>
-                  <Text>Actions</Text>
-
-                  <IconButton
-                    size="sm"
-                    icon={<FiFilter />}
-                    color={stage.filter ? "blue" : "gray"}
-                    onClick={() => handleFilterToggle(index)}
-                  />
-                </Stack>
-
-                <Stack>
-                  <Button onClick={() => handleDeleteStage(index)}>Delete</Button>
-                </Stack>
-              </HStack>
-            ))}
-            <Button onClick={handleAddNewStage}>Add Stage</Button>
           </ModalBody>
 
           <ModalFooter>

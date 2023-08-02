@@ -2,9 +2,11 @@ import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divide
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
+import { getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import BackButtons from '../../Components/Buttons/BackButtons';
+import TicketCard from '../../Components/Card/TicketCard';
 import CreateForm from '../../Components/Form/CreateForm';
+import useUserStore from '../../Hooks/Zustand/Store';
 import { decryptToken } from '../../Utils/encrypToken';
 
 
@@ -12,7 +14,7 @@ function generateHTML(formFields) {
     let html = '';
 
     formFields.forEach((field) => {
-        const { label, type, name, placeholder, options, idform, isRequired } = field;
+        const { label, type, name, placeholder, options, formId, isRequired } = field;
 
 
         switch (type) {
@@ -52,7 +54,7 @@ function generateHTML(formFields) {
 
             case 'button':
                 html += `
-                <div onclick="submitForm('${idform}')" style="display: flex; align-items: center; justify-content: center; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                <div onclick="submitForm('${formId}')" style="display: flex; align-items: center; justify-content: center; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
             <button type="${type}" name="${name}"  style="padding: 10px; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">${label}</button>
             </div>
             `;
@@ -71,7 +73,7 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
     let jsScript = '';
 
     jsScript += ` <script>
-    async function submitForm(idform) {
+    async function submitForm(formId) {
       const inputElements = document.querySelectorAll('input');
       const textAreaElements = document.querySelectorAll('textarea');
       const selectElements = document.querySelectorAll('select');
@@ -89,13 +91,13 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
         dataForm[select.name] = select.value;
       }); 
 
-      dataForm.idform = idform
+      dataForm.formId = formId
       
     
   
         const jsonData = JSON.stringify(dataForm);
 
-        console.log('ID Form:', idform)
+        console.log('ID Form:', formId)
         console.log('JSON Form:', jsonData)
 
         const xhr = new XMLHttpRequest();
@@ -152,6 +154,9 @@ function FormBuilderPage() {
 
     const [loading, setLoading] = useState(false)
 
+    const globalState = useUserStore();
+
+
     const [formFields, setFormFields] = useState([]);
     const navigate = useNavigate()
 
@@ -161,6 +166,8 @@ function FormBuilderPage() {
     const [isActive, setIsActive] = useState(false);
 
     const [apiSubmitUrl, setApiSubmitUrl] = useState('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead');
+
+    const [ticketActive, setTicketActive] = useState([])
 
     const [embedCode, setEmbedCode] = useState('');
 
@@ -173,7 +180,7 @@ function FormBuilderPage() {
     const renderFormFields = () => {
         if (formFields?.length > 0) {
             return formFields?.map((field) => {
-                const { label, type, name, placeholder, isRequired, options, idform } = field;
+                const { label, type, name, placeholder, isRequired, options, formId } = field;
                 const inputPlaceholder = placeholder || '';
                 const inputIsRequired = isRequired || false;
                 const inputProps = { name, onChange: handleInputChange, value: formValues[name] || '' };
@@ -181,15 +188,16 @@ function FormBuilderPage() {
                 const handleSubmit = async () => {
 
 
+
                     let updateData = formValues
-                    updateData.formId = idform
+                    updateData.formId = formId
 
                     const data = updateData
                     try {
-                    const res =  await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', {data}) 
-                    console.log(res, 'ini ress')
+                        const res = await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', data)
+                        console.log(res, 'ini ress')
                     } catch (error) {
-                     console.log(error, 'ini error')   
+                        console.log(error, 'ini error')
                     }
                     // Implement your form submission logic here
                 };
@@ -326,6 +334,28 @@ function FormBuilderPage() {
         try {
             const result = await getSingleDocumentFirebase('forms', param.id)
             setFormData(result)
+            if (result.ticket_used) {
+                const conditions = [
+                    { field: "formId", operator: "==", value: param.id },
+                    { field: "companyId", operator: "==", value: globalState.currentCompany },
+                    { field: "projectId", operator: "==", value: globalState.currentCompany },
+                ];
+                const sortBy = { field: "createdAt", direction: "desc" };
+                const limitValue = 10;
+
+                try {
+                    const res = await getCollectionFirebase(
+                        "tickets",
+                        conditions,
+                        sortBy,
+                        limitValue
+                    );
+                    setTicketActive(res);
+                } catch (error) {
+                    console.log(error, "ini error");
+                }
+            }
+           
             if (result?.form_fields) {
                 setFormFields(result?.form_fields)
                 setEnableFacebookPixel(result?.enableFacebookPixel)
@@ -334,14 +364,14 @@ function FormBuilderPage() {
 
             } else {
                 setFormFields([
-                    { label: 'Nama', type: 'text', name: 'nama', placeholder: 'Masukkan nama lengkap', isRequired: true },
+                    { label: 'Nama', type: 'text', name: 'name', placeholder: 'Masukkan nama lengkap', isRequired: true },
                     { label: 'Email', type: 'email', name: 'email', placeholder: 'Masukkan alamat email', isRequired: true },
-                    { label: 'nomor telpon', type: 'number', name: 'nomor telpon', placeholder: 'Masukkan nomor telpon', isRequired: true },
+                    { label: 'phone number', type: 'number', name: 'phoneNumber', placeholder: 'Masukkan nomor telpon', isRequired: true },
                     { label: 'Pesan', type: 'textarea', name: 'pesan', placeholder: 'Masukkan pesan Anda' },
                     { label: 'Pilihan', type: 'select', name: 'pilihan', options: ['Pilihan 1', 'Pilihan 2', 'Pilihan 3'] },
                     { label: 'date', type: 'date', name: 'date', isRequired: true },
                     { label: 'File', type: 'file', name: 'bukti transfer', isRequired: true },
-                    { label: 'Submit', type: 'button', name: 'submit_button', idform: result.token },
+                    { label: 'Submit', type: 'button', name: 'submit_button', formId: result.token },
                 ])
                 setEnableFacebookPixel(false)
                 setFacebookPixelId('YOUR_PIXEL_ID_HERE')
@@ -380,7 +410,7 @@ function FormBuilderPage() {
                             />
                         </HStack>
 
-                            <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
+                        <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
 
                         <Heading size={'md'}>Facebook Pixel ID</Heading>
 
@@ -418,9 +448,24 @@ function FormBuilderPage() {
                         </Stack>
                     </Stack>
 
+                    {ticketActive?.length > 0 && (
+                        <Stack  bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
+                            <Heading size={'md'}>Product Active</Heading>
+                            {ticketActive?.map((x, index) => {
+                                return(
+                                    <Stack key={index} onClick={() => console.log(x, 'ini xx')}>
+                                        <TicketCard item={x}/>
+                                    </Stack>
+                                )
+                            } )}
+                            <Stack></Stack>
+                        </Stack>
+                    )}
+
+
                 </Stack>
                 <Stack  >
-                    <Stack p={[1, 1, 5]} bgColor={'white'} minH={'500px'} spacing={5} borderRadius='md' shadow={'md'}>
+                    <Stack p={[1, 1, 5]} bgColor={'white'} minH={'530px'} spacing={5} borderRadius='md' shadow={'md'}>
                         <Stack>
                             <Heading size={'md'}>Data penerima: </Heading>
                         </Stack>
