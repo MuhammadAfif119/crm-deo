@@ -17,7 +17,9 @@ import {
     SimpleGrid,
     Checkbox,
     Image,
-    useToast, // Tambahkan import untuk Checkbox
+    useToast,
+    Container,
+    Flex, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import ViewPageListing from "./ViewPageListing";
@@ -110,7 +112,7 @@ function FormPageListing() {
         })
         setSelectedCategory(arr)
         setDetails(res.details)
-        if(res.priceEnd){
+        if (res.priceEnd) {
             setCheckPrice(true)
         }
     }
@@ -486,7 +488,7 @@ function FormPageListing() {
     };
 
 
-   
+
     const handleAddDetail = () => {
         setDetails([...details, { key: "", value: "" }]);
     };
@@ -529,20 +531,96 @@ function FormPageListing() {
     }, [categoryList.length, selectedCategory.length])
 
     return (
-        <Stack
-
-        >
+        <>
             <Stack>
                 <BackButtons />
             </Stack>
-            <Grid
-                gap={5}
-                p={3}
-                mt={5}
-                w="100%"
+            <Container
 
+                gap={5}
+                mt={0}
+                maxW={'container.lg'}
+                bg={'white'}
+                minH={'500px'} bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}
+                mb={2}
             >
-                <VStack spacing={4} align="start">
+                <VStack spacing={4} align={'left'} w='100%'>
+                    <Flex justify={'space-between'} w='full' gap={5}>
+                        <FormControl id="image" isRequired>
+                            <HStack>
+                                {files?.length > 0 && (
+                                    <Stack>
+                                        <Image
+                                            src={idProject ? files : files[0].file}
+                                            boxSize="100%"
+                                            maxWidth={300}
+                                            borderRadius="xl"
+                                            alt={idProject ? title : files[0].name}
+                                            shadow="sm"
+                                        />
+                                    </Stack>
+                                )}
+                            </HStack>
+
+                            <Stack>
+                                <Input
+                                    type="file"
+                                    onChange={handleFileInputChange}
+                                    display="none"
+                                    id="fileInput"
+                                />
+
+                                <label htmlFor="fileInput">
+                                    <HStack cursor="pointer">
+                                        <Stack>
+                                            <MdOutlinePermMedia />
+                                        </Stack>
+                                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                            Add Image thumbnail
+                                        </Text>
+                                    </HStack>
+                                </label>
+                            </Stack>
+                        </FormControl>
+
+                        <FormControl id="logo" isRequired>
+                            <HStack>
+                                {filesLogo?.length > 0 && (
+                                    <Stack>
+                                        <Image
+                                            src={idProject ? filesLogo : filesLogo[0].file}
+                                            boxSize="100%"
+                                            maxWidth={300}
+                                            borderRadius="xl"
+                                            alt={idProject ? `${title}-logo` : filesLogo[0].name}
+                                            shadow="sm"
+                                        />
+                                    </Stack>
+                                )}
+                            </HStack>
+
+                            <Stack>
+                                <Input
+                                    type="file"
+                                    onChange={handleFileLogoInputChange}
+                                    display="none"
+                                    id="fileInputLogo"
+                                />
+
+                                <label htmlFor="fileInputLogo">
+                                    <HStack cursor="pointer">
+                                        <Stack>
+                                            <MdOutlinePermMedia />
+                                        </Stack>
+                                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                            Add Image logo
+                                        </Text>
+                                    </HStack>
+                                </label>
+                            </Stack>
+                        </FormControl>
+                    </Flex>
+
                     <FormControl id="title" isRequired>
                         <FormLabel>Title:</FormLabel>
                         <Input
@@ -637,10 +715,10 @@ function FormPageListing() {
                     </FormControl>
                     <HStack w='100%' gap='5'>
                         <FormControl
-                            w='25%'
+                            w='40%'
 
                             id="price" isRequired>
-                            <FormLabel>Price:</FormLabel>
+                            <FormLabel>Price Start</FormLabel>
                             <Input
                                 type="number"
                                 value={price}
@@ -648,11 +726,11 @@ function FormPageListing() {
                             />
                         </FormControl>
                         <Checkbox
-                        isChecked={checkPrice}
-                            onChange={(e)=>setCheckPrice(e.target.checked)}
-                        >Add Price</Checkbox>
+                            isChecked={checkPrice}
+                            onChange={(e) => setCheckPrice(e.target.checked)}
+                        >Add Range Price</Checkbox>
                         {checkPrice && <FormControl
-                            w='25%'
+                            w='40%'
 
                             id="price" isRequired>
                             <FormLabel>Price End</FormLabel>
@@ -665,79 +743,6 @@ function FormPageListing() {
                     </HStack>
 
 
-                    <FormControl id="image" isRequired>
-                        <HStack>
-                            {files?.length > 0 && (
-                                <Stack>
-                                    <Image
-                                        src={idProject ? files : files[0].file}
-                                        boxSize="100%"
-                                        maxWidth={300}
-                                        borderRadius="xl"
-                                        alt={idProject ? title : files[0].name}
-                                        shadow="sm"
-                                    />
-                                </Stack>
-                            )}
-                        </HStack>
-
-                        <Stack>
-                            <Input
-                                type="file"
-                                onChange={handleFileInputChange}
-                                display="none"
-                                id="fileInput"
-                            />
-
-                            <label htmlFor="fileInput">
-                                <HStack cursor="pointer">
-                                    <Stack>
-                                        <MdOutlinePermMedia />
-                                    </Stack>
-                                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                                        Add Image thumbnail
-                                    </Text>
-                                </HStack>
-                            </label>
-                        </Stack>
-                    </FormControl>
-
-                    <FormControl id="logo" isRequired>
-                        <HStack>
-                            {filesLogo?.length > 0 && (
-                                <Stack>
-                                    <Image
-                                        src={idProject ? filesLogo : filesLogo[0].file}
-                                        boxSize="100%"
-                                        maxWidth={300}
-                                        borderRadius="xl"
-                                        alt={idProject ? `${title}-logo` : filesLogo[0].name}
-                                        shadow="sm"
-                                    />
-                                </Stack>
-                            )}
-                        </HStack>
-
-                        <Stack>
-                            <Input
-                                type="file"
-                                onChange={handleFileLogoInputChange}
-                                display="none"
-                                id="fileInputLogo"
-                            />
-
-                            <label htmlFor="fileInputLogo">
-                                <HStack cursor="pointer">
-                                    <Stack>
-                                        <MdOutlinePermMedia />
-                                    </Stack>
-                                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                                        Add Image logo
-                                    </Text>
-                                </HStack>
-                            </label>
-                        </Stack>
-                    </FormControl>
 
                     {/* <FormControl id="image" isRequired>
                         <HStack>
@@ -811,9 +816,19 @@ function FormPageListing() {
                             </label>
                         </Stack>
                     </FormControl> */}
+                    <FormControl id="contactPerson" isRequired>
+                        <FormLabel>Contact Person:</FormLabel>
+                        <Input
+                            type="text"
+                            value={contactPerson}
+                            onChange={(e) => setContactPerson(e.target.value)}
+                        />
+                    </FormControl>
                     {details.map((detail, index) => (
                         <HStack
                             key={index}
+                            align={'center'}
+                            justify={'center'}
                         >
                             <FormControl id={`detail-key-${index}`}>
                                 <FormLabel>Key:</FormLabel>
@@ -838,26 +853,22 @@ function FormPageListing() {
                                     }
                                 />
                             </FormControl>
+                            <Box pt='7'>
+
                             <IconButton
                                 icon={<MdDelete />}
                                 aria-label="Remove Detail"
                                 onClick={() => handleRemoveDetail(index)}
                             />
+                            </Box>
                         </HStack>
                     ))}
-                    <Button colorScheme="teal"
+
+                    <Button variant={'outline'} colorScheme="blue"
                         onClick={handleAddDetail}
                     >
                         Add Detail
                     </Button>
-                    <FormControl id="contactPerson" isRequired>
-                        <FormLabel>Contact Person:</FormLabel>
-                        <Input
-                            type="text"
-                            value={contactPerson}
-                            onChange={(e) => setContactPerson(e.target.value)}
-                        />
-                    </FormControl>
                     <FormControl id="isActive">
                         <FormLabel>Is Active:</FormLabel>
                         <Select
@@ -893,33 +904,40 @@ function FormPageListing() {
                     </FormControl>
 
                     {!idProject ? (!loading ? (
-                        <Button colorScheme="teal"
-                            onClick={handleSubmit}
-                        >
-                            Add Listing
-                        </Button>
+                        <Flex align={'right'} justify={'right'}>
+
+                            <Button variant={'outline'} colorScheme="blue"
+                                onClick={handleSubmit}
+                            >
+                                Add Listing
+                            </Button>
+                        </Flex>
+
                     ) : (
-                        <Button isLoading colorScheme="teal" isDisabled>
-                            Add Listing
-                        </Button>
+                        <Flex align={'right'} justify={'right'}>
+
+                            <Button isLoading variant={'outline'} colorScheme="blue" isDisabled>
+                                Add Listing
+                            </Button>
+                        </Flex>
+
                     )) :
                         (!loading ? (
-                            <Button colorScheme="teal"
+                            <Button variant={'outline'} colorScheme="blue"
                                 onClick={handleEditSubmit}
                             >
                                 Edit Listing
                             </Button>
                         ) : (
-                            <Button isLoading colorScheme="teal" isDisabled>
+                            <Button isLoading variant={'outline'} colorScheme="blue" isDisabled>
                                 Edit Listing
                             </Button>
                         ))
                     }
 
-                    <Divider my={4} />
                 </VStack>
-            </Grid>
-        </Stack>
+            </Container>
+        </>
     );
 }
 

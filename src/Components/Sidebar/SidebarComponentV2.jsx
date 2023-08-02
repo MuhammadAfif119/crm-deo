@@ -1,6 +1,11 @@
 import { Icon } from "@chakra-ui/icons";
 import {
 
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Center,
@@ -49,7 +54,7 @@ function SidebarComponentV2({ layout }) {
     globalState.setCurrentCompany(findCompany.id || e);
     globalState.setCurrentXenditId(findCompany?.xenditId);
 
-    if(findCompany.id || e){
+    if (findCompany.id || e) {
       getProjectList(findCompany.id || e)
     }
 
@@ -96,7 +101,7 @@ function SidebarComponentV2({ layout }) {
       setListProject(projects)
 
 
-      
+
     } catch (error) {
       console.log(error)
     }
@@ -104,11 +109,11 @@ function SidebarComponentV2({ layout }) {
 
   useEffect(() => {
     getProjectList(globalState.currentCompany)
-  
+
     return () => {
     }
   }, [globalState.currentCompany])
-  
+
 
   const handleProjectSelect = (e) => {
     const dataProject = listProject
@@ -135,6 +140,7 @@ function SidebarComponentV2({ layout }) {
   const logout = async () => {
     signOut(auth)
       .then(() => {
+
         // Sign-out successful.
         toast({
           status: "success",
@@ -143,16 +149,21 @@ function SidebarComponentV2({ layout }) {
         });
 
         globalState.setIsLoggedIn(false);
-        navigate("/");
         store.clearAll();
       })
       .catch((error) => {
         console.log(error, "ini error");
-      });
+      }).finally(()=>{
+
+        navigate("/login");
+      })
+
   };
 
 
+  useEffect(() => {
 
+  }, [globalState.isLoggedIn])
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -164,7 +175,7 @@ function SidebarComponentV2({ layout }) {
             height="full"
             width={{
               md: "14rem",
-              xl: "25rem",
+              xl: "21rem",
             }}
             display={{
               base: "none",
@@ -178,7 +189,21 @@ function SidebarComponentV2({ layout }) {
           >
             <>
               <Box position="sticky" overflowY="auto"
-
+                css={{
+                  '&::-webkit-scrollbar': {
+                    height: '0rem',
+                    width: '4px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    width: '6px',
+                    // backgroundColor: 'whitesmoke'
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    // background: 'DarkGray',
+                    height: '2px',
+                    // borderRadius: '24px',
+                  }
+                }}
               >
                 <Flex align={'right'} justify={'right'} onClick={() => setSideBarOpen(!sideBarOpen)} cursor={'pointer'} position={'relative'} top={5}>
                   <Box position={'absolute'} boxShadow={'md'} p='3'>
@@ -269,14 +294,17 @@ function SidebarComponentV2({ layout }) {
                         </Stack>
 
 
-                        <Stack mt='5'>
+                        <Stack mt='5'
+
+
+                        >
                           {/* <HStack>
                             <Icon as={FcDatabase} boxSize={5} />
                             <Text fontWeight={"semibold"} pl={3}>
                               Dashboard
                             </Text>
                           </HStack> */}
-                          {data.map((x, i) => (
+                          {/* {data.map((x, i) => (
                             <>
                               {x.name === 'Scoreboard' || x.name === 'Contacts' ?
                                 <Button onClick={() => navigate(x?.link)} variant={'ghost'} alignItems={'center'} justifyContent={'left'} key={i}>
@@ -300,8 +328,8 @@ function SidebarComponentV2({ layout }) {
                               }
 
                             </>
-                          ))}
-                          <Button
+                          ))} */}
+                          {/* <Button
                             as={Link}
                             to={"/settings"}
                             variant="ghost"
@@ -311,62 +339,63 @@ function SidebarComponentV2({ layout }) {
                               <Icon as={FiSettings} boxSize="5" color="subtle" />
                               <Text>Setting</Text>
                             </HStack>
-                          </Button>
-                          {/* <Accordion>
+                          </Button> */}
+                          <Accordion>
 
-                              {data.map((x, i) => (
-                                <AccordionItem
-                                  key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
-                                >
-                                  <h2>
-                                    <AccordionButton>
-                                      {x.name === 'Dashboard' ?
-                                        <Flex m='0' p='0' gap='0' onClick={() => navigate(x?.link)}>
-                                          <Icon as={x.icon} boxSize={5} />
-                                          <Text fontWeight={"semibold"} pl={3}>
-                                            {x.name}
-                                          </Text>
-                                        </Flex>
-                                        :
-                                        <>
-                                          <Icon as={x.icon} boxSize={5} />
-                                          <Text fontWeight={"semibold"} pl={3}>
-                                            {x.name}
-                                          </Text>
-                                          <AccordionIcon />
+                            {data.map((x, i) => (
+                              <AccordionItem
+                                key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
+                              >
+                                <h2>
+                                  <AccordionButton>
+                                    {x.name === 'Scoreboard' || x.name === 'Contacts' ?
+                                      <Flex m='0' p='0' gap='0' onClick={() => navigate(x?.link)}>
+                                        <Icon as={x.icon} boxSize={5} />
+                                        <Text fontWeight={"semibold"} pl={3}>
+                                          {x.name}
+                                        </Text>
+                                      </Flex>
+                                      :
+                                      <>
+                                        <Icon as={x.icon} boxSize={5} />
+                                        <Text fontWeight={"semibold"} pl={3}>
+                                          {x.name}
+                                        </Text>
+                                        <AccordionIcon />
 
-                                        </>
-                                      }
-                                    </AccordionButton>
-                                  </h2>
-                                  {x.submenu ? (
-                                    <>
-                                      <AccordionPanel>
-                                        <Stack>
-                                          {x.submenu?.map((subitem, i) => (
-                                            <Link to={subitem.link} key={i}>
-                                              <HStack spacing="3">
-                                                <Icon
-                                                  as={subitem.icon}
-                                                // boxSize="5"
-                                                />
-                                                <Text fontSize={"sm"}>
-                                                  {subitem.name}
-                                                </Text>
-                                              </HStack>
-                                            </Link>
-                                          ))}
-                                        </Stack>
-                                      </AccordionPanel>
-                                    </>
-                                  ) : (
-                                    <>{null}</>
-                                  )}
-                                </AccordionItem>
-                              ))}
-                            </Accordion> */}
+                                      </>
+                                    }
+                                  </AccordionButton>
+                                </h2>
+                                {x.submenu ? (
+                                  <>
+                                    <AccordionPanel>
+                                      <Stack>
+                                        {x.submenu?.map((subitem, i) => (
+                                          <Link to={subitem.link} key={i}>
+                                            <HStack spacing="3">
+                                              <Icon
+                                                as={subitem.icon}
+                                              // boxSize="5"
+                                              />
+                                              <Text fontSize={"sm"}>
+                                                {subitem.name}
+                                              </Text>
+                                            </HStack>
+                                          </Link>
+                                        ))}
+                                      </Stack>
+                                    </AccordionPanel>
+                                  </>
+                                ) : (
+                                  <>{null}</>
+                                )}
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
                         </Stack>
                       </Stack>
+                      <Spacer />
 
                       <Stack
                         spacing={{
@@ -375,13 +404,11 @@ function SidebarComponentV2({ layout }) {
                         }}
                         bottom={5}
                         pos={'absolute'}
-                        width={{
-                          md: "14rem",
-                          xl: "17rem",
-                        }}
+                        width={'sticky'}
+                        w='82%'
                       >
 
-                        {/* <Stack spacing="1">
+                        <Stack spacing="1">
                           <Button
                             as={Link}
                             to={"/settings"}
@@ -393,9 +420,9 @@ function SidebarComponentV2({ layout }) {
                               <Text>Setting</Text>
                             </HStack>
                           </Button>
-                        </Stack> */}
+                        </Stack>
 
-                        <Spacer />
+                        {/* <Spacer /> */}
 
                         {layout.type === "vertical-horizontal" &&
                           layout.userProfile === "sidebar" ? (
@@ -459,21 +486,21 @@ function SidebarComponentV2({ layout }) {
                                 >
                                   Logout
                                 </Button>
-                                  <HStack overflowY={'auto'} justify={'center'} align={'center'} gap={5} css={{
-                                    '&::-webkit-scrollbar': {
-                                      height: '0rem',
-                                      width: '4px',
-                                    },
-                                    '&::-webkit-scrollbar-track': {
-                                      width: '6px',
-                                      // backgroundColor: 'whitesmoke'
-                                    },
-                                    '&::-webkit-scrollbar-thumb': {
-                                      // background: 'DarkGray',
-                                      height: '2px',
-                                      // borderRadius: '24px',
-                                    },
-                                  }}>  
+                                <HStack overflowY={'auto'} justify={'center'} align={'center'} gap={5} css={{
+                                  '&::-webkit-scrollbar': {
+                                    height: '0rem',
+                                    width: '4px',
+                                  },
+                                  '&::-webkit-scrollbar-track': {
+                                    width: '6px',
+                                    // backgroundColor: 'whitesmoke'
+                                  },
+                                  '&::-webkit-scrollbar-thumb': {
+                                    // background: 'DarkGray',
+                                    height: '2px',
+                                    // borderRadius: '24px',
+                                  },
+                                }}>
                                   {dataApps.map((x, id) => (
                                     <a href={x.link} target="_blank" rel="noopener noreferrer" >
                                       <Stack key={id} justify={'center'} align={'center'} cursor={'pointer'} >

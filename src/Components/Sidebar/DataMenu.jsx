@@ -97,14 +97,14 @@ export const data = [
   //     { name: "News", icon: FcEditImage, link: "/news" },
   //   ],
   // },
-  {
-    name: "Pipeline",
-    icon: FcKindle,
-    submenu: [
-      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-      { name: "Membership", icon: FcSettings, link: "/chat" },
-    ],
-  },
+  // {
+  //   name: "Pipeline",
+  //   icon: FcKindle,
+  //   submenu: [
+  //     { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+  //     { name: "Membership", icon: FcSettings, link: "/chat" },
+  //   ],
+  // },
   {
     name: "Configuration",
     icon: FcSettings,
