@@ -1,10 +1,11 @@
 import { Button, Container, Heading, HStack, Input, Select, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import BackButtonComponent from '../../../Components/Buttons/BackButtons';
+import BackButtonComponent from '../../Components/Buttons/BackButtons';
 // import { createSource, initOauth } from '../../Apis/firebaseFunctions'
-import { addDocumentFirebase, getCollectionFirebase } from '../../../Api/firebaseApi'
-import { Link, useNavigate } from 'react-router-dom'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import { addDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
+import useUserStore from '../../Hooks/Zustand/Store'
+import { createSource, initOauth } from '../../Api/firebaseFunction';
+import { useNavigate } from 'react-router-dom';
 
 
 function DomainsNewPage() {
@@ -13,17 +14,13 @@ function DomainsNewPage() {
     const globalState = useUserStore();
 	const [isLoading, setIsLoading] = useState(false);
 	const [projects,setProjects]=useState()
-	const [workspaces, setWorkspaces] = useState([])
 	const navigate = useNavigate()
-	const [newWorskpace, setNewWorkspace] = useState("")
 	const [ouaths, setOauths] = useState([])
 	const [newOauth, setNewOauth] = useState("")
-	const [projectName, setProjectName] = useState("")
 
 	useEffect(() => {
 	  setSourceLists(["google-analytics-data-api", "google-analytics-v4", "google-ads", "facebook-marketing"])
 	  getProjects()
-	  getWorkspaces()
 	  getOauths()
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalState?.currentCompany])
@@ -37,20 +34,9 @@ function DomainsNewPage() {
 		.catch((err)=>console.log(err.message))
 	}
 
-	const getWorkspaces = ()=>{
-		const conditions = [
-		{ field: "companyId", operator: "==", value: globalState.currentCompany },
-		];
-		getCollectionFirebase('analytic_workspaces', conditions)
-		.then((x)=> {
-			setWorkspaces(x)
-		})
-		.catch((err)=>console.log(err.message))
-	}
-
 	const getOauths = ()=>{
 		const conditions = [
-		// { field: "companyId", operator: "==", value: globalState.currentCompany },
+			{ field: "companyId", operator: "==", value: globalState.currentCompany },
 		];
 		getCollectionFirebase('analytic_oauths', conditions)
 		.then((x)=> {
@@ -61,27 +47,32 @@ function DomainsNewPage() {
 
 	const handleSave = async () => {
 		try {
-			// setIsLoading(true)
-			// const response = await createSource(data)
-			// setIsLoading(false)
-			// if (response.status) {
-			// 	const dataSave = {
-			// 		"companyId": globalState.currentCompanies.id,
-			// 		"projectId": data.projectId,
-			// 		"sourceId": response.data.sourceId,
-			// 		"name": data.name,
-			// 		"workspaceId": data.workspaceId,
-			// 		"sourceType": data.sourceType,
-			// 		"params": response.data,
-			// 	}
-			// 	console.log('dataSave', dataSave)
-			// 	addDocumentFirebase('analytic_sources', dataSave, globalState.currentCompany)
-			// 	alert("Success to save")
-			// 	navigate("/analytic/source")
-			// } else {
-			// 	alert(response.message)
-			// 	return
-			// }
+			setIsLoading(true)
+			const response = await createSource(data)
+			setIsLoading(false)
+			if (response.status) {
+				const dataResSource = response.data.source;
+				const dataResConn = response.data.connection;
+				const dataSave = {
+					"companyId": globalState.currentCompany,
+					"projectId": data.projectId,
+					"sourceId": dataResSource.sourceId,
+					"name": dataResSource.name,
+					"workspaceId": data.workspaceId,
+					"sourceType": data.sourceType,
+					"params": dataResSource,
+					"connectionId": dataResConn.connectionId,
+					"connectionName": dataResConn.name,
+					"paramsConection": dataResConn,
+				}
+				console.log('dataSave', dataSave)
+				await addDocumentFirebase('analytic_sources', dataSave, globalState.currentCompany)
+				alert("Success to save")
+				navigate("/configuration/integration")
+			} else {
+				alert(response.message)
+				return
+			}
 		} catch (error) {
 			setIsLoading(false)
 		}
@@ -94,7 +85,7 @@ function DomainsNewPage() {
 			if (ouaths.length === 0) {
 				setNewOauth(selectedSource)
 			} else {
-				const selectedOauth = ouaths.find(value => value.sourceType === selectedSource)
+				const selectedOauth = ouaths.find(value => value.sourceType === selectedSource && value.projectId === data.projectId)
 				if (selectedOauth === undefined) {
 					setNewOauth(selectedOauth)
 				} else {
@@ -105,27 +96,29 @@ function DomainsNewPage() {
 	}
 
 	const changeProject = (id) => {
+		setData(data => ({...data, sourceType: ""}))
 		setData(data => ({...data, projectId: id}))
+		setData(data => ({...data, companyId: globalState?.currentCompany}))
         setData(data => ({...data, workspaceId: "39d1492c-b5c8-4986-ad59-4049a8f1cc5c"}))
 	}
 
 	const requestOauth = async () => {
 		try {
-			// const redirectUrl = "https://new-admin.importir.com/api/general/callback-oauth/"+globalState.currentCompany+"/" + data.projectId + "/" + data.workspaceId + "/" + data.sourceType
-			// setIsLoading(true)
-			// console.log('response', data)
-			// const response = await initOauth({
-			// 	name: data.sourceType,
-			// 	workspaceId: data.workspaceId,
-			// 	redirectUrl: redirectUrl
-			// })
-			// setIsLoading(false)
-			// if (response.status) {
-			// 	window.location.href = response.data.consentUrl
-			// } else {
-			// 	alert(response.message)
-			// 	return
-			// }
+			const redirectUrl = "https://new-admin.importir.com/api/general/callback-oauth/"+globalState.currentCompany+"/" + data.projectId + "/" + data.workspaceId + "/" + data.sourceType
+			setIsLoading(true)
+			console.log('response', data)
+			const response = await initOauth({
+				name: data.sourceType,
+				workspaceId: data.workspaceId,
+				redirectUrl: redirectUrl
+			})
+			setIsLoading(false)
+			if (response.status) {
+				window.location.href = response.data.consentUrl
+			} else {
+				alert(response.message)
+				return
+			}
 		} catch (error) {
 
 		}
@@ -146,8 +139,6 @@ function DomainsNewPage() {
 				data.projectId !== undefined ?
 					data.projectId !== "" ? 
 						<div>
-                            <Input m='1' type='text' placeholder='source name ex: importir analytic' onChange={(e) => setData(data => ({...data, name:e.target.value}))} />
-                            <Input m='1' type='text' value={data.workspaceId} />
                             <Select m='1' placeholder='Sources' onChange={(e) => changeSourceList(e.target.value) }>
                                 {sourceLists?.map((x,i)=>
                                 <option key={i} value={x}>{x.toUpperCase()}</option>)}
@@ -160,6 +151,7 @@ function DomainsNewPage() {
                                     <Button colorScheme='blue' onClick={() => requestOauth()}>Integrate It</Button>
                                 :
                                 <>
+									
                                     {
                                         data.sourceType === "google-analytics-data-api" ?
                                             <div>
@@ -197,6 +189,17 @@ function DomainsNewPage() {
                                                     ""
                                         )
                                     }
+									{
+										data.sourceType !== ""
+										? 
+											<>
+												<Select m='1' placeholder='Schedule Type' onChange={(e) => setData(data => ({...data, scheduleType: e.target.value})) }>
+													<option value="manual">Manual</option>
+													<option value="cron">Cron</option>
+												</Select>
+											</>
+										: ""
+									}
                                     {
                                         data.sourceType ? 
                                             isLoading  ? 

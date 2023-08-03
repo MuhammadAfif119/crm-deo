@@ -10,9 +10,9 @@ import { Box, Button, Heading, HStack, SimpleGrid, Spacer, Text,  Modal,
 	Input, } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { addDocumentFirebase, getCollectionFirebase } from '../../../Api/firebaseApi'
-import ImageComponent from '../../../Components/Image/ImageComponent'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import { addDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
+import ImageComponent from '../../Components/Image/ImageComponent'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 function OutletPage() {
     const globalState = useUserStore();

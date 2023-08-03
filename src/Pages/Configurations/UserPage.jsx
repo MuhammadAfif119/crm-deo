@@ -9,10 +9,10 @@ import {
 	ModalCloseButton, HStack, Input, SimpleGrid, Spacer, Text, useDisclosure
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { arrayRemoveFirebase, arrayUnionFirebase, getCollectionFirebase } from '../../../Api/firebaseApi'
-import { createUserFunctions } from '../../../Api/firebaseFunction'
-import { clientTypessense } from '../../../Api/Typesense'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import { arrayRemoveFirebase, arrayUnionFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
+import { createUserFunctions } from '../../Api/firebaseFunction'
+import { clientTypessense } from '../../Api/Typesense'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 function UsersPage() {
 	const globalState = useUserStore()

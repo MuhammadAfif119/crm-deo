@@ -1,9 +1,9 @@
 import { Badge, Box, Button, Flex, Heading, HStack, Input, SimpleGrid, Spacer, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getCollectionFirebase } from '../../../Api/firebaseApi'
-import ImageComponent from '../../../Components/Image/ImageComponent'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import { getCollectionFirebase } from '../../Api/firebaseApi'
+import ImageComponent from '../../Components/Image/ImageComponent'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 function ProjectsPage() {
     const globalState = useUserStore();

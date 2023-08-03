@@ -1,10 +1,10 @@
 import { Box, Button, Container, Heading, HStack, Input, Select, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { addDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../../Api/firebaseApi'
-import BackButtonComponent from '../../../Components/Buttons/BackButtons';
-import { createDomainCustom } from '../../../Api/vercelAPI'
-import useUserStore from '../../../Hooks/Zustand/Store';
+import { addDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi'
+import BackButtonComponent from '../../Components/Buttons/BackButtons';
+import { createDomainCustom } from '../../Api/vercelAPI'
+import useUserStore from '../../Hooks/Zustand/Store';
 
 function NewPage() {
     const globalState = useUserStore();

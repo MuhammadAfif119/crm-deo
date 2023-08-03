@@ -12,9 +12,9 @@ import {
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../../Api/firebaseApi'
-import { checkDomainCustom, deleteDomainCustom } from '../../../Api/vercelAPI'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import { deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi'
+import { checkDomainCustom, deleteDomainCustom } from '../../Api/vercelAPI'
+import useUserStore from '../../Hooks/Zustand/Store'
 
 function DomainsPage() {
   	const globalState = useUserStore();

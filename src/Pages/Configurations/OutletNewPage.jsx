@@ -9,13 +9,13 @@ import { Avatar, AvatarGroup, Box, Button, Container,   Modal,
 	FormControl, FormHelperText, useDisclosure,FormLabel, Heading, HStack, Input, Select, Spacer, Text, SimpleGrid } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { addDocumentFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../../Api/firebaseApi'
-import BackButtonComponent from '../../../Components/Buttons/BackButtons';
-import UserCardComponent from '../../../Components/Card/UserCardComponent'
-import ImageComponent from '../../../Components/Image/ImageComponent'
-import InputSearchUserComponent from '../../../Components/Inputs/InputSearchComponent'
-import useUserStore from '../../../Hooks/Zustand/Store'
-import { uploadImage } from '../../../Api/firebaseFunction'
+import { addDocumentFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi'
+import BackButtonComponent from '../../Components/Buttons/BackButtons';
+import UserCardComponent from '../../Components/Card/UserCardComponent'
+import ImageComponent from '../../Components/Image/ImageComponent'
+import InputSearchUserComponent from '../../Components/Inputs/InputSearchComponent'
+import useUserStore from '../../Hooks/Zustand/Store'
+import { uploadImage } from '../../Api/firebaseFunction'
 
 function OutletViewPage() {
     const globalState = useUserStore();

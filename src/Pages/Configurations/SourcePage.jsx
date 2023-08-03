@@ -9,10 +9,11 @@ import {
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { deleteDocumentFirebase, getCollectionFirebase } from '../../../Api/firebaseApi'
+import { deleteDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
 import { DeleteIcon } from '@chakra-ui/icons'
 // import { deleteSource } from '../../../Api/firebaseFunctions'
-import useUserStore from '../../../Hooks/Zustand/Store'
+import useUserStore from '../../Hooks/Zustand/Store'
+import { deleteSource } from '../../Api/firebaseFunction'
 
 function IndexPage() {
     const globalState = useUserStore();
@@ -49,14 +50,14 @@ function IndexPage() {
 		if (confirmDelete) {
 			setIndexDelete(i)
 			setIsLoading(true)
-			// const response = await deleteSource(data[i].sourceId, data[i].name)
-			// setIsLoading(false)
-			// if (response.status) {
-			// 	await deleteDocumentFirebase('analytic_sources', data[i].id)
-			// 	getData()
-			// } else {
-			// 	alert(response.message)
-			// }
+			const response = await deleteSource(data[i].sourceId, data[i].name)
+			setIsLoading(false)
+			if (response.status) {
+				await deleteDocumentFirebase('analytic_sources', data[i].id)
+				getData()
+			} else {
+				alert(response.message)
+			}
 		}
 	}
 	
@@ -75,9 +76,8 @@ function IndexPage() {
 					<Thead>
 						<Tr>
 							<Th>Project ID</Th>
-							<Th>Type</Th>
-							<Th>Name</Th>
-							<Th>Workspace ID</Th>
+							<Th>Source Type</Th>
+							<Th>Connection Name</Th>
 							<Th>Action</Th>
 						</Tr>
 					</Thead>
@@ -88,12 +88,11 @@ function IndexPage() {
 									<Link to={`/projects/${x.projectId}`}>{x.projectId}</Link>
 								</Td>
 								<Td>{x.sourceType}</Td>
-								<Td>{x.name}</Td>
-								<Td>{x.workspaceSourceId}</Td>
+								<Td>{x.connectionName}</Td>
 								<Td>
 									{
-										// isLoading && indexDelete === i ? 
-										// <Button m='2' isLoading colorScheme='green' >Loading</Button> : <DeleteIcon onClick={() => deleteSourceData(i)} />
+										isLoading && indexDelete === i ? 
+										<Button m='2' isLoading colorScheme='green' >Loading</Button> : <DeleteIcon onClick={() => deleteSourceData(i)} />
 									}
 								</Td>
 							</Tr>
