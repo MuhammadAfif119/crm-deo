@@ -390,7 +390,7 @@ function SidebarComponentV2({ layout }) {
                           <Text>Setting</Text>
                         }
                       </HStack>
-                    </Button>
+                    </Button>                                                   
                     <Divider />
 
                     <SimpleGrid columns={isDesktop ? [dataApps.length] : [1]} w={'auto'} overflowX={'scroll'} justify={'center'} align={'center'} gap={5} >
