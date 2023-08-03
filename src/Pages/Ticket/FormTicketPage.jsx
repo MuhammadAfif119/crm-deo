@@ -19,7 +19,7 @@ const LocationComponent = ({ type, data, setData }) => {
                          <Input type='text' id='address' name='address' onChange={(e) => setData({ ...data, address: e.target.value })} value={data?.address} />
                     </FormControl>
                     <FormControl isRequired>
-                         <FormLabel>Location</FormLabel>
+                         <FormLabel>Link Google Maps</FormLabel>
                          <Input onChange={(e) => setData({ ...data, location: e.target.value })} value={data?.location} />
                     </FormControl>
                </>
@@ -53,7 +53,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
                               />
                          </FormControl>
                          <FormControl py='5' isRequired w='fit-content'>
-                              <FormLabel>End Ticket</FormLabel>
+                              <FormLabel>End Sales Ticket</FormLabel>
                               <Input type='date'
                                    onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'endTicket', e.target.value)}
                                    value={category?.tickets[ticketIndex]?.endTicket}
@@ -300,32 +300,45 @@ const FormTicketPage = () => {
      }
      const getTickets = async () => {
           const res = await getSingleDocumentFirebase('tickets', idProject)
+          let newData = {
+               title: res.title,
+               description: res.description,
+               dateStart: res.dateStart,
+               time: res.time,
+               timeEnd: res.timeEnd,
+               tnc: res.tnc,
+               isActive: res.isActive,
+               price: res.price,
+               formId: res.formId
+          }
           if (res) {
-               let newData = {
-                    title: res.title,
-                    description: res.description,
-                    dateStart: res.dateStart,
-                    time: res.time,
-                    timeEnd: res.timeEnd,
-                    tnc: res.tnc,
-                    isActive: res.isActive,
-                    price: res.price,
-                    formId: res.formId
-               }
 
                if (res.dateEnd) {
                     setCheckboxDate(true)
-                    newData.dataEnd = res.dateEnd
+                    newData = {
+                         ...newData,
+                         dataEnd: res.dateEnd
+                    }
                }
                if (res.location) {
-                    newData.location = res.location
+                    newData = {
+                         ...newData,
+                         location: res.location
+                    }
                }
                if (res.address) {
-                    newData.address = res.address
+                    newData = {
+                         ...newData,
+                         address: res.address
+                    }
                }
                if (res.zoomId) {
-                    newData = res.zoomId
+                    newData = {
+                         ...newData,
+                         zoomId: res.zoomId
+                    }
                }
+               console.log(newData)
                setData(newData)
                setProjectId(res.projectId)
                setProjectName(res.projectName)
@@ -336,8 +349,7 @@ const FormTicketPage = () => {
                setEventType(res.eventType)
           }
      }
-
-
+     console.log(categoryDetails)
      const getDataForms = async () => {
           try {
                const q = query(collection(db, 'forms'),
@@ -452,7 +464,7 @@ const FormTicketPage = () => {
           try {
                if (type === 'create') {
                     const res = await addDocumentFirebase('tickets', newData, companyId)
-                   
+
 
                     if (res && newData.formId) {
                          console.log(res)
@@ -462,19 +474,19 @@ const FormTicketPage = () => {
                          const values = [res];
 
                          try {
-                           const result = await arrayUnionFirebase(collectionName, docName, field, values);
-                           console.log(result); // Pesan toast yang berhasil
-                           toast({
-                              title: "Deoapp.com",
-                              description: `success add new ticket with document id ${res}`,
-                              status: "success",
-                              position: "top-right",
-                              isClosable: true,
-                         });
-                    navigate('/ticket')
+                              const result = await arrayUnionFirebase(collectionName, docName, field, values);
+                              console.log(result); // Pesan toast yang berhasil
+                              toast({
+                                   title: "Deoapp.com",
+                                   description: `success add new ticket with document id ${res}`,
+                                   status: "success",
+                                   position: "top-right",
+                                   isClosable: true,
+                              });
+                              navigate('/ticket')
 
                          } catch (error) {
-                           console.log('Terjadi kesalahan:', error);
+                              console.log('Terjadi kesalahan:', error);
                          }
                     }
 
