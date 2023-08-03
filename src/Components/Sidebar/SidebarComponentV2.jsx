@@ -142,7 +142,7 @@ function SidebarComponentV2({ layout }) {
 
 
   const logout = async () => {
-    await logoutUserWithIp(globalState.uid, 'productivity')
+    await logoutUserWithIp(globalState.uid, 'crm')
 
     signOut(auth)
       .then(() => {
