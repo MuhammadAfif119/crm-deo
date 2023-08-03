@@ -17,7 +17,10 @@ import {
   FcDatabase,
   FcGlobe,
   FcContacts,
-  FcBusinessContact
+  FcBusinessContact,
+  FcAutomatic,
+  FcBriefcase,
+  FcShop
 } from "react-icons/fc";
 
 export const data = [
@@ -106,6 +109,9 @@ export const data = [
     icon: FcSettings,
     submenu: [
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
+      { name: "Integration", icon: FcAutomatic, link: "/configuration/integration" },
+      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
 

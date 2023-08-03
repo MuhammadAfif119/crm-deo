@@ -42,11 +42,13 @@ function SidebarComponentV2({ layout }) {
   const globalState = useUserStore();
 
   const handleCompanySelect = (e) => {
+    console.log("handle select", handleCompanySelect)
     const dataCompany = globalState.companies;
 
     const findCompany = dataCompany.find((x) => x.id === e);
 
     globalState.setCurrentCompany(findCompany.id || e);
+    globalState.setUsers(findCompany.users);
     globalState.setCurrentXenditId(findCompany?.xenditId);
 
     if(findCompany.id || e){
@@ -92,7 +94,6 @@ function SidebarComponentV2({ layout }) {
       } else {
         globalState.setRoleProject("user");
       }
-
       setListProject(projects)
 
 

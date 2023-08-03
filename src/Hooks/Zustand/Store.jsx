@@ -13,6 +13,7 @@ const useUserStore = create((set, get) => ({
   currentXenditId: "",
   roleCompany: "",
   roleProject: "",
+  users: [],
   
 
   setUid: (data) => {
@@ -80,6 +81,12 @@ const useUserStore = create((set, get) => ({
   setCurrentXenditId: (data) => {
     set({
       currentXenditId: data,
+    });
+  },
+
+  setUsers: (data) => {
+    set({
+      users: data,
     });
   },
 }));
