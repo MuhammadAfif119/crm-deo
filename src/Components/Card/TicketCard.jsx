@@ -1,17 +1,18 @@
 import { DeleteIcon } from '@chakra-ui/icons'
-import { Box, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Stack, Text, VStack } from '@chakra-ui/react'
 import moment from 'moment'
 import React from 'react'
 import { FiCalendar, FiClock, FiMapPin } from 'react-icons/fi'
+import { formatFrice } from '../../Utils/Helper'
 
-function TicketCard({item}) {
+function TicketCard({ item }) {
 
     const monthNames = moment.monthsShort();
 
 
     return (
         <Box pos={'relative'}  >
-            <VStack rounded={5} borderWidth='1px' p={3} bgColor='white' shadow={'md'} align={'left'} justify={'space-between'} cursor={'pointer'}
+            <VStack spacing={3} rounded={5} borderWidth='1px' p={3} bgColor='white' shadow={'md'} align={'left'} justify={'space-between'} cursor={'pointer'}
                 _hover={{
                     bg: "gray.100",
                     transform: "scale(1.02)",
@@ -43,10 +44,11 @@ function TicketCard({item}) {
                         <FiMapPin />
                         <Text size={'sm'}>{item?.address || 'Zoom'}</Text>
                     </Flex>
-                    <Flex justify={'space-between'} align={'center'}>
-                       
-                    </Flex>
+
                 </Box>
+                <Stack>
+                        <Heading size={'md'} color='green.500'>Rp. {formatFrice(item.price)}</Heading>
+                </Stack>
             </VStack>
 
         </Box>

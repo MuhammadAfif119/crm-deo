@@ -1,5 +1,5 @@
-import { Box, Button, Center, Flex, Heading, HStack, Input, Select, SimpleGrid, Spacer, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { Box, Button, Center, Divider, Flex, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spacer, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
+import React, { useEffect, useRef, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useParams } from 'react-router-dom'
@@ -7,25 +7,38 @@ import { getCollectionFirebase, getSingleDocumentFirebase } from '../../Api/fire
 import KanbanColumnsComponent from '../../Components/Columns/KanbanColumnsComponent'
 import { decryptToken } from '../../Utils/encrypToken'
 import BackButtons from '../../Components/Buttons/BackButtons'
+import { AddIcon, CloseIcon } from '@chakra-ui/icons'
+import DetailPipelineCard from '../../Components/Card/DetailPipelineCard'
 
 function PipelineViewPage() {
-	const param = useParams()
-	const [pipelineList, setPipelineList] = useState("")
-	const isDesktop = useBreakpointValue({ base: false, lg: true })
-
-
+	const param = useParams();
+	const [pipelineList, setPipelineList] = useState("");
+	const isDesktop = useBreakpointValue({ base: false, lg: true });
+  
+	const [modalDetail, setModalDetail] = useState(false);
+	const [detailActive, setDetailActive] = useState("");
+  
+	const [filterData, setFilterData] = useState({ search: "" });
+  
 	const fetchData = async () => {
-		try {
-			const result = await getSingleDocumentFirebase('pipelines', param.id)
-			setPipelineList(result)
-			console.log(result, 'ini result')
-
-
-		} catch (error) {
-			console.log(error)
-		}
-
-	}
+	  try {
+		const result = await getSingleDocumentFirebase('pipelines', param.id);
+		setPipelineList(result);
+	  } catch (error) {
+		console.log(error);
+	  }
+	};
+  
+	const handleModalOpen = (x) => {
+	  setModalDetail(true);
+	  setDetailActive(x);
+	};
+  
+	const handleModalClose = () => {
+	  setModalDetail(false);
+	  setDetailActive("");
+	};
+  
 
 
 	useEffect(() => {
@@ -41,9 +54,13 @@ function PipelineViewPage() {
 				<BackButtons />
 				<Heading size={'md'}>Pipelines {pipelineList?.title}</Heading>
 				<Spacer />
-				<Input type='text' size='xs' w='3xs' placeholder='Search Leads' />
-				<Select size='xs' w='24' placeholder='Sort by'>
-					<option>Kodok</option>
+				<Input type='text' size='sm' w='3xs' placeholder='Search Leads' onChange={(e) =>
+					setFilterData({ search: e.target.value })} />
+				<Select size='sm' w='24' placeholder='Sort by'  onChange={(e) =>
+					setFilterData({ status: e.target.value })}>
+					<option value={'won'}>Won</option>
+					<option value={'lost'}>Lost</option>
+					<option value={'open'}>Open</option>
 				</Select>
 				<Button size='xs' colorScheme='blue'>Filter</Button>
 				<Button size='xs' colorScheme='green'>+</Button>
@@ -53,7 +70,6 @@ function PipelineViewPage() {
 			</Stack>
 			<Flex
 				overflowX='auto'
-			// columns={{ base: 1, md: 5 }}
 			>
 				<DndProvider backend={HTML5Backend}>
 					{isDesktop ?
@@ -61,7 +77,7 @@ function PipelineViewPage() {
 							{pipelineList?.stages?.map((x, i) => {
 								return (
 
-									<KanbanColumnsComponent key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={{ name: "filter" }} column={x?.stageName} />
+									<KanbanColumnsComponent handleModalOpen={handleModalOpen} key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={filterData} column={x?.stageName} />
 
 								)
 							}
@@ -75,6 +91,34 @@ function PipelineViewPage() {
 					}
 				</DndProvider>
 			</Flex>
+
+			<Modal
+				isOpen={modalDetail}
+				onClose={handleModalClose}
+				isCentered
+				size={'4xl'}
+			>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>
+						<Stack>
+							<Text textTransform={'capitalize'}>Detail {detailActive.name}</Text>
+						</Stack>
+					</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Text fontSize={'sm'}>Add and edit opportunity details, tasks, notes and appointments.</Text>
+						<Divider py={1} />
+						<Stack >
+							{detailActive && (
+								<DetailPipelineCard data={detailActive} stages={pipelineList?.stages} handleModalClose={handleModalClose}
+								/>
+
+							)}
+						</Stack>
+					</ModalBody>
+				</ModalContent>
+			</Modal>
 
 		</Stack>
 	)

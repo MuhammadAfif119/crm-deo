@@ -333,7 +333,7 @@ function CreateForm({ setFormFields, formFields }) {
                                 <Stack>
                                     <Stack>
                                         <Text fontWeight={500} color='gray.700'>Fields</Text>
-                                        <Input type="text" placeholder="Name Field" isDisabled={newFieldShape.name === "phoneNumber" || newFieldShape.name === "submit_button"  || newFieldShape.name === "name"? true:false} value={newFieldShape.name ? true : false} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
+                                        <Input type="text" placeholder="Name Field" isDisabled={newFieldShape.name === "phoneNumber" || newFieldShape.name === "submit_button"  || newFieldShape.name === "name"? true:false} value={newFieldShape.name} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
 
                                     </Stack>
 

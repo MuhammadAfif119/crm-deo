@@ -4,12 +4,13 @@ import { collection, limit, onSnapshot, orderBy, query, where } from 'firebase/f
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCollectionFirebase } from '../../Api/firebaseApi';
+import { getCollectionFirebase, getCollectionFirebaseV2 } from '../../Api/firebaseApi';
+import { clientTypessense } from '../../Api/Typesense';
 // import { addDocumentFirebase, getCollectionFirebase } from '../../Apis/firebaseApi';
-// import { clientTypesense } from '../../Apis/typeSense';
 import { db } from '../../Config/firebase';
 import { encryptToken } from '../../Utils/encrypToken';
 import TaskCardComponent from '../Card/TaskCardComponent';
+import axios from 'axios';
 
 const ColumnColorScheme = {
 	TODOS: 'blue',
@@ -19,19 +20,16 @@ const ColumnColorScheme = {
 	DONE: 'gray',
 };
 
-function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterData, index, formId }) {
+function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterData, index, formId, handleModalOpen }) {
 	const [columnsData, setColumnsData] = useState([])
 	const [columnsData2, setColumnsData2] = useState([])
 	const param = useParams()
 	const navigate = useNavigate()
 
 
-	const handleNewTask = () => {
 
-	}
 
 	const handleLoad = () => {
-		
 		const conditions = [
 			{ field: "formId", operator: "==", value: formId },
 			{ field: "column", operator: "==", value: column },
@@ -39,35 +37,21 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		const sortBy = { field: "lastUpdated", direction: "desc" };
 		const limitValue = 5;
 		let startAfter = ''
+
 		if (columnsData2.length > 0) {
 			// console.log('kedua kali dan seterusnya')
 			startAfter = columnsData2[columnsData2.length - 1].lastUpdated
-			// if (filterData?.category)
-			// 	conditions.push({ field: "category", operator: "==", value: filterData?.category })
-
-			// if (filterData?.label)
-			// 	conditions.push({ field: "label", operator: "==", value: filterData?.label })
-
-
-			// if (filterData?.asignee)
-			// 	conditions.push({ field: "asignee", operator: "==", value: filterData?.asignee })
+			if (filterData?.status) conditions.push({ field: "status", operator: "==", value: filterData?.status })
 
 		} else {
-			// console.log('pertama kali')
+
 			startAfter = columnsData[columnsData.length - 1].lastUpdated
-			// if (filterData?.category)
-			// 	conditions.push({ field: "category", operator: "==", value: filterData?.category })
-
-			// if (filterData?.label)
-			// 	conditions.push({ field: "label", operator: "==", value: filterData?.label })
-
-
-			// if (filterData?.asignee)
-			// 	conditions.push({ field: "asignee", operator: "==", value: filterData?.asignee })
+			if (filterData?.category)
+				conditions.push({ field: "status", operator: "==", value: filterData?.status })
 		}
 
 
-		getCollectionFirebase('leads', {conditions}, {sortBy}, {limitValue}, {startAfterData : startAfter})
+		getCollectionFirebaseV2('leads', { conditions }, { sortBy }, { limitValue }, { startAfterData: startAfter })
 			.then((x) => {
 				const updateData = [...columnsData2, ...x]
 				setColumnsData2(updateData)
@@ -75,25 +59,27 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 
 	}
 
+	// const handleModalOpen = (x) => {
+	// 	console.log(x, 'ini sex')
+	// }
+
 
 
 	const handleTypesenseSearch = (q) => {
-		// console.log(q)
 		const searchParameters = {
 			q: q,
-			query_by: "title",
+			query_by: "name",
 			filter_by: `formId: ${formId} && column:${column} `,
 			sort_by: "_text_match:desc"
 		};
-		// clientTypesense
-		// 	.collections("kanban")
-		// 	.documents()
-		// 	.search(searchParameters)
-		// 	.then((x) => {
-		// 		// console.log(x)
-		// 		const newData = x.hits.map((y) => { return { ...y.document } })
-		// 		setColumnsData(newData)
-		// 	});
+		clientTypessense
+			.collections("leads")
+			.documents()
+			.search(searchParameters)
+			.then((x) => {
+				const newData = x.hits.map((y) => { return { ...y.document } })
+				setColumnsData(newData)
+			});
 	}
 
 
@@ -115,6 +101,11 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 
 			collectionRef = query(collectionRef, orderBy("lastUpdated", "desc"));
 			collectionRef = query(collectionRef, limit(5));
+
+
+
+			if (filterData?.status)
+				collectionRef = query(collectionRef, where("status", "==", filterData.status));
 
 
 			unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
@@ -153,7 +144,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		[allowedDropEffect],
 	)
 
-	const ColumnTasks = (datas, type) => datas?.map((x, index) => {
+	const ColumnTasks = (datas, type, handleModalOpen) => datas?.map((x, index) => {
 		// console.log(x, 'ini datanya di columntask')
 		if (x.id)
 			return (
@@ -164,6 +155,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 						indexNumber={index}
 						setData={type === 'snapshot' ? setColumnsData : setColumnsData2}
 						columnsData={datas}
+						handleModalOpen={handleModalOpen}
 					/>
 				</Fade>
 			)
@@ -197,8 +189,8 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 				overflow="auto"
 				opacity={isOver ? 0.85 : 1}
 			>
-				{ColumnTasks(columnsData, 'snapshot')}
-				{columnsData2?.length ? ColumnTasks(columnsData2, 'manual') : <></>}
+				{ColumnTasks(columnsData, 'snapshot', handleModalOpen)}
+				{columnsData2?.length ? ColumnTasks(columnsData2, 'manual', handleModalOpen) : <></>}
 				{columnsData?.length > 4 && columnsData2?.length === 0 ?
 					<Button onClick={() => handleLoad()}> Load more</Button>
 					:
