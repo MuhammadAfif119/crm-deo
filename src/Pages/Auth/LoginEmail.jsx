@@ -48,11 +48,11 @@ function LoginEmail() {
 
 
         // Sign-out successful.
-        toast({
-          status: "success",
-          description: "Logged out success",
-          duration: 2000,
-        });
+        // toast({
+        //   status: "success",
+        //   description: "Logged out success",
+        //   duration: 2000,
+        // });
 
         globalState.setIsLoggedIn(false);
         store.clearAll();
@@ -71,7 +71,7 @@ function LoginEmail() {
     toast({
       title: 'Error',
       description: `Your account still active, please logout in another place. `,
-      status: 'success',
+      status: 'error',
       duration: 9000,
       isClosable: true,
     });
