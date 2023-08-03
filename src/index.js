@@ -8,8 +8,6 @@ import { extendTheme, ChakraProvider } from "@chakra-ui/react";
 import ScrollToTop from "./Components/AppScrollToTop";
 
 import * as Sentry from "@sentry/react";
-// import WebConfigProvider from './Hooks/Contexts/WebConfig/WebConfigProvider';
-// import WebConfig from './Hooks/Contexts/WebConfig/WebConfigProvider';
 
 const isLocalhost = () => {
 	return (

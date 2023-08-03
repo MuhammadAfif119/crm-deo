@@ -69,7 +69,7 @@ function generateHTML(formFields) {
     return `<form  style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">${html}</form>`;
 }
 
-function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
+function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue) {
     let jsScript = '';
 
     jsScript += ` <script>
@@ -92,6 +92,8 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl) {
       }); 
 
       dataForm.formId = formId
+      dataForm.opportunity_value = ${opportunityValue}
+      dataForm.status = 'open'
       
     
   
@@ -166,6 +168,7 @@ function FormBuilderPage() {
     const [isActive, setIsActive] = useState(false);
 
     const [apiSubmitUrl, setApiSubmitUrl] = useState('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead');
+    const [opportunityValue, setOpportunityValue] = useState("");
 
     const [ticketActive, setTicketActive] = useState([])
 
@@ -177,7 +180,7 @@ function FormBuilderPage() {
         setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
     };
 
-    const renderFormFields = () => {
+    const renderFormFields = (opportunityValue) => {
         if (formFields?.length > 0) {
             return formFields?.map((field) => {
                 const { label, type, name, placeholder, isRequired, options, formId } = field;
@@ -191,6 +194,8 @@ function FormBuilderPage() {
 
                     let updateData = formValues
                     updateData.formId = formId
+                    updateData.opportunity_value = opportunityValue? opportunityValue : "0"
+                    updateData.status = "open"
 
                     const data = updateData
                     try {
@@ -238,7 +243,7 @@ function FormBuilderPage() {
     const handleEmbedCode = () => {
         setModalEmbedCode(true)
         const formHTML = generateHTML(formFields);
-        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl);
+        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue);
 
 
 
@@ -352,7 +357,13 @@ function FormBuilderPage() {
                         limitValue
                     );
                     setTicketActive(res);
-                    console.log(res, 'inires');
+                    if(res.length > 0){
+                        if(res[0].price){
+                            setOpportunityValue(res[0].price);
+
+                        }
+                    }
+                   
                 } catch (error) {
                     console.log(error, "ini error");
                 }
@@ -473,7 +484,7 @@ function FormBuilderPage() {
                             <Heading size={'md'}>Data penerima: </Heading>
                         </Stack>
                         <Stack spacing={3} p={[1, 1, 5]}>
-                            {renderFormFields()}
+                            {renderFormFields(opportunityValue)}
                         </Stack>
                     </Stack>
                 </Stack>

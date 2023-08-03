@@ -22,6 +22,7 @@
     "framer-motion": "^6.5.1",
     "html-react-parser": "^3.0.15",
     "install": "^0.13.0",
+    "ipify": "^6.0.0",
     "jquery": "^3.7.0",
     "jquery-ui-sortable": "^1.0.0",
     "keen-slider": "^6.8.5",

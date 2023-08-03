@@ -23,9 +23,11 @@ import {
   MdVpnKey,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import {  signInWithEmailAndPassword } from "firebase/auth";
+import {  signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
+import { loginUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
+import store from 'store'
 
 
 function LoginEmail() {
@@ -40,16 +42,66 @@ function LoginEmail() {
   const toast = useToast();
   const navigate = useNavigate();
 
+  const logout = async () => {
+    await signOut(auth)
+      .then(() => {
+
+
+        // Sign-out successful.
+        // toast({
+        //   status: "success",
+        //   description: "Logged out success",
+        //   duration: 2000,
+        // });
+
+        globalState.setIsLoggedIn(false);
+        store.clearAll();
+      })
+      .catch((error) => {
+        console.log(error, "ini error");
+      }).finally(() => {
+
+        navigate("/login");
+      })
+
+  };
+
+  const middleWareAccess = () => {
+    
+    toast({
+      title: 'Error',
+      description: `Your account still active, please logout in another place. `,
+      status: 'error',
+      duration: 9000,
+      isClosable: true,
+    });
+
+    return logout()
+
+
+  }
+
   const handleLogin = async () => {
     if (email !== "" && password !== "") {
       try {
         setLoading(true);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        const uid = user.uid;
+        const pathLink = 'crm'
+        const res = await loginUserWithIp(uid, pathLink);
+
+        if(!res){
+          return middleWareAccess()
+        }
+
         globalState.setUid(user.uid)
         globalState.setName(user.displayName)
         globalState.setEmail(user.email)
         globalState.setIsLoggedIn(true);
+
+   
   
         toast({
           title: 'Login Successful',

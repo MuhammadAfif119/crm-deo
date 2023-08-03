@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-
+import { useEffect } from "react";
 import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
@@ -7,11 +6,12 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, fetchToken } from "./Config/firebase";
 import { arrayUnionFirebase, getCollectionFirebase } from "./Api/firebaseApi";
 import useUserStore from "./Hooks/Zustand/Store";
+import { loginUserWithIp } from "./Hooks/Middleware/sessionMiddleWare";
+
 
 function App() {
   const globalState = useUserStore();
 
-  const [tokenId, setTokenId] = useState("");
 
   const fetchProjectsAndCompanies = async (uid) => {
     const conditions = [
@@ -23,24 +23,24 @@ function App() {
     ];
 
     try {
-      const companies = await getCollectionFirebase("companies", conditions);
-      // const projects = await getCollectionFirebase("projects", conditions);
+      const [companies, projects] = await Promise.all([
+        getCollectionFirebase("companies", conditions),
+        getCollectionFirebase("projects", conditions)
+      ]);
 
       globalState.setCompanies(companies);
       globalState.setCurrentCompany(companies[0]?.id);
       globalState.setCurrentXenditId(companies[0]?.xenditId);
 
-      if (companies.length > 0 && companies[0].owner?.includes(uid)) {
-        globalState.setRoleCompany("owner");
-      } else if (companies.length > 0 && companies[0].managers?.includes(uid)) {
-        globalState.setRoleCompany("managers");
-      } else {
-        globalState.setRoleCompany("user");
-      }
+      const userRoleInCompany = getUserRole(companies, uid);
+      globalState.setRoleCompany(userRoleInCompany);
 
+      if (companies[0]?.id) {
+        globalState.setProjects(projects);
+        globalState.setCurrentProject(projects[0]?.id);
 
-      if(companies[0]?.id){
-        return getProjectData(companies[0]?.id, uid)
+        const userRoleInProject = getUserRole(projects, uid);
+        globalState.setRoleProject(userRoleInProject);
       }
 
     } catch (error) {
@@ -48,43 +48,15 @@ function App() {
     }
   };
 
-  const getProjectData = async (id, uid) => {
-
-    const conditions = [
-      {
-        field: "users",
-        operator: "array-contains",
-        value: uid,
-      },
-      {
-        field: "companyId",
-        operator: "==",
-        value: id,
-      },
-    ];
-
-
-    try {
-
-      const projects = await getCollectionFirebase("projects", conditions);
-
-
-      globalState.setProjects(projects);
-      globalState.setCurrentProject(projects[0]?.id);
-
-      if (projects.length > 0 && projects[0].owner?.includes(uid)) {
-        globalState.setRoleProject("owner");
-      } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
-        globalState.setRoleProject("managers");
-      } else {
-        globalState.setRoleProject("user");
-      }
-
-      
-    } catch (error) {
-      console.log(error, 'ini error')
+  const getUserRole = (data, uid) => {
+    if (data.length > 0 && data[0].owner?.includes(uid)) {
+      return "owner";
+    } else if (data.length > 0 && data[0].managers?.includes(uid)) {
+      return "managers";
+    } else {
+      return "user";
     }
-  }
+  };
 
   const uploadTokenToFirebase = async (token, user) => {
     if (token !== "") {
@@ -94,13 +66,13 @@ function App() {
       const values = [token];
 
       try {
-        const result = await arrayUnionFirebase(
+        await arrayUnionFirebase(
           collectionName,
           docName,
           field,
           values
         );
-        console.log(result, token, 'ini token'); // Pesan toast yang berhasil
+        console.log(token, 'ini token'); // Pesan toast yang berhasil
       } catch (error) {
         console.log("Terjadi kesalahan:", error);
       }
@@ -111,18 +83,22 @@ function App() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const token = await fetchToken();
-        uploadTokenToFirebase(token, user);
+        if (token) {
+          await uploadTokenToFirebase(token, user);
+        }
+
         globalState.setIsLoggedIn(true);
         globalState.setUid(user.uid);
         globalState.setName(user.displayName);
         globalState.setEmail(user.email);
         fetchProjectsAndCompanies(user?.uid);
+
       } else {
         globalState.setIsLoggedIn(false);
       }
     });
 
-    return () => {};
+    return () => { };
   }, []);
 
   return (

@@ -14,7 +14,7 @@ import useUserStore from '../../Hooks/Zustand/Store';
 import { formatFrice } from '../../Utils/Helper'
 import { BsCalendarPlus, BsChatDots, BsCheckSquare, BsFileText, BsTag, BsTelephone, BsPersonDash } from 'react-icons/bs';
 
-function TaskCardComponent({ task, setData, columnsData }) {
+function TaskCardComponent({ task, setData, columnsData, handleModalOpen }) {
 	const [index, setIndex] = useState(0);
 
 	const navigate = useNavigate();
@@ -67,14 +67,17 @@ function TaskCardComponent({ task, setData, columnsData }) {
 				width='full'
 				shadow='base'
 				borderBottomWidth={2}
-				borderColor='green.300'
+				borderColor={`green.300`}
 				borderRadius={'md'}
 				p='2'
 				spacing={1}
 				ref={drag}
 				style={{ opacity }}
+				cursor='pointer'
 				onClick={() => {
-					console.log(`${task?.id}`, { state: { type: 'existing' } })
+					handleModalOpen(task,)
+					// console.log(`${task?.id}`, { state: { type: 'existing' } })
+					// console.log(`${task?.id}`, { state: { type: 'existing' } })
 					// navigate(`${task?.id}`, { state: { type: 'existing' } })
 					// window.open(`${param.title}/${task?.id}`)
 					// setSomeFunction(setData)
@@ -89,9 +92,9 @@ function TaskCardComponent({ task, setData, columnsData }) {
 							<Badge colorScheme={
 								task.status === 'help' ? 'yellow'
 									:
-									task.status === 'pending' ? 'green'
+									task.status === 'won' ? 'green'
 										:
-										task.status === 'blocked' ? 'red'
+										task.status === 'lost' ? 'red'
 											:
 											'gray'
 							} size='sm' borderRadius={'sm'}>
@@ -109,10 +112,10 @@ function TaskCardComponent({ task, setData, columnsData }) {
 				</HStack>
 
 
-				<Text fontSize='xs' color={'gray.600'}>{task?.opportunity_source ? task.opportunity_source : ""}</Text>
+				<Text fontSize='xs' color={'gray.600'}>{task?.source ? task.source : ""}</Text>
 
 
-				<Text fontSize='xs'>Rp.{formatFrice(task?.lead_value ? task.lead_value : 0)}</Text>
+				<Text fontSize='xs' fontWeight={500}>Rp.{formatFrice(task?.opportunity_value ? task.opportunity_value : 0)}</Text>
 
 
 

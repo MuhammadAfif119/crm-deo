@@ -21,7 +21,6 @@ function LoginPage() {
 			'size': 'invisible',
 			'callback': (response) => {
 				console.log(response, 'response')
-				// reCAPTCHA solved, allow signInWithPhoneNumber.
 			}
 		}, auth);
 	}

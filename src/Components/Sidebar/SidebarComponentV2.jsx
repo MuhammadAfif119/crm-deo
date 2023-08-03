@@ -37,6 +37,7 @@ import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { getCollectionFirebase } from "../../Api/firebaseApi";
 import themeConfig from "../../Config/themeConfig";
+import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 
 // ** Theme Configuration
 
@@ -49,7 +50,6 @@ function SidebarComponentV2({ layout }) {
   const globalState = useUserStore();
 
   const handleCompanySelect = (e) => {
-    console.log("handle select", handleCompanySelect)
     const dataCompany = globalState.companies;
 
     const findCompany = dataCompany.find((x) => x.id === e);
@@ -140,9 +140,13 @@ function SidebarComponentV2({ layout }) {
   const toast = useToast()
 
 
+
   const logout = async () => {
+    await logoutUserWithIp(globalState.uid, 'crm')
+
     signOut(auth)
       .then(() => {
+
 
         // Sign-out successful.
         toast({

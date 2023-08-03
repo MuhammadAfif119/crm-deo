@@ -198,7 +198,7 @@ function PipelinePage() {
           </HStack>
         </HStack>
 
-        <Box bg={"white"} my={4} p={3} boxShadow={"sm"}>
+        <Box bg={"white"} minHeight='700px' my={4} p={[1, 1, 5]} boxShadow={"sm"}>
           <SimpleGrid columns={[2, null, 4]} spacing={3}>
             {listPipeline?.map((x, i) => {
               return (

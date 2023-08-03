@@ -7,6 +7,7 @@ import { getStorage } from "firebase/storage";
 import { getMessaging, onMessage, getToken } from "firebase/messaging";
 
 import song from "../assets/CoinDrop-Notification.mp3"
+import { getDatabase } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -29,11 +30,12 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app)
+const database = getDatabase(app)
 const storage = getStorage(app);
 const configMessage = getMessaging(app);
 auth.languageCode = 'id';
 
-export {app,analytics,auth,db, storage}
+export {app,analytics,auth,db, storage, database}
 export const fetchToken = async () => {
   try {
     const token = await getToken(configMessage, { vapidKey: firebaseConfig.token_option });
