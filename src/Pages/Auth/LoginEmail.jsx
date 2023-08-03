@@ -43,7 +43,7 @@ function LoginEmail() {
   const navigate = useNavigate();
 
   const logout = async () => {
-    signOut(auth)
+    await signOut(auth)
       .then(() => {
 
 
@@ -76,7 +76,7 @@ function LoginEmail() {
       isClosable: true,
     });
 
-    logout()
+    return logout()
 
 
   }
