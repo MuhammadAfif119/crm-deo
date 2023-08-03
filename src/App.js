@@ -87,6 +87,8 @@ function App() {
           await uploadTokenToFirebase(token, user);
         }
 
+        loginUserWithIp(user.uid, 'crm'); // Menyimpan data login berdasarkan IP
+
         globalState.setIsLoggedIn(true);
         globalState.setUid(user.uid);
         globalState.setName(user.displayName);
