@@ -402,9 +402,9 @@ function SidebarComponentV2({ layout }) {
                         spacing={{
                           base: "5",
                           sm: "6",
-                        }}
+                        }} 
                         bottom={5}
-                        pos={'absolute'}
+                        // pos={'absolute'}
                         width={'sticky'}
                         w='82%'
                       >

@@ -114,6 +114,7 @@ export const data = [
     submenu: [
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
       { name: "Integration", icon: FcAutomatic, link: "/configuration/integration" },
+      { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
       { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],

@@ -7,6 +7,7 @@ import ProjectPage from "../Pages/Configurations/Project/IndexPage";
 import ProjectNewPage from "../Pages/Configurations/Project/NewPage";
 import OutletPage from "../Pages/Configurations/Outlet/IndexPage";
 import OutletNewPage from "../Pages/Configurations/Outlet/NewPage";
+import UserPage from "../Pages/Configurations/User/IndexPage";
 
 const PipelineRouter = [
   {
@@ -40,6 +41,10 @@ const PipelineRouter = [
   {
     path: "/configuration/outlet/:id",
     element: <OutletNewPage />,
+  },
+  {
+    path: "/configuration/user",
+    element: <UserPage />,
   },
 ];
 
