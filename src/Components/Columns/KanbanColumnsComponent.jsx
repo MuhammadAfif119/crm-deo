@@ -82,7 +82,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		const searchParameters = {
 			q: q,
 			query_by: "title",
-			filter_by: `filesId: ${param.id} && column:${column} `,
+			filter_by: `formId: ${formId} && column:${column} `,
 			sort_by: "_text_match:desc"
 		};
 		// clientTypesense

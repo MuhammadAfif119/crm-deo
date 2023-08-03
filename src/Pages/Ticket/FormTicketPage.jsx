@@ -471,12 +471,13 @@ const FormTicketPage = () => {
                               position: "top-right",
                               isClosable: true,
                          });
-                    navigate('/ticket')
 
                          } catch (error) {
                            console.log('Terjadi kesalahan:', error);
                          }
                     }
+                    navigate('/ticket')
+
 
                     console.log(newData, 'ini new')
 
