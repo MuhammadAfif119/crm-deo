@@ -1,4 +1,8 @@
 import axios from "axios"
+
+const baseURL='https://asia-southeast2-deoapp-indonesia.cloudfunctions.net'
+// const baseURL='http://localhost:5001/deoapp-indonesia/asia-southeast2'
+
 const options={
 	headers : {
 	'Content-Type': 'application/json',
@@ -35,3 +39,39 @@ export const createUserFunctions =async(data)=>{
 		}
 	}
 }	
+
+export const initOauth = async(data)=>{
+	const url = `${baseURL}/analyticInitOauth`
+	const configtest = {"headers" : {
+		'Content-Type': 'application/json',
+		'Authorization': 'pFa08EJkVRoT7GDiqk1'}}
+	return axios.post(url, data, configtest)
+		.then((x)=>x.data)
+		.catch((err)=>console.log(err))
+}
+
+
+export const createSource = async(data)=>{
+	const url = `${baseURL}/analyticCreateSourceAndConnection`
+	const configtest = {headers : {
+		'Content-Type': 'application/json',
+		'Authorization': 'pFa08EJkVRoT7GDiqk1'}}
+	return axios.post(url, data, configtest)
+		.then((x)=>x.data)
+		.catch((err)=>console.log(err))
+}
+
+export const deleteSource = async(sourceId, name)=>{
+	const url = `${baseURL}/analyticDeleteSource`
+	const configtest = {headers : {
+		'Content-Type': 'application/json',
+		'Authorization': 'pFa08EJkVRoT7GDiqk1',
+		methods: "DELETE"
+	}}
+	return axios.post(url, {
+		"source_id": sourceId,
+		"source_name": name
+	}, configtest)
+		.then((x)=>x.data)
+		.catch((err)=>console.log(err))
+}

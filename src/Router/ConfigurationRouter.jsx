@@ -1,13 +1,13 @@
 import React from "react";
-import IndexDomainPage from "../Pages/Configurations/Domain/IndexPage";
-import NewDomainPage from "../Pages/Configurations/Domain/NewPage";
-import SourcePage from "../Pages/Configurations/Integration/SourcePage";
-import SourceNewPage from "../Pages/Configurations/Integration/SourceNewPage";
-import ProjectPage from "../Pages/Configurations/Project/IndexPage";
-import ProjectNewPage from "../Pages/Configurations/Project/NewPage";
-import OutletPage from "../Pages/Configurations/Outlet/IndexPage";
-import OutletNewPage from "../Pages/Configurations/Outlet/NewPage";
-import UserPage from "../Pages/Configurations/User/IndexPage";
+import IndexDomainPage from "../Pages/Configurations/DomainPage";
+import NewDomainPage from "../Pages/Configurations/DomainNewPage";
+import SourcePage from "../Pages/Configurations/SourcePage";
+import SourceNewPage from "../Pages/Configurations/SourceNewPage";
+import ProjectPage from "../Pages/Configurations/ProjectPage";
+import ProjectNewPage from "../Pages/Configurations/ProjectNewPage";
+import OutletPage from "../Pages/Configurations/OutletPage";
+import OutletNewPage from "../Pages/Configurations/OutletNewPage";
+import UserPage from "../Pages/Configurations/UserPage";
 
 const PipelineRouter = [
   {
