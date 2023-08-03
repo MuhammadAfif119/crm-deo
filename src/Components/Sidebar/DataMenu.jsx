@@ -15,10 +15,13 @@ import {
   FcPackage,
 
   FcGlobe,
+  FcContacts,
   FcBusinessContact,
+  FcAutomatic,
+  FcBriefcase,
+  FcShop,
   FcLibrary,
   FcCollaboration,
-  FcShop,
   FcDisplay,
   FcCustomerSupport
 } from "react-icons/fc";
@@ -110,6 +113,10 @@ export const data = [
     icon: FcSettings,
     submenu: [
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
+      { name: "Integration", icon: FcAutomatic, link: "/configuration/integration" },
+      { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
+      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
 

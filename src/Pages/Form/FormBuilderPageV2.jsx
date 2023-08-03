@@ -268,7 +268,7 @@ function FormBuilderPage() {
             facebookPixelId,
             enableFacebookPixel,
             isActive,
-            apiSubmitUrl: `${apiSubmitUrl}/${param.id}`,
+            apiSubmitUrl: `${apiSubmitUrl}`,
 
         };
 
@@ -338,10 +338,11 @@ function FormBuilderPage() {
                 const conditions = [
                     { field: "formId", operator: "==", value: param.id },
                     { field: "companyId", operator: "==", value: globalState.currentCompany },
-                    { field: "projectId", operator: "==", value: globalState.currentCompany },
+                    { field: "projectId", operator: "==", value: globalState.currentProject },
                 ];
                 const sortBy = { field: "createdAt", direction: "desc" };
                 const limitValue = 10;
+
 
                 try {
                     const res = await getCollectionFirebase(
@@ -351,11 +352,12 @@ function FormBuilderPage() {
                         limitValue
                     );
                     setTicketActive(res);
+                    console.log(res, 'inires');
                 } catch (error) {
                     console.log(error, "ini error");
                 }
             }
-           
+
             if (result?.form_fields) {
                 setFormFields(result?.form_fields)
                 setEnableFacebookPixel(result?.enableFacebookPixel)
@@ -364,7 +366,7 @@ function FormBuilderPage() {
 
             } else {
                 setFormFields([
-                    { label: 'Nama', type: 'text', name: 'name', placeholder: 'Masukkan nama lengkap', isRequired: true },
+                    { label: 'Name', type: 'text', name: 'name', placeholder: 'Masukkan nama lengkap', isRequired: true },
                     { label: 'Email', type: 'email', name: 'email', placeholder: 'Masukkan alamat email', isRequired: true },
                     { label: 'phone number', type: 'number', name: 'phoneNumber', placeholder: 'Masukkan nomor telpon', isRequired: true },
                     { label: 'Pesan', type: 'textarea', name: 'pesan', placeholder: 'Masukkan pesan Anda' },
@@ -448,23 +450,24 @@ function FormBuilderPage() {
                         </Stack>
                     </Stack>
 
-                    {ticketActive?.length > 0 && (
-                        <Stack  bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
-                            <Heading size={'md'}>Product Active</Heading>
-                            {ticketActive?.map((x, index) => {
-                                return(
-                                    <Stack key={index} onClick={() => console.log(x, 'ini xx')}>
-                                        <TicketCard item={x}/>
-                                    </Stack>
-                                )
-                            } )}
-                            <Stack></Stack>
-                        </Stack>
-                    )}
+
 
 
                 </Stack>
                 <Stack  >
+                    {ticketActive?.length > 0 && (
+                        <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
+                            <Heading size={'md'}>Product Active</Heading>
+                            {ticketActive?.map((x, index) => {
+                                return (
+                                    <Stack key={index} onClick={() => console.log(x, 'ini xx')}>
+                                        <TicketCard item={x} />
+                                    </Stack>
+                                )
+                            })}
+                            <Stack></Stack>
+                        </Stack>
+                    )}
                     <Stack p={[1, 1, 5]} bgColor={'white'} minH={'530px'} spacing={5} borderRadius='md' shadow={'md'}>
                         <Stack>
                             <Heading size={'md'}>Data penerima: </Heading>
