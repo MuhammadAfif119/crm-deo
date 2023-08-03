@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, HStack, Input, InputGroup, InputRightElement, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, OrderedList, Select, SimpleGrid, Stack, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Checkbox, HStack, Input, InputGroup, InputRightElement, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, OrderedList, Select, SimpleGrid, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { FiEdit } from 'react-icons/fi';
@@ -6,7 +6,18 @@ import { MdDeleteOutline } from 'react-icons/md';
 
 
 
-const FormField = ({ index, moveField, label, handleLabelChange, isFieldBeingEdited, handleEditField, handleRemoveField }) => {
+const FormField = ({ index, moveField, field,  toast, label, handleLabelChange, isFieldBeingEdited, handleEditField, handleRemoveField }) => {
+
+    const handleAlert = () => {
+
+        toast({
+            title: "Deoapp.com",
+            description: 'cannot delete this field',
+            status: "error",
+            position: "top-right",
+            isClosable: true,
+          });
+    }
 
 
     return (
@@ -24,7 +35,8 @@ const FormField = ({ index, moveField, label, handleLabelChange, isFieldBeingEdi
                             )}
                         </InputRightElement>
                     </InputGroup>
-                    <Stack onClick={() => handleRemoveField(index)} cursor='pointer'>
+                    <Stack onClick={() => field.name !== "phoneNumber" && field.name !== "submit_button" &&  field.name !== "name" ? handleRemoveField(index) : handleAlert()} cursor='pointer'>
+                    {/* <Stack onClick={() =>  handleAlert()} cursor='pointer'> */}
                         <MdDeleteOutline color='red' />
                     </Stack>
 
@@ -47,6 +59,8 @@ function CreateForm({ setFormFields, formFields }) {
 
     const [editingFieldIndex, setEditingFieldIndex] = useState(null);
     const [newOptionValue, setNewOptionValue] = useState('');
+
+    const toast = useToast()
 
 
 
@@ -167,6 +181,7 @@ function CreateForm({ setFormFields, formFields }) {
                     isFieldBeingEdited={isFieldBeingEdited}
                     handleEditField={handleEditField}
                     handleRemoveField={handleRemoveField}
+                    toast={toast}
                   />
                 </ListItem>
               );
@@ -318,7 +333,7 @@ function CreateForm({ setFormFields, formFields }) {
                                 <Stack>
                                     <Stack>
                                         <Text fontWeight={500} color='gray.700'>Fields</Text>
-                                        <Input type="text" placeholder="Name Field" value={newFieldShape.name} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
+                                        <Input type="text" placeholder="Name Field" isDisabled={newFieldShape.name === "phoneNumber" || newFieldShape.name === "submit_button"  || newFieldShape.name === "name"? true:false} value={newFieldShape.name ? true : false} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
 
                                     </Stack>
 
@@ -326,7 +341,7 @@ function CreateForm({ setFormFields, formFields }) {
                                         {newFieldShape.type === 'button' ? (
                                             <Stack fontWeight={500} color='gray.700'>
                                                 <Text fontWeight={500} color='gray.700'>Form ID</Text>
-                                                <Input type="text" placeholder="ID Form" value={newFieldShape.idform} onChange={(e) => setNewFieldShape({ ...newFieldShape, idform: e.target.value })} />
+                                                <Input type="text" placeholder="ID Form" value={newFieldShape.formId} onChange={(e) => setNewFieldShape({ ...newFieldShape, formId: e.target.value })} />
                                             </Stack>
                                         ) : (
                                             <Stack>
@@ -411,7 +426,7 @@ function CreateForm({ setFormFields, formFields }) {
                                 <Stack>
                                     <Stack>
                                         <Text fontWeight={500} color='gray.700'>Fields</Text>
-                                        <Input type="text" placeholder="Name Field" value={newFieldShape.name} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
+                                        <Input isDisabled={newFieldShape.name === "phoneNumber" || newFieldShape.name === "submit_button"  || newFieldShape.name === "name"? true : false} type="text" placeholder="Name Field" value={newFieldShape.name} onChange={(e) => setNewFieldShape({ ...newFieldShape, name: e.target.value })} />
 
                                     </Stack>
 
@@ -419,7 +434,7 @@ function CreateForm({ setFormFields, formFields }) {
                                         {newFieldShape.type === 'button' ? (
                                             <Stack>
                                                 <Text fontWeight={500} color='gray.700'>Form ID</Text>
-                                                <Input type="text" placeholder="ID Form" value={newFieldShape.idform} onChange={(e) => setNewFieldShape({ ...newFieldShape, idform: e.target.value })} />
+                                                <Input type="text" placeholder="ID Form" isDisabled value={newFieldShape.formId} onChange={(e) => setNewFieldShape({ ...newFieldShape, formId: e.target.value })} />
                                             </Stack>
                                         ) : (
                                             <Stack>

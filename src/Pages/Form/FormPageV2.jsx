@@ -9,9 +9,8 @@ import { addDocumentFirebase, getCollectionFirebase, updateDocumentFirebase } fr
 import { db } from '../../Config/firebase';
 import { checkIdSelect } from '../../Hooks/Middleware/UserMiddleWare';
 import useUserStore from "../../Hooks/Zustand/Store";
-
-import CryptoJS from "crypto-js"
 import { encryptToken } from '../../Utils/encrypToken';
+import { FcPlus } from 'react-icons/fc';
 
 
 
@@ -47,6 +46,7 @@ function FormPageV2() {
     const getData = async () => {
 
         const conditions = [
+            { field: "companyId", operator: "==", value: globalState.currentCompany },
             { field: "projectId", operator: "==", value: globalState.currentProject },
         ];
         const sortBy = { field: "createdAt", direction: "desc" };
@@ -65,6 +65,7 @@ function FormPageV2() {
         }
     };
 
+
     const handleLoadMore = () => {
         setStartIndex(prev => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
     };
@@ -76,7 +77,7 @@ function FormPageV2() {
         return () => {
 
         };
-    }, [globalState.currentProject, startIndex]);
+    }, [globalState.currentCompany, globalState.currentProject, startIndex]);
 
     const handleAddData = (e) => {
         const { name, value } = e.target;
@@ -149,16 +150,28 @@ function FormPageV2() {
     return (
         <Stack p={[1, 1, 5]} spacing={5}>
             <HStack>
-                <Heading>Form Builder</Heading>
+                <Heading size='md'>Form Builder</Heading>
                 <Spacer />
-                <Button onClick={onOpen} variant='outline' colorScheme={'blue'}>New Form</Button>
+                <Button onClick={onOpen} bgColor={'white'} shadow='md' variant='outline' borderColor='#F05A28' color='#F05A28'>
+                    <HStack>
+                        <FcPlus />
+                        <Text>Form</Text>
+                    </HStack>
+                </Button>
             </HStack>
 
             <Stack p={[1, 1, 5]}>
                 <SimpleGrid columns={[1, 2, 3]} gap={3}>
                     {dataForm?.length > 0 && dataForm.map((x, index) => {
                         return (
-                            <Stack key={index} borderWidth='1px' p={3} bgColor='white' shadow={'md'} cursor='pointer' onClick={() => navigate(`/form-builder/${x.id}`)}>
+                            <Stack key={index} borderWidth='1px' p={3} bgColor='white' shadow={'md'} rounded={5} cursor='pointer' onClick={() => navigate(`/form-builder/${x.id}`)}
+                                _hover={{
+                                    bg: "gray.100",
+                                    transform: "scale(1.02)",
+                                    transition: "0.3s",
+                                    cursor: "pointer"
+                                }}
+                            >
                                 <Heading textTransform={'capitalize'} size='sm'>{x.title}</Heading>
                                 <Text color={'gray.700'}>{x.description}</Text>
                                 <Spacer />

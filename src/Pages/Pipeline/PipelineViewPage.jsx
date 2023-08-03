@@ -18,6 +18,7 @@ function PipelineViewPage() {
 		try {
 			const result = await getSingleDocumentFirebase('pipelines', param.id)
 			setPipelineList(result)
+			console.log(result, 'ini result')
 
 
 		} catch (error) {
@@ -37,7 +38,7 @@ function PipelineViewPage() {
 	return (
 		<Stack p={[1, 1, 5]}>
 			<HStack>
-				<BackButtons/>
+				<BackButtons />
 				<Heading size={'md'}>Pipelines {pipelineList?.title}</Heading>
 				<Spacer />
 				<Input type='text' size='xs' w='3xs' placeholder='Search Leads' />
@@ -48,7 +49,7 @@ function PipelineViewPage() {
 				<Button size='xs' colorScheme='green'>+</Button>
 			</HStack>
 			<Stack>
-				{pipelineList.length > 0}
+				{pipelineList?.length > 0}
 			</Stack>
 			<Flex
 				overflowX='auto'
@@ -57,8 +58,13 @@ function PipelineViewPage() {
 				<DndProvider backend={HTML5Backend}>
 					{isDesktop ?
 						<HStack>
-							{pipelineList?.stages?.map((x, i) =>
-								<KanbanColumnsComponent key={i} index={i} kanbanData={{ name: x.stageName }} formId={decryptToken(pipelineList.token_form)} allowedDropEffect='move' filterData={{ name: "filter" }} column={x.stageName} />
+							{pipelineList?.stages?.map((x, i) => {
+								return (
+
+									<KanbanColumnsComponent key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={{ name: "filter" }} column={x?.stageName} />
+
+								)
+							}
 
 							)}
 

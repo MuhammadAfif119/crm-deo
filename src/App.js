@@ -43,19 +43,6 @@ function App() {
         return getProjectData(companies[0]?.id, uid)
       }
 
-
-      // globalState.setProjects(projects);
-      // globalState.setCurrentProject(projects[0]?.id);
-
-      // if (projects.length > 0 && projects[0].owner?.includes(uid)) {
-      //   globalState.setRoleProject("owner");
-      // } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
-      //   globalState.setRoleProject("managers");
-      // } else {
-      //   globalState.setRoleProject("user");
-      // }
-
-
     } catch (error) {
       console.log(error, "ini err");
     }

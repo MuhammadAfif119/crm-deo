@@ -9,7 +9,7 @@ import store from 'store'
 
 const config = {
   // baseURL: 'https://dev-api.importir.com',
-  baseURL: 'https://new-apiv2.importir.com',
+  baseURL: 'https://asia-southeast2-deoapp-indonesia.cloudfunctions.net',
   timeout: 60 * 1000 // Timeout
 }
 
@@ -19,12 +19,10 @@ const _axios = axios.create(config)
 
 _axios.interceptors.request.use(async config => {
 
-  let user = await store.get('userData')
-  const userStorage = user&&user
-  const token = userStorage.token
+  const token = process.env.REACT_APP_PAYMENT_KEY
 
-  if(userStorage){
-    config.headers['Authorization'] = `Bearer ${ token }`
+  if(token){
+    config.headers['Authorization'] = `${ token }`
   }
   return config
 }) 

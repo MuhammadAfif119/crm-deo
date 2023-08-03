@@ -3,7 +3,7 @@ import { Box, Stack, Text, HStack, IconButton, SimpleGrid, Divider, AbsoluteCent
 import { MdDelete } from 'react-icons/md';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebase';
-import { deleteDocumentFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
+import { deleteDocumentFirebase, deleteFileFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from "../../Hooks/Zustand/Store";
 
 import { formatFrice } from '../../Utils/numberUtil';
@@ -163,15 +163,22 @@ const ViewPageListing = () => {
     const docName = listing.id;
 
     try {
-      const result = await deleteDocumentFirebase(collectionName, docName);
-      toast({
-        title: 'Deleted!',
-        description: result,
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
+      deleteFileFirebase(`${listing.title}_800x800`,'listings').then(()=>{
+        deleteFileFirebase(`${listing.title}-logo_800x800`,'listings').then(()=>{
+          deleteDocumentFirebase(collectionName, docName).then((res)=>{
+            toast({
+              title: 'Deleted!',
+              description: res,
+              status: 'success',
+              duration: 9000,
+              isClosable: true,
+            })
+            setModalDelete(false)
+          })
+        })
       })
-      setModalDelete(false)
+     
+   
      
     } catch (error) {
       console.log('Terjadi kesalahan:', error);

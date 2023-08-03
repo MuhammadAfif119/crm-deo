@@ -4,7 +4,7 @@ import BackButtons from '../../Components/Buttons/BackButtons'
 import { MdOutlinePermMedia } from 'react-icons/md'
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { addDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
+import { addDocumentFirebase, arrayUnionFirebase, getSingleDocumentFirebase, updateDocumentFirebase, uploadFile } from '../../Api/firebaseApi'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '../../Config/firebase'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -36,9 +36,9 @@ const LocationComponent = ({ type, data, setData }) => {
 const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, key }) => {
 
      return (
-          <Flex border={'1px solid black'} pl='5' rounded={5} gap={5} mt='5' key={key}>
-               <Box w='90%' paddingBottom='5'>
-                    <FormControl py='5' isRequired>
+          <Flex border={'1px solid black'} p='5' rounded={5} gap={5} mt='5' key={key}>
+               <Stack paddingBottom='5'>
+                    <FormControl isRequired>
                          <FormLabel>Title</FormLabel>
                          <Input onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'title', e.target.value)}
                               value={category?.tickets[ticketIndex]?.title}
@@ -79,129 +79,136 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
                               value={category?.tickets[ticketIndex]?.notes}
                          />
                     </FormControl>
-               </Box>
-               <Flex borderLeft={'dashed 1px black'} w='10%' alignItems={'center'} justifyContent={'center'} flexDir={'column'}>
-                    {
-                         ticketIndex !== 0 &&
-                         <Button leftIcon={<DeleteIcon />} colorScheme='red' transform={'rotate(90deg)'} onClick={() => handleDeleteTicket(categoryIndex, ticketIndex)}>
+               </Stack>
+               {
+                    ticketIndex !== 0 &&
+                    <Flex w='10%' alignItems={'center'} justifyContent={'center'} flexDir={'column'}>
+                         <Button leftIcon={<DeleteIcon />} colorScheme='red' variant={'outline'} transform={'rotate(90deg)'} onClick={() => handleDeleteTicket(categoryIndex, ticketIndex)}>
                               Delete Ticket
                          </Button>
-                    }
-                    {/* <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px'></Box>
+                    </Flex>
+               }
+               {/* <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px'></Box>
                     <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px' my='10'></Box>
                     <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px'></Box> */}
 
-               </Flex>
           </Flex>
      )
 }
 
 
 const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
-
      return (
           <>
-               <Box mt='5'>
-                    <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>Back</Button>
-                    <Heading size='md' py='5' borderBottom={'1px green solid'} rounded={5}>Input your category and ticket for your event</Heading>
+               <Stack align={'left'} w='full'
+                    bg={'white'}
+                    bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}
+                    my={5}
+               >
+                    <HStack gap={5}>
+                         {/* <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}
+                              variant={'outline'} colorScheme="blue"
+                              w='fit-content'
+                         >Back to Event Form</Button> */}
+                         <Heading size='md' >Input your category and ticket for your event</Heading>
+                    </HStack>
 
                     {categoryDetails.map((category, categoryIndex) => {
                          return (
-                              <div key={`category-${categoryIndex}`}>
-                                   {
+                              <SimpleGrid columns={2} key={`category-${categoryIndex}`} gap={5}>
+                                   <Stack>
+                                        <Flex justify={'space-between'} align={'center'} gap='5'>
 
-                                        <>
-                                             <Flex justify={'space-between'} align={'center'} mt='5' gap='5'>
+                                             <Heading size='md' >Category {categoryIndex + 1}</Heading>
+                                             <Spacer />
+                                             {categoryIndex !== 0 && <Button leftIcon={<DeleteIcon />} colorScheme='red' variant={'outline'} onClick={() => handleDeleteCategory(categoryIndex)}>Delete Category</Button>
+                                             }
+                                             <Button leftIcon={<AddIcon />} onClick={() => handleIncrement()}
+                                                  variant={'outline'} colorScheme="blue"
+                                             >Add Category</Button>
+                                        </Flex>
 
-                                                  <Heading size='md' pb='5'>Category {categoryIndex + 1}</Heading>
-                                                  <Spacer />
-                                                  {categoryIndex !== 0 && <Button leftIcon={<DeleteIcon />} colorScheme='red' onClick={() => handleDeleteCategory(categoryIndex)}>Delete Category</Button>
-                                                  }
-                                                  <Button leftIcon={<AddIcon />} onClick={() => handleIncrement()}>Add Category</Button>
-                                             </Flex>
-
-                                             <FormControl isRequired>
-                                                  <FormLabel>Title</FormLabel>
-                                                  <Input onChange={(e) => handleCategoryChange(categoryIndex, 'title', e.target.value)} value={category?.title} />
+                                        <FormControl isRequired>
+                                             <FormLabel>Title</FormLabel>
+                                             <Input onChange={(e) => handleCategoryChange(categoryIndex, 'title', e.target.value)} value={category?.title} />
+                                        </FormControl>
+                                        <HStack w='100%' gap='5'>
+                                             <FormControl w='25%' id="price" isRequired>
+                                                  <FormLabel>Price Start</FormLabel>
+                                                  <Input
+                                                       type="number"
+                                                       value={category?.price}
+                                                       onChange={(e) => handleCategoryChange(categoryIndex, 'price', e.target.value)}
+                                                  />
                                              </FormControl>
-                                             <HStack w='100%' gap='5' mt='5'>
-                                                  <FormControl w='25%' id="price" isRequired>
-                                                       <FormLabel>Price Start</FormLabel>
+                                             <Checkbox
+                                                  isChecked={checkboxPrice}
+                                                  onChange={(e) => setCheckboxPrice(e.target.checked)}
+                                             >Add Range Price</Checkbox>
+                                             {checkboxPrice &&
+                                                  <FormControl
+                                                       w='25%'
+                                                       id="price" isRequired>
+                                                       <FormLabel>Price End</FormLabel>
                                                        <Input
+                                                            value={category?.priceEnd}
                                                             type="number"
-                                                            value={category?.price}
-                                                            onChange={(e) => handleCategoryChange(categoryIndex, 'price', e.target.value)}
+                                                            onChange={(e) => handleCategoryChange(categoryIndex, 'priceEnd', e.target.value)}
                                                        />
                                                   </FormControl>
-                                                  <Checkbox
-                                                       isChecked={checkboxPrice}
-                                                       onChange={(e) => setCheckboxPrice(e.target.checked)}
-                                                  >Add Range Price</Checkbox>
-                                                  {checkboxPrice &&
-                                                       <FormControl
-                                                            w='25%'
-                                                            id="price" isRequired>
-                                                            <FormLabel>Price End</FormLabel>
-                                                            <Input
-                                                                 value={category?.priceEnd}
-                                                                 type="number"
-                                                                 onChange={(e) => handleCategoryChange(categoryIndex, 'priceEnd', e.target.value)}
-                                                            />
-                                                       </FormControl>
-                                                  }
-                                             </HStack>
-                                             <FormControl py='5' isRequired>
-                                                  <FormLabel>Details</FormLabel>
-                                                  <Textarea
-                                                       value={category.details}
-                                                       onChange={(e) => handleCategoryChange(categoryIndex, 'details', e.target.value)}
-                                                  />
-                                             </FormControl>
-                                             <Flex justify={'space-between'} pb='5'>
-                                                  <Heading size={'md'}>Ticket Category {categoryIndex + 1}</Heading>
-                                                  <Button leftIcon={<AddIcon />} onClick={() => handleAddTicket(categoryIndex)}>
-                                                       Add Ticket
-                                                  </Button>
-                                             </Flex>
-                                        </>
-                                   }
+                                             }
+                                        </HStack>
+                                        <FormControl isRequired>
+                                             <FormLabel>Details</FormLabel>
+                                             <Textarea
+                                                  value={category.details}
+                                                  onChange={(e) => handleCategoryChange(categoryIndex, 'details', e.target.value)}
+                                             />
+                                        </FormControl>
 
-                                   {
-                                        categoryDetails[categoryIndex]?.tickets?.length ?
-                                             categoryDetails[categoryIndex]?.tickets?.map((_, ticketIndex) => (
-                                                  <TicketComponent
-                                                       key={`ticket-${categoryIndex}-${ticketIndex}`}
-                                                       categoryIndex={categoryIndex}
-                                                       category={category}
-                                                       ticketIndex={ticketIndex}
-                                                       handleTicketChange={handleTicketChange}
-                                                       handleDeleteTicket={handleDeleteTicket}
-                                                  />
-                                             ))
-                                             :
-                                             Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => (
-                                                  <TicketComponent
-                                                       key={`ticket-${categoryIndex}-${ticketIndex}`}
-                                                       categoryIndex={categoryIndex}
-                                                       category={category}
-                                                       ticketIndex={ticketIndex}
-                                                       handleTicketChange={handleTicketChange}
-                                                       handleDeleteTicket={handleDeleteTicket}
-                                                  />
-                                             ))
-                                   }
-                              </div>
+                                   </Stack>
+                                   <Box>
+
+                                        <Flex justify={'space-between'} align={'center'}>
+                                             <Heading size={'md'}>Ticket Category {categoryIndex + 1}</Heading>
+                                             <Button leftIcon={<AddIcon />} onClick={() => handleAddTicket(categoryIndex)}
+                                                  variant={'outline'} colorScheme="blue"
+                                             >
+                                                  Add Ticket
+                                             </Button>
+                                        </Flex>
+                                        {
+                                             Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => {
+                                                  return (
+                                                       <TicketComponent
+                                                            key={`ticket-${categoryIndex}-${ticketIndex}`}
+                                                            categoryIndex={categoryIndex}
+                                                            category={category}
+                                                            ticketIndex={ticketIndex}
+                                                            handleTicketChange={handleTicketChange}
+                                                            handleDeleteTicket={handleDeleteTicket}
+                                                       />
+                                                  )
+                                             })
+
+                                        }
+                                   </Box>
+                              </SimpleGrid>
                          )
                     })}
-               </Box>
-               <Flex align='end' justify={'space-between'} mt='5' >
-                    <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>
-                         Back
-                    </Button>
-                    <Button rightIcon={<FiChevronRight />} onClick={() => { setDetailTicket(false); setFormPage(true) }}>
-                         Next
-                    </Button>
-               </Flex>
+                    <Flex align='end' justify={'space-between'} mt='5' >
+                         <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}
+                              variant={'outline'} colorScheme="blue"
+                         >
+                              Back to Event Form
+                         </Button>
+                         <Button rightIcon={<FiChevronRight />} onClick={() => { setDetailTicket(false); setFormPage(true) }}
+                              variant={'outline'} colorScheme="blue"
+                         >
+                              Next
+                         </Button>
+                    </Flex>
+               </Stack>
                {/* <Flex justify={'space-between'} mt='5'>
                     <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>Back</Button>
                     {idProject ?
@@ -218,11 +225,17 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
 
 const FormPage = ({ data, setData, handleSubmit, idProject, setFormPage, setDetailTicket, dataForm }) => {
      return (
-          <>
-               <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }}>Back</Button>
+          <Stack
+               bg={'white'}
+               bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}
+               my='5'
+          >
+               <HStack align={'center'} gap={5}>
+                    {/* <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }} variant={'outline'} colorScheme='blue' w='fit-content'>Back to Ticket Form</Button> */}
+                    <Heading size='md'>Pick form builder for this tickets</Heading>
+               </HStack>
 
                <Stack my='5'>
-                    <Heading size='md' pb='5'>Pick form builder for this tickets</Heading>
                     <SimpleGrid columns={[1, 2, 3]} gap={3}>
                          {dataForm.length > 0 && dataForm.map((x, index) => {
                               return (
@@ -240,15 +253,15 @@ const FormPage = ({ data, setData, handleSubmit, idProject, setFormPage, setDeta
                </Stack>
 
                <Flex justify={'space-between'} mt='5'>
-                    <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }}>Back</Button>
+                    <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }} variant={'outline'} colorScheme='blue'>Back to Ticket Form</Button>
                     {idProject ?
-                         <Button onClick={() => handleSubmit('edit')}>Edit</Button>
+                         <Button onClick={() => handleSubmit('edit')} variant={'outline'} colorScheme='blue'>Edit</Button>
                          :
-                         <Button onClick={() => handleSubmit('create')}>Submit</Button>
+                         <Button onClick={() => handleSubmit('create')} variant={'outline'} colorScheme='blue'>  Submit</Button>
                     }
 
                </Flex>
-          </>
+          </Stack>
      )
 }
 
@@ -319,6 +332,7 @@ const FormTicketPage = () => {
                setLogo(res.logo)
                setFiles(res.thumbnail)
                setCategoryDetails(res.category)
+               setTicketCounts([res.category[0].tickets.length])
                setEventType(res.eventType)
           }
      }
@@ -362,21 +376,23 @@ const FormTicketPage = () => {
           getTickets()
      }, [globalState.currentProject])
 
-     const handleAddTicket = (categoryIndex) => {
-          setCategoryDetails((prevCategoryDetails) => {
+     const handleAddTicket = async (categoryIndex) => {
+          await setCategoryDetails((prevCategoryDetails) => {
                const updatedCategoryDetails = [...prevCategoryDetails];
-               updatedCategoryDetails[categoryIndex].tickets.push({
-                    title: '',
-                    price: '',
-                    endTicket: '',
-                    totalAudience: '',
-                    notes: '',
-               });
+               if (updatedCategoryDetails[categoryIndex]?.tickets?.length === ticketCounts[categoryIndex]) {
+                    updatedCategoryDetails[categoryIndex].tickets.push({
+                         title: '',
+                         price: '',
+                         endTicket: '',
+                         totalAudience: '',
+                         notes: '',
+                    });
+               }
                return updatedCategoryDetails;
           });
-
           setTicketCounts((prevTicketCounts) => {
                const updatedTicketCounts = [...prevTicketCounts];
+
                updatedTicketCounts[categoryIndex] = updatedTicketCounts[categoryIndex] + 1;
                return updatedTicketCounts;
           });
@@ -436,15 +452,34 @@ const FormTicketPage = () => {
           try {
                if (type === 'create') {
                     const res = await addDocumentFirebase('tickets', newData, companyId)
-                    toast({
-                         title: "Deoapp.com",
-                         description: `success add new ticket with document id ${res}`,
-                         status: "success",
-                         position: "top-right",
-                         isClosable: true,
-                    });
+                   
 
+                    if (res && newData.formId) {
+                         console.log(res)
+                         const collectionName = 'forms';
+                         const docName = newData.formId;
+                         const field = 'ticket_used';
+                         const values = [res];
+
+                         try {
+                           const result = await arrayUnionFirebase(collectionName, docName, field, values);
+                           console.log(result); // Pesan toast yang berhasil
+                           toast({
+                              title: "Deoapp.com",
+                              description: `success add new ticket with document id ${res}`,
+                              status: "success",
+                              position: "top-right",
+                              isClosable: true,
+                         });
                     navigate('/ticket')
+
+                         } catch (error) {
+                           console.log('Terjadi kesalahan:', error);
+                         }
+                    }
+
+                    console.log(newData, 'ini new')
+
                } else {
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({
@@ -490,7 +525,6 @@ const FormTicketPage = () => {
                updatedCategoryDetails[categoryIndex].tickets.splice(ticketIndex, 1);
                return updatedCategoryDetails;
           });
-
           setTicketCounts((prevTicketCounts) => {
                const updatedTicketCounts = [...prevTicketCounts];
                updatedTicketCounts[categoryIndex] = updatedTicketCounts[categoryIndex] - 1;
@@ -536,188 +570,213 @@ const FormTicketPage = () => {
                setFilesLogo(newFiles);
           }
      };
+     useEffect(() => {
 
+     }, [categoryDetails.length !== 0])
 
      return (
-          <Container pb='5' maxW={'container.lg'}>
+          <>
+               <Stack>
+                    <BackButtons />
+               </Stack>
+
                {detailTicket === false && formPage === false ?
-                    <>
-                         <BackButtons />
+                    <Container
+                         justifyContent={'center'}
+                         alignItems={'center'}
+                         gap={5}
+                         mt={0}
+                         maxW={'container.lg'}
+                         bg={'white'}
+                         bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}
+                         my={5}
+                    >
+                         <Stack>
 
-                         <Heading size='md' mt='5'>Event</Heading>
 
-                         <FormControl py='5' isRequired>
-                              <FormLabel>Event Name</FormLabel>
-                              <Input onChange={(e) => setData({ ...data, title: e.target.value })} value={data?.title} />
-                         </FormControl>
-                         <FormControl isRequired>
-                              <FormLabel>Description of Event</FormLabel>
-                              <Textarea onChange={(e) => setData({ ...data, description: e.target.value })} value={data?.description} />
-                         </FormControl>
-                         <FormControl id="image-peaker" pt='5'>
-                              <HStack>
-                                   <Stack>
-                                        {files?.length > 0 && (
-                                             <Image
-                                                  boxSize="100%"
-                                                  maxWidth={300}
-                                                  borderRadius="xl"
-                                                  shadow="sm"
-                                                  src={idProject ? files : files[0].file}
-                                                  alt={idProject ? data?.title : files[0].name}
-                                             />
-                                        )}
-                                   </Stack>
-                              </HStack>
-                              <Stack>
-                                   <Input
-                                        type="file"
-                                        display="none"
-                                        id="fileInput"
-                                        onChange={handleFileInputChange}
-                                   />
+                              <Heading size='md'>Event</Heading>
 
-                                   <label htmlFor="fileInput">
-                                        <HStack cursor="pointer">
-                                             <Stack>
-                                                  <MdOutlinePermMedia />
-                                             </Stack>
-                                             <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                                                  Add Banner Event
-                                             </Text>
-                                        </HStack>
-                                   </label>
-                              </Stack>
-                         </FormControl>
-                         <FormControl w='25%' id="price" isRequired pt='5'>
-                              <FormLabel>Price</FormLabel>
-                              <Input
-                                   type="number"
-                                   value={data?.price}
-                                   onChange={(e) => setData({ ...data, price: e.target.value })}
-                              />
-                         </FormControl>
-                         <HStack align={'center'}>
-
-                              <FormControl py='5' isRequired w='25%'>
-                                   <FormLabel>Date Start</FormLabel>
-                                   <Input type='date' onChange={(e) => setData({ ...data, dateStart: e.target.value })} value={data?.dateStart} />
+                              <FormControl isRequired>
+                                   <FormLabel>Event Name</FormLabel>
+                                   <Input onChange={(e) => setData({ ...data, title: e.target.value })} value={data?.title} />
                               </FormControl>
-                              <Checkbox isChecked={checkboxDate} onChange={e => setCheckboxDate(e.target.checked)} px='5'>Date End</Checkbox>
-                              {
-                                   checkboxDate &&
-                                   <FormControl isRequired w='25%'>
-                                        <FormLabel>Date End</FormLabel>
-                                        <Input type='date' onChange={(e) => setData({ ...data, dateEnd: e.target.value })} value={data?.dateEnd} />
+                              <FormControl isRequired>
+                                   <FormLabel>Description of Event</FormLabel>
+                                   <Textarea onChange={(e) => setData({ ...data, description: e.target.value })} value={data?.description} />
+                              </FormControl>
+                              <Flex justify={'space-between'}>
+                                   <FormControl id="image-peaker">
+                                        <HStack>
+                                             <Stack>
+                                                  {files?.length > 0 && (
+                                                       <Image
+                                                            boxSize="100%"
+                                                            maxWidth={300}
+                                                            borderRadius="xl"
+                                                            shadow="sm"
+                                                            src={idProject ? files : files[0].file}
+                                                            alt={idProject ? data?.title : files[0].name}
+                                                       />
+                                                  )}
+                                             </Stack>
+                                        </HStack>
+                                        <Stack>
+                                             <Input
+                                                  type="file"
+                                                  display="none"
+                                                  id="fileInput"
+                                                  onChange={handleFileInputChange}
+                                             />
+
+                                             <label htmlFor="fileInput">
+                                                  <HStack cursor="pointer">
+                                                       <Stack>
+                                                            <MdOutlinePermMedia />
+                                                       </Stack>
+                                                       <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                                            Add Banner Event
+                                                       </Text>
+                                                  </HStack>
+                                             </label>
+                                        </Stack>
                                    </FormControl>
-                              }
-                         </HStack>
-                         <HStack>
-
-                              <FormControl isRequired w='25%'>
-                                   <FormLabel>Time Start</FormLabel>
-                                   <Input type='time' onChange={(e) => setData({ ...data, time: e.target.value })} value={data?.time} />
-                              </FormControl>
-                              <FormControl isRequired w='25%'>
-                                   <FormLabel>Time End</FormLabel>
-                                   <Input type='time' onChange={(e) => setData({ ...data, timeEnd: e.target.value })} value={data?.timeEnd} />
-                              </FormControl>
-                         </HStack>
-                         <FormControl mt='5' id="Project" isRequired>
-                              <FormLabel>Project</FormLabel>
-                              <Input value={projectName} variant={'unstyled'} disabled />
-                         </FormControl>
-                         <FormControl id="image-peaker" pt='5'>
-                              <HStack>
-                                   <Stack>
-                                        {logo?.length > 0 && (
-                                             <Image
-                                                  boxSize="100%"
-                                                  maxWidth={300}
-                                                  borderRadius="xl"
-                                                  shadow="sm"
-                                                  src={idProject ? logo : logo[0].file}
-                                                  alt={idProject ? `${data?.title}-logo` : logo[0].name}
-                                             />
-                                        )}
-                                   </Stack>
-                              </HStack>
-                              <Stack>
-                                   <Input
-                                        type="file"
-                                        display="none"
-                                        id="logoInput"
-                                        onChange={handleFileLogoInputChange}
-                                   />
-
-                                   <label htmlFor="logoInput">
-                                        <HStack cursor="pointer">
+                                   <FormControl id="image-peaker" >
+                                        <HStack>
                                              <Stack>
-                                                  <MdOutlinePermMedia />
+                                                  {logo?.length > 0 && (
+                                                       <Image
+                                                            boxSize="100%"
+                                                            maxWidth={300}
+                                                            borderRadius="xl"
+                                                            shadow="sm"
+                                                            src={idProject ? logo : logo[0].file}
+                                                            alt={idProject ? `${data?.title}-logo` : logo[0].name}
+                                                       />
+                                                  )}
                                              </Stack>
-                                             <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                                                  Add Image Logo
-                                             </Text>
                                         </HStack>
-                                   </label>
-                              </Stack>
-                         </FormControl>
-                         <FormControl isRequired mt='5'>
-                              <FormLabel>Event type</FormLabel>
-                              <Checkbox
-                                   isChecked={eventType.includes('offline')}
-                                   onChange={() => handleEventTypeChange('offline')}
-                                   mr={5}
-                              >
-                                   Offline
-                              </Checkbox>
-                              <Checkbox
-                                   isChecked={eventType.includes('online')}
-                                   onChange={() => handleEventTypeChange('online')}
-                              >
-                                   Online
-                              </Checkbox>
-                         </FormControl>
-                         {eventType.includes('offline') && eventType.includes('online') ?
-                              <Flex w='100% ' justify={'space-between'} gap={5}>
-                                   <Box w='100%' mt='5'>
-                                        <Heading size='md'>Offline Location</Heading>
-                                        <LocationComponent type={'offline'} data={data} setData={setData} />
-                                   </Box>
-                                   <Box w='100%' mt='5'>
-                                        <Heading size='md'>Online Location</Heading>
-                                        <LocationComponent type={'online'} data={data} setData={setData} />
-                                   </Box>
-                              </Flex>
-                              : eventType.includes('online') ?
+                                        <Stack>
+                                             <Input
+                                                  type="file"
+                                                  display="none"
+                                                  id="logoInput"
+                                                  onChange={handleFileLogoInputChange}
+                                             />
 
-                                   <LocationComponent type={eventType[0]} data={data} setData={setData} />
-                                   : eventType.includes('offline') ?
+                                             <label htmlFor="logoInput">
+                                                  <HStack cursor="pointer">
+                                                       <Stack>
+                                                            <MdOutlinePermMedia />
+                                                       </Stack>
+                                                       <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                                                            Add Image Logo
+                                                       </Text>
+                                                  </HStack>
+                                             </label>
+                                        </Stack>
+                                   </FormControl>
+                              </Flex>
+                              <HStack w='100%' justify={'space-between'} gap='5'>
+                                   <FormControl id="price" isRequired >
+                                        <FormLabel>Price</FormLabel>
+                                        <Input
+                                             type="number"
+                                             value={data?.price}
+                                             onChange={(e) => setData({ ...data, price: e.target.value })}
+                                        />
+                                   </FormControl>
+                                   <FormControl isRequired  >
+                                        <FormLabel>Event type</FormLabel>
+                                        <Checkbox
+                                             isChecked={eventType.includes('offline')}
+                                             onChange={() => handleEventTypeChange('offline')}
+                                             mr={5}
+                                        >
+                                             Offline
+                                        </Checkbox>
+                                        <Checkbox
+                                             isChecked={eventType.includes('online')}
+                                             onChange={() => handleEventTypeChange('online')}
+                                        >
+                                             Online
+                                        </Checkbox>
+                                   </FormControl>
+                              </HStack>
+
+                              <HStack align={'center'} gap='5'>
+
+                                   <FormControl isRequired w='50%'>
+                                        <FormLabel>Date Start</FormLabel>
+                                        <Input type='date' onChange={(e) => setData({ ...data, dateStart: e.target.value })} value={data?.dateStart} />
+                                   </FormControl>
+                                   <Checkbox isChecked={checkboxDate} onChange={e => setCheckboxDate(e.target.checked)}>Date End</Checkbox>
+                                   {
+                                        checkboxDate &&
+                                        <FormControl isRequired w='50%'>
+                                             <FormLabel>Date End</FormLabel>
+                                             <Input type='date' onChange={(e) => setData({ ...data, dateEnd: e.target.value })} value={data?.dateEnd} />
+                                        </FormControl>
+                                   }
+                              </HStack>
+                              <HStack>
+
+                                   <FormControl isRequired w='50%'>
+                                        <FormLabel>Time Start</FormLabel>
+                                        <Input type='time' onChange={(e) => setData({ ...data, time: e.target.value })} value={data?.time} />
+                                   </FormControl>
+                                   <FormControl isRequired w='50%'>
+                                        <FormLabel>Time End</FormLabel>
+                                        <Input type='time' onChange={(e) => setData({ ...data, timeEnd: e.target.value })} value={data?.timeEnd} />
+                                   </FormControl>
+                              </HStack>
+                              <FormControl id="Project" isRequired>
+                                   <FormLabel>Project</FormLabel>
+                                   <Input value={projectName} variant={'unstyled'} disabled />
+                              </FormControl>
+
+
+                              {eventType.includes('offline') && eventType.includes('online') ?
+                                   <Flex w='100% ' justify={'space-between'} gap={5}>
+                                        <Box w='100%' >
+                                             <Heading size='md'>Offline Location</Heading>
+                                             <LocationComponent type={'offline'} data={data} setData={setData} />
+                                        </Box>
+                                        <Box w='100%' >
+                                             <Heading size='md'>Online Location</Heading>
+                                             <LocationComponent type={'online'} data={data} setData={setData} />
+                                        </Box>
+                                   </Flex>
+                                   : eventType.includes('online') ?
+
                                         <LocationComponent type={eventType[0]} data={data} setData={setData} />
-                                        : <></>
+                                        : eventType.includes('offline') ?
+                                             <LocationComponent type={eventType[0]} data={data} setData={setData} />
+                                             : <></>
 
-                         }
+                              }
 
-                         <FormControl isRequired mt='5'>
-                              <FormLabel>Terms & Conditions</FormLabel>
-                              <Textarea onChange={(e) => setData({ ...data, tnc: e.target.value })} value={data?.tnc} />
-                         </FormControl>
+                              <FormControl isRequired >
+                                   <FormLabel>Terms & Conditions</FormLabel>
+                                   <Textarea onChange={(e) => setData({ ...data, tnc: e.target.value })} value={data?.tnc} />
+                              </FormControl>
 
-                         <FormControl isRequired mt='5'>
-                              <FormLabel>Activate this Event</FormLabel>
-                              <Flex align={'center'} gap={2}>
-                                   <Text>No</Text>
-                                   <Switch id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
-                                   <Text>Yes</Text>
+                              <FormControl isRequired>
+                                   <FormLabel>Activate this Event</FormLabel>
+                                   <Flex align={'center'} gap={2}>
+                                        <Text>No</Text>
+                                        <Switch id='isChecked' isChecked={data?.isActive} onChange={() => setData({ ...data, isActive: !data?.isActive })} />
+                                        <Text>Yes</Text>
 
+                                   </Flex>
+                              </FormControl>
+                              <Flex align='end' justify={'end'} >
+                                   <Button rightIcon={<FiChevronRight />} variant={'outline'} colorScheme="blue" onClick={() => setDetailTicket(true)}>
+                                        Next
+                                   </Button>
                               </Flex>
-                         </FormControl>
-                         <Flex align='end' justify={'end'} mt='5' >
-                              <Button rightIcon={<FiChevronRight />} onClick={() => setDetailTicket(true)}>
-                                   Next
-                              </Button>
-                         </Flex>
-                    </>
+                         </Stack>
+                    </Container >
+
                     : formPage === false ?
                          <DetailTicketComponent
                               categoryDetails={categoryDetails}
@@ -735,6 +794,7 @@ const FormTicketPage = () => {
                               idProject={idProject}
                               setFormPage={setFormPage}
                               formPage={formPage}
+                              categoryCount={categoryCount}
                          /> :
                          <FormPage
                               handleSubmit={handleSubmit}
@@ -748,7 +808,8 @@ const FormTicketPage = () => {
                }
 
 
-          </Container >
+          </>
+
      )
 }
 

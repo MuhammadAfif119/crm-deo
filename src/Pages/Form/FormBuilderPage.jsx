@@ -290,6 +290,7 @@ function FormBuilderPage() {
         try {
             const result = await getSingleDocumentFirebase('forms', param.id)
             setFormData(result)
+            console.log(result, 'result')
             if (result?.form_fields) {
                 setFormFields(result?.form_fields)
                 setEnableFacebookPixel(result?.enableFacebookPixel)
@@ -297,9 +298,9 @@ function FormBuilderPage() {
 
             } else {
                 setFormFields([
-                    { label: 'Nama', type: 'text', name: 'nama', placeholder: 'Masukkan nama lengkap', isRequired: true },
+                    { label: 'Nama', type: 'text', name: 'name', placeholder: 'Masukkan nama lengkap', isRequired: true },
                     { label: 'Email', type: 'email', name: 'email', placeholder: 'Masukkan alamat email', isRequired: true },
-                    { label: 'nomor telpon', type: 'number', name: 'nomor telpon', placeholder: 'Masukkan nomor telpon', isRequired: true },
+                    { label: 'Phone Number', type: 'number', name: 'phoneNumber', placeholder: 'Ex: 085256123456', isRequired: true },
                     { label: 'Pesan', type: 'textarea', name: 'pesan', placeholder: 'Masukkan pesan Anda' },
                     { label: 'Pilihan', type: 'select', name: 'pilihan', options: ['Pilihan 1', 'Pilihan 2', 'Pilihan 3'] },
                     { label: 'date', type: 'date', name: 'date', isRequired: true },

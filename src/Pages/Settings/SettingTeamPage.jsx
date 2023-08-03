@@ -122,7 +122,6 @@ function SettingTeamPage() {
 
         }
 
-        console.log(email, 'xxx')
 
 
         const conditions = [
@@ -136,7 +135,6 @@ function SettingTeamPage() {
                 conditions,
             );
             if (res.length > 0) {
-                console.log(res[0], "xx");
 
                 const collectionName = 'companies';
                 const docName = companyActive.id;
@@ -506,7 +504,7 @@ function SettingTeamPage() {
                                 searchResult.hits.map((x, index) => {
 
                                     return (
-                                        <HStack key={index} p='2' borderBottom='1px'>
+                                        <HStack key={index} p='2' borderBottom='1px' >
                                             <Avatar name={x.document.name} src={x.document.image ? x.document.image : ''} />
                                             <Box>
                                                 <Text>{x.document.name}</Text>
