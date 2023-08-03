@@ -312,7 +312,6 @@ const FormTicketPage = () => {
                formId: res.formId
           }
           if (res) {
-                    console.log(res)
                if (res.dateEnd) {
                     setCheckboxDate(true)
                     newData = {
@@ -348,7 +347,6 @@ const FormTicketPage = () => {
                setEventType(res.eventType)
           }
      }
-console.log(logo)
      const getDataForms = async () => {
           try {
                const q = query(collection(db, 'forms'),
@@ -494,10 +492,8 @@ console.log(logo)
                          }
                     }
 
-                    console.log(newData, 'ini new')
 
                } else {
-                    console.log(newData)
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({
                          title: "Deoapp.com",
