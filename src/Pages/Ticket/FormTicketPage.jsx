@@ -312,7 +312,7 @@ const FormTicketPage = () => {
                formId: res.formId
           }
           if (res) {
-
+                    console.log(res)
                if (res.dateEnd) {
                     setCheckboxDate(true)
                     newData = {
@@ -338,7 +338,6 @@ const FormTicketPage = () => {
                          zoomId: res.zoomId
                     }
                }
-               console.log(newData)
                setData(newData)
                setProjectId(res.projectId)
                setProjectName(res.projectName)
@@ -349,7 +348,7 @@ const FormTicketPage = () => {
                setEventType(res.eventType)
           }
      }
-     console.log(categoryDetails)
+console.log(logo)
      const getDataForms = async () => {
           try {
                const q = query(collection(db, 'forms'),
@@ -461,13 +460,18 @@ const FormTicketPage = () => {
                const resImage = await uploadFile(`${data?.title}-logo`, "tickets", filesLogo[0]);
                newData.logo = resImage;
           }
+          if(files){
+               newData.thumbnail =files
+          }
+          if(logo){
+               newData.logo = logo
+          }
           try {
                if (type === 'create') {
                     const res = await addDocumentFirebase('tickets', newData, companyId)
 
 
                     if (res && newData.formId) {
-                         console.log(res)
                          const collectionName = 'forms';
                          const docName = newData.formId;
                          const field = 'ticket_used';
@@ -493,6 +497,7 @@ const FormTicketPage = () => {
                     console.log(newData, 'ini new')
 
                } else {
+                    console.log(newData)
                     const res = await updateDocumentFirebase('tickets', idProject, newData)
                     toast({
                          title: "Deoapp.com",
