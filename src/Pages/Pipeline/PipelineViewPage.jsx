@@ -196,7 +196,7 @@ function PipelineViewPage() {
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-					<Text fontSize={'sm'}>Add and edit opportunity details, tasks, notes and appointments.</Text>
+					<Text fontSize={'sm'}>Add and edit opportunity details, tasks, notes and appointments. </Text>
 						<Divider py={1} />
 						<Stack >
 								<DetailPipelineAddCard formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
