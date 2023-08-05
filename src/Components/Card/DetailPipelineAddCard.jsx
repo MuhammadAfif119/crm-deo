@@ -5,20 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import { getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
+function DetailPipelineAddCard({ stages, handleModalClose, formId }) {
 
     const toast = useToast()
 
 
 
     const globalState = useUserStore();
-    const nameRef = useRef(data?.name);
-    const emailRef = useRef(data?.email);
-    const phoneNumberRef = useRef(data?.phoneNumber);
-    const columnRef = useRef(data?.column);
-    const statusRef = useRef(data?.status);
-    const sourceRef = useRef(data?.source);
-    const opportunityValueRef = useRef(data?.opportunity_value);
+    const nameRef = useRef("");
+    const emailRef = useRef("");
+    const phoneNumberRef = useRef("");
+    const columnRef = useRef();
+    const statusRef = useRef("");
+    const sourceRef = useRef("");
+    const opportunityValueRef = useRef("");
 
 
 
@@ -31,10 +31,12 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
             status: statusRef.current.value,
             source: sourceRef.current.value,
             opportunity_value: opportunityValueRef.current.value,
+            projectId: globalState.currentProject,
+            companyId: globalState.currentCompany
         };
 
         const collectionName = 'leads';
-        const docName = data.id;
+        const docName = `${updatedData.phoneNumber}-${formId}`;
         const value = updatedData;
 
 
@@ -55,27 +57,6 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
         }
     };
 
-    const navigateToContact = async () => {
-
-        try {
-            const result = await getSingleDocumentFirebase('contacts', `${data?.phoneNumber}-${globalState.currentProject}`)
-            if(result){
-                navigate(`/contacts/detail/${data?.phoneNumber}-${globalState.currentProject}`, { state: result })
-
-            }else{
-                toast({
-                    title: "Deoapp.com",
-                    description: "You dont have any contact",
-                    status: "error",
-                    position: "top-right",
-                    isClosable: true,
-                });
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     return (
         <Stack>
@@ -93,17 +74,17 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
                         <SimpleGrid columns={[2]} gap={3} fontSize='sm'>
                             <Stack>
                                 <Text>Contact Name</Text>
-                                <Input defaultValue={data?.name} ref={nameRef} />
+                                <Input  ref={nameRef} />
                             </Stack>
 
                             <Stack>
                                 <Text>Email</Text>
-                                <Input defaultValue={data?.email} ref={emailRef} />
+                                <Input  ref={emailRef} />
                             </Stack>
 
                             <Stack>
                                 <Text>Phone</Text>
-                                <Input defaultValue={data?.phoneNumber} ref={phoneNumberRef} />
+                                <Input  ref={phoneNumberRef} />
                             </Stack>
                         </SimpleGrid>
 
@@ -118,12 +99,12 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
                         <SimpleGrid columns={[2]} gap={3} fontSize='sm'>
                             <Stack>
                                 <Text>Name</Text>
-                                <Input defaultValue={data?.name} ref={nameRef} />
+                                <Input  ref={nameRef} />
                             </Stack>
 
                             <Stack>
                                 <Text>Stage</Text>
-                                <Select defaultValue={data?.column} variant='outline' fontWeight='normal' ref={columnRef}>
+                                <Select  variant='outline' fontWeight='normal' ref={columnRef}>
                                     {stages?.length > 0 &&
                                         stages.map((x, index) => {
                                             return (
@@ -137,7 +118,7 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
 
                             <Stack>
                                 <Text>Status</Text>
-                                <Select defaultValue={data?.status} variant='outline' fontWeight='normal' ref={statusRef}>
+                                <Select  variant='outline' fontWeight='normal' ref={statusRef}>
                                     <option value={'open'}>Open</option>
                                     <option value={'won'}>Won</option>
                                     <option value={'lost'}>Lost</option>
@@ -145,12 +126,12 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
                             </Stack>
                             <Stack>
                                 <Text>Source</Text>
-                                <Input defaultValue={data?.source} ref={sourceRef} />
+                                <Input ref={sourceRef} />
                             </Stack>
 
                             <Stack>
                                 <Text>Opportunity Value</Text>
-                                <Input type={'number'} defaultValue={Number(data?.opportunity_value) || 0} ref={opportunityValueRef} />
+                                <Input type={'number'}  ref={opportunityValueRef} />
                             </Stack>
                         </SimpleGrid>
 
@@ -167,9 +148,6 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
                     </Stack>
                 </Grid>
                 <HStack gap={5} alignItems='flex-end' justifyContent={'flex-end'}>
-                    <Button colorScheme='green' onClick={navigateToContact}>
-                        Go to contact
-                    </Button>
                     <Button leftIcon={<AddIcon boxSize={3} />} colorScheme='green' onClick={handleSaveData}>
                         Save
                     </Button>
@@ -181,4 +159,4 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
     );
 }
 
-export default DetailPipelineCard;
+export default DetailPipelineAddCard;

@@ -28,7 +28,7 @@ function TaskCardComponent({ task, setData, columnsData, handleModalOpen }) {
 			...columnsData.slice(0, index),
 			...columnsData.slice(index + 1)
 		]);
-		setDocumentFirebase('leads', id, { column: column, lastUpdated: new Date() }, globalState.currentCompany)
+		setDocumentFirebase('leads', id, { column: column, lastUpdated: new Date(), companyId:  globalState.currentCompany }, globalState.currentCompany)
 
 		addDocumentFirebase(`leads/${id}/history`, { comments: `${auth.currentUser.email} has moved card to ${column} on ${new Date()}`, lastUpdated: new Date() }, globalState.currentCompany)
 	}

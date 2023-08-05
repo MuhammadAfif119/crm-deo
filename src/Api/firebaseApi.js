@@ -317,6 +317,7 @@ export const setDocumentFirebase = async (
       uid: auth.currentUser.uid,
       email: auth.currentUser.email,
     };
+    
 
     const docRef = doc(db, collectionName, docName);
     await setDoc(docRef, data, { merge: true });
