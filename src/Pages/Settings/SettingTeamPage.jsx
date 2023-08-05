@@ -365,7 +365,7 @@ function SettingTeamPage() {
         const searchParameters = {
             q: q,
             query_by: "name,email",
-            filter_by: `id: [${newArr}]`,
+            // filter_by: `id: [${newArr}]`,
             sort_by: "_text_match:desc"
         };
         clientTypessense

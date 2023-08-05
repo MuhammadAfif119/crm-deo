@@ -11,6 +11,7 @@ import { db } from '../../Config/firebase';
 import { encryptToken } from '../../Utils/encrypToken';
 import TaskCardComponent from '../Card/TaskCardComponent';
 import axios from 'axios';
+import useUserStore from '../../Hooks/Zustand/Store';
 
 const ColumnColorScheme = {
 	TODOS: 'blue',
@@ -20,11 +21,15 @@ const ColumnColorScheme = {
 	DONE: 'gray',
 };
 
-function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterData, index, formId, handleModalOpen }) {
+function KanbanColumnsComponent({ allowedDropEffect, column,  filterData, index, formId, handleModalOpen }) {
 	const [columnsData, setColumnsData] = useState([])
 	const [columnsData2, setColumnsData2] = useState([])
 	const param = useParams()
+
 	const navigate = useNavigate()
+
+	const globalState = useUserStore();
+
 
 
 
@@ -33,6 +38,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 		const conditions = [
 			{ field: "formId", operator: "==", value: formId },
 			{ field: "column", operator: "==", value: column },
+			{ field: "companyId", operator: "==", value: globalState.currentCompany },
 		];
 		const sortBy = { field: "lastUpdated", direction: "desc" };
 		const limitValue = 5;
@@ -83,8 +89,11 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 	}
 
 
+
 	useEffect(() => {
 		let unsubscribe = () => { }
+
+
 
 		if (filterData?.search)
 			setTimeout(function () {
@@ -98,6 +107,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 			let collectionRef = collection(db, "leads");
 			collectionRef = query(collectionRef, where("formId", "==", formId));
 			collectionRef = query(collectionRef, where("column", "==", column));
+			collectionRef = query(collectionRef, where("companyId", "==", globalState?.currentCompany));
 
 			collectionRef = query(collectionRef, orderBy("lastUpdated", "desc"));
 			collectionRef = query(collectionRef, limit(5));
@@ -126,7 +136,7 @@ function KanbanColumnsComponent({ allowedDropEffect, column, kanbanData, filterD
 			setColumnsData2([])
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [filterData])
+	}, [filterData,  globalState.currentProject])
 
 
 	const [{ canDrop, isOver }, drop] = useDrop(

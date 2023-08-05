@@ -4,14 +4,13 @@ import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, fetchToken } from "./Config/firebase";
-import { arrayUnionFirebase, getCollectionFirebase } from "./Api/firebaseApi";
+import { arrayUnionFirebase, getCollectionFirebase, getSingleDocumentFirebase } from "./Api/firebaseApi";
 import useUserStore from "./Hooks/Zustand/Store";
 import { loginUserWithIp } from "./Hooks/Middleware/sessionMiddleWare";
-
+import { decryptToken } from "./Utils/encrypToken";
 
 function App() {
   const globalState = useUserStore();
-
 
   const fetchProjectsAndCompanies = async (uid) => {
     const conditions = [
@@ -25,7 +24,7 @@ function App() {
     try {
       const [companies, projects] = await Promise.all([
         getCollectionFirebase("companies", conditions),
-        getCollectionFirebase("projects", conditions)
+        getCollectionFirebase("projects", conditions),
       ]);
 
       globalState.setCompanies(companies);
@@ -42,7 +41,6 @@ function App() {
         const userRoleInProject = getUserRole(projects, uid);
         globalState.setRoleProject(userRoleInProject);
       }
-
     } catch (error) {
       console.log(error, "ini err");
     }
@@ -66,17 +64,23 @@ function App() {
       const values = [token];
 
       try {
-        await arrayUnionFirebase(
-          collectionName,
-          docName,
-          field,
-          values
-        );
-        console.log(token, 'ini token'); // Pesan toast yang berhasil
+        await arrayUnionFirebase(collectionName, docName, field, values);
+        console.log(token, "ini token"); // Pesan toast yang berhasil
       } catch (error) {
         console.log("Terjadi kesalahan:", error);
       }
     }
+  };
+
+  const getAccessToken = async () => {
+        try {
+          const result = await getSingleDocumentFirebase('token', 'dropbox')
+          const resultData = decryptToken(result.access_token)
+          globalState.setAccessToken(resultData);
+
+        } catch (error) {
+          console.log(error)
+        }
   };
 
   useEffect(() => {
@@ -86,19 +90,19 @@ function App() {
         if (token) {
           await uploadTokenToFirebase(token, user);
         }
+        await getAccessToken();
 
         globalState.setIsLoggedIn(true);
         globalState.setUid(user.uid);
         globalState.setName(user.displayName);
         globalState.setEmail(user.email);
         fetchProjectsAndCompanies(user?.uid);
-
       } else {
         globalState.setIsLoggedIn(false);
       }
     });
 
-    return () => { };
+    return () => {};
   }, []);
 
   return (
