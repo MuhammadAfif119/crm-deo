@@ -19,8 +19,11 @@ function PipelineViewPage() {
 
 	const [pipelineList, setPipelineList] = useState("");
 	const isDesktop = useBreakpointValue({ base: false, lg: true });
-	const [selectedUserProjectIds, setSelectedUserProjectIds] = useState([]);
 
+	const [searchResult, setSearchResult] = useState('')
+
+
+	
 
 	const navigate = useNavigate()
 
@@ -50,52 +53,40 @@ function PipelineViewPage() {
 		setDetailActive("");
 	};
 
+	const handleModalAddClose = () => {
+		setModalAdd(false);
+	};
+
 
 
 	const handleModalAddOpen = () => {
 		setModalAdd(true);
 	};
 
-	const handleModalAddClose = () => {
-		setModalAdd(false);
-	};
 
-	// const handleSearchUsers = (q) => {
-	// 	// console.log(q)
-	// 	// const companyUsers = globalState.companies.find((x) => x.id === globalState.currentCompany)
-	// 	// const newArr = companyUsers?.users.join(",")
 
-	// 	const searchParameters = {
-	// 		q: q,
-	// 		query_by: "name,email",
-	// 		filter_by: `companyId:${globalState?.currentCompany} && projectId:${globalState?.currentProject}`,
-	// 		sort_by: "_text_match:desc"
-	// 	};
-	// 	clientTypessense
-	// 		.collections("contacts")
-	// 		.documents()
-	// 		.search(searchParameters)
-	// 		.then((x) => {
-	// 			console.log(x, 'yyy')
-	// 			setSearchResult(x)
-	// 		});
-	// }
+	const handleSearchUsers = (q) => {
+		// console.log(q)
+		// const companyUsers = globalState.companies.find((x) => x.id === globalState.currentCompany)
+		// const newArr = companyUsers?.users.join(",")
 
-	// const handleUserProjectClick = (userId) => {
-	// 	console.log(userId, 'xxx')
-	// 	setSelectedUserProjectIds((prevIds) => {
-	// 		if (prevIds.includes(userId)) {
-	// 			return prevIds.filter((id) => id !== userId);
-	// 		} else {
-	// 			return [...prevIds, userId];
-	// 		}
-	// 	});
-	// }
-
-	const handleSave = () => {
-		console.log(selectedUserProjectIds, 'xxx')
-
+		const searchParameters = {
+			q: q,
+			query_by: "name,email",
+			filter_by: `projectId:${globalState?.currentProject}`,
+			sort_by: "_text_match:desc"
+		};
+		clientTypessense
+			.collections("contacts")
+			.documents()
+			.search(searchParameters)
+			.then((x) => {
+				console.log(x, 'yyy')
+				setSearchResult(x)
+			});
 	}
+
+
 
 
 
@@ -106,7 +97,7 @@ function PipelineViewPage() {
 
 		return () => {
 		}
-	}, [ globalState.currentProject])
+	}, [globalState.currentProject])
 
 	return (
 		<Stack p={[1, 1, 5]}>
@@ -136,7 +127,7 @@ function PipelineViewPage() {
 							{pipelineList?.stages?.map((x, i) => {
 								return (
 
-									<KanbanColumnsComponent  handleModalOpen={handleModalOpen} key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={filterData} column={x?.stageName} />
+									<KanbanColumnsComponent handleModalOpen={handleModalOpen} key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={filterData} column={x?.stageName} />
 
 								)
 							}
@@ -196,24 +187,17 @@ function PipelineViewPage() {
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-					<Text fontSize={'sm'}>Add and edit opportunity details, tasks, notes and appointments. </Text>
+						<Text fontSize={'sm'}>Add and edit opportunity details, tasks, notes and appointments. </Text>
 						<Divider py={1} />
 						<Stack >
-								<DetailPipelineAddCard formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
+							{pipelineList && (
+								<DetailPipelineAddCard handleSearchUsers={handleSearchUsers}  searchResult={searchResult}  formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalAddClose={handleModalAddClose}
 								/>
+							)}
+
 						</Stack>
 					</ModalBody>
 
-					<ModalFooter>
-						<HStack>
-							<Button colorScheme="blue" variant={'outline'} size='sm' mr={3} onClick={handleSave}>
-								Save
-							</Button>
-							<Button colorScheme="red" variant={'outline'} size='sm' mr={3} onClick={handleModalAddClose}>
-								Close
-							</Button>
-						</HStack>
-					</ModalFooter>
 				</ModalContent>
 			</Modal>
 

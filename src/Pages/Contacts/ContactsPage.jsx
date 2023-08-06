@@ -84,7 +84,7 @@ const ContactsPage = () => {
 
   useEffect(() => {
     getData();
-  }, [globalState.currentCompany, globalState.currentProject, currentPage]);
+  }, [ globalState.currentProject, currentPage]);
 
   const handleDetail = (contact) => {
     navigate(`/contacts/detail/${contact.id}`, { state: contact })

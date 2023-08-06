@@ -154,16 +154,6 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
                             </Stack>
                         </SimpleGrid>
 
-                        {/* <Stack>
-              <Text>Tags</Text>
-              <CreatableSelect
-                isClearable={true}
-                value={selectedTagsRef.current}
-                options={data?.category?.map((category) => ({ label: category, value: category })) || []}
-                isMulti
-                onChange={handleTagChange}
-              />
-            </Stack> */}
                     </Stack>
                 </Grid>
                 <HStack gap={5} alignItems='flex-end' justifyContent={'flex-end'}>
