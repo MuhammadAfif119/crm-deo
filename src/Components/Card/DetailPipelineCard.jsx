@@ -1,13 +1,14 @@
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { Button, Divider, Flex, Grid, HStack, Input, Select, SimpleGrid, Stack, Text, useToast } from '@chakra-ui/react';
 import React, { useRef } from 'react';
-import CreatableSelect from 'react-select/creatable';
-import { setDocumentFirebase } from '../../Api/firebaseApi';
+import { useNavigate } from 'react-router-dom';
+import { getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DetailPipelineCard({ data, stages, handleModalClose }) {
+function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
 
     const toast = useToast()
+
 
 
     const globalState = useUserStore();
@@ -54,14 +55,36 @@ function DetailPipelineCard({ data, stages, handleModalClose }) {
         }
     };
 
+    const navigateToContact = async () => {
+
+        try {
+            const result = await getSingleDocumentFirebase('contacts', `${data?.phoneNumber}-${globalState.currentProject}`)
+            if(result){
+                navigate(`/contacts/detail/${data?.phoneNumber}-${globalState.currentProject}`, { state: result })
+
+            }else{
+                toast({
+                    title: "Deoapp.com",
+                    description: "You dont have any contact",
+                    status: "error",
+                    position: "top-right",
+                    isClosable: true,
+                });
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Stack>
             <Stack>
-                <Grid templateColumns={{ base: '1fr', md: '1fr 2.5fr' }}>
-                    <Stack py={2}>
+                <Grid templateColumns={{ base: '1fr', md: '1fr' }}>
+                    {/* <Stack py={2}>
                         <Text fontWeight={500}>Opportunity Details</Text>
-                    </Stack>
-                    <Stack h={'600px'} overflowY='scroll'>
+                    </Stack> */}
+                    <Stack h={'550px'} overflowY='scroll'>
                         <Stack py={2}>
                             <Text fontWeight={500}>Contact Details</Text>
                         </Stack>
@@ -131,29 +154,19 @@ function DetailPipelineCard({ data, stages, handleModalClose }) {
                             </Stack>
                         </SimpleGrid>
 
-                        {/* <Stack>
-              <Text>Tags</Text>
-              <CreatableSelect
-                isClearable={true}
-                value={selectedTagsRef.current}
-                options={data?.category?.map((category) => ({ label: category, value: category })) || []}
-                isMulti
-                onChange={handleTagChange}
-              />
-            </Stack> */}
                     </Stack>
                 </Grid>
                 <HStack gap={5} alignItems='flex-end' justifyContent={'flex-end'}>
-                <Button leftIcon={<AddIcon boxSize={3} />} colorScheme='green' onClick={handleSaveData}>
-                    Save
-                </Button>
-                <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme='red' onClick={handleModalClose}>
-                    Cancel
-                </Button>
-            </HStack>
+                    <Button colorScheme='green' onClick={navigateToContact}>
+                        Go to contact
+                    </Button>
+                    <Button leftIcon={<AddIcon boxSize={3} />} colorScheme='green' onClick={handleSaveData}>
+                        Save
+                    </Button>
+                </HStack>
             </Stack>
 
-          
+
         </Stack>
     );
 }
