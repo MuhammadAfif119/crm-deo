@@ -6,11 +6,12 @@ import {
 	Th,
 	Td,
 	TableContainer,
+	Text,
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { deleteDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
-import { DeleteIcon } from '@chakra-ui/icons'
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
 // import { deleteSource } from '../../../Api/firebaseFunctions'
 import useUserStore from '../../Hooks/Zustand/Store'
 import { deleteSource } from '../../Api/firebaseFunction'
@@ -70,7 +71,7 @@ function IndexPage() {
 					<Button colorScheme='green'>Add Source</Button>
 				</Link>
 			</HStack>
-			<TableContainer>
+			<TableContainer bg={'white'} mt={3}>
 				<Table variant='simple'>
 					{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
 					<Thead>
@@ -78,6 +79,7 @@ function IndexPage() {
 							<Th>Project ID</Th>
 							<Th>Source Type</Th>
 							<Th>Connection Name</Th>
+							<Th>Param</Th>
 							<Th>Action</Th>
 						</Tr>
 					</Thead>
@@ -91,8 +93,26 @@ function IndexPage() {
 								<Td>{x.connectionName}</Td>
 								<Td>
 									{
+										x.sourceType === 'google-ads' 
+										?
+											<>
+												<Text>Customer ID: {x.params.configuration.customer_id}</Text>
+											</>
+										: 
+											"" 
+									}
+								</Td>
+								<Td>
+									{
 										isLoading && indexDelete === i ? 
-										<Button m='2' isLoading colorScheme='green' >Loading</Button> : <DeleteIcon onClick={() => deleteSourceData(i)} />
+											<Button m='2' isLoading colorScheme='green' >Loading</Button>
+										: 
+											<>
+												<DeleteIcon onClick={() => deleteSourceData(i)} />
+												<Link to={`${x.id}`}>
+													<EditIcon colorScheme='orange'>Edit</EditIcon>
+												</Link>
+											</>
 									}
 								</Td>
 							</Tr>

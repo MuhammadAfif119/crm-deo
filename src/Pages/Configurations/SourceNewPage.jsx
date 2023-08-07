@@ -1,11 +1,11 @@
-import { Button, Container, Heading, HStack, Input, Select, Text } from '@chakra-ui/react'
+import { Button, Checkbox, Container, Heading, HStack, Input, Select, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import BackButtonComponent from '../../Components/Buttons/BackButtons';
 // import { createSource, initOauth } from '../../Apis/firebaseFunctions'
-import { addDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
+import { addDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi'
 import useUserStore from '../../Hooks/Zustand/Store'
 import { createSource, initOauth } from '../../Api/firebaseFunction';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 function DomainsNewPage() {
@@ -17,13 +17,30 @@ function DomainsNewPage() {
 	const navigate = useNavigate()
 	const [ouaths, setOauths] = useState([])
 	const [newOauth, setNewOauth] = useState("")
+	const [collectionGoogleAds, setCollectionGoogleAds] = useState()
+	const params = useParams();
 
 	useEffect(() => {
-	  setSourceLists(["google-analytics-data-api", "google-analytics-v4", "google-ads", "facebook-marketing"])
+	  setSourceLists(["google-ads", "google-analytics-data-api", "google-analytics-v4", "facebook-marketing"])
+	  setCollectionGoogleAds(["account_labels", "account_performance_report", "accounts", "ad_group_ad_labels", "ad_group_ad_report",
+		"ad_group_ads", "ad_group_bidding_strategies", "ad_group_criterion_labels", "ad_group_criterions", "ad_group_labels",
+		"ad_listing_group_criterions", "audience", "campaign_bidding_strategies", "campaign_budget", "campaign_labels", "campaigns",
+		"click_view", "display_keyword_performance_report", "display_topics_performance_report", "display_topics_performance_report",
+		"geographic_report", "keyword_report", "labels", "shopping_performance_report", "user_interest", "user_location_report"])
 	  getProjects()
 	  getOauths()
+	  getProject()
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalState?.currentCompany])
+
+	const getProject = async () => {
+		const projectData = await getSingleDocumentFirebase("analytic_sources", params.id);
+		if (projectData === undefined) {
+			alert("the data is not found");
+			navigate("/configuration/integration")
+		}
+		console.log("projectdata", projectData)
+	}
 
 	const getProjects = ()=>{
 		const conditions = [
@@ -47,6 +64,14 @@ function DomainsNewPage() {
 
 	const handleSave = async () => {
 		try {
+			// if (data.collectionList === undefined) {
+			// 	alert("Please select the collection list")
+			// 	return
+			// }
+			// if (data.collectionList.length === 0) {
+			// 	alert("Please select the collection list")
+			// 	return
+			// }
 			setIsLoading(true)
 			const response = await createSource(data)
 			setIsLoading(false)
@@ -56,14 +81,14 @@ function DomainsNewPage() {
 				const dataSave = {
 					"companyId": globalState.currentCompany,
 					"projectId": data.projectId,
+					"connectionId": dataResConn.connectionId,
+					"connectionName": dataResConn.name,
 					"sourceId": dataResSource.sourceId,
 					"name": dataResSource.name,
 					"workspaceId": data.workspaceId,
 					"sourceType": data.sourceType,
 					"params": dataResSource,
-					"connectionId": dataResConn.connectionId,
-					"connectionName": dataResConn.name,
-					"paramsConection": dataResConn,
+					// "paramsConection": dataResConn,
 				}
 				console.log('dataSave', dataSave)
 				await addDocumentFirebase('analytic_sources', dataSave, globalState.currentCompany)
@@ -96,6 +121,8 @@ function DomainsNewPage() {
 	}
 
 	const changeProject = (id) => {
+		console.log("projects", projects)
+		// const projectSelected = proje
 		setData(data => ({...data, sourceType: ""}))
 		setData(data => ({...data, projectId: id}))
 		setData(data => ({...data, companyId: globalState?.currentCompany}))
@@ -123,6 +150,20 @@ function DomainsNewPage() {
 
 		}
 	}
+
+	const changeCollectionName = (x) => {
+		const collectionList = data.collectionList
+		if (collectionList === undefined) {
+			setData(data => ({...data, collectionList: [x]}))
+		} else {
+			if (collectionList.includes(x)) {
+				setData(data => ({...data, collectionList: collectionList.filter(val => val !== x)}))
+			} else {
+				collectionList.push(x)
+				setData(data => ({...data, collectionList: collectionList}))
+			}
+		}
+	}
 	
 	return (<>
 		<HStack mb='2'>
@@ -139,7 +180,7 @@ function DomainsNewPage() {
 				data.projectId !== undefined ?
 					data.projectId !== "" ? 
 						<div>
-                            <Select m='1' placeholder='Sources' onChange={(e) => changeSourceList(e.target.value) }>
+                            <Select m='1' mt={4} placeholder='Sources' onChange={(e) => changeSourceList(e.target.value) }>
                                 {sourceLists?.map((x,i)=>
                                 <option key={i} value={x}>{x.toUpperCase()}</option>)}
                             </Select>
@@ -163,9 +204,15 @@ function DomainsNewPage() {
                                         : (
                                             data.sourceType === 'google-ads' ? 
                                                 <div>
-                                                    <Input m='1' type='text' placeholder='customer_id ex: 6783948572,5839201945' onChange={(e) => setData(data => ({ ...data, customerId: e.target.value }))} /> 
+													<Text m="2" mt={4}>Collection List</Text>
+													{collectionGoogleAds?.map(x => 
+														<Checkbox m="1" onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
+													)}
+													<br />
+													<Text fontSize='sm' color="tomato" as="i" m={2}>You can pick the collection data</Text>
+                                                    <Input m='1' mt={4} type='text' placeholder='customer_id ex: 6783948572,5839201945' onChange={(e) => setData(data => ({ ...data, customerId: e.target.value }))} /> 
                                                     <Text fontSize='sm' color="tomato" as="i" m={2}>Comma separated list of (client) customer IDs. Each customer ID must be specified as a 10-digit number without dashes. More instruction on how to find this value in our docs. Metrics streams like AdGroupAdReport cannot be requested for a manager account.</Text>
-                                                    <Input m='2' type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
+                                                    <Input m='2' mt={4} type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
                                                     <Text fontSize='sm' color="tomato" as="i" ml={2}>UTC date and time in the format 2017-01-25. Any data before this date will not be replicated.</Text>
                                                 </div>
                                             :
@@ -193,7 +240,7 @@ function DomainsNewPage() {
 										data.sourceType !== ""
 										? 
 											<>
-												<Select m='1' placeholder='Schedule Type' onChange={(e) => setData(data => ({...data, scheduleType: e.target.value})) }>
+												<Select m='1' mt={4} placeholder='Schedule Type' onChange={(e) => setData(data => ({...data, scheduleType: e.target.value})) }>
 													<option value="manual">Manual</option>
 													<option value="cron">Cron</option>
 												</Select>

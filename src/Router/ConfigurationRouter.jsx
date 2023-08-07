@@ -23,7 +23,7 @@ const PipelineRouter = [
     element: <SourcePage />,
   },
   {
-    path: "/configuration/integration/new",
+    path: "/configuration/integration/:id",
     element: <SourceNewPage />,
   },
   {
