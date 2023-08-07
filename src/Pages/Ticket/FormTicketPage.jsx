@@ -10,15 +10,15 @@ import { db } from '../../Config/firebase'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useUserStore from '../../Hooks/Zustand/Store'
 
-const LocationComponent = ({ type, data, setData }) => {
+const LocationComponent = ({ type, data, setData, isError }) => {
      if (type === 'offline') {
           return (
                <>
-                    <FormControl py='5' isRequired>
+                    <FormControl py='5' isRequired isInvalid={isError.includes('address')}>
                          <FormLabel>Address</FormLabel>
                          <Input type='text' id='address' name='address' onChange={(e) => setData({ ...data, address: e.target.value })} value={data?.address} />
                     </FormControl>
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={isError.includes('location')}>
                          <FormLabel>Link Google Maps</FormLabel>
                          <Input onChange={(e) => setData({ ...data, location: e.target.value })} value={data?.location} />
                     </FormControl>
@@ -26,33 +26,33 @@ const LocationComponent = ({ type, data, setData }) => {
           )
      } else {
           return (
-               <FormControl py='5' isRequired>
+               <FormControl py='5' isRequired isInvalid={isError.includes('zoomId')}>
                     <FormLabel>Zoom ID</FormLabel>
                     <Input onChange={(e) => setData({ ...data, zoomId: e.target.value })} value={data?.zoomId} />
                </FormControl>
           )
      }
 }
-const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, key }) => {
+const TicketComponent = ({ isError, handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, key }) => {
 
      return (
           <Flex border={'1px solid black'} p='5' rounded={5} gap={5} mt='5' key={key}>
                <Stack paddingBottom='5'>
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].title`)}>
                          <FormLabel>Title</FormLabel>
                          <Input onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'title', e.target.value)}
                               value={category?.tickets[ticketIndex]?.title}
                          />
                     </FormControl>
                     <HStack>
-                         <FormControl py='5' isRequired w='33.3%'>
+                         <FormControl py='5' isRequired w='33.3%' isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].price`)}>
                               <FormLabel>Price</FormLabel>
                               <Input type='number' onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'price', e.target.value)}
                                    value={category?.tickets[ticketIndex]?.price}
 
                               />
                          </FormControl>
-                         <FormControl py='5' isRequired w='fit-content'>
+                         <FormControl py='5' isRequired w='fit-content' isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].endTicket`)}>
                               <FormLabel>End Sales Ticket</FormLabel>
                               <Input type='date'
                                    onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'endTicket', e.target.value)}
@@ -62,7 +62,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
                          <Spacer />
                          <FormControl
                               w='25%'
-                              id="price" isRequired>
+                              id="price" isRequired isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].totalAudience`)}>
                               <FormLabel>Total Audience</FormLabel>
                               <Input
                                    type="number"
@@ -72,7 +72,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
                               />
                          </FormControl>
                     </HStack>
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].notes`)}>
                          <FormLabel>Notes</FormLabel>
                          <Textarea
                               onChange={(e) => handleTicketChange(categoryIndex, ticketIndex, 'notes', e.target.value)}
@@ -97,7 +97,7 @@ const TicketComponent = ({ handleDeleteTicket, categoryIndex, ticketIndex, handl
 }
 
 
-const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
+const DetailTicketComponent = ({ handleNext, isError, setFormPage, setCheckboxPrice, checkboxPrice, handleDeleteCategory, handleDeleteTicket, handleSubmit, categoryDetails, handleCategoryChange, handleTicketChange, handleAddTicket, handleIncrement, setDetailTicket, ticketCounts }) => {
      return (
           <>
                <Stack align={'left'} w='full'
@@ -128,12 +128,12 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                                              >Add Category</Button>
                                         </Flex>
 
-                                        <FormControl isRequired>
+                                        <FormControl isRequired isInvalid={isError.includes(`categoryDetails[${categoryIndex}].title`)}>
                                              <FormLabel>Title</FormLabel>
                                              <Input onChange={(e) => handleCategoryChange(categoryIndex, 'title', e.target.value)} value={category?.title} />
                                         </FormControl>
                                         <HStack w='100%' gap='5'>
-                                             <FormControl w='25%' id="price" isRequired>
+                                             <FormControl w='25%' id="price" >
                                                   <FormLabel>Price Start</FormLabel>
                                                   <Input
                                                        type="number"
@@ -148,7 +148,7 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                                              {checkboxPrice &&
                                                   <FormControl
                                                        w='25%'
-                                                       id="price" isRequired>
+                                                       id="price" >
                                                        <FormLabel>Price End</FormLabel>
                                                        <Input
                                                             value={category?.priceEnd}
@@ -158,7 +158,7 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                                                   </FormControl>
                                              }
                                         </HStack>
-                                        <FormControl isRequired>
+                                        <FormControl>
                                              <FormLabel>Details</FormLabel>
                                              <Textarea
                                                   value={category.details}
@@ -187,6 +187,7 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                                                             ticketIndex={ticketIndex}
                                                             handleTicketChange={handleTicketChange}
                                                             handleDeleteTicket={handleDeleteTicket}
+                                                            isError={isError}
                                                        />
                                                   )
                                              })
@@ -202,7 +203,7 @@ const DetailTicketComponent = ({ setFormPage, setCheckboxPrice, checkboxPrice, h
                          >
                               Back to Event Form
                          </Button>
-                         <Button rightIcon={<FiChevronRight />} onClick={() => { setDetailTicket(false); setFormPage(true) }}
+                         <Button rightIcon={<FiChevronRight />} onClick={() => handleNext()}
                               variant={'outline'} colorScheme="blue"
                          >
                               Next
@@ -288,11 +289,11 @@ const FormTicketPage = () => {
      const [categoryDetails, setCategoryDetails] = useState([
           { title: '', price: '', priceEnd: '', details: '', tickets: [{ title: '', price: '', endTicket: '', totalAudience: '', notes: '' }] }
      ]);
-     const [data, setData] = useState({ isActive: true })
+     const [data, setData] = useState({ isActive: true, title: '', description: '', price: '', dateStart: '', time: '', timeEnd: '', tnc: '' })
      const [eventType, setEventType] = useState([]);
      const [formPage, setFormPage] = useState(false)
      const [dataForm, setDataForm] = useState({})
-
+     const [isError, setIsError] = useState([])
      const getProject = () => {
           const res = globalState?.projects?.find(e => e.id === globalState?.currentProject)
           setProjectId(res?.id)
@@ -300,18 +301,23 @@ const FormTicketPage = () => {
      }
      const getTickets = async () => {
           const res = await getSingleDocumentFirebase('tickets', idProject)
-          let newData = {
-               title: res.title,
-               description: res.description,
-               dateStart: res.dateStart,
-               time: res.time,
-               timeEnd: res.timeEnd,
-               tnc: res.tnc,
-               isActive: res.isActive,
-               price: res.price,
-               formId: res.formId
-          }
           if (res) {
+               let newData = {
+                    title: res.title,
+                    description: res.description,
+                    dateStart: res.dateStart,
+                    time: res.time,
+                    timeEnd: res.timeEnd,
+                    tnc: res.tnc,
+                    isActive: res.isActive,
+                    price: res.price,
+               }
+               if (res.formId) {
+                    newData = {
+                         ...newData,
+                         formId: res.formId
+                    }
+               }
                if (res.dateEnd) {
                     setCheckboxDate(true)
                     newData = {
@@ -337,6 +343,9 @@ const FormTicketPage = () => {
                          zoomId: res.zoomId
                     }
                }
+               if (res.eventType) {
+                    setEventType(res.eventType)
+               }
                setData(newData)
                setProjectId(res.projectId)
                setProjectName(res.projectName)
@@ -344,8 +353,74 @@ const FormTicketPage = () => {
                setFiles(res.thumbnail)
                setCategoryDetails(res.category)
                setTicketCounts([res.category[0].tickets.length])
-               setEventType(res.eventType)
           }
+     }
+
+     const handleNext = () => {
+          if (!detailTicket) {
+               const hasEmptyValues = Object.values(data).some(value => value === '');
+               const isEventTypeOffline = eventType.includes('offline');
+               const isEventTypeOnline = eventType.includes('online');
+
+               const isZoomIdLocationAddressEmpty = isEventTypeOffline ? (!data.location || !data.address) : (!data.zoomId);
+
+               if (hasEmptyValues || isZoomIdLocationAddressEmpty) {
+                    const errorKeysSet = new Set(Object.keys(data).filter(key => data[key] === ''));
+
+                    if (isEventTypeOffline && (!data.location || !data.address)) {
+
+                         errorKeysSet.add('location');
+                         errorKeysSet.add('address');
+                    }
+
+                    if (isEventTypeOnline && !data.zoomId) {
+                         errorKeysSet.add('zoomId');
+                    }
+                    const errorKeys = [...errorKeysSet];
+                    setIsError(errorKeys);
+               } else {
+                    // Reset error jika data valid
+                    setIsError([]);
+                    setDetailTicket(true);
+               }
+          } else if (detailTicket && !formPage) {
+               const hasEmptyValues = categoryDetails.some(detail => {
+                    return Object.values(detail).some(value => value === '');
+               });
+
+               if (hasEmptyValues) {
+                    const errorKeysSet = new Set();
+
+                    categoryDetails.forEach((detail, index) => {
+                         Object.keys(detail).forEach(key => {
+                              if (detail[key] === '') {
+                                   errorKeysSet.add(`categoryDetails[${index}].${key}`);
+                              }
+                         });
+
+                         detail.tickets.forEach((ticket, ticketIndex) => {
+                              Object.keys(ticket).forEach(ticketKey => {
+                                   if (ticket[ticketKey] === '') {
+                                        errorKeysSet.add(`categoryDetails[${index}].tickets[${ticketIndex}].${ticketKey}`);
+                                   }
+                              });
+                         });
+                    });
+                    const errorKeys = [...errorKeysSet];
+                    if (errorKeys.length > 3) {
+                         setIsError(errorKeys);
+                    } else {
+                         setIsError([]);
+                         setDetailTicket(false);
+                         setFormPage(true)
+                    }
+               } else {
+                    setIsError([]);
+                    setDetailTicket(false);
+                    setFormPage(true)
+               }
+          }
+
      }
      const getDataForms = async () => {
           try {
@@ -379,10 +454,10 @@ const FormTicketPage = () => {
 
      useEffect(() => {
           getDataForms()
-          if (!idProject) {
-               getProject()
+          getProject()
+          if (idProject) {
+               getTickets()
           }
-          getTickets()
      }, [globalState.currentProject])
 
      const handleAddTicket = async (categoryIndex) => {
@@ -409,8 +484,8 @@ const FormTicketPage = () => {
      };
 
      const handleEventTypeChange = (value) => {
-          if (eventType.includes(value)) {
-               setEventType((prevEventType) => prevEventType.filter((item) => item !== value));
+          if (eventType?.includes(value)) {
+               setEventType((prevEventType) => prevEventType?.filter((item) => item !== value));
           } else {
                setEventType((prevEventType) => [...prevEventType, value]);
           }
@@ -442,36 +517,64 @@ const FormTicketPage = () => {
      };
 
      const handleSubmit = async (type) => {
-          const newData = {
-               ...data,
-               category: categoryDetails,
-               projectId: projectId,
-               projectName: projectName,
-               eventType: eventType
-          }
-
-          if (filesImage[0]) {
-               const resImage = await uploadFile(data?.title, "tickets", filesImage[0]);
-               newData.thumbnail = resImage;
-          }
-          if (filesLogo[0]) {
-               const resImage = await uploadFile(`${data?.title}-logo`, "tickets", filesLogo[0]);
-               newData.logo = resImage;
-          }
-          if(files){
-               newData.thumbnail =files
-          }
-          if(logo){
-               newData.logo = logo
-          }
           try {
                if (type === 'create') {
-                    const res = await addDocumentFirebase('tickets', newData, companyId)
+                    const newDatas = {
+                         ...data,
+                         category: categoryDetails,
+                         projectId: projectId,
+                         projectName: projectName,
 
+                    }
+                    if (filesImage[0]) {
+                         const resImage = await uploadFile(data?.title, "tickets", filesImage[0]);
+                         newDatas.thumbnail = resImage
 
-                    if (res && newData.formId) {
+                    }
+                    if (filesLogo[0]) {
+                         const resImage = await uploadFile(`${data?.title}-logo`, "tickets", filesLogo[0]);
+                         newDatas.logo = resImage
+                    }
+                    if(eventType){
+                         newDatas.eventType = eventType
+                    }
+
+                    const res = await addDocumentFirebase('tickets', newDatas, companyId)
+                    toast({
+                         title: "Deoapp.com",
+                         description: res,
+                         status: "success",
+                         position: "top-right",
+                         isClosable: true,
+                    })
+                    navigate('/ticket')
+               } else {
+                    let newData = {
+                         ...data,
+                         category: categoryDetails,
+                         projectId: projectId,
+                         projectName: projectName,
+
+                    }
+
+                    if (filesImage[0]) {
+                         const resImage = await uploadFile(data?.title, "tickets", filesImage[0]);
+                         newData.thumbnail = resImage
+
+                    }
+                    if (filesLogo[0]) {
+                         const resImage = await uploadFile(`${data?.title}-logo`, "tickets", filesLogo[0]);
+                         newData.logo = resImage
+                    }
+
+                    if (eventType) {
+                         newData.eventType = eventType
+                    }
+
+                    const res = await updateDocumentFirebase('tickets', idProject, newData)
+                    if (res && data.formId) {
                          const collectionName = 'forms';
-                         const docName = newData.formId;
+                         const docName = data.formId;
                          const field = 'ticket_used';
                          const values = [res];
 
@@ -490,19 +593,18 @@ const FormTicketPage = () => {
                          } catch (error) {
                               console.log('Terjadi kesalahan:', error);
                          }
+
+                    } else {
+                         toast({
+                              title: "Deoapp.com",
+                              description: `success add new ticket with document id ${res}`,
+                              status: "success",
+                              position: "top-right",
+                              isClosable: true,
+                         });
+                         navigate('/ticket')
                     }
 
-
-               } else {
-                    const res = await updateDocumentFirebase('tickets', idProject, newData)
-                    toast({
-                         title: "Deoapp.com",
-                         description: res,
-                         status: "success",
-                         position: "top-right",
-                         isClosable: true,
-                    })
-                    navigate('/ticket')
                }
           } catch (error) {
                toast({
@@ -586,7 +688,6 @@ const FormTicketPage = () => {
      useEffect(() => {
 
      }, [categoryDetails.length !== 0])
-
      return (
           <>
                <Stack>
@@ -609,11 +710,11 @@ const FormTicketPage = () => {
 
                               <Heading size='md'>Event</Heading>
 
-                              <FormControl isRequired>
+                              <FormControl isRequired isInvalid={isError.includes('title')}>
                                    <FormLabel>Event Name</FormLabel>
                                    <Input onChange={(e) => setData({ ...data, title: e.target.value })} value={data?.title} />
                               </FormControl>
-                              <FormControl isRequired>
+                              <FormControl isRequired isInvalid={isError.includes('description')}>
                                    <FormLabel>Description of Event</FormLabel>
                                    <Textarea onChange={(e) => setData({ ...data, description: e.target.value })} value={data?.description} />
                               </FormControl>
@@ -689,36 +790,22 @@ const FormTicketPage = () => {
                                         </Stack>
                                    </FormControl>
                               </Flex>
-                              <HStack w='100%' justify={'space-between'} gap='5'>
-                                   <FormControl id="price" isRequired >
-                                        <FormLabel>Price</FormLabel>
-                                        <Input
-                                             type="number"
-                                             value={data?.price}
-                                             onChange={(e) => setData({ ...data, price: e.target.value })}
-                                        />
-                                   </FormControl>
-                                   <FormControl isRequired  >
-                                        <FormLabel>Event type</FormLabel>
-                                        <Checkbox
-                                             isChecked={eventType.includes('offline')}
-                                             onChange={() => handleEventTypeChange('offline')}
-                                             mr={5}
-                                        >
-                                             Offline
-                                        </Checkbox>
-                                        <Checkbox
-                                             isChecked={eventType.includes('online')}
-                                             onChange={() => handleEventTypeChange('online')}
-                                        >
-                                             Online
-                                        </Checkbox>
-                                   </FormControl>
-                              </HStack>
+
+                              <FormControl id="price" isRequired isInvalid={isError.includes('price')} >
+                                   <FormLabel>Price</FormLabel>
+                                   <Input
+                                        type="number"
+                                        value={data?.price}
+                                        onChange={(e) => setData({ ...data, price: e.target.value })}
+                                   />
+                              </FormControl>
+
+
 
                               <HStack align={'center'} gap='5'>
 
-                                   <FormControl isRequired w='50%'>
+                                   <FormControl isRequired w='50%' isInvalid={isError.includes('dateStart')}
+                                   >
                                         <FormLabel>Date Start</FormLabel>
                                         <Input type='date' onChange={(e) => setData({ ...data, dateStart: e.target.value })} value={data?.dateStart} />
                                    </FormControl>
@@ -733,11 +820,11 @@ const FormTicketPage = () => {
                               </HStack>
                               <HStack>
 
-                                   <FormControl isRequired w='50%'>
+                                   <FormControl isRequired w='50%' isInvalid={isError.includes('time')}>
                                         <FormLabel>Time Start</FormLabel>
                                         <Input type='time' onChange={(e) => setData({ ...data, time: e.target.value })} value={data?.time} />
                                    </FormControl>
-                                   <FormControl isRequired w='50%'>
+                                   <FormControl isRequired w='50%' isInvalid={isError.includes('timeEnd')}>
                                         <FormLabel>Time End</FormLabel>
                                         <Input type='time' onChange={(e) => setData({ ...data, timeEnd: e.target.value })} value={data?.timeEnd} />
                                    </FormControl>
@@ -746,29 +833,44 @@ const FormTicketPage = () => {
                                    <FormLabel>Project</FormLabel>
                                    <Input value={projectName} variant={'unstyled'} disabled />
                               </FormControl>
+                              <FormControl isRequired isInvalid={eventType.length === 0}>
+                                   <FormLabel>Event type</FormLabel>
+                                   <Checkbox
+                                        isChecked={eventType?.includes('offline')}
+                                        onChange={() => handleEventTypeChange('offline')}
+                                        mr={5}
+                                   >
+                                        Offline
+                                   </Checkbox>
+                                   <Checkbox
+                                        isChecked={eventType?.includes('online')}
+                                        onChange={() => handleEventTypeChange('online')}
+                                   >
+                                        Online
+                                   </Checkbox>
+                              </FormControl>
 
-
-                              {eventType.includes('offline') && eventType.includes('online') ?
+                              {eventType?.includes('offline') && eventType?.includes('online') ?
                                    <Flex w='100% ' justify={'space-between'} gap={5}>
                                         <Box w='100%' >
                                              <Heading size='md'>Offline Location</Heading>
-                                             <LocationComponent type={'offline'} data={data} setData={setData} />
+                                             <LocationComponent type={'offline'} data={data} isError={isError} setData={setData} />
                                         </Box>
                                         <Box w='100%' >
                                              <Heading size='md'>Online Location</Heading>
-                                             <LocationComponent type={'online'} data={data} setData={setData} />
+                                             <LocationComponent type={'online'} data={data} isError={isError} setData={setData} />
                                         </Box>
                                    </Flex>
-                                   : eventType.includes('online') ?
+                                   : eventType?.includes('online') ?
 
-                                        <LocationComponent type={eventType[0]} data={data} setData={setData} />
-                                        : eventType.includes('offline') ?
-                                             <LocationComponent type={eventType[0]} data={data} setData={setData} />
+                                        <LocationComponent type={eventType[0]} data={data} isError={isError} setData={setData} />
+                                        : eventType?.includes('offline') ?
+                                             <LocationComponent type={eventType[0]} data={data} isError={isError} setData={setData} />
                                              : <></>
 
                               }
 
-                              <FormControl isRequired >
+                              <FormControl isRequired isInvalid={isError.includes('tnc')}>
                                    <FormLabel>Terms & Conditions</FormLabel>
                                    <Textarea onChange={(e) => setData({ ...data, tnc: e.target.value })} value={data?.tnc} />
                               </FormControl>
@@ -783,7 +885,7 @@ const FormTicketPage = () => {
                                    </Flex>
                               </FormControl>
                               <Flex align='end' justify={'end'} >
-                                   <Button rightIcon={<FiChevronRight />} variant={'outline'} colorScheme="blue" onClick={() => setDetailTicket(true)}>
+                                   <Button rightIcon={<FiChevronRight />} variant={'outline'} colorScheme="blue" onClick={() => handleNext()} >
                                         Next
                                    </Button>
                               </Flex>
@@ -808,6 +910,9 @@ const FormTicketPage = () => {
                               setFormPage={setFormPage}
                               formPage={formPage}
                               categoryCount={categoryCount}
+                              isError={isError}
+                          
+                              handleNext={handleNext}
                          /> :
                          <FormPage
                               handleSubmit={handleSubmit}
