@@ -7,6 +7,8 @@ import {
 	Td,
 	TableContainer,
 	Text,
+	Stack,
+	Heading
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -64,63 +66,72 @@ function IndexPage() {
 	
 	return (
 		<>
-		<Box>
-			<HStack>
-				<Spacer />
-				<Link to='new'>
-					<Button colorScheme='green'>Add Source</Button>
-				</Link>
-			</HStack>
-			<TableContainer bg={'white'} mt={3}>
-				<Table variant='simple'>
-					{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
-					<Thead>
-						<Tr>
-							<Th>Project ID</Th>
-							<Th>Source Type</Th>
-							<Th>Connection Name</Th>
-							<Th>Param</Th>
-							<Th>Action</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{data?.map((x,i) =>
-							<Tr key={i}>
-								<Td>
-									<Link to={`/projects/${x.projectId}`}>{x.projectId}</Link>
-								</Td>
-								<Td>{x.sourceType}</Td>
-								<Td>{x.connectionName}</Td>
-								<Td>
-									{
-										x.sourceType === 'google-ads' 
-										?
-											<>
-												<Text>Customer ID: {x.params.configuration.customer_id}</Text>
-											</>
-										: 
-											"" 
-									}
-								</Td>
-								<Td>
-									{
-										isLoading && indexDelete === i ? 
-											<Button m='2' isLoading colorScheme='green' >Loading</Button>
-										: 
-											<>
-												<DeleteIcon onClick={() => deleteSourceData(i)} />
-												<Link to={`${x.id}`}>
-													<EditIcon colorScheme='orange'>Edit</EditIcon>
-												</Link>
-											</>
-									}
-								</Td>
+		<Stack p={[1, 1, 5]}>
+			<Stack spacing={4}>
+				<HStack>
+					<Heading size={'md'} fontWeight={'bold'}>Integration</Heading>
+					<Spacer />
+					<Link to='new'>
+						<Button colorScheme='green' size={'sm'}>+</Button>
+					</Link>
+				</HStack>
+				<Stack bgColor={'white'} spacing={1} borderRadius={'xl'} p={3} m={[1, 1, 4]} shadow={'md'}>
+					<Table variant='striped' colorScheme='gray'>
+						{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
+						<Thead>
+							<Tr>
+								<Th>Project ID</Th>
+								<Th>Source Type</Th>
+								<Th>Connection Name</Th>
+								<Th>Param</Th>
+								<Th>Action</Th>
 							</Tr>
-						)}
-					</Tbody>
-				</Table>
-			</TableContainer>
-		</Box>
+						</Thead>
+						<Tbody>
+							{data?.map((x,i) =>
+								<Tr key={i}>
+									<Td>
+										<Link to={`/projects/${x.projectId}`}>{x.projectId}</Link>
+									</Td>
+									<Td>{x.sourceType}</Td>
+									<Td>{x.connectionName}</Td>
+									<Td>
+										{
+											x.sourceType === 'google-ads' 
+											?
+												<>
+													<Text>Customer ID: {x.params.configuration.customer_id}</Text>
+												</>
+											: 
+												"" 
+										}
+									</Td>
+									<Td>
+										{
+											isLoading && indexDelete === i ? 
+												<Button m='2' isLoading colorScheme='green' >Loading</Button>
+											: 
+											<>
+												<HStack>
+													<Button bgColor={'green.500'} size={'sm'} onClick={() => deleteSourceData(i)}>
+														<DeleteIcon color={'white'} />
+													</Button>
+													<Link to={`${x.id}`}>
+														<Button bgColor={'orange.400'} size={'sm'}>
+															<EditIcon color={'white'}>Edit</EditIcon>
+														</Button>
+													</Link>
+												</HStack>
+											</>
+										}
+									</Td>
+								</Tr>
+							)}
+						</Tbody>
+					</Table>
+				</Stack>
+			</Stack>
+		</Stack>
 		</>
 	)
 }

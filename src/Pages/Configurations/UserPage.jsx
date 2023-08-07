@@ -6,7 +6,7 @@ import {
 	ModalHeader,
 	ModalFooter,
 	ModalBody,
-	ModalCloseButton, HStack, Input, SimpleGrid, Spacer, Text, useDisclosure
+	ModalCloseButton, HStack, Input, SimpleGrid, Spacer, Text, useDisclosure, Stack, Grid, Divider
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { arrayRemoveFirebase, arrayUnionFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
@@ -150,11 +150,25 @@ function UsersPage() {
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>Add User</ModalHeader>
+					<Divider />
 					<ModalCloseButton />
 					<ModalBody>
-						{/* <Lorem count={2} /> */}
-						<Input type='text' placeholder='name' onChange={(e) => setName(e.target.value)} />
-						<Input type='text' placeholder='email' onChange={(e) => setEmail(e.target.value)} />
+						<Stack>
+							{/* <Lorem count={2} /> */}
+							<Grid templateColumns={{ base: '1fr', md: '1fr' }}>
+								<Stack p={2}>
+									<Stack>
+										<Text>Name</Text>
+										<Input type='text' placeholder='name' onChange={(e) => setName(e.target.value)} />
+									</Stack>
+
+									<Stack>
+										<Text>Email</Text>
+										<Input type='text' placeholder='email' onChange={(e) => setEmail(e.target.value)} />
+									</Stack>
+								</Stack>
+							</Grid>
+						</Stack>
 					</ModalBody>
 
 					<ModalFooter>
