@@ -1,12 +1,12 @@
-import { Button, HStack, Input, SimpleGrid, Stack, Text, useToast } from '@chakra-ui/react'
+import { Box, Button, HStack, Heading, Input, SimpleGrid, Stack, Text, useToast } from '@chakra-ui/react'
 import axios from 'axios';
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { addDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 import DropboxUploader from '../DropBox/DropboxUploader';
 import RichTextEditor from '../Quill/RichTextEditor';
 
-function EmailSendgridChat({ dataContact }) {
+function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) {
 
     const toast = useToast()
     const globalState = useUserStore();
@@ -14,16 +14,12 @@ function EmailSendgridChat({ dataContact }) {
     const [value, setValue] = useState("")
     const [isModalOpen, setModalOpen] = useState(false);
     const [shareLink, setShareLink] = useState("");
-
     const [loading, setLoading] = useState(false)
 
     const emailRef = useRef(dataContact?.email);
     const nameRef = useRef(dataContact?.name);
 
-
-
-
-
+    console.log(dataContact, 'xxxt')
 
 
     const handleContentChange = (value) => {
@@ -62,12 +58,6 @@ function EmailSendgridChat({ dataContact }) {
     };
 
 
-
-
-
-
-
-
     const handleChange = (e) => {
         const { name, value } = e.target
         setDataSend((prev) => ({ ...prev, [name]: value }))
@@ -87,7 +77,7 @@ function EmailSendgridChat({ dataContact }) {
             projectId: globalState.currentProject,
             companyId: globalState.currentCompany,
             type: 'email',
-            status:'success'
+            status: 'success'
         }
 
         console.log(updateData, 'updateData')
@@ -126,11 +116,6 @@ function EmailSendgridChat({ dataContact }) {
         finally {
             setLoading(false)
         }
-
-
-
-
-
     }
 
     const handleSuccess = () => {
@@ -143,6 +128,20 @@ function EmailSendgridChat({ dataContact }) {
             position: "top-right",
             isClosable: true,
         });
+    }
+
+    const handleSelectTemplateEmail = (template) => {
+        const data = {
+            NAME: nameRef.current.value,
+            EMAIL: emailRef.current.value,
+            TITLE: dataPipeline?.name,
+            DESCRIPTION: dataPipeline?.description,
+            TOTAL: price
+        }
+        const replacedTemplate = template?.messages.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+            return data[key] || ""; // Mengganti dengan data yang sesuai, atau string kosong jika tidak ada data
+        });
+        setValue(replacedTemplate)
     }
 
     const searchCompanyName = globalState?.companies?.find((x) => x.id === globalState?.currentCompany)
@@ -199,6 +198,17 @@ function EmailSendgridChat({ dataContact }) {
                 <Button onClick={openModal} colorScheme={'green'} variant='outline'>Upload</Button>
 
             </HStack>
+            <Stack>
+                <Heading size='sm'>Template Message</Heading>
+                <SimpleGrid columns={3}>
+                    {templateEmail?.map((template, index) => (
+                        <Stack rounded={5} key={index} boxShadow={'md'} p={5} cursor={'pointer'} onClick={() => handleSelectTemplateEmail(template)}>
+                            <Heading size={'sm'}>{template?.title}</Heading>
+                            <Text>{template?.description}</Text>
+                        </Stack>
+                    ))}
+                </SimpleGrid>
+            </Stack>
 
             <DropboxUploader isActive={isModalOpen} onClose={closeModal} parentPath={`/${companyName}/message/${dataContact?.id}`} shareLink={shareLink} setShareLink={handleShareLinkChange} />
 

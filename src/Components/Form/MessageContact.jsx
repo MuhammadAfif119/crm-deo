@@ -2,8 +2,7 @@ import { Stack, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react
 import React from 'react'
 import EmailSendgridChat from '../Chat/EmailSendgridChat'
 
-function MessageContact({data, globalState}) {
-    console.log(data, 'ini data')
+function MessageContact({ data, globalState, templateEmail, dataPipeline, price }) {
     return (
         <Stack p={[1, 1, 5]}>
             <Stack>
@@ -18,7 +17,7 @@ function MessageContact({data, globalState}) {
 
                     <TabPanels>
                         <TabPanel>
-                           <EmailSendgridChat dataContact={data} globalState={globalState}/>
+                            <EmailSendgridChat dataContact={data} globalState={globalState} templateEmail={templateEmail} dataPipeline={dataPipeline} price={price}/>
                         </TabPanel>
                         <TabPanel>
                             <p>two!</p>

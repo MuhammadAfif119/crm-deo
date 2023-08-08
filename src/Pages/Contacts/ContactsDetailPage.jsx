@@ -1,7 +1,7 @@
 import { Grid, Heading, HStack, Stack, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getCollectionFirebase } from '../../Api/firebaseApi'
+import { getCollectionFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import EmailHistory from '../../Components/Chat/EmailHistory'
 import EditContactFrom from '../../Components/Form/EditContactFrom'
@@ -17,9 +17,12 @@ function ContactsDetailPage() {
     const globalState = useUserStore();
 
     const [emailHistory, setEmailHistory] = useState("")
+    const [templateEmail, setTemplateEmail] = useState([])
 
 
-    const dataParam = location.state
+    const dataParam = location.state.result
+    const dataPipeline = location.state.pipeline
+    const price = location.state.price
 
     const getdataMessageEmail = async() => {
           const conditions = [
@@ -39,10 +42,19 @@ function ContactsDetailPage() {
             console.log(error, "ini error");
           }
     }
+    const getTemplateEmail = async () => {
+        try {
+            const res = await getCollectionWhereFirebase('templates', 'category', '==', 'email')
+            console.log({ res })
+            setTemplateEmail(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
         getdataMessageEmail()
-
+        getTemplateEmail()
         return () => {
         }
     }, [globalState.currentCompany,globalState.currentProject, "email" ])
@@ -63,7 +75,7 @@ function ContactsDetailPage() {
                         <EditContactFrom data={dataParam}  />
                     </Stack>
                     <Stack bgColor={'white'} borderRadius='md' shadow={'md'} minH='500px'>
-                        <MessageContact data={dataParam} />
+                        <MessageContact data={dataParam} templateEmail={templateEmail} dataPipeline={dataPipeline} price={price}/>
                     </Stack>
                     <Stack bgColor={'white'} borderRadius='md' shadow={'md'} minH='500px'>
                         {emailHistory.length > 0 ? (
