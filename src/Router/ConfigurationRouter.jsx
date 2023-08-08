@@ -8,6 +8,7 @@ import ProjectNewPage from "../Pages/Configurations/ProjectNewPage";
 import OutletPage from "../Pages/Configurations/OutletPage";
 import OutletNewPage from "../Pages/Configurations/OutletNewPage";
 import UserPage from "../Pages/Configurations/UserPage";
+import OauthPage from "../Pages/Configurations/OauthPage";
 
 const PipelineRouter = [
   {
@@ -45,6 +46,10 @@ const PipelineRouter = [
   {
     path: "/configuration/user",
     element: <UserPage />,
+  },
+  {
+    path: "/configuration/integration/oauth/:projectId/:sourceType",
+    element: <OauthPage />,
   },
 ];
 
