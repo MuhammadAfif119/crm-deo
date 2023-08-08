@@ -19,7 +19,6 @@ function PricingDetail() {
   const toast = useToast()
   const navigate = useNavigate()
 
-  const { signUp, currentUser } = useContext(AuthContext);
 
 
   const [subscription, setSubscription] = useState(null)

@@ -360,12 +360,13 @@ function SettingTeamPage() {
     const handleSearchUsers = (q) => {
         // console.log(q)
         const companyUsers = globalState.companies.find((x) => x.id === globalState.currentCompany)
+        console.log(companyUsers, 'xxx')
         const newArr = companyUsers?.users.join(",")
 
         const searchParameters = {
             q: q,
             query_by: "name,email",
-            // filter_by: `id: [${newArr}]`,
+            filter_by: `id: [${newArr}]`,
             sort_by: "_text_match:desc"
         };
         clientTypessense
