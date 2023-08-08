@@ -18,6 +18,7 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
     const emailRef = useRef(dataContact?.email);
     const nameRef = useRef(dataContact?.name);
+    const phoneRef = useRef(dataContact?.phoneNumber);
 
 
 
@@ -133,12 +134,13 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
         const data = {
             NAME: nameRef.current.value,
             EMAIL: emailRef.current.value,
+            PHONE: dataContact?.phoneNumber,
             TITLE: dataPipeline?.name,
-            DESCRIPTION: dataPipeline?.description,
+            DESCRIPTION: dataPipeline?.description || "",
             TOTAL: price
         }
         const replacedTemplate = template?.messages.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-            return data[key] || ""; // Mengganti dengan data yang sesuai, atau string kosong jika tidak ada data
+            return `${data[key]}<br/>` || ""; // Mengganti dengan data yang sesuai, atau string kosong jika tidak ada data
         });
         setValue(replacedTemplate)
     }

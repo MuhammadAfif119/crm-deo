@@ -1,7 +1,7 @@
 import { Grid, Heading, HStack, Stack, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getCollectionFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
+import { getCollectionFirebase, getCollectionFirebaseV2, getCollectionWhereFirebase } from '../../Api/firebaseApi'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import EmailHistory from '../../Components/Chat/EmailHistory'
 import EditContactFrom from '../../Components/Form/EditContactFrom'
@@ -26,6 +26,8 @@ function ContactsDetailPage() {
     const price = location.state.price
 
     const getdataMessageEmail = async() => {
+
+        const link = `contacts/${params?.id}/messages`
           const conditions = [
             { field: "type", operator: "==", value: "email" },
             { field: "companyId", operator: "==", value: globalState.currentCompany },
@@ -34,10 +36,12 @@ function ContactsDetailPage() {
           const sortBy = { field: "createdAt", direction: "desc" };
           try {
             const res = await getCollectionFirebase(
-              `contacts/${dataParam?.id === undefined ? dataParam?.id : dataPipeline?.id}/messages`,
+                link,
               conditions,
-              sortBy
+              sortBy,
             );
+
+            console.log(link, 'ini link')
             setEmailHistory(res);
             console.log(res, 'yyy');
           } catch (error) {
