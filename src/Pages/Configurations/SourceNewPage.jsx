@@ -1,4 +1,4 @@
-import { Button, Checkbox, Container, Heading, HStack, Input, Select, Text } from '@chakra-ui/react'
+import { Button, Checkbox, Container, Heading, HStack, Input, Select, Text, Stack, Grid, Box, GridItem } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import BackButtonComponent from '../../Components/Buttons/BackButtons';
 // import { createSource, initOauth } from '../../Apis/firebaseFunctions'
@@ -218,9 +218,11 @@ function DomainsNewPage() {
 	return (<>
 		<HStack mb='2'>
 			<BackButtonComponent />
-			<Heading>{params.id === "new" ? "New Source" : "Edit Source"}</Heading>
+			<Stack p={4}>
+				<Heading>{params.id === "new" ? "New Source" : "Edit Source"}</Heading>
+			</Stack>
 		</HStack>
-		<Container shadow='base' p='2'>
+		<Container shadow='base' p='2' maxW={'container.sm'}>
 			<Heading fontSize='md'>{params.id === "new" ? "Add New Source" : `Edit Source ${params.id}`}</Heading>
 			<Select m='1' placeholder={params.id === "new" ? 'Project' : ''} onChange={(e) => changeProject(e.target.value)}>
 				{projects?.map((x,i)=>
@@ -255,9 +257,13 @@ function DomainsNewPage() {
                                             data.sourceType === 'google-ads' ? 
                                                 <div>
 													<Text m="2" mt={4}>Collection List</Text>
-													{collectionGoogleAds?.map(x => 
-														<Checkbox m="1" defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
-													)}
+													<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
+															{collectionGoogleAds?.map(x => 
+														<GridItem w={'100%'} >
+																<Checkbox defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)} wordBreak={'break-all'}>{x}</Checkbox>
+														</GridItem>
+															)}
+													</Grid>
 													<br />
 													<Text fontSize='sm' color="tomato" as="i" m={2}>You can pick the collection data</Text>
                                                     <Input m='1' mt={4} type='text' placeholder='customer_id ex: 6783948572,5839201945' defaultValue={data?.customerId} onChange={(e) => setData(data => ({ ...data, customerId: e.target.value }))} /> 

@@ -17,6 +17,7 @@ import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
 // import { deleteSource } from '../../../Api/firebaseFunctions'
 import useUserStore from '../../Hooks/Zustand/Store'
 import { deleteSource } from '../../Api/firebaseFunction'
+import Swal from 'sweetalert2'
 
 function IndexPage() {
     const globalState = useUserStore();
@@ -49,19 +50,31 @@ function IndexPage() {
 
 	const deleteSourceData = async (i) => {
 		console.log('delete')
-		const confirmDelete = window.confirm("Are you sure to delete this source?");
-		if (confirmDelete) {
-			setIndexDelete(i)
-			setIsLoading(true)
-			const response = await deleteSource(data[i].sourceId, data[i].name)
-			setIsLoading(false)
-			if (response.status) {
+		// const confirmDelete = window.confirm("Are you sure to delete this source?");
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		  }).then(async (result) => {
+			if (result.isConfirmed) {
+			  const response = await deleteSource(data[i].sourceId, data[i].name)
+			  setIsLoading(false)
+			  if (response.status) {
 				await deleteDocumentFirebase('analytic_sources', data[i].id)
 				getData()
-			} else {
-				alert(response.message)
+			  } else {
+				  alert(response.message)
+			  }
+			  setIndexDelete(i)
+			  setIsLoading(true)
 			}
-		}
+		  })
+		// if (confirmDelete) {
+		// }
 	}
 	
 	return (

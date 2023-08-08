@@ -47,6 +47,7 @@
     "sheetjs-style": "^0.15.8",
     "social-post-api": "^1.1.1",
     "store": "^2.0.12",
+    "sweetalert2": "^11.7.20",
     "timers": "^0.1.1",
     "typesense": "^1.5.4",
     "web-vitals": "^2.1.4",
