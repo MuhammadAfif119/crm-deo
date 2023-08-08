@@ -2,7 +2,7 @@ import { Avatar, AvatarGroup, Box, Button, Center, Divider, Flex, Heading, HStac
 import React, { useEffect, useRef, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getCollectionFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi'
 import KanbanColumnsComponent from '../../Components/Columns/KanbanColumnsComponent'
 import { decryptToken } from '../../Utils/encrypToken'
@@ -16,14 +16,15 @@ import DetailPipelineAddCard from '../../Components/Card/DetailPipelineAddCard'
 function PipelineViewPage() {
 	const param = useParams();
 	const globalState = useUserStore();
-
+	const location = useLocation()
+	const datas = location.state
 	const [pipelineList, setPipelineList] = useState("");
 	const isDesktop = useBreakpointValue({ base: false, lg: true });
 
 	const [searchResult, setSearchResult] = useState('')
 
 
-	
+
 
 	const navigate = useNavigate()
 
@@ -127,7 +128,7 @@ function PipelineViewPage() {
 							{pipelineList?.stages?.map((x, i) => {
 								return (
 
-									<KanbanColumnsComponent handleModalOpen={handleModalOpen} key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={filterData} column={x?.stageName} />
+									<KanbanColumnsComponent handleModalOpen={handleModalOpen}  key={i} index={i} kanbanData={{ name: x?.stageName }} formId={pipelineList?.formId[0]} allowedDropEffect='move' filterData={filterData} column={x?.stageName} />
 
 								)
 							}
@@ -161,7 +162,7 @@ function PipelineViewPage() {
 						<Divider py={1} />
 						<Stack >
 							{detailActive && (
-								<DetailPipelineCard data={detailActive} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
+								<DetailPipelineCard pipeline={datas} data={detailActive} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
 								/>
 
 							)}
@@ -191,7 +192,7 @@ function PipelineViewPage() {
 						<Divider py={1} />
 						<Stack >
 							{pipelineList && (
-								<DetailPipelineAddCard handleSearchUsers={handleSearchUsers}  searchResult={searchResult}  formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalAddClose={handleModalAddClose}
+								<DetailPipelineAddCard handleSearchUsers={handleSearchUsers} searchResult={searchResult} formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalAddClose={handleModalAddClose}
 								/>
 							)}
 

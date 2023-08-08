@@ -21,7 +21,7 @@ const ColumnColorScheme = {
 	DONE: 'gray',
 };
 
-function KanbanColumnsComponent({ allowedDropEffect, column,  filterData, index, formId, handleModalOpen }) {
+function KanbanColumnsComponent({ allowedDropEffect, column,  filterData, index, formId, handleModalOpen, pipeline }) {
 	const [columnsData, setColumnsData] = useState([])
 	const [columnsData2, setColumnsData2] = useState([])
 	const param = useParams()
