@@ -22,6 +22,7 @@ function DomainsNewPage() {
 	const [collectionFacebookMarketing, setCollectionFacebookMarketing] = useState()
 	const params = useParams();
 	const [projectUpdate, setProjectUpdate] = useState({})
+	const [oautSelected, setOauthSelected] = useState([])
 
 	useEffect(() => {
 	  setSourceLists(["google-ads", "facebook-marketing", "google-analytics-data-api", "google-analytics-v4"])
@@ -171,51 +172,29 @@ function DomainsNewPage() {
 
 	const changeSourceList = (selectedSource) => {
 		setData(data => ({...data, sourceType: selectedSource}))
-		setNewOauth("")
 		if (selectedSource !== "") {
-			if (ouaths.length === 0) {
-				setNewOauth(selectedSource)
-			} else {
-				const selectedOauth = ouaths.find(value => value.sourceType === selectedSource && value.projectId === data.projectId)
-				if (selectedOauth === undefined) {
-					setNewOauth(selectedOauth)
-				} else {
-					setData(data => ({...data, secretId: selectedOauth.secretId}))
-				}
+			if (ouaths.length > 0) {
+				setOauthSelected(ouaths.filter(value => value.sourceType === selectedSource && value.projectId === data.projectId))
 			}
 		}
+	}
+
+	const chooseOauth = (id) => {
+		const oauth = oautSelected[id]
+		setData(data => ({...data, secretId: oauth.secretId}))
+		setNewOauth(oauth)
 	}
 
 	const changeProject = (id) => {
-		console.log("projects", projects)
 		const projectSelected = projects.find(val => val.id === id)
 		setData(data => ({...data, sourceType: ""}))
+		setNewOauth("")
 		setData(data => ({...data, projectId: id}))
-		setData(data => ({...data, projectName: projectSelected.name}))
+		if (projectSelected !== undefined) {
+			setData(data => ({...data, projectName: projectSelected.name}))
+		}
 		setData(data => ({...data, companyId: globalState?.currentCompany}))
         setData(data => ({...data, workspaceId: "39d1492c-b5c8-4986-ad59-4049a8f1cc5c"}))
-	}
-
-	const requestOauth = async () => {
-		try {
-			const redirectUrl = "https://new-admin.importir.com/api/general/callback-oauth/"+globalState.currentCompany+"/" + data.projectId + "/" + data.workspaceId + "/" + data.sourceType
-			setIsLoading(true)
-			console.log('response', data)
-			const response = await initOauth({
-				name: data.sourceType,
-				workspaceId: data.workspaceId,
-				redirectUrl: redirectUrl
-			})
-			setIsLoading(false)
-			if (response.status) {
-				window.location.href = response.data.consentUrl
-			} else {
-				alert(response.message)
-				return
-			}
-		} catch (error) {
-
-		}
 	}
 
 	const changeCollectionName = (x) => {
@@ -249,102 +228,113 @@ function DomainsNewPage() {
 				data.projectId !== undefined ?
 					data.projectId !== "" ? 
 						<div>
-                            <Select m='1' mt={4} placeholder={params.id === "new" ? 'Sources' : ""} onChange={(e) => changeSourceList(e.target.value) }>
+                            <Select m='1' value={data?.sourceType} mt={4} placeholder={params.id === "new" ? 'Sources' : ""} onChange={(e) => changeSourceList(e.target.value) }>
                                 {sourceLists?.map((x,i)=>
                                 <option key={i} value={x}>{x.toUpperCase()}</option>)}
                             </Select>
                             {
-                                newOauth !== "" ? 
+                                oautSelected?.length === 0 && data.sourceType !== "" ? 
                                     isLoading  ? 
                                     <Button colorScheme='blue' isLoading >Integrate It</Button>
                                     :
-                                    <Button colorScheme='blue' onClick={() => requestOauth()}>Integrate It</Button>
+                                    <Button colorScheme='blue' onClick={() => navigate(`/configuration/integration/oauth/${data.projectId}/${data.sourceType}`)}>Integrate It</Button>
                                 :
-                                <>
-									
-                                    {
-                                        data.sourceType === "google-analytics-data-api" ?
-                                            <div>
-                                                <Input m='1' type='text' placeholder='property_id' onChange={(e) => setData(data => ({ ...data, propertyId: e.target.value }))} /> 
-                                                <Text fontSize='sm' color="tomato" as="i" ml={2}>A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body such as "123...". See the docs for more details.</Text>
-                                                <Input m='2' type='date' placeholder='date_ranges_start_date' onChange={(e) => setData(data => ({ ...data, dateRangesStartDate: e.target.value }))} /> 
-                                                <Text fontSize='sm' color="tomato" as="i" ml={2}>The start date from which to replicate report data. Data generated before this date will not be included in the report. Not applied to custom Cohort reports.</Text>
-                                            </div>
-                                        : (
-                                            data.sourceType === 'google-ads' ? 
-                                                <div>
-													<Text m="2" mt={4}>Collection List</Text>
-													<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
-															{collectionGoogleAds?.map(x => 
-														<GridItem w={'100%'} >
-																<Checkbox defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)} wordBreak={'break-all'}>{x}</Checkbox>
-														</GridItem>
-															)}
-													</Grid>
-													<br />
-													<Text fontSize='sm' color="tomato" as="i" m={2}>You can pick the collection data</Text>
-                                                    <Input m='1' mt={4} type='text' placeholder='customer_id ex: 6783948572,5839201945' defaultValue={data?.customerId} onChange={(e) => setData(data => ({ ...data, customerId: e.target.value }))} /> 
-                                                    <Text fontSize='sm' color="tomato" as="i" m={2}>Comma separated list of (client) customer IDs. Each customer ID must be specified as a 10-digit number without dashes. More instruction on how to find this value in our docs. Metrics streams like AdGroupAdReport cannot be requested for a manager account.</Text>
-                                                    <Input m='2' mt={4} type='date' placeholder='start_date' defaultValue={data?.startDate} onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
-                                                    <Text fontSize='sm' color="tomato" as="i" ml={2}>UTC date and time in the format 2017-01-25. Any data before this date will not be replicated.</Text>
-                                                </div>
-                                            :
-                                                data.sourceType === 'google-analytics-v4' ? 
-                                                    <div>
-                                                        <Input m='1' type='text' placeholder='view_id' onChange={(e) => setData(data => ({ ...data, viewId: e.target.value }))} /> 
-                                                        <Text fontSize='sm' color="tomato" as="i" m={2}>The ID for the Google Analytics View you want to fetch data from. This can be found from the Google Analytics Account Explorer.</Text>
-                                                        <Input m='2' type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
-                                                        <Text fontSize='sm' color="tomato" as="i" ml={2}>The date in the format YYYY-MM-DD. Any data before this date will not be replicated.</Text>
-                                                    </div>
-                                                :
-
-                                                    data.sourceType === 'facebook-marketing' ? 
-                                                        <div>
-															<Text m="2" mt={4}>Collection List</Text>
-															<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
-																{collectionFacebookMarketing?.map(x => 
-																<GridItem>
-																	<Checkbox m="1" defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
-																</GridItem>
-																)}
-															</Grid>
-															<br />
-                                                            <Input m='1' mt={4} type='text' placeholder='account_id' onChange={(e) => setData(data => ({ ...data, accountId: e.target.value }))} /> 
-                                                            <Text fontSize='sm' color="tomato" as="i" m={2}>The Facebook Ad account ID to use when pulling data from the Facebook Marketing API. Open your Meta Ads Manager. The Ad account ID number is in the account dropdown menu or in your browser's address bar. See the docs for more information.</Text>
-                                                            <Input m='2' mt={4} type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
-                                                            <Text fontSize='sm' color="tomato" as="i" ml={2}>The date in the format YYYY-MM-DD. Any data before this date will not be replicated.</Text>
-                                                        </div>
-                                                    :
-                                                    ""
-                                        )
-                                    }
-									{
-										data.sourceType !== ""
-										? 
-											params.id === "new"
-											?
+									<>
+										<Select m='1' defaultValue={newOauth} mt={4} placeholder="Choose Oauth" onChange={(e) => chooseOauth(e.target.value) }>
+											{oautSelected?.map((x,i)=>
+											<option key={i} value={i}>{x.email} | {x.secretId}</option>)}
+										</Select>
+										{
+											newOauth ? 
 												<>
-													<Select m='1' mt={4} placeholder='Schedule Type' onChange={(e) => setData(data => ({...data, scheduleType: e.target.value})) }>
-														<option value="manual">Manual</option>
-														<option value="cron">Cron</option>
-													</Select>
+													
+													{
+														data.sourceType === "google-analytics-data-api" ?
+															<div>
+																<Input m='1' type='text' placeholder='property_id' onChange={(e) => setData(data => ({ ...data, propertyId: e.target.value }))} /> 
+																<Text fontSize='sm' color="tomato" as="i" ml={2}>A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body such as "123...". See the docs for more details.</Text>
+																<Input m='2' type='date' placeholder='date_ranges_start_date' onChange={(e) => setData(data => ({ ...data, dateRangesStartDate: e.target.value }))} /> 
+																<Text fontSize='sm' color="tomato" as="i" ml={2}>The start date from which to replicate report data. Data generated before this date will not be included in the report. Not applied to custom Cohort reports.</Text>
+															</div>
+														: (
+															data.sourceType === 'google-ads' ? 
+																<div>
+																	<Text m="2" mt={4}>Collection List</Text>
+																	<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
+																			{collectionGoogleAds?.map(x => 
+																		<GridItem w={'100%'} >
+																				<Checkbox defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)} wordBreak={'break-all'}>{x}</Checkbox>
+																		</GridItem>
+																			)}
+																	</Grid>
+																	<br />
+																	<Text fontSize='sm' color="tomato" as="i" m={2}>You can pick the collection data</Text>
+																	<Input m='1' mt={4} type='text' placeholder='customer_id ex: 6783948572,5839201945' defaultValue={data?.customerId} onChange={(e) => setData(data => ({ ...data, customerId: e.target.value }))} /> 
+																	<Text fontSize='sm' color="tomato" as="i" m={2}>Comma separated list of (client) customer IDs. Each customer ID must be specified as a 10-digit number without dashes. More instruction on how to find this value in our docs. Metrics streams like AdGroupAdReport cannot be requested for a manager account.</Text>
+																	<Input m='2' mt={4} type='date' placeholder='start_date' defaultValue={data?.startDate} onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
+																	<Text fontSize='sm' color="tomato" as="i" ml={2}>UTC date and time in the format 2017-01-25. Any data before this date will not be replicated.</Text>
+																</div>
+															:
+																data.sourceType === 'google-analytics-v4' ? 
+																	<div>
+																		<Input m='1' type='text' placeholder='view_id' onChange={(e) => setData(data => ({ ...data, viewId: e.target.value }))} /> 
+																		<Text fontSize='sm' color="tomato" as="i" m={2}>The ID for the Google Analytics View you want to fetch data from. This can be found from the Google Analytics Account Explorer.</Text>
+																		<Input m='2' type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
+																		<Text fontSize='sm' color="tomato" as="i" ml={2}>The date in the format YYYY-MM-DD. Any data before this date will not be replicated.</Text>
+																	</div>
+																:
+
+																	data.sourceType === 'facebook-marketing' ? 
+																		<div>
+																			<Text m="2" mt={4}>Collection List</Text>
+																			<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
+																				{collectionFacebookMarketing?.map(x => 
+																				<GridItem>
+																					<Checkbox m="1" defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
+																				</GridItem>
+																				)}
+																			</Grid>
+																			<br />
+																			<Input m='1' mt={4} type='text' placeholder='account_id' onChange={(e) => setData(data => ({ ...data, accountId: e.target.value }))} /> 
+																			<Text fontSize='sm' color="tomato" as="i" m={2}>The Facebook Ad account ID to use when pulling data from the Facebook Marketing API. Open your Meta Ads Manager. The Ad account ID number is in the account dropdown menu or in your browser's address bar. See the docs for more information.</Text>
+																			<Input m='2' mt={4} type='date' placeholder='start_date' onChange={(e) => setData(data => ({ ...data, startDate: e.target.value }))} /> 
+																			<Text fontSize='sm' color="tomato" as="i" ml={2}>The date in the format YYYY-MM-DD. Any data before this date will not be replicated.</Text>
+																		</div>
+																	:
+																	""
+														)
+													}
+													{
+														data.sourceType !== ""
+														? 
+															params.id === "new"
+															?
+																<>
+																	<Select m='1' mt={4} placeholder='Schedule Type' onChange={(e) => setData(data => ({...data, scheduleType: e.target.value})) }>
+																		<option value="manual">Manual</option>
+																		<option value="cron">Cron</option>
+																	</Select>
+																</>
+															: ""
+														: ""
+													}
+													{
+														data.sourceType ? 
+															params.id === "new" ?
+																isLoading  ? 
+																<Button isLoading colorScheme='green' m='1' width='full'>Save</Button>  : 
+																<Button colorScheme='green' m='1' width='full' onClick={() => handleSave()}>Save</Button>	
+															: 
+																isLoading  ? 
+																<Button isLoading colorScheme='green' m='1' width='full'>Update</Button>  : 
+																<Button colorScheme='green' m='1' width='full' onClick={() => handleUpdate()}>Update</Button>	
+														: ""
+													}
 												</>
-											: ""
-										: ""
-									}
-                                    {
-                                        data.sourceType ? 
-											params.id === "new" ?
-												isLoading  ? 
-												<Button isLoading colorScheme='green' m='1' width='full'>Save</Button>  : 
-												<Button colorScheme='green' m='1' width='full' onClick={() => handleSave()}>Save</Button>	
 											: 
-												isLoading  ? 
-												<Button isLoading colorScheme='green' m='1' width='full'>Update</Button>  : 
-												<Button colorScheme='green' m='1' width='full' onClick={() => handleUpdate()}>Update</Button>	
-                                        : ""
-                                    }
-                                </>
+												""
+										}
+									</>
                             }
                             
                         </div>

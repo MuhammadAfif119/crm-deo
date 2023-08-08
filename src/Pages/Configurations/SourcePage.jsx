@@ -79,11 +79,11 @@ function IndexPage() {
 			if (result.isConfirmed) {
 				setIndexDelete(i)
 				setIsLoading(true)
-				const response =  deleteSource(data[i].sourceId, data[i].name)
+				const response = await deleteSource(data[i].sourceId, data[i].name)
 				setIsLoading(false)
 				if (response.status) {
-					deleteDocumentFirebase('analytic_sources', data[i].id)
-				   	getData()
+					await deleteDocumentFirebase('analytic_sources', data[i].id)
+				   	await getData()
 					Swal.fire(
 						'Deleted!',
 						'Your file has been deleted.',

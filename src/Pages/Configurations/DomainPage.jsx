@@ -68,20 +68,6 @@ function DomainsPage() {
 				}
 			}
 		})
-		// const confirmDelete = window.confirm("Are you sure to delete this domain?");
-		// if (confirmDelete) {
-		// 	const deleteDomainResult = await deleteDomainCustom(data[i].domain, data[i].projectVercel)
-		// 	if (deleteDomainResult.status) {
-		// 		await deleteDocumentFirebase('domain_lists', data[i].id)
-		// 		let domain = await getSingleDocumentFirebase('domains', data[i].projectId)
-		// 		domain.domain = domain.domain.filter(function(e) { return e !== data[i].domain })
-		// 		await setDocumentFirebase("domains", data[i].projectId, domain)
-		// 		getData()
-		// 		alert("Success to delete domain");
-		// 	} else {
-		// 		alert(deleteDomainResult.message)
-		// 	}
-		// }
 	}
 
 	const checkDomain = async (i) => {
