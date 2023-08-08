@@ -98,22 +98,6 @@ function IndexPage() {
 				}
 			}
 		})
-		// console.log('delete')
-		// const confirmDelete = window.confirm("Are you sure to delete this source?");
-		// if (confirmDelete) {
-		// 	setIndexDelete(i)
-		// 	setIsLoading(true)
-		// 	const response = await deleteSource(data[i].sourceId, data[i].name)
-		// 	setIsLoading(false)
-		// 	console.log(response, 'ok')
-		// 	if (response.status) {
-		// 		await deleteDocumentFirebase('analytic_sources', data[i].id)
-		// 		getData()
-		// 	} else {
-		// 		alert(response.message)
-		// 	}
-		// }
-
 	}
 
 	const changeSource = (id) => {
