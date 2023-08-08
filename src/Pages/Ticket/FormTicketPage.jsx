@@ -33,10 +33,10 @@ const LocationComponent = ({ type, data, setData, isError }) => {
           )
      }
 }
-const TicketComponent = ({ isError, handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, key }) => {
+const TicketComponent = ({ isError, handleDeleteTicket, categoryIndex, ticketIndex, handleTicketChange, category, keyuniq }) => {
 
      return (
-          <Flex border={'1px solid black'} p='5' rounded={5} gap={5} mt='5' key={key}>
+          <Flex border={'1px solid black'} p='5' rounded={5} gap={5} mt='5' key={keyuniq}>
                <Stack paddingBottom='5'>
                     <FormControl isRequired isInvalid={isError.includes(`categoryDetails[${categoryIndex}].tickets[${ticketIndex}].title`)}>
                          <FormLabel>Title</FormLabel>
@@ -181,7 +181,7 @@ const DetailTicketComponent = ({ handleNext, isError, setFormPage, setCheckboxPr
                                              Array.from({ length: ticketCounts[categoryIndex] }).map((_, ticketIndex) => {
                                                   return (
                                                        <TicketComponent
-                                                            key={`ticket-${categoryIndex}-${ticketIndex}`}
+                                                            keyuniq={`ticket-${categoryIndex}-${ticketIndex}`}
                                                             categoryIndex={categoryIndex}
                                                             category={category}
                                                             ticketIndex={ticketIndex}
@@ -571,19 +571,19 @@ const FormTicketPage = () => {
                          newData.eventType = eventType
                     }
 
-                    const res = await updateDocumentFirebase('tickets', idProject, newData)
-                    if (res && data.formId) {
+                    const resUpdate = await updateDocumentFirebase('tickets', idProject, newData)
+                    if (resUpdate && data.formId) {
                          const collectionName = 'forms';
                          const docName = data.formId;
                          const field = 'ticket_used';
-                         const values = [res];
+                         const values = [idProject];
 
                          try {
                               const result = await arrayUnionFirebase(collectionName, docName, field, values);
                               console.log(result); // Pesan toast yang berhasil
                               toast({
                                    title: "Deoapp.com",
-                                   description: `success add new ticket with document id ${res}`,
+                                   description: `success add new ticket with document id ${idProject}`,
                                    status: "success",
                                    position: "top-right",
                                    isClosable: true,
@@ -597,7 +597,7 @@ const FormTicketPage = () => {
                     } else {
                          toast({
                               title: "Deoapp.com",
-                              description: `success add new ticket with document id ${res}`,
+                              description: `success add new ticket with document id ${idProject}`,
                               status: "success",
                               position: "top-right",
                               isClosable: true,

@@ -54,9 +54,22 @@ function generateHTML(formFields) {
 
             case 'button':
                 html += `
-                <div onclick="submitForm('${formId}')" style="display: flex; align-items: center; justify-content: center; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
-            <button type="${type}" name="${name}"  style="padding: 10px; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">${label}</button>
-            </div>
+
+
+
+                <div style="margin-bottom: 10px;">
+                <div id="notification" style="display: none; color: green; text-align: center;">Terima kasih telah melakukan pendaftaran!</div>
+                <div id="successMessage" style="display: none; color: green; text-align: center; font-size: 18px;">Terimakasih sudah melakukan pembayaran!</div>
+              </div>
+              <div onclick="submitForm('${formId}')" style="display: flex; align-items: center; justify-content: center; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                <button type="${type}" name="${name}" style="padding: 10px; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; cursor: pointer;">
+                  <span id="loader" style="display: none;">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/importir-com.appspot.com/o/1.png?alt=media&token=7eff6537-54e9-454b-a9c7-b5c8f3b05e44" alt="Loading..." />
+                  </span>
+                  ${label}
+                </button>
+              </div>
+
             `;
 
                 break;
@@ -66,7 +79,9 @@ function generateHTML(formFields) {
         }
     });
 
-    return `<form  style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">${html}</form>`;
+    return `  <form  id="myForm" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">${html}</form>
+   
+    `;
 }
 
 function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue) {
@@ -74,10 +89,17 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
 
     jsScript += ` <script>
     async function submitForm(formId) {
-      const inputElements = document.querySelectorAll('input');
-      const textAreaElements = document.querySelectorAll('textarea');
-      const selectElements = document.querySelectorAll('select');
-      const dataForm = {}; // Membuat object kosong untuk menyimpan data form
+        const myForm = document.getElementById('myForm');
+        const loader = document.getElementById('loader');
+        const notification = document.getElementById('notification');
+        const successMessage = document.getElementById('successMessage');
+        const inputElements = document.querySelectorAll('input');
+        const textAreaElements = document.querySelectorAll('textarea');
+        const selectElements = document.querySelectorAll('select');
+        const dataForm = {}; // Membuat object kosong untuk menyimpan data form
+  
+        loader.style.display = 'block'; 
+
   
       inputElements.forEach(input => {
         dataForm[input.name] = input.value;
@@ -92,7 +114,7 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
       }); 
 
       dataForm.formId = formId
-      dataForm.opportunity_value = ${opportunityValue}
+      dataForm.opportunity_value = ${opportunityValue || 0}
       dataForm.status = 'open'
       
     
@@ -108,7 +130,9 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
 
         try {
             const res = await xhr.send(jsonData);
-            console.log(res, 'ini res');
+            notification.style.display = 'none';
+            successMessage.style.display = 'block';
+            loader.style.display = 'none';
           } catch (error) {
             console.log(error, 'ini error');
           }
@@ -194,7 +218,7 @@ function FormBuilderPage() {
 
                     let updateData = formValues
                     updateData.formId = formId
-                    updateData.opportunity_value = opportunityValue? opportunityValue : "0"
+                    updateData.opportunity_value = opportunityValue ? opportunityValue : "0"
                     updateData.status = "open"
 
                     const data = updateData
@@ -357,13 +381,13 @@ function FormBuilderPage() {
                         limitValue
                     );
                     setTicketActive(res);
-                    if(res.length > 0){
-                        if(res[0].price){
+                    if (res.length > 0) {
+                        if (res[0].price) {
                             setOpportunityValue(res[0].price);
 
                         }
                     }
-                   
+
                 } catch (error) {
                     console.log(error, "ini error");
                 }

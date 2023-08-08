@@ -35,7 +35,6 @@ function UsersPage() {
 		getCollectionFirebase('users',conditions)
 		.then((x)=>{
 			if(x){
-				console.log(x)
 				arrayUnionFirebase('companies',globalState.currentCompany,'users',[x[0].id])
 				.then()
 				.catch((err)=>console.log(err.message))
