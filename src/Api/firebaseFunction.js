@@ -1,7 +1,7 @@
 import axios from "axios"
 
-// const baseURL='https://asia-southeast2-deoapp-indonesia.cloudfunctions.net'
-const baseURL='http://localhost:5001/deoapp-indonesia/asia-southeast2'
+const baseURL='https://asia-southeast2-deoapp-indonesia.cloudfunctions.net'
+// const baseURL='http://localhost:5001/deoapp-indonesia/asia-southeast2'
 
 const options={
 	headers : {
