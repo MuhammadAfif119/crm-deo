@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
+function DetailPipelineCard({ data, stages, handleModalClose, navigate, pipeline }) {
 
     const toast = useToast()
 
@@ -60,7 +60,7 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate }) {
         try {
             const result = await getSingleDocumentFirebase('contacts', `${data?.phoneNumber}-${globalState.currentProject}`)
             if(result){
-                navigate(`/contacts/detail/${data?.phoneNumber}-${globalState.currentProject}`, { state: result })
+                navigate(`/contacts/detail/${data?.phoneNumber}-${globalState.currentProject}`, { state: { result: result, pipeline: pipeline, price: opportunityValueRef?.current?.value } })
 
             }else{
                 toast({
