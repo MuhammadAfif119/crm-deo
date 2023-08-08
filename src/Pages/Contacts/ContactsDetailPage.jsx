@@ -22,6 +22,7 @@ function ContactsDetailPage() {
 
     const dataParam = location.state.result
     const dataPipeline = location.state.pipeline
+
     const price = location.state.price
 
     const getdataMessageEmail = async() => {
@@ -33,11 +34,12 @@ function ContactsDetailPage() {
           const sortBy = { field: "createdAt", direction: "desc" };
           try {
             const res = await getCollectionFirebase(
-              `contacts/${dataParam?.id}/messages`,
+              `contacts/${dataParam?.id === undefined ? dataParam?.id : dataPipeline?.id}/messages`,
               conditions,
               sortBy
             );
             setEmailHistory(res);
+            console.log(res, 'yyy');
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -45,7 +47,6 @@ function ContactsDetailPage() {
     const getTemplateEmail = async () => {
         try {
             const res = await getCollectionWhereFirebase('templates', 'category', '==', 'email')
-            console.log({ res })
             setTemplateEmail(res)
         } catch (error) {
             console.log(error)
@@ -56,8 +57,9 @@ function ContactsDetailPage() {
         getdataMessageEmail()
         getTemplateEmail()
         return () => {
+            setEmailHistory("")
         }
-    }, [globalState.currentCompany,globalState.currentProject, "email" ])
+    }, [globalState.currentProject, "email" ])
 
 
 

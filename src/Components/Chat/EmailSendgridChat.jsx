@@ -83,17 +83,16 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
 
         const dataEmail = {
-            platform_name: (dataPipeline?.name).toUpperCase(),
+            platform_name: updateData.title.toUpperCase(),
             sender_email: updateData.emailFrom,
             recipient_email: updateData.emailTo,
             recipient_name: updateData.nameFrom,
             cc: [],
             subject: updateData.subject || "",
-            title: updateData.title,
+            title: dataPipeline?.name,
             message: updateData.message
         }
 
-        console.log(dataEmail, 'dataEmail')
 
         try {
             const res = await axios.post("https://new-third-party.importir.com/api/email/send-message", dataEmail)
