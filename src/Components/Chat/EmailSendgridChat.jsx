@@ -65,7 +65,11 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
     const handleSave = async () => {
 
-        setLoading(true)
+        // console.log(dataContact, 'xxx')
+
+
+
+        // setLoading(true)
         const updateData = {
             title: dataSend.title,
             emailTo: emailRef.current.value,
@@ -90,16 +94,21 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
             recipient_name: updateData.nameFrom,
             cc: [],
             subject: updateData.subject || "",
-            title: dataPipeline?.name,
+            title: dataPipeline?.name || "Contact",
             message: updateData.message
         }
+
+
+
+
+
 
 
         try {
             const res = await axios.post("https://new-third-party.importir.com/api/email/send-message", dataEmail)
             if (res?.data?.status === true) {
                 if (!value) return
-                addDocumentFirebase(`contacts/${dataContact.id}/messages`, updateData, updateData.companyId)
+                addDocumentFirebase(`contacts/${dataContact.phoneNumber}-${globalState.currentProject}/messages`, updateData, updateData.companyId)
                     .then(() => handleSuccess())
             } else {
                 toast({
