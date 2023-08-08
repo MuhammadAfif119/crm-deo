@@ -19,7 +19,6 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
     const emailRef = useRef(dataContact?.email);
     const nameRef = useRef(dataContact?.name);
 
-    console.log(dataContact, 'xxxt')
 
 
     const handleContentChange = (value) => {
@@ -80,10 +79,11 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
             status: 'success'
         }
 
-        console.log(updateData, 'updateData')
+
+
 
         const dataEmail = {
-            platform_name: window.location.hostname,
+            platform_name: (dataPipeline?.name).toUpperCase(),
             sender_email: updateData.emailFrom,
             recipient_email: updateData.emailTo,
             recipient_name: updateData.nameFrom,
