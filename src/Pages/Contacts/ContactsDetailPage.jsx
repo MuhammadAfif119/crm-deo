@@ -1,7 +1,7 @@
 import { Grid, Heading, HStack, Stack, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getCollectionFirebase, getCollectionWhereFirebase } from '../../Api/firebaseApi'
+import { getCollectionFirebase, getCollectionFirebaseV2, getCollectionWhereFirebase, getSingleDocumentFirebase } from '../../Api/firebaseApi'
 import BackButtons from '../../Components/Buttons/BackButtons'
 import EmailHistory from '../../Components/Chat/EmailHistory'
 import EditContactFrom from '../../Components/Form/EditContactFrom'
@@ -19,30 +19,44 @@ function ContactsDetailPage() {
     const [emailHistory, setEmailHistory] = useState("")
     const [templateEmail, setTemplateEmail] = useState([])
 
+    const [dataParam, setDataParam] = useState("")
 
-    const dataParam = location.state.result
+
+    // const dataParam = location.state.result
     const dataPipeline = location.state.pipeline
 
     const price = location.state.price
 
-    const getdataMessageEmail = async() => {
-          const conditions = [
+
+    const getDataMessageDetail = async () => {
+        try {
+                  const result = await getSingleDocumentFirebase('contacts', params.id)
+                  setDataParam(result)
+                } catch (error) {
+                  console.log(error)
+                }
+    }
+
+    const getdataMessageEmail = async () => {
+
+        const link = `contacts/${params?.id}/messages`
+        const conditions = [
             { field: "type", operator: "==", value: "email" },
             { field: "companyId", operator: "==", value: globalState.currentCompany },
             { field: "projectId", operator: "==", value: globalState.currentProject },
-          ];
-          const sortBy = { field: "createdAt", direction: "desc" };
-          try {
+        ];
+        const sortBy = { field: "createdAt", direction: "desc" };
+        try {
             const res = await getCollectionFirebase(
-              `contacts/${dataParam?.id === undefined ? dataParam?.id : dataPipeline?.id}/messages`,
-              conditions,
-              sortBy
+                link,
+                conditions,
+                sortBy,
             );
+
             setEmailHistory(res);
-            console.log(res, 'yyy');
-          } catch (error) {
+        } catch (error) {
             console.log(error, "ini error");
-          }
+        }
     }
     const getTemplateEmail = async () => {
         try {
@@ -54,12 +68,13 @@ function ContactsDetailPage() {
     }
 
     useEffect(() => {
+        getDataMessageDetail()
         getdataMessageEmail()
         getTemplateEmail()
         return () => {
             setEmailHistory("")
         }
-    }, [globalState.currentProject, "email" ])
+    }, [globalState.currentProject, "email"])
 
 
 
@@ -74,14 +89,14 @@ function ContactsDetailPage() {
             <Stack >
                 <Grid templateColumns={{ base: '1fr', md: '1fr 2fr 1fr' }} gap={2}>
                     <Stack bgColor={'white'} borderRadius='md' shadow={'md'} minH='500px'>
-                        <EditContactFrom data={dataParam}  />
+                        <EditContactFrom data={dataParam || dataPipeline} />
                     </Stack>
                     <Stack bgColor={'white'} borderRadius='md' shadow={'md'} minH='500px'>
-                        <MessageContact data={dataParam} templateEmail={templateEmail} dataPipeline={dataPipeline} price={price}/>
+                        <MessageContact data={dataParam || dataPipeline} templateEmail={templateEmail} dataPipeline={dataPipeline} price={price} />
                     </Stack>
                     <Stack bgColor={'white'} borderRadius='md' shadow={'md'} minH='500px'>
                         {emailHistory.length > 0 ? (
-                        <EmailHistory data={emailHistory}/>
+                            <EmailHistory data={emailHistory} />
 
                         ) : (
                             <Stack alignItems={'center'} justifyContent='center' minH='500px'>
