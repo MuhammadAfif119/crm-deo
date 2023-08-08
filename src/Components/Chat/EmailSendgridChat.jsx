@@ -69,7 +69,7 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
 
 
-        // setLoading(true)
+        setLoading(true)
         const updateData = {
             title: dataSend.title,
             emailTo: emailRef.current.value,
