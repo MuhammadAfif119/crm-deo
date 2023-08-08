@@ -49,8 +49,6 @@ function IndexPage() {
 	}, [globalState?.currentCompany])
 
 	const deleteSourceData = async (i) => {
-		console.log('delete')
-		// const confirmDelete = window.confirm("Are you sure to delete this source?");
 		Swal.fire({
 			title: 'Are you sure?',
 			text: "You won't be able to revert this!",
@@ -61,20 +59,43 @@ function IndexPage() {
 			confirmButtonText: 'Yes, delete it!'
 		  }).then(async (result) => {
 			if (result.isConfirmed) {
-			  const response = await deleteSource(data[i].sourceId, data[i].name)
-			  setIsLoading(false)
-			  if (response.status) {
-				await deleteDocumentFirebase('analytic_sources', data[i].id)
-				getData()
-			  } else {
-				  alert(response.message)
-			  }
-			  setIndexDelete(i)
-			  setIsLoading(true)
+				setIndexDelete(i)
+				setIsLoading(true)
+				const response =  deleteSource(data[i].sourceId, data[i].name)
+				setIsLoading(false)
+				if (response.status) {
+					deleteDocumentFirebase('analytic_sources', data[i].id)
+				   	getData()
+					Swal.fire(
+						'Deleted!',
+						'Your file has been deleted.',
+						'success'
+					)
+				} else {
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: response.message
+					})
+				}
 			}
-		  })
+		})
+		// console.log('delete')
+		// const confirmDelete = window.confirm("Are you sure to delete this source?");
 		// if (confirmDelete) {
+		// 	setIndexDelete(i)
+		// 	setIsLoading(true)
+		// 	const response = await deleteSource(data[i].sourceId, data[i].name)
+		// 	setIsLoading(false)
+		// 	console.log(response, 'ok')
+		// 	if (response.status) {
+		// 		await deleteDocumentFirebase('analytic_sources', data[i].id)
+		// 		getData()
+		// 	} else {
+		// 		alert(response.message)
+		// 	}
 		// }
+
 	}
 	
 	return (
@@ -88,7 +109,7 @@ function IndexPage() {
 						<Button colorScheme='green' size={'sm'}>+</Button>
 					</Link>
 				</HStack>
-				<Stack bgColor={'white'} spacing={1} borderRadius={'xl'} p={3} m={[1, 1, 4]} shadow={'md'}>
+				<Stack bgColor={'white'} spacing={1} borderRadius={'xl'} p={3} m={[1, 1, 4]} shadow={'md'} overflowY={'auto'}>
 					<Table variant='striped' colorScheme='gray'>
 						{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
 						<Thead>

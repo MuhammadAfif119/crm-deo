@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom'
 import { deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi'
 import { checkDomainCustom, deleteDomainCustom } from '../../Api/vercelAPI'
 import useUserStore from '../../Hooks/Zustand/Store'
+import Swal from 'sweetalert2'
 
 function DomainsPage() {
   	const globalState = useUserStore();
@@ -36,20 +37,51 @@ function DomainsPage() {
 	}
 
 	const deleteDomain = async (i) => {
-		const confirmDelete = window.confirm("Are you sure to delete this domain?");
-		if (confirmDelete) {
-			const deleteDomainResult = await deleteDomainCustom(data[i].domain, data[i].projectVercel)
-			if (deleteDomainResult.status) {
-				await deleteDocumentFirebase('domain_lists', data[i].id)
-				let domain = await getSingleDocumentFirebase('domains', data[i].projectId)
-				domain.domain = domain.domain.filter(function(e) { return e !== data[i].domain })
-				await setDocumentFirebase("domains", data[i].projectId, domain)
-				getData()
-				alert("Success to delete domain");
-			} else {
-				alert(deleteDomainResult.message)
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		  }).then(async(result) => {
+			if (result.isConfirmed) {
+				const deleteDomainResult = await deleteDomainCustom(data[i].domain, data[i].projectVercel)
+				if (deleteDomainResult.status) {
+					await deleteDocumentFirebase('domain_lists', data[i].id)
+					let domain = await getSingleDocumentFirebase('domains', data[i].projectId)
+					domain.domain = domain.domain.filter(function(e) { return e !== data[i].domain })
+					await setDocumentFirebase("domains", data[i].projectId, domain)
+					getData()
+					Swal.fire(
+						'Deleted!',
+						'Success to delete domain',
+						'success'
+					)
+				} else {
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: deleteDomainResult.message
+					})
+				}
 			}
-		}
+		})
+		// const confirmDelete = window.confirm("Are you sure to delete this domain?");
+		// if (confirmDelete) {
+		// 	const deleteDomainResult = await deleteDomainCustom(data[i].domain, data[i].projectVercel)
+		// 	if (deleteDomainResult.status) {
+		// 		await deleteDocumentFirebase('domain_lists', data[i].id)
+		// 		let domain = await getSingleDocumentFirebase('domains', data[i].projectId)
+		// 		domain.domain = domain.domain.filter(function(e) { return e !== data[i].domain })
+		// 		await setDocumentFirebase("domains", data[i].projectId, domain)
+		// 		getData()
+		// 		alert("Success to delete domain");
+		// 	} else {
+		// 		alert(deleteDomainResult.message)
+		// 	}
+		// }
 	}
 
 	const checkDomain = async (i) => {
@@ -103,7 +135,7 @@ function DomainsPage() {
 						<Button colorScheme='green' size={'sm'}>+</Button>
 					</Link>
 				</HStack>
-				<Stack bgColor={'white'} spacing={1} borderRadius={'xl'} p={3} m={[1, 1, 4]} shadow={'md'}>
+				<Stack bgColor={'white'} spacing={1} borderRadius={'xl'} p={3} m={[1, 1, 4]} shadow={'md'} overflowY={'auto'} >
 					<Table variant='striped' colorScheme='gray'>
 						{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
 						<Thead>

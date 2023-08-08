@@ -6,6 +6,7 @@ import { addDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, 
 import useUserStore from '../../Hooks/Zustand/Store'
 import { createSource, initOauth, updateSource } from '../../Api/firebaseFunction';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 
 function DomainsNewPage() {
@@ -100,10 +101,18 @@ function DomainsNewPage() {
 			newData.params = response.data.source
 			newData.collectionList = data.collectionList
 			await updateDocumentFirebase("analytic_sources", params.id, newData)
-			alert("Success to update")
+			Swal.fire({
+				icon: 'success',
+				title: 'Success',
+				text: 'Success to update'
+			})
 			navigate("/configuration/integration")
 		} else {
-			alert(response.message)
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: response.message
+			})
 			return
 		}
 		console.log("dta", response)
@@ -141,10 +150,18 @@ function DomainsNewPage() {
 				}
 				console.log('dataSave', dataSave)
 				await addDocumentFirebase('analytic_sources', dataSave, globalState.currentCompany)
-				alert("Success to save")
+				Swal.fire({
+					icon: 'success',
+					title: 'Success',
+					text: 'Successfully save data'
+				})
 				navigate("/configuration/integration")
 			} else {
-				alert(response.message)
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops...',
+					text: response.message
+				})
 				return
 			}
 		} catch (error) {
@@ -284,9 +301,13 @@ function DomainsNewPage() {
                                                     data.sourceType === 'facebook-marketing' ? 
                                                         <div>
 															<Text m="2" mt={4}>Collection List</Text>
-															{collectionFacebookMarketing?.map(x => 
-																<Checkbox m="1" defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
-															)}
+															<Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={{ base: 2, md: 3, lg: 4 }}>
+																{collectionFacebookMarketing?.map(x => 
+																<GridItem>
+																	<Checkbox m="1" defaultChecked={data?.collectionList?.includes(x) ? true :  false} onChange={(e) => changeCollectionName(x)}>{x}</Checkbox>
+																</GridItem>
+																)}
+															</Grid>
 															<br />
                                                             <Input m='1' mt={4} type='text' placeholder='account_id' onChange={(e) => setData(data => ({ ...data, accountId: e.target.value }))} /> 
                                                             <Text fontSize='sm' color="tomato" as="i" m={2}>The Facebook Ad account ID to use when pulling data from the Facebook Marketing API. Open your Meta Ads Manager. The Ad account ID number is in the account dropdown menu or in your browser's address bar. See the docs for more information.</Text>

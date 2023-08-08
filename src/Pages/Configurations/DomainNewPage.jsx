@@ -5,6 +5,7 @@ import { addDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, 
 import BackButtonComponent from '../../Components/Buttons/BackButtons';
 import { createDomainCustom } from '../../Api/vercelAPI'
 import useUserStore from '../../Hooks/Zustand/Store';
+import Swal from 'sweetalert2'
 
 function NewPage() {
     const globalState = useUserStore();
@@ -17,11 +18,19 @@ function NewPage() {
 
 	const handleSave = async () => {
 		if(!data.name) {
-			alert("Please fill the name of domain!")
+			Swal.fire({
+				icon: 'warning',
+				title: 'Oops...',
+				text: 'Please fill the name of domain!',
+			})
 			return
 		}
 		if(!data.projectId) {
-			alert("Please fill the project!")
+			Swal.fire({
+				icon: 'warning',
+				title: 'Oops...',
+				text: 'Please fill the project!',
+			})
 			return
 		}
 		setIsLoading(true);
@@ -53,9 +62,18 @@ function NewPage() {
 					setData({...data, verif: domainData.name, isSubdomain: false})
 				}
 			}
+			Swal.fire({
+				icon: 'success',
+				title: 'Success',
+				text: 'Successfully to save'
+			})
 			setIsComplete(true)
 		} else {
-			alert(response.message);
+			Swal.fire({
+				icon: 'error',
+				title: 'Oops...',
+				text: response.message
+			})
 		}
 	}
 
