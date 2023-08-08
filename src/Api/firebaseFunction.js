@@ -75,3 +75,14 @@ export const deleteSource = async(sourceId, name)=>{
 		.then((x)=>x.data)
 		.catch((err)=>console.log(err))
 }
+
+
+export const updateSource = async(data)=>{
+	const url = `${baseURL}/analyticUpdateSourceAndConnection`
+	const configtest = {headers : {
+		'Content-Type': 'application/json',
+		'Authorization': 'pFa08EJkVRoT7GDiqk1'}}
+	return axios.post(url, data, configtest)
+		.then((x)=>x.data)
+		.catch((err)=>console.log(err))
+}

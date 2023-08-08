@@ -76,7 +76,7 @@ function IndexPage() {
 					{/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
 					<Thead>
 						<Tr>
-							<Th>Project ID</Th>
+							<Th>Project</Th>
 							<Th>Source Type</Th>
 							<Th>Connection Name</Th>
 							<Th>Param</Th>
@@ -87,7 +87,7 @@ function IndexPage() {
 						{data?.map((x,i) =>
 							<Tr key={i}>
 								<Td>
-									<Link to={`/projects/${x.projectId}`}>{x.projectId}</Link>
+									<Link to={`/projects/${x.projectId}`}>{x.projectName}</Link>
 								</Td>
 								<Td>{x.sourceType}</Td>
 								<Td>{x.connectionName}</Td>
