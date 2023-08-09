@@ -18,6 +18,7 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
     const emailRef = useRef(dataContact?.email);
     const nameRef = useRef(dataContact?.name);
+    const phoneRef = useRef(dataContact?.phoneNumber);
 
 
 
@@ -64,6 +65,10 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
     const handleSave = async () => {
 
+        // console.log(dataContact, 'xxx')
+
+
+
         setLoading(true)
         const updateData = {
             title: dataSend.title,
@@ -89,16 +94,21 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
             recipient_name: updateData.nameFrom,
             cc: [],
             subject: updateData.subject || "",
-            title: dataPipeline?.name,
+            title: dataPipeline?.name || "Contact",
             message: updateData.message
         }
+
+
+
+
+
 
 
         try {
             const res = await axios.post("https://new-third-party.importir.com/api/email/send-message", dataEmail)
             if (res?.data?.status === true) {
                 if (!value) return
-                addDocumentFirebase(`contacts/${dataContact.id}/messages`, updateData, updateData.companyId)
+                addDocumentFirebase(`contacts/${dataContact.phoneNumber}-${globalState.currentProject}/messages`, updateData, updateData.companyId)
                     .then(() => handleSuccess())
             } else {
                 toast({
@@ -133,12 +143,13 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
         const data = {
             NAME: nameRef.current.value,
             EMAIL: emailRef.current.value,
+            PHONE: dataContact?.phoneNumber,
             TITLE: dataPipeline?.name,
-            DESCRIPTION: dataPipeline?.description,
+            DESCRIPTION: dataPipeline?.description || "",
             TOTAL: price
         }
         const replacedTemplate = template?.messages.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-            return data[key] || ""; // Mengganti dengan data yang sesuai, atau string kosong jika tidak ada data
+            return `${data[key]}<br/>` || ""; // Mengganti dengan data yang sesuai, atau string kosong jika tidak ada data
         });
         setValue(replacedTemplate)
     }
