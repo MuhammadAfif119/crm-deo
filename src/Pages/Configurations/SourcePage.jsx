@@ -73,8 +73,8 @@ function IndexPage() {
 			text: "You won't be able to revert this!",
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
 			confirmButtonText: 'Yes, delete it!'
 		  }).then(async (result) => {
 			if (result.isConfirmed) {
@@ -162,6 +162,7 @@ function IndexPage() {
 											?
 												<>
 													<Text>Customer ID: {x.params.configuration.customer_id}</Text>
+													<Text>Date: {x.params.configuration.start_date}</Text>
 												</>
 											: 
 												x.sourceType === 'facebook-marketing' 
@@ -170,7 +171,7 @@ function IndexPage() {
 												:
 													""
 										}
-										Secret ID: {x.secretId}
+										Oauth Email: {x.secretEmail}
 										<br />
 										<Link to={`oauth/${x.projectId}/${x.sourceType}`}>
 											<Button bgColor={'blue.300'} size={'sm'}>
@@ -226,14 +227,18 @@ function IndexPage() {
 									<Tr key={i}>
 										<Td>
 											{
-												isLoading && oauthSelected === x.id ?
-													<Button isLoading bgColor={'blue.300'} size={'sm'} ml={3}>
-														<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
-													</Button>
+												x.email !== sourceSelected.secretEmail
+												?
+													isLoading && oauthSelected === x.id ?
+														<Button isLoading bgColor={'blue.300'} size={'sm'} ml={3}>
+															<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
+														</Button>
+													:
+														<Button onClick={() => changeOauth(x)} bgColor={'blue.300'} size={'sm'} ml={3}>
+															<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
+														</Button>
 												:
-													<Button onClick={() => changeOauth(x)} bgColor={'blue.300'} size={'sm'} ml={3}>
-														<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
-													</Button>
+													""
 											}
 										</Td>
 										<Td>
