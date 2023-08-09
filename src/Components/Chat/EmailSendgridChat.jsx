@@ -15,10 +15,23 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
     const [isModalOpen, setModalOpen] = useState(false);
     const [shareLink, setShareLink] = useState("");
     const [loading, setLoading] = useState(false)
+    const [ccList, setCcList] = useState([]);
+    const [cc, setCc] = useState("")
+
 
     const emailRef = useRef(dataContact?.email);
     const nameRef = useRef(dataContact?.name);
     const phoneRef = useRef(dataContact?.phoneNumber);
+
+    const addCc = (email) => {
+        setCcList((prevCcList) => [...prevCcList, email]);
+    };
+
+    const removeCc = (index) => {
+        const updatedCcList = [...ccList];
+        updatedCcList.splice(index, 1);
+        setCcList(updatedCcList);
+    };
 
 
 
@@ -86,23 +99,16 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
 
 
 
-
         const dataEmail = {
             platform_name: updateData.title.toUpperCase(),
             sender_email: updateData.emailFrom,
             recipient_email: updateData.emailTo,
-            recipient_name: updateData.nameFrom,
-            cc: [],
+            recipient_name: updateData.nameTo,
+            cc: ccList, 
             subject: updateData.subject || "",
             title: dataPipeline?.name || "Contact",
             message: updateData.message
-        }
-
-
-
-
-
-
+        };
 
         try {
             const res = await axios.post("https://new-third-party.importir.com/api/email/send-message", dataEmail)
@@ -192,6 +198,22 @@ function EmailSendgridChat({ dataContact, templateEmail, dataPipeline, price }) 
                 <Input size={'sm'} placeholder='Title ' name='title' onChange={handleChange} />
             </HStack>
 
+            <HStack>
+                <Text fontSize={'sm'}>CC: </Text>
+                <Input size={'sm'} placeholder='Email CC' value={cc} onChange={(e) => setCc(e.target.value)} />
+                <Button colorScheme='green' size='sm' onClick={() => addCc(cc)}>Tambah</Button>
+            </HStack>
+
+            {ccList.length > 0 && (
+                <Stack spacing={1}>
+                    {ccList.map((email, index) => (
+                        <HStack key={index}>
+                            <Text fontSize={'sm'}>{email}</Text>
+                            <Button colorScheme='red' size='sm' onClick={() => removeCc(index)}>Hapus</Button>
+                        </HStack>
+                    ))}
+                </Stack>
+            )}
 
             <HStack>
 
