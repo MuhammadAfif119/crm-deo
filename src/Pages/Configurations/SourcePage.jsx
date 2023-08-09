@@ -28,6 +28,7 @@ function IndexPage() {
 	const [indexDelete, setIndexDelete] = useState(0)
 	const [oauths, setOauths] = useState([])
 	const [sourceSelected, setSourceSelected] = useState({})
+	const [oauthSelected, setOauthSelected] = useState()
 
 	const getData = ()=>{
 		const conditions = [
@@ -107,6 +108,7 @@ function IndexPage() {
 	}
 
 	const changeOauth = async (oauth) => {
+		setOauthSelected(oauth.id)
 		console.log("oauth", oauth)
 		setIsLoading(true)
 		const response = await updateSecretId({
@@ -214,24 +216,31 @@ function IndexPage() {
 							<Table variant='striped' colorScheme='gray'>
 							<Thead>
 								<Tr>
-									<Th>Source Type</Th>
-									<Th>Email</Th>
 									<Th>Action</Th>
+									<Th>Email</Th>
+									<Th>Source Type</Th>
 								</Tr>
 							</Thead>
 							<Tbody>
 								{oauths?.filter(val => val.sourceType === sourceSelected.sourceType).map((x, i) => 
 									<Tr key={i}>
 										<Td>
-											<Text>{x.sourceType}</Text>
+											{
+												isLoading && oauthSelected === x.id ?
+													<Button isLoading bgColor={'blue.300'} size={'sm'} ml={3}>
+														<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
+													</Button>
+												:
+													<Button onClick={() => changeOauth(x)} bgColor={'blue.300'} size={'sm'} ml={3}>
+														<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
+													</Button>
+											}
 										</Td>
 										<Td>
 											<Text>{x.email}</Text>
 										</Td>
 										<Td>
-											<Button onClick={() => changeOauth(x)} bgColor={'blue.300'} size={'sm'} ml={3}>
-												<CheckCircleIcon color={'white'}></CheckCircleIcon> Select
-											</Button>
+											<Text>{x.sourceType}</Text>
 										</Td>
 									</Tr>
 								)}
@@ -240,9 +249,6 @@ function IndexPage() {
                         </Stack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button isLoading={isLoading} variant={'outline'} size='sm' colorScheme="blue" mr={3}>
-                            Submit
-                        </Button>
                         <Button variant={'outline'} size='sm' colorScheme="red" mr={3} onClick={onClose}>
                             Close
                         </Button>
