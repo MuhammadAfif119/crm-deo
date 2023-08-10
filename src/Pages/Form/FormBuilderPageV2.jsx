@@ -1,8 +1,8 @@
-import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading, HStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Spacer } from '@chakra-ui/react';
+import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divider, Switch, useToast, Box, SimpleGrid, Heading, HStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Spacer, Checkbox } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
+import { deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import BackButtons from '../../Components/Buttons/BackButtons';
 import TicketCard from '../../Components/Card/TicketCard';
 import CreateForm from '../../Components/Form/CreateForm';
@@ -194,6 +194,8 @@ function FormBuilderPage() {
     const [apiSubmitUrl, setApiSubmitUrl] = useState('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead');
     const [opportunityValue, setOpportunityValue] = useState("");
 
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+
     const [ticketActive, setTicketActive] = useState([])
 
     const [embedCode, setEmbedCode] = useState('');
@@ -288,6 +290,7 @@ function FormBuilderPage() {
         // Menyimpan hasil elemen HTML lengkap ke state embedCode
         setEmbedCode(fullHTML);
     };
+
     const handleSaveForm = async () => {
         setLoading(true)
         const collectionName = 'forms';
@@ -298,7 +301,8 @@ function FormBuilderPage() {
             enableFacebookPixel,
             isActive,
             apiSubmitUrl: `${apiSubmitUrl}`,
-
+            paymentMethod: selectedPaymentMethod,
+            paymentMethodId: process.env.REACT_APP_PAYMENT_XENDIT
         };
 
         try {
@@ -363,31 +367,11 @@ function FormBuilderPage() {
         try {
             const result = await getSingleDocumentFirebase('forms', param.id)
             setFormData(result)
-            if (result.ticket_used) {
-                const conditions = [
-                    { field: "formId", operator: "==", value: param.id },
-                    { field: "companyId", operator: "==", value: globalState.currentCompany },
-                    { field: "projectId", operator: "==", value: globalState.currentProject },
-                ];
-                const sortBy = { field: "createdAt", direction: "desc" };
-                const limitValue = 10;
-
-
+            if (result?.ticket_used) {
                 try {
-                    const res = await getCollectionFirebase(
-                        "tickets",
-                        conditions,
-                        sortBy,
-                        limitValue
-                    );
-                    setTicketActive(res);
-                    if (res.length > 0) {
-                        if (res[0].price) {
-                            setOpportunityValue(res[0].price);
-
-                        }
-                    }
-
+                    const resultTicket = await getSingleDocumentFirebase('tickets', result.ticket_used[0])
+                    setTicketActive(resultTicket)
+                    setOpportunityValue(resultTicket?.price);
                 } catch (error) {
                     console.log(error, "ini error");
                 }
@@ -398,6 +382,7 @@ function FormBuilderPage() {
                 setEnableFacebookPixel(result?.enableFacebookPixel)
                 setFacebookPixelId(result?.facebookPixelId)
                 setIsActive(result?.isActive)
+                setSelectedPaymentMethod(result?.paymentMethod)
 
             } else {
                 setFormFields([
@@ -426,13 +411,67 @@ function FormBuilderPage() {
     }, [])
 
 
+    const handlePaymentMethodChange = (option) => {
+        setSelectedPaymentMethod(option);
+    };
+
+    const renderPaymentOptions = () => {
+        const paymentOptions = ['xendit', 'midtrans', 'finpay']; // Ganti dengan opsi pembayaran yang sesuai
+        return (
+            <Stack spacing={2} >
+                <HStack spacing={5}>
+                    {paymentOptions.map(option => (
+                        <Checkbox
+                            key={option}
+                            value={option}
+                            isChecked={selectedPaymentMethod === option}
+                            onChange={() => handlePaymentMethodChange(option)}
+                            textTransform='capitalize'
+                        >
+                            {option}
+                        </Checkbox>
+                    ))}
+                </HStack>
+            </Stack>
+        );
+    };
+
+    const handleDeleteForm = async () => {
+        const collectionName = 'forms';
+        const docName = param.id;
+
+        try {
+          const result = await deleteDocumentFirebase(collectionName, docName);
+          console.log(result);
+          
+          toast({
+            title: "Deoapp.com",
+            description: "success delete form",
+            status: "success",
+            position: "top-right",
+            isClosable: true,
+        });
+
+        navigate(-1)
+        } catch (error) {
+          console.log('Terjadi kesalahan:', error);
+        }
+    }
+
+
 
     return (
         <Stack spacing={5}>
             <BackButtons />
 
+            <HStack>
 
-            <Heading size={'lg'} textTransform='capitalize'>{formData.title}</Heading>
+                <Heading size={'lg'} textTransform='capitalize'>{formData.title}</Heading>
+                <Spacer />
+                <Button onClick={handleDeleteForm} size={'sm'} colorScheme='red'>Delete</Button>
+
+            </HStack>
+
 
             <Divider />
             <Grid templateColumns={{ base: '1fr', md: '1.3fr 1fr' }} gap={4} py={5}>
@@ -470,19 +509,27 @@ function FormBuilderPage() {
                                 </Stack>
                             </FormControl>
 
-                            <HStack alignItems={'flex-end'} justifyContent='flex-end'>
-                                <Button variant={'outline'} onClick={handleEmbedCode} colorScheme="blue">
-                                    Show Embed Code
-                                </Button>
 
-                                <Button variant={'outline'} isLoading={loading} onClick={handleSaveForm} colorScheme="blue">
-                                    Save Form
-                                </Button>
-
-                            </HStack>
 
 
                         </Stack>
+
+                        <Heading size={'md'}>Payment Method</Heading>
+                        <Stack>
+                            {renderPaymentOptions()}
+                        </Stack>
+
+                        <HStack alignItems={'flex-end'} justifyContent='flex-end'>
+                            <Button variant={'outline'} onClick={handleEmbedCode} colorScheme="blue">
+                                Show Embed Code
+                            </Button>
+
+                            <Button variant={'outline'} isLoading={loading} onClick={handleSaveForm} colorScheme="blue">
+                                Save Form
+                            </Button>
+
+                        </HStack>
+
                     </Stack>
 
 
@@ -490,16 +537,12 @@ function FormBuilderPage() {
 
                 </Stack>
                 <Stack  >
-                    {ticketActive?.length > 0 && (
+                    {ticketActive && (
                         <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
                             <Heading size={'md'}>Product Active</Heading>
-                            {ticketActive?.map((x, index) => {
-                                return (
-                                    <Stack key={index} onClick={() => console.log(x, 'ini xx')}>
-                                        <TicketCard item={x} />
-                                    </Stack>
-                                )
-                            })}
+                            <Stack onClick={() => console.log(ticketActive, 'ini xx')}>
+                                <TicketCard item={ticketActive} />
+                            </Stack>
                             <Stack></Stack>
                         </Stack>
                     )}

@@ -432,7 +432,9 @@ const FormTicketPage = () => {
                     const data = [];
                     snapshot.forEach((doc) => {
                          const docData = doc.data();
-                         data.push({ id: doc.id, ...docData });
+                         if (!docData.ticket_used || docData.ticket_used.length === 0) {
+                              data.push({ id: doc.id, ...docData });
+                         }
                     });
 
                     setDataForm(data);
@@ -535,7 +537,7 @@ const FormTicketPage = () => {
                          const resImage = await uploadFile(`${data?.title}-logo`, "tickets", filesLogo[0]);
                          newDatas.logo = resImage
                     }
-                    if(eventType){
+                    if (eventType) {
                          newDatas.eventType = eventType
                     }
 
@@ -911,7 +913,7 @@ const FormTicketPage = () => {
                               formPage={formPage}
                               categoryCount={categoryCount}
                               isError={isError}
-                          
+
                               handleNext={handleNext}
                          /> :
                          <FormPage
