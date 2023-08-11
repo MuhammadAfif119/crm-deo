@@ -301,7 +301,7 @@ function SidebarComponentV2({ layout }) {
 
                         {data.map((x, i) => (
                           <AccordionItem
-                            key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
+                            key={i} isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
                               <AccordionButton>

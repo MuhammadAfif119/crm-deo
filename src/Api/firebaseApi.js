@@ -313,10 +313,13 @@ export const setDocumentFirebase = async (
 ) => {
   try {
     if (!data.createdAt) data.lastUpdated = new Date();
-    data.lastUpdatedBy = {
-      uid: auth.currentUser.uid,
-      email: auth.currentUser.email,
-    };
+    if(auth.currentUser){
+      data.lastUpdatedBy = {
+        uid: auth.currentUser.uid,
+        email: auth.currentUser.email,
+      };
+    }
+  
     
 
     const docRef = doc(db, collectionName, docName);
