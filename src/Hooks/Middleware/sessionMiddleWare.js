@@ -1,6 +1,7 @@
 import axios from "axios";
 import { database } from "../../Config/firebase";
 import { ref, set, remove, get, child } from "firebase/database";
+import { removeSymbols } from "../../Utils/Helper";
 
 // const getUserIp = async () => {
 //   try {
@@ -14,7 +15,7 @@ import { ref, set, remove, get, child } from "firebase/database";
 
 const logoutIfExpired = async (hostName, email, pathLink) => {
   try {
-    const snapshot = await get(ref(database, `onlineUsers/${hostName}-${pathLink}-${email}`));
+    const snapshot = await get(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
     const userData = snapshot.val();
 
     if (userData) {
@@ -22,7 +23,7 @@ const logoutIfExpired = async (hostName, email, pathLink) => {
       const loginTime = new Date(userData.loginTime).getTime(); // Konversi waktu login dari string ke milidetik
 
       if (currentTime - loginTime > 5 * 60 * 60 * 1000) { // 5 jam dalam milidetik
-        await remove(ref(database, `onlineUsers/${hostName}-${pathLink}-${email}`));
+        await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
         return true; // Pengguna berhasil logout
       }
     }
@@ -46,7 +47,7 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
   }
 
     try {
-      await set(ref(database, `onlineUsers/${hostName}-${pathLink}-${email}`), {
+      await set(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`), {
         loginTime: new Date().toString(),
       });
       return true;
@@ -59,7 +60,7 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
 const logoutUserWithIp = async (hostName, email, pathLink) => {
 
     try {
-      await remove(ref(database, `onlineUsers/${hostName}-${pathLink}-${email}`));
+      await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
       return true;
     } catch (error) {
       console.log(error);
@@ -70,7 +71,7 @@ const logoutUserWithIp = async (hostName, email, pathLink) => {
 const checkUserAccess = async (hostName, email, pathLink) => {
 
     try {
-      const snapshot = await get(child(ref(database), `onlineUsers/${hostName}-${pathLink}-${email}`));
+      const snapshot = await get(child(ref(database), `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
       const userData = snapshot.val();
       return userData ? true : false;
     } catch (error) {
