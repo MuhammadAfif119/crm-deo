@@ -13,6 +13,7 @@ import { arrayRemoveFirebase, arrayUnionFirebase, getCollectionFirebase } from '
 import { createUserFunctions } from '../../Api/firebaseFunction'
 import { clientTypessense } from '../../Api/Typesense'
 import useUserStore from '../../Hooks/Zustand/Store'
+import Swal from 'sweetalert2'
 
 function UsersPage() {
 	const globalState = useUserStore()
@@ -25,31 +26,57 @@ function UsersPage() {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 
 
-	const handleAddNewUser = () => {
-		setLoading(true)
-		    const conditions = [
-		{ field: "email", operator: "==", value: email.toLowerCase() },
+	const handleAddNewUser = async () => {
+		setLoading(true);
+		if (!name || name.trim() === "" || !email) {
+			onClose();
+			Swal.fire({
+			  icon: 'warning',
+			  title: 'Oops...',
+			  text: 'Please complate input',
+			});
+			setLoading(false);
+			return; // Stop execution
+		  }
+
+		const conditions = [
+			{ field: "email", operator: "==", value: email.toLowerCase() },
 		];
-        // console.log("oke")
-        // return 
-		getCollectionFirebase('users',conditions)
-		.then((x)=>{
-			if(x){
-				arrayUnionFirebase('companies',globalState.currentCompany,'users',[x[0].id])
-				.then()
-				.catch((err)=>console.log(err.message))
+
+		try {
+			const x = await getCollectionFirebase('users', conditions);
+
+			if (x.length > 0) {
+				await arrayUnionFirebase('companies', globalState.currentCompany, 'users', [x[0].id]);
+				setLoading(false);
+				onClose();
+				Swal.fire({
+					icon: 'success',
+					title: 'Success',
+					text: 'Success Create User',
+				});
+				setData(prevData => [x[0], ...prevData]);
+			} else {
+				const createNewUser = await createUserFunctions({ email: email, name: name, companyId: globalState.currentCompany });
+				setLoading(false);
+				onClose();
+				Swal.fire({
+				  icon: 'success',
+				  title: 'Success',
+				  text: 'Success Create New User',
+				});
+				const newUser = { email: email, id: createNewUser.data.uid, name: name };
+				setData(prevData => [newUser, ...prevData]);
 			}
-			else{
-				createUserFunctions({ email: email, name: name, companyId: globalState.currentCompany })
-					.then()
-					.catch((err)=> console.log(err.message))
-			}
-			setLoading(false) 
-			onClose()
-		})
-		.catch((err)=>console.log(err.message))
-		//create new user
-	
+		} catch (err) {
+			console.log(err.message);
+			setLoading(false);
+			Swal.fire({
+			  icon: 'error',
+			  title: 'Oops...',
+			  text: 'An error occurred while processing your request.',
+			});
+		  }
 	}
 
 	const handleSearch=(q,p)=>{
@@ -76,12 +103,41 @@ function UsersPage() {
 			});
 	}
 
-	const handleRemoveUser=(uid)=>{
-        console.log("oke")
-		arrayRemoveFirebase('companies',globalState.currentCompany,'users',[uid])
-		.then(()=>handleSearch('*',1))
-		.catch((err)=>console.log(err.message))
-	}
+	const handleRemoveUser = (uid) => {
+		Swal.fire({
+			title: 'Are you sure?',
+			text: 'You won\'t be able to revert this!',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+		setLoading(true);
+			if (result.isConfirmed) {
+				arrayRemoveFirebase('companies', globalState.currentCompany, 'users', [uid])
+				.then(() => {
+				setLoading(false);
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: 'User has been deleted successfully!',
+					});
+					const newData = data.filter((user) => user.id !== uid);
+					setData(newData);
+				})
+				.catch((err) => {
+					setLoading(false);
+					console.log(err.message);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: 'An error occurred while deleting user.',
+					});
+				});
+			}
+		});
+	};
 
 	useEffect(() => {
 		// getData(counter)

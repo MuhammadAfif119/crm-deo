@@ -6,7 +6,7 @@ const baseURL='https://asia-southeast2-deoapp-indonesia.cloudfunctions.net'
 const options={
 	headers : {
 	'Content-Type': 'application/json',
-	'Authorization': process.env.REACT_APP_PAYMENT_KEY
+	'Authorization': 'q1w2e3r4t5y6u7i8o9p0'
 }}
 export const uploadImage = async(file) => {
 	const configTest = {
