@@ -1,10 +1,11 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AuthenticationRouter from "./AuthenticationRouter";
+import ChatRouter from "./ChatRouter";
 
 
 function AuthRouter() {
-  const authRouter = [...AuthenticationRouter];
+  const authRouter = [...AuthenticationRouter, ...ChatRouter];
   return (
     <Routes>
       {authRouter.map((item, index) => {
