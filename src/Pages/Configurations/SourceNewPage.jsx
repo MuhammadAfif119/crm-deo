@@ -28,21 +28,66 @@ function DomainsNewPage() {
 
 	useEffect(() => {
 	  setSourceLists(["google-ads", "facebook-marketing", "google-analytics-data-api", "google-analytics-v4"])
-	  setCollectionGoogleAds(["account_labels", "account_performance_report", "accounts", "ad_group_ad_labels", "ad_group_ad_report",
-		"ad_group_ads", "ad_group_bidding_strategies", "ad_group_criterion_labels", "ad_group_criterions", "ad_group_labels",
-		"ad_listing_group_criterions", "audience", "campaign_bidding_strategies", "campaign_budget", "campaign_labels", "campaigns",
-		"click_view", "display_keyword_performance_report", "display_topics_performance_report", "display_topics_performance_report",
-		"geographic_report", "keyword_report", "labels", "shopping_performance_report", "user_interest", "user_location_report"])
-	setCollectionGoogleAnalyticDataApi(["daily_active_users", "devices", "four_weekly_active_users", "locations", "pages", "trafic_sources",
-		"website_overview", "weekly_active_users"])
-	setCollectionGoogleAnalyticV4(["daily_active_users", "devices", "four_weekly_active_users", "locations", "monthly_active_users", "pages", "trafic_sources",
-		"two_weekly_active_users", "website_overview", "weekly_active_users"])
-	setCollectionFacebookMarketing(["activities", "ad_account", "ad_creatives", 'ad_sets', "ads", "ads_insights", "ads_insights_action_carousel_card",
-		"ads_insights_action_conversion_device", "ads_insights_action_product_id", "ads_insights_action_reaction", "ads_insights_action_type", 
-		"ads_insights_action_video_sound", "ads_insights_action_video_type", "ads_insights_age_and_gender", "ads_insights_country",
-		"ads_insights_delivery_device", "ads_insights_delivery_platform", "ads_insights_delivery_platform_and_device_platform",
-		"ads_insights_demographics_age", "ads_insights_demographics_country", "ads_insights_demographics_dma_region", "ads_insights_demographics_gender",
-		"ads_insights_dma", "ads_insights_platform_and_device", "ads_insights_region", "campaigns", "custom_conversions", "images", "videos"])
+	  setCollectionGoogleAds([
+		"account_labels",
+		"account_performance_report",
+		"ad_group_ad_labels",
+		"ad_group_ad_report",
+		"ad_group_ads",
+		"campaign_bidding_strategies",
+		"campaign_budget",
+		"campaign_labels",
+		"campaigns",
+		"click_view",
+		"display_keyword_performance_report",
+		"display_topics_performance_report",
+		"display_topics_performance_report",
+		"keyword_report",
+		"shopping_performance_report",
+		"user_interest",
+		"user_location_report"
+	  ])
+	setCollectionGoogleAnalyticDataApi([
+		"daily_active_users",
+  		"devices",
+		"locations",
+		"pages",
+		"trafic_sources",
+		"website_overview",
+		"weekly_active_users"
+	])
+	setCollectionGoogleAnalyticV4([
+		"daily_active_users",
+		"devices",
+		"locations",
+		"pages",
+		"trafic_sources",
+		"website_overview",
+		"weekly_active_users",
+		"monthly_active_users"
+	])
+	setCollectionFacebookMarketing([
+		"ad_account",
+		"ad_creatives",
+		"ad_sets",
+		"ads",
+		"ads_insights",
+		"ads_insights_action_type",
+		"ads_insights_age_and_gender",
+		"ads_insights_delivery_device",
+		"ads_insights_delivery_platform",
+		"ads_insights_delivery_platform_and_device_platform",
+		"ads_insights_demographics_age",
+		"ads_insights_demographics_dma_region",
+		"ads_insights_demographics_gender",
+		"ads_insights_dma",
+		"ads_insights_platform_and_device",
+		"ads_insights_region",
+		"campaigns",
+		"custom_conversions",
+		"images",
+		"videos"
+	])
 		
 	  getOauths()
 	  if (params.id !== "new") {
