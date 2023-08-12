@@ -38,6 +38,7 @@ import { useEffect, useState } from "react";
 import { getCollectionFirebase } from "../../Api/firebaseApi";
 import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
+import { removeSymbols } from "../../Utils/Helper";
 
 // ** Theme Configuration
 
@@ -142,7 +143,10 @@ function SidebarComponentV2({ layout }) {
 
 
   const logout = async () => {
-    await logoutUserWithIp(globalState.uid, 'crm')
+
+    const emailNonSymbol = removeSymbols(globalState.email)
+    const pathLink = 'crm'
+    await logoutUserWithIp(window.location.hostname, emailNonSymbol, pathLink);
 
     signOut(auth)
       .then(() => {
@@ -301,7 +305,7 @@ function SidebarComponentV2({ layout }) {
 
                         {data.map((x, i) => (
                           <AccordionItem
-                            key={i} isDisabled={x.name === "Chat" || x.name === "Social Media" ? true : false}
+                            key={i} isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
                               <AccordionButton>
