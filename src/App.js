@@ -87,9 +87,9 @@ function App() {
 
   const handleLogout = async () => {
     const pathLink = 'crm';
-    await logoutUserWithIp(window.location.hostname, globalState.email, pathLink);
 
     try {
+    await logoutUserWithIp(window.location.hostname, globalState.email, pathLink);
       await signOut(auth);
       toast({
         status: "success",
