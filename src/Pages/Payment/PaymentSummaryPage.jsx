@@ -109,7 +109,7 @@ function PaymentSummaryPage() {
                 />
 
                 <Flex w='full' py={2}>
-                    <Button w='full' borderRadius='lg' variant='outline' color='green.500' shadow='lg' borderColor="green.500" onClick={() => setThanksPage(false)}>
+                    <Button w='full' borderRadius='lg' variant='outline' color='green.500' shadow='lg' borderColor="green.500" >
                         <Flex flexDir='row' justifyContent='space-bewtween' alignItems='center'>
                             {/* <IoMdArrowBack /> */}
                             <Text>Kembali</Text>
