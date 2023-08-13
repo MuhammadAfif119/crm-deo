@@ -144,9 +144,8 @@ function SidebarComponentV2({ layout }) {
 
   const logout = async () => {
 
-    const emailNonSymbol = removeSymbols(globalState.email)
     const pathLink = 'crm'
-    await logoutUserWithIp(window.location.hostname, emailNonSymbol, pathLink);
+    await logoutUserWithIp(window.location.hostname, globalState?.email, pathLink);
 
     signOut(auth)
       .then(() => {
