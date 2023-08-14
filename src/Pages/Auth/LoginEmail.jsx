@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 import {  signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
-import { loginUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
+import { checkUserAccess, loginUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import store from 'store'
 import { encryptToken } from "../../Utils/encrypToken";
 import { removeSymbols } from "../../Utils/Helper";
@@ -78,9 +78,9 @@ function LoginEmail() {
     if (email !== "" && password !== "") {
 
       const pathLink = 'crm'
-      const res = await loginUserWithIp(window.location.hostname, email, pathLink);
+      const resCheck = await checkUserAccess(window.location.hostname, email, pathLink);
 
-      if(!res){
+      if(!resCheck){
         return middleWareAccess()
       }
 
@@ -89,6 +89,15 @@ function LoginEmail() {
         setLoading(true);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        if(user){
+          const pathLink = 'crm'
+          const res = await loginUserWithIp(window.location.hostname, email, pathLink);
+    
+          if(!res){
+            return middleWareAccess()
+          }
+        }
 
 
 
