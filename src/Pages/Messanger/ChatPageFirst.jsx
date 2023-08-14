@@ -1,7 +1,7 @@
 import { Button, Stack } from '@chakra-ui/react';
 import moment from 'moment';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { addDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 import store from 'store';
@@ -12,6 +12,8 @@ function ChatPageFirst() {
     const globalState = useUserStore();
     const [idMessage, setIdMessage] = useState("");
     const navigate = useNavigate();
+
+    const param  = useParams()
 
     // Fungsi untuk melakukan sign-in anonim dan menyimpan UID dalam sesi
     const handleNewChatUser = async () => {
