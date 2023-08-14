@@ -28,16 +28,7 @@ import {
 
 export const data = [
 
-  // {
-  //   name: "Chat",
-  //   icon: FcSms,
-  //   submenu: [
-  //     { name: "Chat", icon: FcEditImage, link: "/chat" },
-  //     { name: "WhatsApp Settings", icon: FcSettings, link: "/chat" },
-  //     { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-  //     { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-  //   ],
-  // },
+
   // {
   //   name: "Social Media",
   //   icon: FcPodiumWithSpeaker,
@@ -54,11 +45,26 @@ export const data = [
     icon: FcDisplay,
     link: '/'
   },
+
   {
     name: "Contacts",
     icon: FcBusinessContact,
     link: '/contacts'
   },
+
+  // {
+  //   name: "Chat",
+  //   icon: FcSms,
+  //   submenu: [
+  //     { name: "Chat", icon: FcEditImage, link: "/chat" },
+  //     { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+  //     { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+  //     { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+  //   ],
+  // },
+
+
+
   {
     name: "Pipeline",
     icon: FcKindle,
@@ -72,8 +78,8 @@ export const data = [
     name: "Products",
     icon: FcConferenceCall,
     submenu: [
-      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
+      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
       { name: "Listings", icon: FcParallelTasks, link: "/listing" },
       { name: "News", icon: FcNews, link: "/news" },
     ],

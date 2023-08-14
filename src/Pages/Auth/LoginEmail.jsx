@@ -28,6 +28,8 @@ import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { loginUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import store from 'store'
+import { encryptToken } from "../../Utils/encrypToken";
+import { removeSymbols } from "../../Utils/Helper";
 
 
 function LoginEmail() {
@@ -47,13 +49,6 @@ function LoginEmail() {
       .then(() => {
 
 
-        // Sign-out successful.
-        // toast({
-        //   status: "success",
-        //   description: "Logged out success",
-        //   duration: 2000,
-        // });
-
         globalState.setIsLoggedIn(false);
         store.clearAll();
       })
@@ -70,31 +65,32 @@ function LoginEmail() {
     
     toast({
       title: 'Error',
-      description: `Your account still active, please logout in another place. `,
+      description: `Your account still online, please logout in another place. `,
       status: 'error',
       duration: 9000,
       isClosable: true,
     });
 
-    return logout()
-
-
   }
+
 
   const handleLogin = async () => {
     if (email !== "" && password !== "") {
+
+      const pathLink = 'crm'
+      const res = await loginUserWithIp(window.location.hostname, email, pathLink);
+
+      if(!res){
+        return middleWareAccess()
+      }
+
+
       try {
         setLoading(true);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        const uid = user.uid;
-        const pathLink = 'crm'
-        const res = await loginUserWithIp(uid, pathLink);
 
-        if(!res){
-          return middleWareAccess()
-        }
 
         globalState.setUid(user.uid)
         globalState.setName(user.displayName)

@@ -14,6 +14,7 @@ import NewsRouter from "./NewsRouter";
 import TicketRouter from "./TicketRouter";
 import ConfigurationRouter from "./ConfigurationRouter";
 import ContactsRouter from "./ContactsRouter";
+import ChatRouter from "./ChatRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -31,11 +32,11 @@ function MainRouter() {
     ...NewsRouter,
     ...TicketRouter,
     ...ConfigurationRouter,
-    ...ContactsRouter
+    ...ContactsRouter,
+    ...ChatRouter,
   ];
   return (
     <Routes>
-      {/* <Route path="setting/*" element={<SettingRouter />} /> */}
 
       {allRouter.map((item, index) => {
         return <Route key={index} path={item.path} element={item.element} />;

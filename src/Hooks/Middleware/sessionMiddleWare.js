@@ -1,7 +1,7 @@
 import axios from "axios";
 import { database } from "../../Config/firebase";
 import { ref, set, remove, get, child } from "firebase/database";
-import { encryptToken } from "../../Utils/encrypToken";
+import { removeSymbols } from "../../Utils/Helper";
 
 // const getUserIp = async () => {
 //   try {
@@ -13,18 +13,41 @@ import { encryptToken } from "../../Utils/encrypToken";
 //   }
 // };
 
-const loginUserWithIp = async (uid, pathLink) => {
-//   const userIp = await getUserIp();
+const logoutIfExpired = async (hostName, email, pathLink) => {
+  try {
+    const snapshot = await get(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
+    const userData = snapshot.val();
 
-  const checkAccess = await checkUserAccess(uid, pathLink)
+    if (userData) {
+      const currentTime = Date.now();
+      const loginTime = new Date(userData.loginTime).getTime(); // Konversi waktu login dari string ke milidetik
+
+      if (currentTime - loginTime > 5 * 60 * 60 * 1000) { // 5 jam dalam milidetik
+        await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
+        return true; // Pengguna berhasil logout
+      }
+    }
+
+    return false; // Pengguna tidak perlu logout
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+
+
+
+const loginUserWithIp = async (hostName, email, pathLink) => {
+
+  const checkAccess = await checkUserAccess(hostName, email, pathLink)
 
   if(checkAccess){
     return false
   }
 
-//   if (userIp) {
     try {
-      await set(ref(database, `onlineUsers/${pathLink}-${uid}`), {
+      await set(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`), {
         loginTime: new Date().toString(),
       });
       return true;
@@ -32,41 +55,29 @@ const loginUserWithIp = async (uid, pathLink) => {
       console.log(error);
       return false;
     }
-//   } 
-//   else {
-//     return false;
-//   }
 };
 
-const logoutUserWithIp = async (uid, pathLink) => {
-//   const userIp = await getUserIp();
-//   if (userIp) {
+const logoutUserWithIp = async (hostName, email, pathLink) => {
+
     try {
-      await remove(ref(database, `onlineUsers/${pathLink}-${uid}`));
+      await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
       return true;
     } catch (error) {
       console.log(error);
       return false;
     }
-//   } else {
-//     return false;
-//   }
 };
 
-const checkUserAccess = async (uid, pathLink) => {
-//   const userIp = await getUserIp();
-//   if (userIp) {
+const checkUserAccess = async (hostName, email, pathLink) => {
+
     try {
-      const snapshot = await get(child(ref(database), `onlineUsers/${pathLink}-${uid}`));
+      const snapshot = await get(child(ref(database), `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
       const userData = snapshot.val();
       return userData ? true : false;
     } catch (error) {
       console.log(error);
       return false;
     }
-//   } else {
-//     return false;
-//   }
 };
 
-export { loginUserWithIp, logoutUserWithIp, checkUserAccess };
+export { loginUserWithIp, logoutUserWithIp, checkUserAccess, logoutIfExpired };

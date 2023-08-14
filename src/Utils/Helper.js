@@ -16,3 +16,8 @@ export function readMore (val) {
   return val.toLowerCase()
     .replace(/\w/, firstLetter => firstLetter.toUpperCase())
 }
+
+export function removeSymbols(text) {
+  if(!text) return undefined
+  return text.replace(/[^a-zA-Z0-9]/g, ''); // Menghapus semua karakter selain huruf dan angka
+};
