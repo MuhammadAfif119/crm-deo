@@ -80,6 +80,9 @@ function LoginEmail() {
       const pathLink = 'crm'
       const resCheck = await checkUserAccess(window.location.hostname, email, pathLink);
 
+      console.log(resCheck, 'xxx')
+
+
       if(!resCheck){
         return middleWareAccess()
       }

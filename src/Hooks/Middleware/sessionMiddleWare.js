@@ -42,7 +42,7 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
 
   const checkAccess = await checkUserAccess(hostName, email, pathLink)
 
-  if(checkAccess){
+  if(!checkAccess){
     return false
   }
 
@@ -73,7 +73,7 @@ const checkUserAccess = async (hostName, email, pathLink) => {
     try {
       const snapshot = await get(child(ref(database), `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
       const userData = snapshot.val();
-      return userData ? true : false;
+      return userData ? false : true;
     } catch (error) {
       console.log(error);
       return false;

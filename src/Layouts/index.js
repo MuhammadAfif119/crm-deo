@@ -9,8 +9,7 @@ function Layout({ children }) {
   let contentWidth =
     themeConfig.contentWidth === "full" ? "full" : "container.xl";
 
-  const curentWindowHeight = window.innerHeight;
-  console.log(curentWindowHeight, "curentWindowHeight");
+
   return (
     <Fragment>
       <Flex height="100vh" w={"full"} bgColor={"gray.50"}>
