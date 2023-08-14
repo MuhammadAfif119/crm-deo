@@ -86,11 +86,10 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const emailNonSymbol = removeSymbols(globalState.email);
     const pathLink = 'crm';
-    await logoutUserWithIp(window.location.hostname, emailNonSymbol, pathLink);
 
     try {
+    await logoutUserWithIp(window.location.hostname, globalState.email, pathLink);
       await signOut(auth);
       toast({
         status: "success",
@@ -109,9 +108,8 @@ function App() {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const emailNonSymbol = removeSymbols(user?.email);
         const pathLink = 'crm';
-        const res = await logoutIfExpired(window.location.hostname, emailNonSymbol, pathLink);
+        const res = await logoutIfExpired(window.location.hostname, user?.email, pathLink);
 
         if (res) {
           handleLogout();

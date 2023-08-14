@@ -84,7 +84,7 @@ function generateHTML(formFields) {
     `;
 }
 
-function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue) {
+function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod) {
     let jsScript = '';
 
     jsScript += ` <script>
@@ -113,9 +113,9 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
         dataForm[select.name] = select.value;
       }); 
 
-      dataForm.formId = formId
-      dataForm.opportunity_value = ${opportunityValue || 0}
-      dataForm.status = 'open'
+      dataForm.formId = formId;
+      dataForm.opportunity_value = ${opportunityValue || 0};
+      dataForm.status = 'open';
       
     
   
@@ -133,6 +133,13 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
             notification.style.display = 'none';
             successMessage.style.display = 'block';
             loader.style.display = 'none';
+
+            const formRoute = dataForm.formId;
+            const phoneRoute = dataForm.phoneNumber;
+
+            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ formId +'/'+phoneRoute , 'test';
+            console.log("https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ formId +'/'+phoneRoute , 'test')
+
           } catch (error) {
             console.log(error, 'ini error');
           }
@@ -192,7 +199,7 @@ function FormBuilderPage() {
     const [isActive, setIsActive] = useState(false);
 
     const [apiSubmitUrl, setApiSubmitUrl] = useState('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead');
-    const [opportunityValue, setOpportunityValue] = useState("");
+    const [opportunityValue, setOpportunityValue] = useState(0);
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
@@ -227,6 +234,9 @@ function FormBuilderPage() {
                     try {
                         const res = await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', data)
                         console.log(res, 'ini ress')
+
+
+                        window.location.href = `https://crm.deoapp.com/payment/ticket/${selectedPaymentMethod}/${updateData.formId}/${updateData.phoneNumber}`
                     } catch (error) {
                         console.log(error, 'ini error')
                     }
@@ -269,7 +279,7 @@ function FormBuilderPage() {
     const handleEmbedCode = () => {
         setModalEmbedCode(true)
         const formHTML = generateHTML(formFields);
-        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue);
+        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod);
 
 
 
@@ -330,7 +340,7 @@ function FormBuilderPage() {
 
     const handleCopyCode = () => {
         const formHTML = generateHTML(formFields);
-        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl);
+        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod);
 
         // Menggabungkan elemen-elemen HTML menjadi satu teks lengkap dengan head dan body
         const fullHTML = `
@@ -441,20 +451,20 @@ function FormBuilderPage() {
         const docName = param.id;
 
         try {
-          const result = await deleteDocumentFirebase(collectionName, docName);
-          console.log(result);
-          
-          toast({
-            title: "Deoapp.com",
-            description: "success delete form",
-            status: "success",
-            position: "top-right",
-            isClosable: true,
-        });
+            const result = await deleteDocumentFirebase(collectionName, docName);
+            console.log(result);
 
-        navigate(-1)
+            toast({
+                title: "Deoapp.com",
+                description: "success delete form",
+                status: "success",
+                position: "top-right",
+                isClosable: true,
+            });
+
+            navigate(-1)
         } catch (error) {
-          console.log('Terjadi kesalahan:', error);
+            console.log('Terjadi kesalahan:', error);
         }
     }
 

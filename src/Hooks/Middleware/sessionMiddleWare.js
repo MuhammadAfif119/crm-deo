@@ -15,7 +15,7 @@ import { removeSymbols } from "../../Utils/Helper";
 
 const logoutIfExpired = async (hostName, email, pathLink) => {
   try {
-    const snapshot = await get(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
+    const snapshot = await get(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
     const userData = snapshot.val();
 
     if (userData) {
@@ -23,7 +23,7 @@ const logoutIfExpired = async (hostName, email, pathLink) => {
       const loginTime = new Date(userData.loginTime).getTime(); // Konversi waktu login dari string ke milidetik
 
       if (currentTime - loginTime > 5 * 60 * 60 * 1000) { // 5 jam dalam milidetik
-        await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
+        await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
         return true; // Pengguna berhasil logout
       }
     }
@@ -47,7 +47,7 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
   }
 
     try {
-      await set(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`), {
+      await set(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`), {
         loginTime: new Date().toString(),
       });
       return true;
@@ -60,7 +60,7 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
 const logoutUserWithIp = async (hostName, email, pathLink) => {
 
     try {
-      await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
+      await remove(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
       return true;
     } catch (error) {
       console.log(error);
@@ -71,7 +71,7 @@ const logoutUserWithIp = async (hostName, email, pathLink) => {
 const checkUserAccess = async (hostName, email, pathLink) => {
 
     try {
-      const snapshot = await get(child(ref(database), `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${email}`));
+      const snapshot = await get(child(ref(database), `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`));
       const userData = snapshot.val();
       return userData ? true : false;
     } catch (error) {

@@ -2,10 +2,11 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AuthenticationRouter from "./AuthenticationRouter";
 import ChatRouter from "./ChatRouter";
+import PaymentRouter from "./PaymentRouter";
 
 
 function AuthRouter() {
-  const authRouter = [...AuthenticationRouter, ...ChatRouter];
+  const authRouter = [...AuthenticationRouter, ...ChatRouter, ...PaymentRouter];
   return (
     <Routes>
       {authRouter.map((item, index) => {

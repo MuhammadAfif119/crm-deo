@@ -77,9 +77,8 @@ function LoginEmail() {
   const handleLogin = async () => {
     if (email !== "" && password !== "") {
 
-      const emailNonSymbol = removeSymbols(email)
       const pathLink = 'crm'
-      const res = await loginUserWithIp(window.location.hostname, emailNonSymbol, pathLink);
+      const res = await loginUserWithIp(window.location.hostname, email, pathLink);
 
       if(!res){
         return middleWareAccess()
