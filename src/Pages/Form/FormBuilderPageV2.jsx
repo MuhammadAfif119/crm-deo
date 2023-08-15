@@ -84,7 +84,7 @@ function generateHTML(formFields) {
     `;
 }
 
-function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod) {
+function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod, projectId) {
     let jsScript = '';
 
     jsScript += ` <script>
@@ -137,8 +137,8 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
             const formRoute = dataForm.formId;
             const phoneRoute = dataForm.phoneNumber;
 
-            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ formId +'/'+phoneRoute , 'test';
-            console.log("https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ formId +'/'+phoneRoute , 'test')
+            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ ${projectId} +'/'+ phoneRoute , 'test';
+            console.log("https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ ${projectId} +'/'+phoneRoute , 'test')
 
           } catch (error) {
             console.log(error, 'ini error');
@@ -190,6 +190,10 @@ function FormBuilderPage() {
     const globalState = useUserStore();
 
 
+    const [projectId, setProjectId] = useState(globalState.currentProject)
+
+
+
     const [formFields, setFormFields] = useState([]);
     const navigate = useNavigate()
 
@@ -203,7 +207,7 @@ function FormBuilderPage() {
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
-    const [ticketActive, setTicketActive] = useState([])
+    const [ticketActive, setTicketActive] = useState("")
 
     const [embedCode, setEmbedCode] = useState('');
 
@@ -236,7 +240,7 @@ function FormBuilderPage() {
                         console.log(res, 'ini ress')
 
 
-                        window.location.href = `https://crm.deoapp.com/payment/ticket/${selectedPaymentMethod}/${updateData.formId}/${updateData.phoneNumber}`
+                        window.location.href = `http://localhost:3000/payment/ticket/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}`
                     } catch (error) {
                         console.log(error, 'ini error')
                     }
@@ -279,7 +283,7 @@ function FormBuilderPage() {
     const handleEmbedCode = () => {
         setModalEmbedCode(true)
         const formHTML = generateHTML(formFields);
-        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod);
+        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod, projectId);
 
 
 
@@ -340,7 +344,7 @@ function FormBuilderPage() {
 
     const handleCopyCode = () => {
         const formHTML = generateHTML(formFields);
-        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod);
+        const jsScript = generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportunityValue, selectedPaymentMethod, projectId);
 
         // Menggabungkan elemen-elemen HTML menjadi satu teks lengkap dengan head dan body
         const fullHTML = `
@@ -426,7 +430,7 @@ function FormBuilderPage() {
     };
 
     const renderPaymentOptions = () => {
-        const paymentOptions = ['xendit', 'midtrans', 'finpay']; // Ganti dengan opsi pembayaran yang sesuai
+        const paymentOptions = ['xendit', 'midtrans', 'finpay', 'none']; // Ganti dengan opsi pembayaran yang sesuai
         return (
             <Stack spacing={2} >
                 <HStack spacing={5}>

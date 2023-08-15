@@ -11,6 +11,7 @@ import { formatFrice } from '../../Utils/Helper'
 
 function PaymentTicketPage() {
 
+
     const param = useParams()
 
     const [dataLeads, setDataLeads] = useState("")
@@ -20,9 +21,10 @@ function PaymentTicketPage() {
 
 
 
+
     const getDataLeads = async () => {
         const conditions = [
-            { field: "formId", operator: "==", value: param.id },
+            { field: "projectId", operator: "==", value: param.id },
             { field: "phoneNumber", operator: "==", value: param.phone },
         ];
         const sortBy = { field: "createdAt", direction: "asc" };
@@ -35,10 +37,11 @@ function PaymentTicketPage() {
                 sortBy,
                 limitValue
             );
-            setDataLeads(...res)
-            console.log(...res, 'xxx')
 
-            if(res[0].orderId !== undefined){
+            setDataLeads(...res)
+            getDataTicket(res[0].formId)
+
+            if (res[0].orderId !== undefined) {
                 checkOrderSummary(res[0].orderId)
             }
         } catch (error) {
@@ -46,10 +49,10 @@ function PaymentTicketPage() {
         }
     };
 
-    const getDataTicket = async () => {
+    const getDataTicket = async (formId) => {
 
         const conditions = [
-            { field: "formId", operator: "==", value: decryptToken(param.id) },
+            { field: "formId", operator: "==", value: decryptToken(formId) },
         ];
         const sortBy = { field: "createdAt", direction: "asc" };
         const limitValue = 1;
@@ -69,7 +72,6 @@ function PaymentTicketPage() {
 
     useEffect(() => {
         getDataLeads()
-        getDataTicket()
 
         return () => {
         }
@@ -92,43 +94,50 @@ function PaymentTicketPage() {
         <Stack>
             <Box p={2} >
                 <Stack >
-                    <SimpleGrid columns={[1, null, 2]} gap={3} >
-                        {dataTicket && (
-                            <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
-                                <Heading size={'md'}>Product Active</Heading>
-                                <Stack onClick={() => console.log(dataTicket, 'ini xx')}>
-                                    <TicketCard item={dataTicket} />
+                    {param.method !== "none" ? (
+                        <SimpleGrid columns={[1, null, 2]} gap={3} >
+                            {dataTicket && (
+                                <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
+                                    <Heading size={'md'}>Product Active</Heading>
+                                    <Stack onClick={() => console.log(dataTicket, 'ini xx')}>
+                                        <TicketCard item={dataTicket} />
+                                    </Stack>
                                 </Stack>
-                            </Stack>
-                        )}
-                        <Stack p={[1, 1, 5]} bgColor={'white'} minH={'530px'} spacing={5} borderRadius='md' shadow={'md'}>
-                            {dataLeads === "" || dataLeads === undefined ? (
-                                <>
-                                    <Stack>
-                                        <Heading size={'md'}>Recipient data: </Heading>
-                                    </Stack>
-                                    
-                                    <Stack spacing={3} p={[1, 1, 5]}>
-                                        <Text>Tidak ada data leads</Text>
-                                    </Stack>
-                                </>
-                            ) : (
-                                <>
-                                    <Stack>
-                                        {param.method === "xendit" ? (
-                                            <PaymentTicketDetail dataLeads={dataLeads} dataTicket={dataTicket} />
-                                        
-                                        ) : (
-                                            <Stack>
-                                                <Heading size={'md'}>We dont have any method payment</Heading>
-                                            </Stack>
-                                        )}
-                                    </Stack>
-                                </>
                             )}
+                            <Stack p={[1, 1, 5]} bgColor={'white'} minH={'530px'} spacing={5} borderRadius='md' shadow={'md'}>
+                                {dataLeads === "" || dataLeads === undefined ? (
+                                    <>
+                                        <Stack>
+                                            <Heading size={'md'}>Recipient data: </Heading>
+                                        </Stack>
 
+                                        <Stack spacing={3} p={[1, 1, 5]}>
+                                            <Text>Tidak ada data leads</Text>
+                                        </Stack>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Stack>
+                                            {param.method === "xendit" ? (
+                                                <PaymentTicketDetail dataLeads={dataLeads} dataTicket={dataTicket} />
+
+                                            ) : (
+                                                <Stack>
+                                                    <Heading size={'md'}>We dont have any method payment</Heading>
+                                                </Stack>
+                                            )}
+                                        </Stack>
+                                    </>
+                                )}
+
+                            </Stack>
+                        </SimpleGrid>
+                    ) : (
+                        <Stack alignItems={'center'} justifyContent='center'>
+                            <Heading> Terimakasih Sudah Mengisi Form ! </Heading>
                         </Stack>
-                    </SimpleGrid>
+                    )}
+
                 </Stack>
             </Box>
         </Stack>

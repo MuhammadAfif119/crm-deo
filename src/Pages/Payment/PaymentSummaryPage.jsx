@@ -7,6 +7,8 @@ import { formatFrice } from '../../Utils/Helper'
 
 function PaymentSummaryPage() {
 
+    console.log('summary')
+
     const param = useParams()
 
     const [dataOrder, setDataOrder] = useState("")
