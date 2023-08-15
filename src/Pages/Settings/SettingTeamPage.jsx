@@ -357,27 +357,44 @@ function SettingTeamPage() {
 
 
 
-    const handleSearchUsers = (q) => {
-        // console.log(q)
-        const companyUsers = globalState.companies.find((x) => x.id === globalState.currentCompany)
-        console.log(companyUsers, 'xxx')
-        const newArr = companyUsers?.users.join(",")
+    const chunkArray = (arr, chunkSize) => {
+		const chunks = [];
+		for (let i = 0; i < arr.length; i += chunkSize) {
+			chunks.push(arr.slice(i, i + chunkSize));
+		}
+		return chunks;
+	};
+	
+	const handleSearchUsers = (q) => {
+		const companyUsers = globalState.companies.find((x) => x.id === globalState.currentCompany);
+		const userChunks = chunkArray(companyUsers?.users, 100)
 
-        const searchParameters = {
-            q: q,
-            query_by: "name,email",
-            filter_by: `id: [${newArr}]`,
-            sort_by: "_text_match:desc"
-        };
-        clientTypessense
-            .collections("users")
-            .documents()
-            .search(searchParameters)
-            .then((x) => {
-                console.log(x, 'yyy')
-                setSearchResult(x)
-            });
-    }
+	
+		const searchPromises = userChunks.map((userChunk) => {
+			const searchParameters = {
+				q: q,
+				query_by: "name,email",
+				filter_by: `id: [${userChunk.join(",")}]`,
+				sort_by: "_text_match:desc"
+			};
+			
+			return clientTypessense
+				.collections("users")
+				.documents()
+				.search(searchParameters);
+		});
+	
+
+
+		Promise.all(searchPromises)
+			.then((results) => {
+				const combinedResults = results.flatMap((result) => result.hits);
+				setSearchResult(combinedResults);
+			})
+			.catch((error) => {
+				console.error("Error performing search:", error);
+			});
+	};
 
     const handleFileInputChange = (event) => {
         const { files: newFiles } = event.target;
@@ -501,8 +518,8 @@ function SettingTeamPage() {
                             <HStack m='1'>
                                 <Input type='text' placeholder='Search users' onChange={(e) => handleSearchUsers(e.target.value)} />
                             </HStack>
-                            {searchResult?.found > 0 ?
-                                searchResult.hits.map((x, index) => {
+                            {searchResult.length > 0 ?
+                                searchResult.map((x, index) => {
 
                                     return (
                                         <HStack key={index} p='2' borderBottom='1px' >
