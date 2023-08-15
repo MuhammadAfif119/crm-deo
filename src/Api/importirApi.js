@@ -80,6 +80,42 @@ export const postImportirAuth = async (data, type) => {
   return response
 }
 
+export const getAllCollectionData = async (data) => {
+  let response = {}
+  const baseUrl = `https://new-apiv2.importir.com/api/general/get-all-collection`
+  const configurationObject = {
+    url: baseUrl,
+    method: 'POST',
+    data: data,
+  }
+
+  try {
+    const resp = await axios(configurationObject)
+    response = resp.data
+  } catch (error) {
+    console.log(error.message)
+  }
+  return response
+}
+
+export const getWhereCollectionData = async (data) => {
+  let response = {}
+  const baseUrl = `https://new-apiv2.importir.com/api/general/get-all-where`
+  const configurationObject = {
+    url: baseUrl,
+    method: 'POST',
+    data: data,
+  }
+
+  try {
+    const resp = await axios(configurationObject)
+    response = resp.data
+  } catch (error) {
+    console.log(error.message)
+  }
+  return response
+}
+
 export const transactionImportir = async (data, auth) => {
   let response = {}
   // console.log(auth, 'this is the data')

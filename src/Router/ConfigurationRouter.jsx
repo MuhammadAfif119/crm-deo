@@ -9,11 +9,16 @@ import OutletPage from "../Pages/Configurations/OutletPage";
 import OutletNewPage from "../Pages/Configurations/OutletNewPage";
 import UserPage from "../Pages/Configurations/UserPage";
 import OauthPage from "../Pages/Configurations/OauthPage";
+import IndexDataPage from "../Pages/Configurations/DataPage"
 
 const PipelineRouter = [
   {
     path: "/configuration/domain",
     element: <IndexDomainPage />,
+  },
+  {
+    path: "/configuration/data",
+    element: <IndexDataPage />,
   },
   {
     path: "/configuration/domain/new",

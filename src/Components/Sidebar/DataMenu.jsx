@@ -23,7 +23,8 @@ import {
   FcLibrary,
   FcCollaboration,
   FcDisplay,
-  FcCustomerSupport
+  FcCustomerSupport,
+  FcFile
 } from "react-icons/fc";
 
 export const data = [
@@ -118,6 +119,7 @@ export const data = [
     name: "Configuration",
     icon: FcSettings,
     submenu: [
+      { name: "Data", icon: FcFile, link: "/configuration/data" },
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
       { name: "Integration", icon: FcAutomatic, link: "/configuration/integration" },
       { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
