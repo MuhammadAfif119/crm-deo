@@ -1,4 +1,3 @@
-import { DeleteIcon, ExternalLinkIcon, RepeatIcon } from '@chakra-ui/icons'
 import {
     Box, Button, Heading, HStack, Spacer, Table,
     Stack,
@@ -10,21 +9,17 @@ import {
     Th,
     Tbody,
     Td,
-    Text,
-    Divider
 } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { getAllCollectionData, getWhereCollectionData } from "../../Api/importirApi"
-import Swal from 'sweetalert2'
 
 function DomainsPage() {
-    const [data, setData] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+    const [data, setData] = useState([]);
     const [keysData, setKeysData] = useState([]);
-    const [dataBody, setDataBody] = useState(null);
+    const [dataBody, setDataBody] = useState([]);
     const [collec, setCollec] = useState(null);
     const [selectedSource, setSelectedSource] = useState('');
-
-
 
     const changeProject = async (id) => {
         setCollec(id);
@@ -32,6 +27,9 @@ function DomainsPage() {
             projectId: "303N0DI0t1WLUnWgSiqb",
             sourceType: id
         };
+
+        setDataBody([])
+        setKeysData([])
 
         try {
             const res = await getAllCollectionData(data);
@@ -41,37 +39,29 @@ function DomainsPage() {
         }
     }
 
-    const changeSourceList = async (value) => {
+    const changeSourceList = async () => {
+        // setKeysData([])
+        // setDataBody([])
         const dataList = {
             sourceType: collec,
-            collectionName: value,
+            collectionName: selectedSource,
             query: []
         };
+        setDataBody([])
+        setKeysData([])
         try {
+            setIsLoading(true)
             const res = await getWhereCollectionData(dataList);
+            setIsLoading(false)
             const keys = Object.keys(res.data[0]);
             setKeysData(keys)
             setDataBody(res.data)
             console.log(keys)
         } catch (error) {
+            setIsLoading(true)
             console.error("Error:", error);
         }
-        setSelectedSource(value);
-        // Lakukan tindakan sesuai dengan source yang dipilih
     }
-
-    useEffect(() => {
-        // Memuat data awal saat komponen dimuat
-        async function fetchData() {
-            try {
-                const res = await changeProject(); // Ganti dengan fungsi untuk mengambil data
-                setData(res); // Menyimpan data ke dalam state
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-        fetchData();
-    }, []);
 
 
     return (
@@ -93,44 +83,65 @@ function DomainsPage() {
                                 <option value={'google-ads'}>Google Ads</option>
                             </Select>
                         </FormControl>
-                        {data && (
-                            <div>
-                                <FormControl mt={3}>
-                                    <FormLabel>Name</FormLabel>
-                                    <Select m='1' value={selectedSource} mt={1} placeholder=" -- Select --" onChange={(e) => changeSourceList(e.target.value)}>
-                                        {data.map((x, i) => (
-                                            <option key={i} value={x}>{x.toUpperCase()}</option>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        )}
+                        {
+                            data.length > 0 ? 
+                                <div>
+                                    <FormControl mt={3}>
+                                        <FormLabel>Name</FormLabel>
+                                        <Select m='1' value={selectedSource} mt={1} placeholder=" -- Select --" onChange={(e) => setSelectedSource(e.target.value)}>
+                                            {data.map((x, i) => (
+                                                <option key={i} value={x}>{x.toUpperCase()}</option>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    {
+                                        selectedSource !== "" ?
+                                            isLoading  ? 
+                                            <Button isLoading colorScheme='green' m='1' width='full'>Search</Button>  : 
+                                            <Button colorScheme='green' m='1' width='full' onClick={() => changeSourceList()}>Search</Button>	
+                                        : ""
+                                    }
+                                </div>
+                            :
+                            ""
+                        }
 
                     </Stack>
-                    <Stack>
-                        {dataBody && (
-                            <Table variant='striped' colorScheme='gray'>
-                                <Thead>
-                                    <Tr>
-                                        <HStack>
+                    <Box overflow={'scroll'}>
+                        <Table variant='striped' colorScheme='gray'>
+                            <Thead>
+                                {
+                                    dataBody.length > 0 ?
+                                        <Tr>
                                             {keysData.map((key, index) => (
                                                 <Th key={index}>{key}</Th>
                                             ))}
-                                        </HStack>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {dataBody.map((x, i) => (
-                                        <Tr key={i}>
-                                            {keysData.map((key, index) => (
-                                                <Td key={index}>{x[key]}</Td>
-                                            ))}
                                         </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        )}
-                    </Stack>
+                                    :
+                                        <Tr>
+                                            <Th>#</Th>
+                                        </Tr>
+                                }
+                                
+                            </Thead>
+                            <Tbody>
+                                {
+                                    dataBody.length > 0 ?
+                                        dataBody.map((x, i) => (
+                                            <Tr key={i}>
+                                                {keysData.map((key, index) => (
+                                                    <Td key={index}>{x[key]}</Td>
+                                                ))}
+                                            </Tr>
+                                        ))
+                                    :
+                                        <Tr>
+                                            <Td>Not Found</Td>
+                                        </Tr>
+                                }
+                            </Tbody>
+                        </Table>
+                    </Box>
                 </Stack>
             </Stack>
         </>
