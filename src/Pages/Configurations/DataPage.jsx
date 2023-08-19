@@ -13,8 +13,6 @@ import {
     GridItem,
     SimpleGrid,
     Input,
-    Text,
-    IconButton,
 } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { getAllCollectionData, getWhereCollectionData } from "../../Api/importirApi"
@@ -26,7 +24,7 @@ function DomainsPage() {
     const [dataBody, setDataBody] = useState([]);
     const [collec, setCollec] = useState(null);
     const [selectedSource, setSelectedSource] = useState('');
-    const [dataPipeline, setDataPipeline] = useState({
+    const [dataQuery, setdataQuery] = useState({
         conditions: []
     });
 
@@ -56,7 +54,7 @@ function DomainsPage() {
         const dataList = {
             sourceType: collec,
             collectionName: selectedSource,
-            query: dataPipeline.conditions
+            query: dataQuery.conditions
         };
         setDataBody([])
         setKeysData([])
@@ -67,7 +65,6 @@ function DomainsPage() {
             const keys = Object.keys(res.data[0]);
             setKeysData(keys)
             setDataBody(res.data)
-            console.log("ini data ",keys)
         } catch (error) {
             setIsLoading(true)
             console.error("Error:", error);
@@ -76,14 +73,14 @@ function DomainsPage() {
 
     const handleAddNewStage = () => {
         setIsLoading(false)
-        const dataPipelineLocal = dataPipeline.conditions;
-        dataPipelineLocal.push({ type: "", column: "", value: "", operator: "" })
-        setDataPipeline(data => ({ ...data, conditions: dataPipelineLocal }))
+        const newQuery = dataQuery.conditions;
+        newQuery.push({ type: "", column: "", value: "", operator: "" })
+        setdataQuery(data => ({ ...data, conditions: newQuery }))
     };
 
     const handleDeleteStage = (index) => {
         setIsLoading(false)
-        setDataPipeline((prev) => ({
+        setdataQuery((prev) => ({
             ...prev,
             conditions: prev.conditions.filter((_, i) => i !== index),
         }));
@@ -91,22 +88,20 @@ function DomainsPage() {
 
     const handleStageNameChange = (index, columnName) => {
         setIsLoading(false)
-        setDataPipeline((prev) => {
+        setdataQuery((prev) => {
             const newStages = [...prev.conditions];
             newStages[index].column = columnName;
             return { ...prev, conditions: newStages };
         });
-        console.log(index, columnName);
     };
 
     const handleValueChange = (index, value) => {
-        updatePipelineData(index, { value });
-        console.log(index, value);
+        updateQueryData(index, { value });
     };
     
-    const updatePipelineData = (index, updates) => {
+    const updateQueryData = (index, updates) => {
         setIsLoading(false)
-        setDataPipeline(prev => {
+        setdataQuery(prev => {
             const newStages = [...prev.conditions];
             newStages[index] = { ...newStages[index], ...updates };
             return { ...prev, conditions: newStages };
@@ -115,10 +110,10 @@ function DomainsPage() {
 
     const handleStageOperatorChange = (index, operator) => {
         setIsLoading(false)
-        const updatedStages = [...dataPipeline.conditions];
+        const updatedStages = [...dataQuery.conditions];
         updatedStages[index].operator = operator;
     
-        setDataPipeline(prev => ({
+        setdataQuery(prev => ({
             ...prev,
             conditions: updatedStages
         }));
@@ -126,9 +121,9 @@ function DomainsPage() {
 
     const changeFilterType = (i, val) => {
         setIsLoading(false)
-        const conditionLocal = dataPipeline.conditions
+        const conditionLocal = dataQuery.conditions
         conditionLocal[i].type = val
-        setDataPipeline(data => ({ ...data, conditions: conditionLocal }))
+        setdataQuery(data => ({ ...data, conditions: conditionLocal }))
     }
 
     return (
@@ -159,7 +154,7 @@ function DomainsPage() {
                                         </Select>
                                     </FormControl>
 
-                                    {dataPipeline?.conditions.map((stage, index) => (
+                                    {dataQuery?.conditions.map((stage, index) => (
                                         <SimpleGrid columns={5} spacing={3} my={3}>
                                             <Stack spacing={2}>
                                                 <Select
