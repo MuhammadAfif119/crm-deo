@@ -74,7 +74,7 @@ function DomainsPage() {
     const handleAddNewStage = () => {
         setIsLoading(false)
         const newQuery = dataQuery.conditions;
-        newQuery.push({ type: "", column: "", value: "", operator: "" })
+        newQuery.push({ type: "string", column: "", value: "", operator: "" })
         setdataQuery(data => ({ ...data, conditions: newQuery }))
     };
 
@@ -160,13 +160,23 @@ function DomainsPage() {
                                                 <Select
                                                     size={"sm"}
                                                     w='100%'
-                                                    placeholder=" -- Select --"
                                                     value={stage.type}
                                                     onChange={(e) => changeFilterType(index, (e.target.value).toLowerCase())}
                                                 >
-                                                    <option value={'date'}>Date</option>
                                                     <option value={'string'}>String</option>
+                                                    <option value={'int'}>Integer</option>
+                                                    <option value={'date'}>Date</option>
                                                 </Select>
+                                            </Stack>
+                                            <Stack spacing={2}>
+                                                {/* <Text>Stage Name</Text> */}
+                                                <Input
+                                                    size={"sm"}
+                                                    w='100%'
+                                                    placeholder="Column Name"
+                                                    value={stage.column}
+                                                    onChange={(e) => handleStageNameChange(index, (e.target.value).toLowerCase())}
+                                                />
                                             </Stack>
                                             <Stack spacing={2}>
                                                 {
@@ -186,19 +196,9 @@ function DomainsPage() {
                                                             w='100%'
                                                             value={stage.value}
                                                             onChange={(e) => handleValueChange(index, e.target.value)}
-                                                            placeholder='text'
+                                                            placeholder='Column Value'
                                                         />
                                                 }
-                                            </Stack>
-                                            <Stack spacing={2}>
-                                                {/* <Text>Stage Name</Text> */}
-                                                <Input
-                                                    size={"sm"}
-                                                    w='100%'
-                                                    placeholder="Colomn Name"
-                                                    value={stage.column}
-                                                    onChange={(e) => handleStageNameChange(index, (e.target.value).toLowerCase())}
-                                                />
                                             </Stack>
 
                                             <Stack spacing={2}>
@@ -209,7 +209,7 @@ function DomainsPage() {
                                                     value={stage.operator}
                                                     onChange={(e) => handleStageOperatorChange(index, e.target.value)}
                                                 >
-                                                    <option value={'=='}>(==) equal to</option>
+                                                    <option value={'='}>(=) equal to</option>
                                                     <option value={'!='}>(!=) not equal to</option>
                                                     <option value={'>'}>&gt; greater than</option>
                                                     <option value={'>='}>&ge; greater than or equal to</option>
