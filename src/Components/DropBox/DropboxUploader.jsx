@@ -4,7 +4,7 @@ import { Box, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, 
 import moment from 'moment';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLink }) {
+function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLink, accessTokenDb }) {
     const fileInputRef = useRef();
     const [uploadProgress, setUploadProgress] = useState(0);
     const [filePreview, setFilePreview] = useState(null);
@@ -44,9 +44,10 @@ function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLin
         const fileTypeFix = fileType === "image" ? "image" : fileType === "video" ? "video" : fileType === "audio" ? "audio" : "file"
 
 
-        const accessToken = globalState.accessToken
+        const accessToken = globalState?.accessToken || accessTokenDb
         const url = 'https://content.dropboxapi.com/2/files/upload';
 
+        console.log(accessToken, 'xxx')
         const headers = {
             'Content-Type': 'application/octet-stream',
             Authorization: `Bearer ${accessToken}`,
