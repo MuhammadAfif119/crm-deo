@@ -1,17 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, fetchToken } from "./Config/firebase";
-import { arrayUnionFirebase, getCollectionFirebase, getSingleDocumentFirebase } from "./Api/firebaseApi";
+import {
+  arrayUnionFirebase,
+  getCollectionFirebase,
+  getSingleDocumentFirebase,
+} from "./Api/firebaseApi";
 import useUserStore from "./Hooks/Zustand/Store";
 import { decryptToken } from "./Utils/encrypToken";
-import { logoutIfExpired, logoutUserWithIp } from "./Hooks/Middleware/sessionMiddleWare";
+import {
+  logoutIfExpired,
+  logoutUserWithIp,
+} from "./Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "./Utils/Helper";
-import { useToast } from "@chakra-ui/react";
+import { Stack, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import store from 'store';
+import store from "store";
 import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
+import ChatPageFirst from "./Pages/Messanger/ChatPageFirst";
 
 function App() {
   const globalState = useUserStore();
@@ -77,8 +85,8 @@ function App() {
 
   const getAccessToken = async () => {
     try {
-      const result = await getSingleDocumentFirebase('token', 'dropbox');
-      const resultData = decryptToken(result.access_token);
+      const result = await getSingleDocumentFirebase("token", "dropbox");
+      const resultData = decryptToken(result?.access_token);
       globalState.setAccessToken(resultData);
     } catch (error) {
       console.log(error);
@@ -86,10 +94,14 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const pathLink = 'crm';
+    const pathLink = "crm";
 
     try {
-    await logoutUserWithIp(window.location.hostname, globalState.email, pathLink);
+      await logoutUserWithIp(
+        window.location.hostname,
+        globalState.email,
+        pathLink
+      );
       await signOut(auth);
       toast({
         status: "success",
@@ -108,8 +120,12 @@ function App() {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const pathLink = 'crm';
-        const res = await logoutIfExpired(window.location.hostname, user?.email, pathLink);
+        const pathLink = "crm";
+        const res = await logoutIfExpired(
+          window.location.hostname,
+          user?.email,
+          pathLink
+        );
 
         if (res) {
           handleLogout();
@@ -135,7 +151,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Stack position={"relative"} overflow='hidden'>
       {globalState.isLoggedIn ? (
         <Layout>
           <MainRouter />
@@ -143,7 +159,15 @@ function App() {
       ) : (
         <AuthRouter />
       )}
-    </>
+      <Stack position={"absolute"} bottom={5} right={5}>
+          <ChatPageFirst
+            module={"crm"}
+            companyId={globalState?.currentCompany || "8NCG4Qw0xVbNR6JCcJw1"}
+            projectId={globalState?.currentProject || "8NCG4Qw0xVbNR6JCcJw1"}
+            companyName={"edrus"}
+          />
+      </Stack>
+    </Stack>
   );
 }
 
