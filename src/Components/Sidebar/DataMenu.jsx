@@ -53,16 +53,16 @@ export const data = [
     link: '/contacts'
   },
 
-  // {
-  //   name: "Chat",
-  //   icon: FcSms,
-  //   submenu: [
-  //     { name: "Chat", icon: FcEditImage, link: "/chat" },
-  //     { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
-  //     { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-  //     { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-  //   ],
-  // },
+  {
+    name: "Chat",
+    icon: FcSms,
+    submenu: [
+      { name: "Chat", icon: FcEditImage, link: "/chat" },
+      { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+      { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+      { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+    ],
+  },
 
 
 

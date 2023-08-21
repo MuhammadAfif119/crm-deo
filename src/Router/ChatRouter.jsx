@@ -10,14 +10,14 @@ const ChatRouter = [
   },
 
   {
-    path: "/chat-user",
+    path: "/chat-user/:module/:companyId/:projectId",
     element: <ChatPageFirst />,
   },
 
-  {
-    path: "/chat-user/:id",
-    element: <ChatUserPage />,
-  },
+  // {
+  //   path: "/chat-user/:id",
+  //   element: <ChatUserPage />,
+  // },
 
 
 

@@ -60,7 +60,7 @@ function ChatUserPage() {
 
     const handleChat = async () => {
 
-        const companyId = globalState.currentCompany
+        const companyId = param?.id
 
         const collectionName = `messages/${param.id}/conversation`;
         const data = {
