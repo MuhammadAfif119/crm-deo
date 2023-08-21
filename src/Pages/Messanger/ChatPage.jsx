@@ -1,46 +1,43 @@
-import { Avatar, Badge, Box, Button, Divider, Flex, Heading, HStack, Icon, Image, Input, SimpleGrid, Spacer, Spinner, Stack, Tag, Text, VStack } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Badge, Box, Button, Divider, Flex, Grid, Heading, HStack, Icon, Image, Input, SimpleGrid, Spacer, Spinner, Stack, Tag, Text, VStack } from '@chakra-ui/react'
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { MdOutlineFilterList, MdSettings, MdSupportAgent } from 'react-icons/md';
 import { db } from '../../Config/firebase';
 import useUserStore from '../../Hooks/Zustand/Store';
+import parse from 'html-react-parser';
+import { getSingleDocumentFirebase } from '../../Api/firebaseApi';
+
 
 function ChatPage() {
-
-    const [chatList, setChatList] = useState();
-    const [chat, setChat] = useState();
-    const [dataChat, setDataChat] = useState("");
-    const [inputChat, setInputChat] = useState("");
-    const [productChat, setProductChat] = useState("");
-    const [idUser, setIdUser] = useState("");
-    const [dataUser, setDataUser] = useState({});
-    const [wishListProducts, setWishlistProducts] = useState([]);
-    const [cartsProducts, setCartProducts] = useState([]);
+    const [chatList, setChatList] = useState([]);
+    const [chat, setChat] = useState([]);
+    const [dataChat, setDataChat] = useState('');
+    const [inputChat, setInputChat] = useState('');
+    const [dataUser, setDataUser] = useState({
+        name: "",
+        email: "",
+        phoneNumber: "",
+        id: ""
+    })
 
     const globalState = useUserStore();
-
-
-
 
     const getChatList = async () => {
         try {
             const q = query(
-                collection(db, "messages"),
-                where("uids", "array-contains", "admin"),
-                where("companyId", "==", globalState.currentCompany),
-                where("projectId", "==", globalState.currentProject),
-                orderBy("lastConversation", "desc"),
+                collection(db, 'messages'),
+                where('uids', 'array-contains', 'admin'),
+                where('companyId', '==', globalState.currentCompany),
+                where('projectId', '==', globalState.currentProject),
+                orderBy('lastConversation', 'desc'),
                 limit(25)
             );
             onSnapshot(q, (querySnapshot) => {
-                const queryData = [];
-
-                querySnapshot.forEach((doc) => {
-                    let forData = doc.data();
-                    forData.id = doc.id;
-                    queryData.push(forData);
-                });
+                const queryData = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
                 setChatList(queryData);
             });
         } catch (error) {
@@ -48,63 +45,59 @@ function ChatPage() {
         }
     };
 
+    const getDataUser = async (id, name) => {
+        if (name !== "visitor") {
+            try {
+                const result = await getSingleDocumentFirebase('users', id)
+
+                setDataUser((prev) => ({ ...prev, name: result.name || "", email: result.email || "", phoneNumber: result.phone || "", id: id || "" }))
+            } catch (error) {
+                console.log(error)
+            }
+        } else {
+            setDataUser((prev) => ({ ...prev, name: name || "", email: name || "", phoneNumber: "", id: id || "" }))
+
+        }
+
+    }
 
     const getChatConversation = async (id) => {
-        console.log(id, 'ini id')
         setDataChat(id);
         try {
-            const unsub = onSnapshot(doc(db, "messages", id), (doc) => {
-                setIdUser(doc.data().uids[0]);
-                console.log(doc.data().uids[0], 'data user');
+            const unsub = onSnapshot(doc(db, 'messages', id), (doc) => {
+
+                getDataUser(doc?.data()?.uids[0], doc.data()?.name[0])
             });
 
             const q = query(
                 collection(db, `messages/${id}/conversation`),
-                // where("uids","array-contains","admin"),
-                orderBy("createdAt", "asc"),
+                orderBy('createdAt', 'desc'),
                 limit(25)
             );
 
             onSnapshot(q, (querySnapshot) => {
-                const queryData = [];
-
-                querySnapshot.forEach((doc) => {
-                    let forData = doc.data();
-                    forData.id = doc.id;
-                    queryData.push(forData);
-                });
-
+                const queryData = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
                 setChat(queryData);
-                console.log(queryData, 'ini query');
             });
         } catch (error) {
             console.log(error.message);
         }
     };
 
-
-
     const handleEnter = async () => {
-        const title = "You have a new message";
-        console.log(idUser, "user");
-
-        const addData = { message: inputChat, createdAt: new Date(), uid: "Admin" };
+        const addData = { message: inputChat, createdAt: new Date(), uid: 'Admin' };
 
         try {
-            // set chat
-            const docRef = await addDoc(
-                collection(db, `messages/${dataChat}/conversation`),
-                addData
-            );
+            const docRef = await addDoc(collection(db, `messages/${dataChat}/conversation`), addData);
             if (docRef) {
-                // set front chat
-                const refUser = doc(db, "messages", dataChat);
+                const refUser = doc(db, 'messages', dataChat);
                 await updateDoc(refUser, {
-                    last_chat: inputChat,
+                    lastChat: inputChat,
                     lastConversation: new Date(),
                 });
-
-
             }
         } catch (error) {
             console.log(error);
@@ -113,33 +106,29 @@ function ChatPage() {
 
     useEffect(() => {
         getChatList();
-
         return () => {
-            setChat();
+            setChat([]);
         };
     }, [globalState.currentProject]);
 
 
     return (
-        <Stack p={1}>
-            <Stack  spacing={5}>
+        <Stack>
+            <Stack spacing={5}>
                 <Heading size={'md'}>Chat</Heading>
 
                 <Stack borderRadius='md' shadow={'md'} bgColor='white'>
                     <Box >
 
-                        <Flex h="80vh">
+                        <Grid templateColumns={{ base: '1fr', md: '1fr 2fr 1fr' }}>
                             <Box
-                                borderRightWidth="1px"
-                                width={"28%"}
-                                display={{ base: "none", md: "initial" }}
-                                pos={"relative"}
+                                borderRightRadius={'md'}
+                                shadow='md'
                             >
-                                <Box
-                                    bgColor={"#ffd600"}
-                                    borderColor={"white"}
-                                    boxShadow={"sm"}
-                                    pos={"relative"}
+                                <Stack
+                                    bgColor={"blue.700"}
+                                    p={2}
+                                    spacing={3}
                                 >
                                     <HStack>
                                         <Spacer />
@@ -149,41 +138,35 @@ function ChatPage() {
                                         <Icon as={MdSettings} />
                                     </HStack>
 
-                                    <HStack m="1">
-                                        <Input type="text" bgColor={"white"} />
-                                        <Button placeholder="Search Chat">Search</Button>
+                                    <HStack mx={2}>
+                                        <Input size={'sm'} borderRadius='md' type="text" placeholder='search..' bgColor={"white"} />
                                     </HStack>
 
-                                    <SimpleGrid columns="3" textAlign="center" width="full" m="1">
-                                        <Text bgColor={"#EAC401"}>All</Text>
-                                        <Text>Read</Text>
-                                        <Text>
-                                            Unread{" "}
-                                            <Badge bgColor="red" color="white">
-                                                93
-                                            </Badge>
-                                        </Text>
+                                    <SimpleGrid mx={2} columns="3" fontSize={'sm'} gap={2} textAlign="center" width="full">
+                                        <Text cursor={'pointer'} color='white' fontWeight={500}>All</Text>
+                                        <Text cursor={'pointer'} color='white' fontWeight={500}>Read</Text>
+                                        <Text cursor={'pointer'} color='white' fontWeight={500}>Unread</Text>
                                     </SimpleGrid>
-                                    {/* <Divider />? */}
-                                </Box>
+                                </Stack>
 
-                                <Box overflowY="auto" h={"68vh"}>
+                                <Box overflowY="auto" h={"75vh"}>
                                     {chatList ? (
                                         chatList.map((x, i) => (
-                                            <Box>
+                                            <Box key={i} cursor='pointer'>
                                                 <HStack
-                                                    key={x.id}
-                                                    m="1"
-                                                    p="1"
+                                                    p={2}
                                                     onClick={() => getChatConversation(x.id)}
                                                     cursor="pointer"
+                                                    spacing={3}
                                                 >
-                                                    <Avatar />
+                                                    <Avatar size="sm">
+                                                        <AvatarBadge boxSize="1.25em" bg="green.500" />
+                                                    </Avatar>
                                                     <Box>
-                                                        <Text fontSize={"md"}>
+                                                        <Text fontSize={"sm"} textTransform='capitalize' fontWeight={500}>
                                                             {x?.name[0]}-{x?.name[1]}
                                                         </Text>
-                                                        <Text fontSize={"sm"}>{x.last_chat}</Text>
+                                                        <Text fontSize={"xs"} color='gray.600'>{x.lastChat}</Text>
                                                     </Box>
                                                     <Spacer />
                                                     <Box>
@@ -195,7 +178,7 @@ function ChatPage() {
                                                                 "HH:mm"
                                                             )}
                                                         </Text>
-                                                        <Text fontSize="2xs" textAlign="end">
+                                                        <Text fontSize="3xs" textAlign="end">
                                                             {moment(x.lastConversation.seconds * 1000).format(
                                                                 "DD/MM/yy"
                                                             )}{" "}
@@ -213,24 +196,48 @@ function ChatPage() {
                                 </Box>
                             </Box>
 
-                            <Box width={"45%"}>
+                            <Box>
                                 <Stack
-                                    h={"71.5vh"}
+                                    h={"80vh"}
                                     overflowY="scroll"
                                     width={"100%"}
                                     spacing={2}
                                     p={5}
-                                    pos={"relative"}
+                                    direction='column-reverse'
                                 >
-                                    {chat ? (
-                                        chat.map((x) => {
+                                    {chat.length > 0 ? (
+                                        chat.map((x, index) => {
+
+
+                                            const mediaData = x?.media
+
                                             return (
                                                 <Stack
                                                     alignItems={x.uid === "Admin" ? "flex-end" : "flex-start"}
                                                     justifyContent="center"
+                                                    key={index}
                                                 >
-                                                    <Tag py={2} px={4} maxW={"40%"} boxShadow="base">
+                                                    <Box py={2} px={4} boxShadow="base">
                                                         <VStack spacing={2}>
+                                                            {mediaData && (
+                                                                <Stack fontSize={'2xs'}>
+                                                                    {parse(mediaData, {
+                                                                        replace: (domNode) => {
+                                                                            if (domNode.type === 'text') {
+                                                                                const textWithLinksReplaced = domNode.data.replace(
+                                                                                    /(\b(?:https?:\/\/|www\.)[^\s]+)/g,
+                                                                                    (match) => {
+                                                                                        const url = match.startsWith('http') ? match : `https://${match}`;
+                                                                                        return `<a href="${url}" target="_blank">${match}</a>`;
+                                                                                    }
+                                                                                );
+                                                                                return parse(textWithLinksReplaced);
+                                                                            }
+                                                                        },
+                                                                    })}
+                                                                </Stack>
+                                                            )}
+
                                                             <Text fontSize={"md"} alignSelf={"flex-start"}>
                                                                 {x.message}
                                                             </Text>
@@ -244,65 +251,88 @@ function ChatPage() {
                                                                 )}
                                                             </Text>
                                                         </VStack>
-                                                    </Tag>
+                                                    </Box>
                                                 </Stack>
                                             );
                                         })
                                     ) : (
-                                        <VStack>
-                                            <Image w={"20em"} src={'www.google.com'} />
+                                        <Stack alignItems={'center'} justifyContent='center' h={"full"} >
                                             <Heading fontSize={20}>Waiting Message</Heading>
-                                            <Text fontSize={15}>
+                                            <Text fontSize={15} color='gray.500' fontWeight={500}>
                                                 Click one of the user displayed in left side to start a chat
                                             </Text>
-                                        </VStack>
+                                        </Stack>
                                     )}
                                 </Stack>
-                                <Box w={"full"}>
-                                    <HStack width="full" p={3} bgColor={"#ffd600"}>
+                                <Spacer />
+                                <Box w={"full"} shadow={'md'}>
+                                    <HStack width="full" borderRadius='md' p={4} bgColor={"blue.700"}>
                                         <Input
                                             type="text"
                                             bgColor={"white"}
                                             width="full"
+                                            size={'sm'}
+                                            placeholder='text...'
                                             pos={"relative"}
                                             onChange={(e) => setInputChat(e.target.value)}
                                             onKeyDown={(event) => {
                                                 event.key === "Enter" ? handleEnter() : <></>;
                                             }}
                                         />
-                                        <Button>Enter</Button>
+                                        <Button size={'sm'} onClick={handleEnter}>Send</Button>
                                     </HStack>
                                 </Box>
                             </Box>
-                            {chat ? (
+
+                            {chat.length > 0 ? (
                                 <Box
                                     flex="1"
                                     maxW="md"
                                     overflowY="auto"
-                                    width={"27%"}
                                     pos={"relative"}
+                                    shadow='md'
+                                    borderLeftRadius={"md"}
                                 >
-                                    <Box bgColor="gray.50" p="3" borderRadius="md" m="1">
+                                    <Stack bgColor={"blue.700"} shadow='md'  p={5} borderRadius="md" spacing={4}>
                                         <Stack gap={3} align={"center"} spacing={"none"}>
-                                            <Avatar size={"sm"} />
-                                            <Heading fontSize="lg"></Heading>
-                                            <Text mt={-1}>
-                                                {/* {"("} {dataUser?.role} {")"} */}
-                                            </Text>
+                                            <Avatar size="sm">
+                                                <AvatarBadge boxSize="1.25em" bg="green.500" />
+                                            </Avatar>
                                         </Stack>
-                                        {/* <Text fontSize={14}>Assign to</Text> */}
-                                        <Stack columns="2" fontSize={14} align="center">
-                                            <Text>Telp :</Text>
-                                            <Text>Email : </Text>
-                                            <Text>ID User : </Text>
+                                        <Stack color={'white'} fontSize={"sm"} spacing={1} >
+                                            <HStack>
+                                                <Text color={'gray.300'}>ID:</Text>
+                                                <Spacer />
+                                                <Text fontWeight={500} noOfLines={1}>{dataUser?.id}</Text>
+                                            </HStack>
+
+                                            <HStack>
+                                                <Text color={'gray.300'}>Name:</Text>
+                                                <Spacer />
+                                                <Text fontWeight={500} noOfLines={1} textTransform='capitalize'>{dataUser?.name}</Text>
+                                            </HStack>
+
+                                            <HStack>
+                                                <Text color={'gray.300'}>Phone:</Text>
+                                                <Spacer />
+                                                <Text fontWeight={500} noOfLines={1}>{dataUser?.phoneNumber}</Text>
+                                            </HStack>
+
+                                            <HStack>
+                                                <Text color={'gray.300'}>Email:</Text>
+                                                <Spacer />
+                                                <Text fontWeight={500} noOfLines={1}>{dataUser?.email}</Text>
+                                            </HStack>
+
+
                                         </Stack>
-                                    </Box>w
+                                    </Stack>
 
                                 </Box>
                             ) : (
                                 <></>
                             )}
-                        </Flex>
+                        </Grid>
                     </Box>
                 </Stack>
 

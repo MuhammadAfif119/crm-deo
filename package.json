@@ -18,7 +18,7 @@
     "firebase": "^9.15.0",
     "fluent-ffmpeg": "^2.1.2",
     "framer-motion": "^6.5.1",
-    "html-react-parser": "^3.0.15",
+    "html-react-parser": "^3.0.16",
     "install": "^0.13.0",
     "ipify": "^6.0.0",
     "jquery": "^3.7.0",

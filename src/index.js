@@ -8,38 +8,47 @@ import { extendTheme, ChakraProvider } from "@chakra-ui/react";
 import ScrollToTop from "./Components/AppScrollToTop";
 
 import * as Sentry from "@sentry/react";
+import ChatPageFirst from "./Pages/Messanger/ChatPageFirst";
 
 const isLocalhost = () => {
-	return (
-		window.location.hostname === "localhost" ||
-		window.location.hostname === "127.0.0.1"
-	);
+  return (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  );
 };
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('../firebase-messaging-sw.js')
-    .then(function (registration) {
-      // Successful registration
-      console.log('Hooray. Registration successful, scope is:', registration.scope);
-    }).catch(function (error) {
-      // Failed registration, service worker won’t be installed
-      console.log('Whoops. Service worker registration failed, error:', error);
-    });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("../firebase-messaging-sw.js")
+      .then(function (registration) {
+        // Successful registration
+        console.log(
+          "Hooray. Registration successful, scope is:",
+          registration.scope
+        );
+      })
+      .catch(function (error) {
+        // Failed registration, service worker won’t be installed
+        console.log(
+          "Whoops. Service worker registration failed, error:",
+          error
+        );
+      });
   });
 }
 
 if (!isLocalhost()) {
-Sentry.init({
-  dsn: "https://649bf87c1b5b49828274a19362ce3f73@o1121849.ingest.sentry.io/4505526450782208",
-  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
-  // Performance Monitoring
-  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-  // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-  tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-});
+  Sentry.init({
+    dsn: "https://649bf87c1b5b49828274a19362ce3f73@o1121849.ingest.sentry.io/4505526450782208",
+    integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
+    // Performance Monitoring
+    tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+    tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
+  });
 }
 
 const colors = {
@@ -58,9 +67,10 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ChakraProvider theme={theme}>
-          <ScrollToTop>
-            <App />
-          </ScrollToTop>
+        <ScrollToTop>
+          <App />
+        
+        </ScrollToTop>
       </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>
