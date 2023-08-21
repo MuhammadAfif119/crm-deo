@@ -27,7 +27,7 @@ function DomainsPage() {
     const [dataQuery, setdataQuery] = useState({
         conditions: []
     });
-
+    const [page, setPage] = useState(1)
 
     const changeProject = async (id) => {
         setCollec(id);
@@ -47,24 +47,31 @@ function DomainsPage() {
         }
     }
 
-    const changeSourceList = async () => {
+    const changeSourceList = async (pageLoc = null) => {
         // setKeysData([])
         // setDataBody([])
 
         const dataList = {
             sourceType: collec,
             collectionName: selectedSource,
-            query: dataQuery.conditions
+            query: dataQuery.conditions,
+            page: pageLoc !== null ? pageLoc : page
         };
-        setDataBody([])
-        setKeysData([])
+        if (pageLoc === null) {
+            setDataBody([])
+            setKeysData([])
+        }
         try {
             setIsLoading(true)
             const res = await getWhereCollectionData(dataList);
             setIsLoading(false)
             const keys = Object.keys(res.data[0]);
             setKeysData(keys)
-            setDataBody(res.data)
+            if (pageLoc === null) {
+                setDataBody(res.data)
+            } else {
+                setDataBody(previous => [...previous, ...res.data])
+            }
         } catch (error) {
             setIsLoading(true)
             console.error("Error:", error);
@@ -124,6 +131,11 @@ function DomainsPage() {
         const conditionLocal = dataQuery.conditions
         conditionLocal[i].type = val
         setdataQuery(data => ({ ...data, conditions: conditionLocal }))
+    }
+
+    const handleLoadmore = () => {
+        setPage(page+1)
+        changeSourceList(page+1)
     }
 
     return (
@@ -246,28 +258,23 @@ function DomainsPage() {
                         }
 
                     </Stack>
-                    <Box overflow={'scroll'}>
-                        <Table variant='striped' colorScheme='gray'>
-                            <Thead>
-                                {
-                                    dataBody.length > 0 ?
-                                        <Tr>
+                    <Box padding={4}>
+                        <Box overflowY="auto" maxHeight="600px">
+                        <Table variant="striped" colorScheme="teal">
+                            <Thead position="sticky" top={0} bgColor={'blue.200'}>
+                            <Tr>
+                                <Th>Number</Th>
                                             {keysData.map((key, index) => (
                                                 <Th key={index}>{key}</Th>
                                             ))}
-                                        </Tr>
-                                        :
-                                        <Tr>
-                                            <Th>#</Th>
-                                        </Tr>
-                                }
-
+                            </Tr>
                             </Thead>
                             <Tbody>
                                 {
                                     dataBody.length > 0 ?
                                         dataBody.map((x, i) => (
                                             <Tr key={i}>
+                                                <Td>{i+1}</Td>
                                                 {keysData.map((key, index) => (
                                                     <Td key={index}>{x[key]}</Td>
                                                 ))}
@@ -280,7 +287,17 @@ function DomainsPage() {
                                 }
                             </Tbody>
                         </Table>
+                        </Box>
                     </Box>
+                    {
+                        dataBody.length > 0 ?
+
+                            isLoading ?
+                            <Button isLoading colorScheme='green' m='1' width='full'>Loadmore</Button> :
+                            <Button bgColor={'blue.200'} onClick={() => handleLoadmore()}>Loadmore</Button>
+                        : ""
+                    }
+                    
                 </Stack>
             </Stack>
         </>
