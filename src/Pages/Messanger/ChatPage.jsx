@@ -158,6 +158,8 @@ function ChatPage() {
                                                     onClick={() => getChatConversation(x.id)}
                                                     cursor="pointer"
                                                     spacing={3}
+                                                    alignItems='center'
+                                                    justifyContent={'center'}
                                                 >
                                                     <Avatar size="sm">
                                                         <AvatarBadge boxSize="1.25em" bg="green.500" />
@@ -170,6 +172,7 @@ function ChatPage() {
                                                     </Box>
                                                     <Spacer />
                                                     <Box>
+                                                        <Text textAlign={"end"} fontSize='2xs' fontWeight={"bold"} textTransform='uppercase'>{x.module}</Text>
                                                         <Text fontSize="2xs" textAlign="end">
                                                             {moment(x.lastConversation.seconds * 1000).format(
                                                                 "ddd"
@@ -323,6 +326,8 @@ function ChatPage() {
                                                 <Spacer />
                                                 <Text fontWeight={500} noOfLines={1}>{dataUser?.email}</Text>
                                             </HStack>
+
+
 
 
                                         </Stack>
