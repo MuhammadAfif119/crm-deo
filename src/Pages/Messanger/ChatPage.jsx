@@ -327,11 +327,7 @@ function ChatPage() {
                                                 <Text fontWeight={500} noOfLines={1}>{dataUser?.email}</Text>
                                             </HStack>
 
-                                            <HStack>
-                                                <Text color={'gray.300'}>Module:</Text>
-                                                <Spacer />
-                                                <Text fontWeight={500} noOfLines={1}>{dataUser?.email}</Text>
-                                            </HStack>
+
 
 
                                         </Stack>
