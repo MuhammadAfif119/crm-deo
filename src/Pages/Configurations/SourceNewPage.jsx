@@ -52,7 +52,7 @@ function DomainsNewPage() {
   		"devices",
 		"locations",
 		"pages",
-		"trafic_sources",
+		"traffic_sources",
 		"website_overview",
 		"weekly_active_users"
 	])
@@ -61,7 +61,7 @@ function DomainsNewPage() {
 		"devices",
 		"locations",
 		"pages",
-		"trafic_sources",
+		"traffic_sources",
 		"website_overview",
 		"weekly_active_users",
 		"monthly_active_users"

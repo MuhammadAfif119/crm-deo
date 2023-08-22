@@ -188,7 +188,7 @@ function IndexPage() {
 												<Button m='2' isLoading colorScheme='green' >Loading</Button>
 											: 
 											<>
-												<HStack>
+												{/* <HStack>
 													<Link to={`${x.id}`}>
 														<Button bgColor={'orange.300'} size={'sm'}>
 															<EditIcon color={'white'}>Edit</EditIcon>
@@ -197,7 +197,7 @@ function IndexPage() {
 													<Button bgColor={'red.500'} size={'sm'} onClick={() => deleteSourceData(i)}>
 														<DeleteIcon color={'white'} />
 													</Button>
-												</HStack>
+												</HStack> */}
 											</>
 										}
 									</Td>
