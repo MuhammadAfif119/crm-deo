@@ -289,11 +289,11 @@ const FormTicketPage = () => {
      const [categoryDetails, setCategoryDetails] = useState([
           { title: '', price: '', priceEnd: '', details: '', tickets: [{ title: '', price: '', endTicket: '', totalAudience: '', notes: '' }] }
      ]);
-     const [data, setData] = useState({ isActive: true, title: '', description: '', price: '', dateStart: '', time: '', timeEnd: '', tnc: '' })
+     const [data, setData] = useState({ isActive: true, title: '', description: '', price: '', gtmId: '',  dateStart: '', time: '', timeEnd: '', tnc: '' })
      const [eventType, setEventType] = useState([]);
      const [formPage, setFormPage] = useState(false)
      const [dataForm, setDataForm] = useState({})
-     const [isError, setIsError] = useState([])
+     const [isError, setIsError] = useState([])   
      const getProject = () => {
           const res = globalState?.projects?.find(e => e.id === globalState?.currentProject)
           setProjectId(res?.id)
@@ -311,6 +311,7 @@ const FormTicketPage = () => {
                     tnc: res.tnc,
                     isActive: res.isActive,
                     price: res.price,
+                    gtmId: res.gtmId,
                }
                if (res.formId) {
                     newData = {
@@ -469,6 +470,7 @@ const FormTicketPage = () => {
                     updatedCategoryDetails[categoryIndex].tickets.push({
                          title: '',
                          price: '',
+                         gtmId: '',
                          endTicket: '',
                          totalAudience: '',
                          notes: '',
@@ -498,7 +500,7 @@ const FormTicketPage = () => {
           setTicketCounts((prevTicketCounts) => [...prevTicketCounts, 1]);
           setCategoryDetails((prevCategoryDetails) => [
                ...prevCategoryDetails,
-               { title: '', price: '', priceEnd: '', details: '', tickets: [{ title: '', price: '', endTicket: '', totalAudience: '', notes: '' }] }
+               { title: '', price: '', gtmId: '', priceEnd: '', details: '', tickets: [{ title: '', price: '', endTicket: '', totalAudience: '', notes: '' }] }
           ]);
      };
 
@@ -799,6 +801,16 @@ const FormTicketPage = () => {
                                         type="number"
                                         value={data?.price}
                                         onChange={(e) => setData({ ...data, price: e.target.value })}
+                                   />
+                              </FormControl>
+
+
+                              <FormControl id="gtmId" isRequired  >
+                                   <FormLabel>GTM-ID</FormLabel>
+                                   <Input
+                                        type="text"
+                                        value={data?.gtmId}
+                                        onChange={(e) => setData({ ...data, gtmId: e.target.value })}
                                    />
                               </FormControl>
 
