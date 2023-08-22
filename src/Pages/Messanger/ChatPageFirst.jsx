@@ -7,7 +7,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 import { BsFillChatDotsFill } from "react-icons/bs"
 import MessageUser from "../../Components/Chat/MessageUser";
 
-function ChatPageFirst({module, companyId, projectId, accessTokenDb}) {
+function ChatPageFirst({module, companyId, projectId}) {
     const globalState = useUserStore();
     const [idMessage, setIdMessage] = useState("");
 
