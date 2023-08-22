@@ -29,23 +29,23 @@ function DomainsNewPage() {
 	useEffect(() => {
 	  setSourceLists(["google-ads", "facebook-marketing", "google-analytics-data-api", "google-analytics-v4"])
 	  setCollectionGoogleAds([
-		"account_labels",
-		"account_performance_report",
-		"ad_group_ad_labels",
-		"ad_group_ad_report",
-		"ad_group_ads",
-		"campaign_bidding_strategies",
-		"campaign_budget",
-		"campaign_labels",
+		// "account_labels",
+		// "account_performance_report",
+		// "ad_group_ad_labels",
+		// "ad_group_ad_report",
+		// "ad_group_ads",
+		// "campaign_bidding_strategies",
+		// "campaign_budget",
+		// "campaign_labels",
 		"campaigns",
-		"click_view",
-		"display_keyword_performance_report",
-		"display_topics_performance_report",
-		"display_topics_performance_report",
-		"keyword_report",
-		"shopping_performance_report",
-		"user_interest",
-		"user_location_report"
+		// "click_view",
+		// "display_keyword_performance_report",
+		// "display_topics_performance_report",
+		// "display_topics_performance_report",
+		// "keyword_report",
+		// "shopping_performance_report",
+		// "user_interest",
+		// "user_location_report"
 	  ])
 	setCollectionGoogleAnalyticDataApi([
 		"daily_active_users",
@@ -67,26 +67,26 @@ function DomainsNewPage() {
 		"monthly_active_users"
 	])
 	setCollectionFacebookMarketing([
-		"ad_account",
-		"ad_creatives",
-		"ad_sets",
-		"ads",
+		// "ad_account",
+		// "ad_creatives",
+		// "ad_sets",
+		// "ads",
 		"ads_insights",
-		"ads_insights_action_type",
-		"ads_insights_age_and_gender",
-		"ads_insights_delivery_device",
-		"ads_insights_delivery_platform",
-		"ads_insights_delivery_platform_and_device_platform",
-		"ads_insights_demographics_age",
-		"ads_insights_demographics_dma_region",
-		"ads_insights_demographics_gender",
-		"ads_insights_dma",
-		"ads_insights_platform_and_device",
-		"ads_insights_region",
-		"campaigns",
-		"custom_conversions",
-		"images",
-		"videos"
+		// "ads_insights_action_type",
+		// "ads_insights_age_and_gender",
+		// "ads_insights_delivery_device",
+		// "ads_insights_delivery_platform",
+		// "ads_insights_delivery_platform_and_device_platform",
+		// "ads_insights_demographics_age",
+		// "ads_insights_demographics_dma_region",
+		// "ads_insights_demographics_gender",
+		// "ads_insights_dma",
+		// "ads_insights_platform_and_device",
+		// "ads_insights_region",
+		// "campaigns",
+		// "custom_conversions",
+		// "images",
+		// "videos"
 	])
 		
 	  getOauths()
