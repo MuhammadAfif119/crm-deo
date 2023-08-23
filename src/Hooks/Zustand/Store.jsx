@@ -15,7 +15,7 @@ const useUserStore = create((set, get) => ({
   roleProject: "",
   users: [],
   accessToken: "",
-  
+  chatId: 0,
 
   setUid: (data) => {
     set({
@@ -35,7 +35,6 @@ const useUserStore = create((set, get) => ({
     });
   },
 
-
   setIsLoggedIn: (data) => {
     set({
       isLoggedIn: data,
@@ -45,6 +44,12 @@ const useUserStore = create((set, get) => ({
   setCompanies: (data) => {
     set({
       companies: data,
+    });
+  },
+
+  setChatId: (data) => {
+    set({
+      chatId: data,
     });
   },
 
@@ -78,7 +83,6 @@ const useUserStore = create((set, get) => ({
     });
   },
 
-
   setCurrentXenditId: (data) => {
     set({
       currentXenditId: data,
@@ -98,4 +102,3 @@ const useUserStore = create((set, get) => ({
 }));
 
 export default useUserStore;
-
