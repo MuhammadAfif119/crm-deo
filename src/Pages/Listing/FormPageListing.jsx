@@ -44,7 +44,7 @@ import {
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import moment from "moment";
 
 function FormPageListing() {
@@ -78,6 +78,7 @@ function FormPageListing() {
     const [priceEnd, setPriceEnd] = useState('')
     const globalState = useUserStore();
     const toast = useToast()
+    const navigate = useNavigate()
 
 
 
@@ -285,6 +286,7 @@ function FormPageListing() {
                     }
                     finally {
                         setLoading(false)
+                        navigate(-1)
                         toast({
                             title: "Deoapp.com",
                             description: "success add new listing",
@@ -385,14 +387,14 @@ function FormPageListing() {
             const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}`, "listings", filesImage[0]);
             newListing.image = resImage;
         }
-        if (filesImage[0]) {
+        if (filesImageLogo[0]) {
             const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}-logo`, "listings", filesImageLogo[0]);
             newListing.logo = resImage;
         }
         const collectionName = "listings";
         const data = newListing;
 
-        console.log(data, 'ini data')
+
 
         try {
             const docID = await updateDocumentFirebase(collectionName, idProject, data);
@@ -453,6 +455,7 @@ function FormPageListing() {
                     }
                     finally {
                         setLoading(false)
+                        navigate(-1)
                         toast({
                             title: "Deoapp.com",
                             description: "success edit listing",
