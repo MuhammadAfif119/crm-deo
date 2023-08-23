@@ -29,6 +29,8 @@ function ChatPageFirst({ module, companyId, projectId }) {
   const globalState = useUserStore();
   const [idMessage, setIdMessage] = useState("");
 
+  const [notif, setNotif] = useState(0);
+
   const navigate = useNavigate();
 
   const param = useParams();
@@ -97,14 +99,12 @@ function ChatPageFirst({ module, companyId, projectId }) {
     }
   };
 
-  console.log(module);
-
-  const handleNotification = async () => {
-    const getCurrentMessage = await getSingleDocumentFirebase(
-      `messages/${idMessage}`
-    );
-    console.log(getCurrentMessage.userNotification);
-  };
+  //   const handleNotification = async () => {
+  //     const getCurrentMessage = await getSingleDocumentFirebase(
+  //       `messages/${idMessage}`
+  //     );
+  //     console.log(getCurrentMessage.userNotification);
+  //   };
 
   const handleLoadChat = async (data) => {
     const conditions = [
@@ -128,6 +128,17 @@ function ChatPageFirst({ module, companyId, projectId }) {
       // navigate(`/chat-user/${data.id}`, { state: data });
 
       setIdMessage(data.id);
+
+      //   const getCurrentMessage = await getSingleDocumentFirebase(
+      //     `messages/${idMessage}`
+      //   );
+
+      //   console.log(getCurrentMessage);
+
+      if (data?.userNotification) {
+        setNotif(data?.userNotification);
+      }
+      console.log(data, "xxxx");
     } catch (error) {
       console.log(error, "ini error");
     }
@@ -186,7 +197,7 @@ function ChatPageFirst({ module, companyId, projectId }) {
             </PopoverTrigger>
 
             <PopoverContent bgColor="blue.200" width={"500px"} mr={5}>
-              <MessageUser id={idMessage} companyId={companyId} />
+              <MessageUser id={idMessage} companyId={companyId} notif={notif} />
             </PopoverContent>
           </Popover>
         </Stack>
