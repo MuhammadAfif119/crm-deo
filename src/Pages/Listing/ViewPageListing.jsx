@@ -364,7 +364,7 @@ const ViewPageListing = () => {
           <ModalBody>
             <Stack spacing={1} py={3}>
 
-                <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
+                <Image borderRadius="md"  src={detailActive.image} alt={detailActive.title} />
               <Stack spacing={1} py={2}>
                 <Flex justify={'space-between'} gap='5'>
 
@@ -381,31 +381,37 @@ const ViewPageListing = () => {
                 <Text color="gray.500">
                   {detailActive.description}
                 </Text>
-                <HStack justifyContent="space-around" alignItems="flex-start">
-                  <Stack>
-                    <Text color="gray.600">Details:</Text>
-                    {detailActive?.details?.map((detail, index) => (
-                      <HStack key={index} spacing={2} alignItems="center">
-                        <Text fontSize="sm" textTransform="capitalize" fontWeight="bold">
-                          {detail.key}:
-                        </Text>
-                        {renderValue(detail)}
-                      </HStack>
-                    ))}
-                  </Stack>
-                  <Spacer />
-                  <Stack spacing={0} alignItems="flex-end">
+                <Stack justifyContent="space-around" alignItems="flex-start">
+
+                <Stack spacing={0} alignItems="flex-end" w={'full'}>
                     <Text color="gray.600">Price</Text>
                     <HStack>
 
                       <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(detailActive.price))}</Text>
-
+                      
                       {detailActive?.priceEnd &&
                         <Text fontWeight={'bold'} fontSize='lg' mx='1'> - Rp. {formatFrice(Number(detailActive.priceEnd))} </Text>
                       }
                     </HStack>
                   </Stack>
-                </HStack>
+
+                  <Spacer />
+                  <Stack h={'250px'} overflowY='scroll'>
+                    <Text color="gray.600">Details:</Text>
+                    {detailActive?.details?.map((detail, index) => (
+                      <HStack key={index} spacing={2} alignItems="center">
+                        <Text fontSize="sm" maxW={'500px'} textTransform="capitalize" fontWeight="bold">
+                          {detail.key}:
+                        </Text>
+                        <Spacer />
+                        {renderValue(detail)}
+                      </HStack>
+                    ))}
+                  </Stack>
+
+
+                  
+                </Stack>
               </Stack>
             </Stack>
           </ModalBody>
