@@ -382,15 +382,17 @@ function FormPageListing() {
         };
 
         if (filesImage[0]) {
-            const resImage = await uploadFile(title, "listings", filesImage[0]);
+            const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}`, "listings", filesImage[0]);
             newListing.image = resImage;
         }
-        if (filesImageLogo[0]) {
-            const resImage = await uploadFile(`${title}-logo`, "listings", filesImageLogo[0]);
+        if (filesImage[0]) {
+            const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}-logo`, "listings", filesImageLogo[0]);
             newListing.logo = resImage;
         }
         const collectionName = "listings";
         const data = newListing;
+
+        console.log(data, 'ini data')
 
         try {
             const docID = await updateDocumentFirebase(collectionName, idProject, data);
@@ -462,7 +464,6 @@ function FormPageListing() {
                 }
             }
 
-            console.log("berhasil");
         } catch (error) {
             console.log("Terjadi kesalahan:", error);
         }
