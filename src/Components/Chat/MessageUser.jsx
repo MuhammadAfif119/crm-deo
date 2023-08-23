@@ -34,12 +34,13 @@ import DropboxUploader from "../DropBox/DropboxUploader";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { decryptToken } from "../../Utils/encrypToken";
 
-function MessageUser({ id, companyId, companyName }) {
+function MessageUser({ id, companyId, companyName, notif }) {
   const param = useParams();
 
   const globalState = useUserStore();
 
   const [userNotif, setUserNotif] = useState();
+  const [userChat, setUserChat] = useState();
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [shareLink, setShareLink] = useState("");
@@ -80,6 +81,8 @@ function MessageUser({ id, companyId, companyName }) {
       setValue((prevContent) => prevContent + ` ${htmlContent}`);
     }
   };
+
+  console.log(notif, "ini notif");
 
   const getChatNotification = async () => {
     const result = await getSingleDocumentFirebase(`messages`, id);
@@ -122,7 +125,6 @@ function MessageUser({ id, companyId, companyName }) {
   useEffect(() => {
     getDataChat();
     getAccessToken();
-    getChatNotification();
 
     return () => {
       setChatData([]);
@@ -130,9 +132,13 @@ function MessageUser({ id, companyId, companyName }) {
     };
   }, [id]);
 
-  const handleChat = async () => {
-    setUserNotif(0);
+  useEffect(() => {
+    getChatNotification();
 
+    return () => {};
+  }, [userChat]);
+
+  const handleChat = async () => {
     const collectionName = `messages/${id}/conversation`;
     const data = {
       message: chat,
@@ -151,6 +157,7 @@ function MessageUser({ id, companyId, companyName }) {
           lastConversation: new Date(),
           lastChat: chat,
           adminNotification: increment(1),
+          userNotification: 0,
         };
 
         try {
@@ -159,25 +166,15 @@ function MessageUser({ id, companyId, companyName }) {
             docName,
             data
           );
-          console.log(result); // Pesan toast yang berhasil
           setValue("");
         } catch (error) {
           console.log("Terjadi kesalahan:", error);
         }
       }
 
-      //update notif
-      const collectionNameFront = "messages";
-      const docName = id;
-      const dataNotif = {
-        userNotification: 0,
-      };
+      //   console.log(result);
 
-      const result = await setDocumentFirebase(
-        collectionNameFront,
-        docName,
-        dataNotif
-      );
+      // setUserNotif(0);
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
       setValue("");
@@ -296,7 +293,11 @@ function MessageUser({ id, companyId, companyName }) {
               Admin
             </Text>
             <Spacer />
-            {userNotif === 0 ? null : <Text>{userNotif} New Notification</Text>}
+            {notif === 0 ? null : (
+              <Text color={"red.400"} fontWeight={500} fontSize={"sm"}>
+                {notif} New Notification
+              </Text>
+            )}
           </HStack>
         </Stack>
 
