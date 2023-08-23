@@ -430,7 +430,7 @@ function FormBuilderPage() {
     };
 
     const renderPaymentOptions = () => {
-        const paymentOptions = ['xendit', 'midtrans', 'finpay', 'none']; // Ganti dengan opsi pembayaran yang sesuai
+        const paymentOptions = ['xendit', 'midtrans', 'xendit recurring', 'none']; // Ganti dengan opsi pembayaran yang sesuai
         return (
             <Stack spacing={2} >
                 <HStack spacing={5}>

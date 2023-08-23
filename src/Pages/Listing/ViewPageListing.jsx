@@ -356,24 +356,15 @@ const ViewPageListing = () => {
       })}
 
 
-      <Modal isOpen={modalDetail} onClose={() => handleCloseDetail()} isCentered>
+      <Modal size={'2xl'} isOpen={modalDetail} onClose={() => handleCloseDetail()} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Detail</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack spacing={1} py={3}>
-              {/* <Box flex="1" position="relative">
-                <IconButton
-                  icon={<MdDelete />}
-                  aria-label="Delete Listing"
-                  onClick={() => handleDelete(detailActive)}
-                  position="absolute"
-                  right={2}
-                  bottom={2}
-                /> */}
+
                 <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
-              {/* </Box> */}
               <Stack spacing={1} py={2}>
                 <Flex justify={'space-between'} gap='5'>
 

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { addDocumentFirebase, deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi'
 import TicketCard from '../../Components/Card/TicketCard'
 import PaymentTicketDetail from '../../Components/Payment/PaymentTicketDetail'
+import PaymentXenditRecurring from '../../Components/Payment/PaymentXenditRecurring'
 import { decryptToken } from '../../Utils/encrypToken'
 import { formatFrice } from '../../Utils/Helper'
 
@@ -138,11 +139,15 @@ function PaymentTicketPage() {
                                             {param.method === "xendit" ? (
                                                 <PaymentTicketDetail dataLeads={dataLeads} dataTicket={dataTicket} />
 
-                                            ) : (
-                                                <Stack>
-                                                    <Heading size={'md'}>We dont have any method payment</Heading>
-                                                </Stack>
-                                            )}
+                                            ) :
+                                                param.method === "xendit recurring" ? (
+                                                    <PaymentXenditRecurring dataLeads={dataLeads} dataTicket={dataTicket} />
+                                                ) : (
+                                                    <Stack>
+                                                        <Heading size={'md'}>We dont have any method payment</Heading>
+                                                    </Stack>
+                                                )
+                                            }
                                         </Stack>
                                     </>
                                 )}

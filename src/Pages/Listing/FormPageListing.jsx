@@ -45,6 +45,7 @@ import {
 import useUserStore from "../../Hooks/Zustand/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import moment from "moment";
 
 function FormPageListing() {
     let [searchParams, setSearchParams] = useSearchParams();
@@ -59,7 +60,7 @@ function FormPageListing() {
     const [category, setCategory] = useState([]);
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState([]); // Initialize with an empty array
     const [filesImage, setFilesImage] = useState([]);
     const [details, setDetails] = useState([]);
     const [contactPerson, setContactPerson] = useState("");
@@ -98,8 +99,8 @@ function FormPageListing() {
         setContactPerson(res.contactPerson)
         setDescription(res.description)
         setPrice(res.price)
-        setFiles(res.image)
-        setFilesLogo(res.logo)
+        setFiles(res?.image || [])
+        setFilesLogo(res?.logo || [])
         setModules(res.modules)
         setIsActive(res.is_active)
         setProjectName(res.projectName)
@@ -215,11 +216,11 @@ function FormPageListing() {
         };
 
         if (filesImage[0]) {
-            const resImage = await uploadFile(title, "listings", filesImage[0]);
+            const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}`, "listings", filesImage[0]);
             newListing.image = resImage;
         }
         if (filesImageLogo[0]) {
-            const resImage = await uploadFile(`${title}-logo`, "listings", filesImageLogo[0]);
+            const resImage = await uploadFile(`${title}-${moment(new Date()).valueOf()}-logo`, "listings", filesImageLogo[0]);
             newListing.logo = resImage;
         }
         const collectionName = "listings";
@@ -317,31 +318,10 @@ function FormPageListing() {
         }
     };
 
-    const handleProjectChange = (value) => {
-        const projectFind = projectList.find((x) => x.id === value);
-        setProjectId(projectFind.id);
-        setProjectName(projectFind.name);
-    };
-
-    const handleCategoryChange = (e) => {
-        setCategoryInput((e.target.value).toLowerCase());
-    };
-
-    const handleCategoryAdd = () => {
-        if (categoryInput.trim() !== "" && !category.includes(categoryInput)) {
-            setCategory((prevCategories) => [...prevCategories, categoryInput]);
-            setCategoryInput("");
-        }
-    };
-
-    const handleCategoryDelete = (categories) => {
-        setCategory((prevCategories) =>
-            prevCategories.filter((cat) => cat !== categories)
-        );
-    };
 
     const handleFileInputChange = (event) => {
         const { files: newFiles } = event.target;
+    
         if (newFiles.length) {
             const newFileArray = [...files];
             for (let i = 0; i < newFiles.length; i++) {
@@ -359,6 +339,7 @@ function FormPageListing() {
             setFilesImage(newFiles);
         }
     };
+    
     const handleFileLogoInputChange = (event) => {
         const { files: newFiles } = event.target;
         if (newFiles?.length) {
@@ -656,59 +637,9 @@ function FormPageListing() {
                                 onInputChange={handleDBInputChange}
                             />
                         </Box>
-                        {/* <HStack spacing={2}>
-                            <Input
-                                type="text"
-                                value={categoryInput}
-                                onChange={handleCategoryChange}
-                            />
-                            <Button colorScheme="teal"
-                                onClick={handleCategoryAdd}
-                            >
-                                Add
-                            </Button>
-                        </HStack> */}
-                        {/* <Stack direction="row" spacing={2} mt={2}>
-                            {category.map((category) => (
-                                <Box
-                                    key={category}
-                                    display="flex"
-                                    alignItems="center"
-                                    bg="teal.100"
-                                    borderRadius="md"
-                                    px={2}
-                                    py={1}
-                                >
-                                    <Text fontSize="sm">{category}</Text>
-                                    <IconButton
-                                        icon={<MdDelete />}
-                                        variant="ghost"
-                                        colorScheme="teal"
-                                        size="xs"
-                                        onClick={() => handleCategoryDelete(category)}
-                                    />
-                                </Box>
-                            ))}
-                        </Stack> */}
                     </FormControl>
 
 
-
-                    {/* <FormControl id="Project" isRequired>
-                        <FormLabel>Project:</FormLabel>
-                        <Select
-                            borderRadius="lg"
-                            placeholder={idProject ? '' : 'Project'}
-                            onChange={(e) => handleProjectChange(e.target.value)}
-                        >
-                            {projectList?.length > 0 &&
-                                projectList?.map((x, index) => (
-                                    <option value={x.id} key={index} selected={x.id === projectId}>
-                                        <Text textTransform={"capitalize"}>{x.name}</Text>
-                                    </option>
-                                ))}
-                        </Select>
-                    </FormControl> */}
                     <FormControl mt='5' id="Project" isRequired>
                         <FormLabel>Project</FormLabel>
                         <Input value={projectName} variant={'unstyled'} disabled />
@@ -743,79 +674,6 @@ function FormPageListing() {
                     </HStack>
 
 
-
-                    {/* <FormControl id="image" isRequired>
-                        <HStack>
-                            {files.length > 0 && (
-                                <Stack>
-                                    <Image
-                                        src={files[0].file}
-                                        boxSize="100%"
-                                        maxWidth={300}
-                                        borderRadius="xl"
-                                        alt={files[0].name}
-                                        shadow="sm"
-                                    />
-                                </Stack>
-                            )}
-                        </HStack>
-
-                        <Stack>
-                            <Input
-                                type="file"
-                                onChange={handleFileInputChange}
-                                display="none"
-                                id="fileInput"
-                            />
-
-                            <label htmlFor="fileInput">
-                                <HStack cursor={"pointer"}>
-                                    <Stack>
-                                        <MdOutlinePermMedia />
-                                    </Stack>
-                                    <Text fontSize={"sm"} color="blue.600" fontStyle={"italic"}>
-                                        Add Image thumbnail
-                                    </Text>
-                                </HStack>
-                            </label>
-                        </Stack>
-                    </FormControl>
-                    <FormControl id="logo" isRequired>
-                        <HStack>
-                            {filesLogo.length > 0 && (
-                                <Stack>
-                                    <Image
-                                        src={filesLogo[0].file}
-                                        boxSize="100%"
-                                        maxWidth={300}
-                                        borderRadius="xl"
-                                        alt={filesLogo[0].name}
-                                        shadow="sm"
-                                    />
-                                </Stack>
-                            )}
-                        </HStack>
-
-                        <Stack>
-                            <Input
-                                type="file"
-                                onChange={handleFileLogoInputChange}
-                                display="none"
-                                id="fileInputLogo"
-                            />
-
-                            <label htmlFor="fileInputLogo">
-                                <HStack cursor={"pointer"}>
-                                    <Stack>
-                                        <MdOutlinePermMedia />
-                                    </Stack>
-                                    <Text fontSize={"sm"} color="blue.600" fontStyle={"italic"}>
-                                        Add Image logo
-                                    </Text>
-                                </HStack>
-                            </label>
-                        </Stack>
-                    </FormControl> */}
                     <FormControl id="contactPerson" isRequired>
                         <FormLabel>Contact Person:</FormLabel>
                         <Input
