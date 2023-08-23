@@ -163,9 +163,9 @@ const ViewPageListing = () => {
     const docName = listing.id;
 
     try {
-      deleteFileFirebase(`${listing.title}_800x800`,'listings').then(()=>{
-        deleteFileFirebase(`${listing.title}-logo_800x800`,'listings').then(()=>{
-          deleteDocumentFirebase(collectionName, docName).then((res)=>{
+      deleteFileFirebase(`${listing.title}_800x800`, 'listings').then(() => {
+        deleteFileFirebase(`${listing.title}-logo_800x800`, 'listings').then(() => {
+          deleteDocumentFirebase(collectionName, docName).then((res) => {
             toast({
               title: 'Deleted!',
               description: res,
@@ -177,9 +177,9 @@ const ViewPageListing = () => {
           })
         })
       })
-     
-   
-     
+
+
+
     } catch (error) {
       console.log('Terjadi kesalahan:', error);
     }
@@ -189,7 +189,7 @@ const ViewPageListing = () => {
     setModalDelete(true)
     setDetailActive(value)
   }
-  const handleCloseDelete = () =>{
+  const handleCloseDelete = () => {
     setModalDelete(false)
     setDetailActive("")
 
@@ -364,7 +364,7 @@ const ViewPageListing = () => {
           <ModalBody>
             <Stack spacing={1} py={3}>
 
-                <Image borderRadius="md"  src={detailActive.image} alt={detailActive.title} />
+              <Image borderRadius="md" src={detailActive.image} alt={detailActive.title} />
               <Stack spacing={1} py={2}>
                 <Flex justify={'space-between'} gap='5'>
 
@@ -383,12 +383,12 @@ const ViewPageListing = () => {
                 </Text>
                 <Stack justifyContent="space-around" alignItems="flex-start">
 
-                <Stack spacing={0} alignItems="flex-end" w={'full'}>
+                  <Stack spacing={0} alignItems="flex-end" w={'full'}>
                     <Text color="gray.600">Price</Text>
                     <HStack>
 
                       <Text fontWeight={'bold'} fontSize='lg'>Rp. {formatFrice(Number(detailActive.price))}</Text>
-                      
+
                       {detailActive?.priceEnd &&
                         <Text fontWeight={'bold'} fontSize='lg' mx='1'> - Rp. {formatFrice(Number(detailActive.priceEnd))} </Text>
                       }
@@ -410,7 +410,7 @@ const ViewPageListing = () => {
                   </Stack>
 
 
-                  
+
                 </Stack>
               </Stack>
             </Stack>
