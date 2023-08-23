@@ -82,12 +82,6 @@ function MessageUser({ id, companyId, companyName, notif }) {
     }
   };
 
-  console.log(notif, "ini notif");
-
-  const getChatNotification = async () => {
-    const result = await getSingleDocumentFirebase(`messages`, id);
-    setUserNotif(result.userNotification);
-  };
 
   const handleChatChange = (e) => {
     setChat(e.target.value);
@@ -132,11 +126,6 @@ function MessageUser({ id, companyId, companyName, notif }) {
     };
   }, [id]);
 
-  useEffect(() => {
-    getChatNotification();
-
-    return () => {};
-  }, [userChat]);
 
   const handleChat = async () => {
     const collectionName = `messages/${id}/conversation`;
