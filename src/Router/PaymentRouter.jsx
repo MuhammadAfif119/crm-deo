@@ -4,7 +4,7 @@ import PaymentTicketPage from "../Pages/Payment/PaymentTicketPage";
 
 const PaymentRouter = [
   {
-    path: "/payment/:type/:method/:id/:phone",
+    path: "/payment/:type/:method/:id/:phone/:name",
     element: <PaymentTicketPage />,
   },
   {

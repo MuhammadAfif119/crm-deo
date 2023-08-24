@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { addDocumentFirebase, deleteDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import { formatFrice } from '../../Utils/Helper';
 
-function PaymentTicketDetail({ dataLeads, dataTicket }) {
+function PaymentTicketDetail({ dataLeads, dataTicket, dataForm }) {
 
     const [paymentVA, setPaymentVA] = useState("");
     const [orderId, setOrderId] = useState("")
@@ -205,7 +205,6 @@ function PaymentTicketDetail({ dataLeads, dataTicket }) {
 
 
     const sucessOrder = (res) => {
-        console.log(res)
 
         updateDocumentFirebase("leads", dataLeads.id, {
             status: "won",

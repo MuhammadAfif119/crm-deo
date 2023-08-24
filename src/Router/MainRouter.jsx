@@ -15,6 +15,7 @@ import TicketRouter from "./TicketRouter";
 import ConfigurationRouter from "./ConfigurationRouter";
 import ContactsRouter from "./ContactsRouter";
 import ChatRouter from "./ChatRouter";
+import MembershipRouter from "./MembershipRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -34,6 +35,7 @@ function MainRouter() {
     ...ConfigurationRouter,
     ...ContactsRouter,
     ...ChatRouter,
+    ...MembershipRouter,
   ];
   return (
     <Routes>

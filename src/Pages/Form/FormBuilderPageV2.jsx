@@ -2,12 +2,14 @@ import { Stack, Text, Input, Textarea, Select, Button, Grid, FormControl, Divide
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import _axios from '../../Api/AxiosBarrier';
 import { deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import BackButtons from '../../Components/Buttons/BackButtons';
 import TicketCard from '../../Components/Card/TicketCard';
+import MembershipCard from '../../Components/Card/MembershipCard';
 import CreateForm from '../../Components/Form/CreateForm';
 import useUserStore from '../../Hooks/Zustand/Store';
-import { decryptToken } from '../../Utils/encrypToken';
+import { formatFrice } from '../../Utils/Helper';
 
 
 function generateHTML(formFields) {
@@ -136,9 +138,9 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
 
             const formRoute = dataForm.formId;
             const phoneRoute = dataForm.phoneNumber;
+            const nameRoute = dataForm.name;
 
-            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ "${projectId}" +'/'+ phoneRoute;
-            console.log("https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ ${projectId} +'/'+phoneRoute , 'test')
+            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ "${projectId}" +'/'+ phoneRoute '/'+ nameRoute;
 
           } catch (error) {
             console.log(error, 'ini error');
@@ -147,35 +149,37 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
     }
   </script>`
 
-    if (enableFacebookPixel && facebookPixelId) {
-        jsScript += `
+    // if (enableFacebookPixel && facebookPixelId) {
+    //     jsScript += `
        
         
-        <script>
-        !function (f, b, e, v, n, t, s) {
-            fbq('track', 'Lead', {
-              content_name: 'FormSubmission',
-            });
+    //     <script>
+    //     !function (f, b, e, v, n, t, s) {
+    //         fbq('track', 'Lead', {
+    //           content_name: 'FormSubmission',
+    //         });
 
-            if (f.fbq) return; n = f.fbq = function () { n.callMethod ?
-                n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${facebookPixelId}');
-        fbq('track', 'PageView');
-        </script>
-        <noscript>
-        <img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1" />
-        </noscript>
-        `;
-    }
+    //         if (f.fbq) return; n = f.fbq = function () { n.callMethod ?
+    //             n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+    //         if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+    //         n.queue = []; t = b.createElement(e); t.async = !0;
+    //         t.src = v; s = b.getElementsByTagName(e)[0];
+    //         s.parentNode.insertBefore(t, s)
+    //     }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    //     fbq('init', '${facebookPixelId}');
+    //     fbq('track', 'PageView');
+    //     </script>
+    //     <noscript>
+    //     <img height="1" width="1" style="display:none"
+    //         src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1" />
+    //     </noscript>
+    //     `;
+    // }
 
     return jsScript;
 }
+
+
 function FormBuilderPage() {
 
     const param = useParams()
@@ -206,10 +210,42 @@ function FormBuilderPage() {
     const [opportunityValue, setOpportunityValue] = useState(0);
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+    const [selectedProductMethod, setSelectedProductMethod] = useState('');
 
     const [ticketActive, setTicketActive] = useState("")
 
     const [embedCode, setEmbedCode] = useState('');
+
+
+    const [membershipList, setMembershipList] = useState([])
+    const [selectedMemberships, setSelectedMemberships] = useState([]);
+
+
+    const handleMembershipSelect = (membership) => {
+        if (selectedMemberships.includes(membership)) {
+            setSelectedMemberships(selectedMemberships.filter(item => item !== membership));
+        } else {
+            setSelectedMemberships([...selectedMemberships, membership]);
+        }
+    };
+
+
+
+    const getDataMembership = async () => {
+        try {
+            const res = await _axios.get('membershipList')
+            setMembershipList(res.message)
+        } catch (error) {
+            console.log(error, 'ini error')
+        }
+    }
+
+    useEffect(() => {
+        getDataMembership()
+
+        return () => {
+        }
+    }, [])
 
 
     const handleInputChange = (event) => {
@@ -237,10 +273,9 @@ function FormBuilderPage() {
                     const data = updateData
                     try {
                         const res = await axios.post('https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead', data)
-                        console.log(res, 'ini ress')
 
 
-                        window.location.href = `http://localhost:3000/payment/ticket/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}`
+                        window.location.href = `http://localhost:3000/payment/ticket/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`
                     } catch (error) {
                         console.log(error, 'ini error')
                     }
@@ -316,7 +351,10 @@ function FormBuilderPage() {
             isActive,
             apiSubmitUrl: `${apiSubmitUrl}`,
             paymentMethod: selectedPaymentMethod,
-            paymentMethodId: process.env.REACT_APP_PAYMENT_XENDIT
+            product: selectedProductMethod,
+            paymentMethodId: process.env.REACT_APP_PAYMENT_XENDIT,
+            membership_used: selectedMemberships // Add selected memberships here
+
         };
 
         try {
@@ -397,6 +435,8 @@ function FormBuilderPage() {
                 setFacebookPixelId(result?.facebookPixelId)
                 setIsActive(result?.isActive)
                 setSelectedPaymentMethod(result?.paymentMethod)
+                setSelectedProductMethod(result?.product)
+                setSelectedMemberships(result?.membership_used)
 
             } else {
                 setFormFields([
@@ -410,7 +450,7 @@ function FormBuilderPage() {
                     { label: 'Submit', type: 'button', name: 'submit_button', formId: result.token },
                 ])
                 setEnableFacebookPixel(false)
-                setFacebookPixelId('YOUR_PIXEL_ID_HERE')
+                setFacebookPixelId('GTM-XXXXX')
             }
         } catch (error) {
             console.log(error)
@@ -449,6 +489,59 @@ function FormBuilderPage() {
             </Stack>
         );
     };
+
+
+    const handleProductMethodChange = (option) => {
+        setSelectedProductMethod(option);
+    };
+
+    const renderProductOptions = () => {
+        const paymentOptions = ['ticket', 'membership', 'listing', 'none']; // Ganti dengan opsi pembayaran yang sesuai
+        return (
+            <Stack spacing={2} >
+                <HStack spacing={5}>
+                    {paymentOptions.map(option => (
+                        <Checkbox
+                            key={option}
+                            value={option}
+                            isChecked={selectedProductMethod === option}
+                            onChange={() => handleProductMethodChange(option)}
+                            textTransform='capitalize'
+                        >
+                            {option}
+                        </Checkbox>
+                    ))}
+                </HStack>
+                <Stack>
+                    {selectedProductMethod === "membership" && (
+                        <Stack spacing={5}>
+                            <Stack>
+                                <Heading size={'md'}>Membership</Heading>
+                            </Stack>
+                            <Stack>
+                                {membershipList.length > 0 && (
+                                    <SimpleGrid columns={[1, 2, 3]} gap={3}>
+                                        {membershipList?.map((x, index) => {
+                                            return (
+                                                <MembershipCard
+                                                    key={index}
+                                                    membership={x}
+                                                    selectedMemberships={selectedMemberships}
+                                                    handleMembershipSelect={handleMembershipSelect}
+                                                />
+
+                                            )
+                                        })}
+                                    </SimpleGrid>
+                                )}
+                            </Stack>
+                        </Stack>
+                    )}
+                </Stack>
+            </Stack>
+        );
+    };
+
 
     const handleDeleteForm = async () => {
         const collectionName = 'forms';
@@ -489,7 +582,7 @@ function FormBuilderPage() {
 
             <Divider />
             <Grid templateColumns={{ base: '1fr', md: '1.3fr 1fr' }} gap={4} py={5}>
-                <Stack >
+                <Stack  >
                     <Stack minH={'500px'} bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
                         <HStack>
                             <Heading size={'md'}>Form Costumize</Heading>
@@ -502,10 +595,10 @@ function FormBuilderPage() {
 
                         <CreateForm setFormFields={setFormFields} formFields={formFields} setFormValues={setFormValues} formValues={formValues} />
 
-                        <Heading size={'md'}>Facebook Pixel ID</Heading>
+                        <Heading size={'md'}>Facebook GTM-ID</Heading>
 
 
-                        <Stack spacing={5} px={[1, 1, 5]}>
+                        <Stack>
                             <FormControl>
                                 <Stack>
                                     <HStack>
@@ -528,10 +621,19 @@ function FormBuilderPage() {
 
                         </Stack>
 
-                        <Heading size={'md'}>Payment Method</Heading>
-                        <Stack>
-                            {renderPaymentOptions()}
+                        <Stack spacing={5}>
+                            <Heading size={'md'}>Payment Method</Heading>
+                            <Stack>
+                                {renderPaymentOptions()}
+                            </Stack>
+
+                            <Heading size={'md'}>Product Form</Heading>
+                            <Stack>
+                                {renderProductOptions()}
+                            </Stack>
                         </Stack>
+
+
 
                         <HStack alignItems={'flex-end'} justifyContent='flex-end'>
                             <Button variant={'outline'} onClick={handleEmbedCode} colorScheme="blue">

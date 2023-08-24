@@ -24,7 +24,8 @@ import {
   FcCollaboration,
   FcDisplay,
   FcCustomerSupport,
-  FcFile
+  FcFile,
+  FcLike
 } from "react-icons/fc";
 
 export const data = [
@@ -80,6 +81,7 @@ export const data = [
     icon: FcConferenceCall,
     submenu: [
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
+      { name: "Membership", icon: FcLike, link: "/membership" },
       { name: "Forms", icon: FcSurvey, link: "/form-builder" },
       { name: "Listings", icon: FcParallelTasks, link: "/listing" },
       { name: "News", icon: FcNews, link: "/news" },
