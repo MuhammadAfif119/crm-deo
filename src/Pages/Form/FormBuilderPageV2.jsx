@@ -140,7 +140,7 @@ function generateJS(enableFacebookPixel, facebookPixelId, apiSubmitUrl, opportun
             const phoneRoute = dataForm.phoneNumber;
             const nameRoute = dataForm.name;
 
-            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+ '/'+ "${projectId}" +'/'+ phoneRoute '/'+ nameRoute;
+            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+'/'+ "${projectId}" +'/'+ phoneRoute + '/'+ nameRoute;
 
           } catch (error) {
             console.log(error, 'ini error');

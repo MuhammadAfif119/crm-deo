@@ -31,13 +31,13 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
     align: "center",
   });
 
-  const sucessOrder = (fixPrice) => {
+  const sucessOrder = (fixPrice, id) => {
 
     updateDocumentFirebase("leads", dataLeads.id, {
-        status: "won",
+        status: "open",
         opportunity_value: Number(fixPrice),
-        orderId: orderId,
-    }).then((fixPrice) => {
+        orderId: id,
+    }).then((res) => {
         setThanksPage(true)
 
     }).catch((err) => console.log(err, 'ini err'))
@@ -53,21 +53,28 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
       setLoadingPay(true);
   
       const baseUrl = "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/";
+
+      console.log(packageActive, 'xxx')
   
       const data = {
-        is_production: false,
+        is_production: true,
         package_code: packageActive,
         company_name: dataLeads.name,
         user_name: dataLeads.name,
         user_email: dataLeads.email,
         user_phone: dataLeads.phoneNumber,
-        redirect_url: "https://www.google.com"
+        redirect_url: "https://crm.deoapp.com"
+        // redirect_url: window.location.href
       };
+
+      console.log(data, 'in idata,')
+
   
       const res = await _axios.post(`${baseUrl}/membershipCreate`, data);
+
+      console.log(res, 'ini res')
   
       if (res.status === true) {
-        console.log(res.data.order_id, 'ini res data');
         const collectionName = 'orders';
         const docName = id;
         const dataUpdetOrder = {
@@ -83,14 +90,17 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
             const dataOrder = {
               order_id: res?.data?.order_id,
             };
+            
+
   
             try {
               const resOrder = await _axios.post("/membershipPay", dataOrder);
+
   
               if (resOrder.status === true) {
                 window.open(resOrder.message.link, "_blank");
               }
-              sucessOrder(fixPrice)
+              sucessOrder(fixPrice, id)
               setLoadingPay(false);
             } catch (error) {
               console.log(error, "ini error");
@@ -117,6 +127,7 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
   
         setLoadingPay(false);
       }
+
     } catch (error) {
       console.log(error, "ini error");
   

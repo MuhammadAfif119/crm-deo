@@ -48,7 +48,6 @@ function PaymentTicketPage() {
                 limitValue
             );
 
-            console.log(res, 'ini res')
 
             setDataLeads(...res)
             getDataTicket(res[0].formId)

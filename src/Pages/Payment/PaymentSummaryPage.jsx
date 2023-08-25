@@ -2,22 +2,33 @@ import { Button, Divider, Flex, Heading, HStack, Spacer, Stack, Text } from '@ch
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import { useParams } from 'react-router-dom'
-import { getSingleDocumentFirebase } from '../../Api/firebaseApi'
+import { getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi'
 import { formatFrice } from '../../Utils/Helper'
 
 function PaymentSummaryPage() {
 
-    console.log('summary')
 
     const param = useParams()
 
     const [dataOrder, setDataOrder] = useState("")
 
+
     const getDataOrder = async () => {
         try {
             const result = await getSingleDocumentFirebase('orders', param.orderId)
             setDataOrder(result)
-            console.log(result, 'ini resut')
+
+            if (result) {
+                updateDocumentFirebase("leads", result.userId, {
+                    status: "won",
+                }).then((res) => {
+                    console.log('success pembembayaran')
+
+                }).catch((err) => console.log(err, 'ini err'))
+            }
+
+
+
         } catch (error) {
             console.log(error)
         }
