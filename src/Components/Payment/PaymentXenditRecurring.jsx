@@ -66,12 +66,10 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
         redirect_url: window.location.href
       };
 
-      console.log(data, 'in idata,')
 
   
       const res = await _axios.post(`${baseUrl}/membershipCreate`, data);
 
-      console.log(res, 'ini res')
   
       if (res.status === true) {
         const collectionName = 'orders';

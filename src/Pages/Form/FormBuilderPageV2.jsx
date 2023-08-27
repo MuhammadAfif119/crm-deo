@@ -341,9 +341,16 @@ function FormBuilderPage() {
     };
 
     const handleSaveForm = async () => {
-        setLoading(true)
+        setLoading(true);
         const collectionName = 'forms';
         const docName = param.id;
+    
+        // Pengecekan apakah selectedMemberships tidak kosong
+        let membershipUsedData = {}; // Objek untuk field membership_used
+        if (selectedMemberships && selectedMemberships.length > 0) {
+            membershipUsedData = { membership_used: selectedMemberships };
+        }
+    
         const data = {
             form_fields: formFields,
             facebookPixelId,
@@ -353,14 +360,13 @@ function FormBuilderPage() {
             paymentMethod: selectedPaymentMethod,
             product: selectedProductMethod,
             paymentMethodId: process.env.REACT_APP_PAYMENT_XENDIT,
-            membership_used: selectedMemberships // Add selected memberships here
-
+            ...membershipUsedData, // Menambahkan field membership_used jika tidak kosong
         };
-
+    
         try {
             const result = await updateDocumentFirebase(collectionName, docName, data);
             console.log(result);
-
+    
             toast({
                 title: "Deoapp.com",
                 description: "success update form",
@@ -368,15 +374,14 @@ function FormBuilderPage() {
                 position: "top-right",
                 isClosable: true,
             });
-
+    
             navigate(-1)
-
+    
             // Pesan toast yang berhasil
         } catch (error) {
             console.log('Terjadi kesalahan:', error);
-        }
-        finally {
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
     }
 
