@@ -54,7 +54,6 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
   
       const baseUrl = "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/";
 
-      console.log(packageActive, 'xxx')
   
       const data = {
         is_production: true,
@@ -63,8 +62,8 @@ function PaymentXenditRecurring({ dataLeads, packageActive, dataForm, membership
         user_name: dataLeads.name,
         user_email: dataLeads.email,
         user_phone: dataLeads.phoneNumber,
-        redirect_url: "https://crm.deoapp.com"
-        // redirect_url: window.location.href
+        // redirect_url: "https://crm.deoapp.com"
+        redirect_url: window.location.href
       };
 
       console.log(data, 'in idata,')
