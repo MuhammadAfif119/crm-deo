@@ -88,9 +88,9 @@ function SocialBuildPage() {
   const navigate = useNavigate();
 
   const toast = useToast();
-  const { userDisplay } = useUserStore();
-  const profileKey = userDisplay.profileKey;
-  const title = userDisplay.projectTitle;
+  const globalState = useUserStore();
+  // const profileKey = userDisplay.profileKey;
+  const title = globalState.currentProject;
 
   const [posting, setPosting] = useState("");
   const [shortenLinks, setShotenLinks] = useState(false);
@@ -110,23 +110,22 @@ function SocialBuildPage() {
 
   const [data, setData] = useState({
     post: "",
-    platforms: [],
+    platforms: ["twitter"],
     mediaUrls: mediaFile,
     shortenLinks: shortenLinks,
     scheduleDate: schedulePosting,
-    profileKey: profileKey,
+    // profileKey: profileKey,
   });
 
   const contentWidth = barStatus ? "85%" : "95%";
 
-
-  const currentUser = auth.currentUser
+  const currentUser = auth.currentUser;
 
   const cancelRef = React.useRef();
 
   const getDataProject = async () => {
     try {
-      const docRef = doc(db, "projects", userDisplay?.currentProject);
+      const docRef = doc(db, "projects", globalState?.currentProject);
       const docSnapshot = await getDoc(docRef);
 
       if (docSnapshot.exists) {
@@ -158,15 +157,13 @@ function SocialBuildPage() {
     setData({ ...data, scheduleDate: schedulePosting });
   };
 
-  console.log(data.scheduleDate);
-
   const getListSocial = async () => {
-    if (userDisplay.profileKey) {
+    if (globalState.profileKey) {
       try {
         const docRef = doc(
           db,
           "projects",
-          userDisplay.currentProject,
+          globalState.currentProject,
           "users",
           currentUser.uid
         );
@@ -230,7 +227,8 @@ function SocialBuildPage() {
   useEffect(() => {
     getListSocial();
     getDataProject();
-  }, [userDisplay.profileKey]);
+    // }, [userDisplay.profileKey]);
+  }, []);
 
   const handleAddPlatform = (media) => {
     setPlatformEndpoints(media);
@@ -328,10 +326,10 @@ function SocialBuildPage() {
   };
 
   const handlePost = async () => {
-
     let fileImage = [];
 
-    if (profileKey) {
+    // if (profileKey) {
+    if (globalState.currentProject) {
       if (files.length > 0) {
         files.forEach(async (x) => {
           try {
@@ -347,7 +345,6 @@ function SocialBuildPage() {
             setData({ ...data, mediaUrls: mediaFile });
             if (fileImage.length === files.length) {
               try {
-
                 const res = await ApiBackend.post(`post`, {
                   ...data,
                   mediaUrls: fileImage,
@@ -461,8 +458,6 @@ function SocialBuildPage() {
                     );
                   });
                 }
-
-                ;
               } catch (error) {
                 console.log(error, "ini error ");
                 // Menampilkan pesan error jika terjadi kesalahan saat melakukan permintaan API
@@ -473,12 +468,8 @@ function SocialBuildPage() {
                   position: "top-right",
                   isClosable: true,
                 });
-
-                ;
               }
-              ;
             }
-            ;
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -540,14 +531,11 @@ function SocialBuildPage() {
               setPlatformActive([]);
               setShotenLinks(false);
               setSchedulePosting("");
-              ;
             }
           } catch (error) {
             console.log(error, "ini error ");
           }
-          ;
         } else {
-          ;
           toast({
             title: "Deoapp.com",
             description: "please check your posting",
@@ -556,7 +544,6 @@ function SocialBuildPage() {
             isClosable: true,
           });
         }
-        ;
       }
     } else {
       toast({
@@ -566,9 +553,7 @@ function SocialBuildPage() {
         position: "top-right",
         isClosable: true,
       });
-      ;
     }
-    ;
   };
 
   const handleDialogSchedule = () => {

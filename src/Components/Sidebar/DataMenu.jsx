@@ -10,10 +10,8 @@ import {
   FcShare,
   FcSms,
   FcSurvey,
-
   FcParallelTasks,
   FcPackage,
-
   FcGlobe,
   FcContacts,
   FcBusinessContact,
@@ -25,33 +23,33 @@ import {
   FcDisplay,
   FcCustomerSupport,
   FcFile,
-  FcLike
+  FcLike,
+  FcPodiumWithSpeaker,
 } from "react-icons/fc";
 
 export const data = [
-
-
-  // {
-  //   name: "Social Media",
-  //   icon: FcPodiumWithSpeaker,
-  //   submenu: [
-  //     { name: "Create Post", icon: FcEditImage, link: "/" },
-  //     { name: "Calendar", icon: FcCalendar, link: "/calendar" },x  x x 
-  //     { name: "Comments", icon: FcComments, link: "/comment" },
-  //     { name: "Reports", icon: FcLineChart, link: "/reports" },
-  //     { name: "Social Accounts", icon: FcShare, link: "/social-account" },
-  //   ],
-  // },
   {
     name: "Scoreboard",
     icon: FcDisplay,
-    link: '/'
+    link: "/",
   },
 
   {
     name: "Contacts",
     icon: FcBusinessContact,
-    link: '/contacts'
+    link: "/contacts",
+  },
+
+  {
+    name: "Social Media",
+    icon: FcPodiumWithSpeaker,
+    submenu: [
+      { name: "Create Post", icon: FcEditImage, link: "/create-post" },
+      { name: "Calendar", icon: FcCalendar, link: "/calendar" },
+      { name: "Comments", icon: FcComments, link: "/comment" },
+      { name: "Reports", icon: FcLineChart, link: "/reports" },
+      { name: "Social Accounts", icon: FcShare, link: "/social-account" },
+    ],
   },
 
   {
@@ -65,8 +63,6 @@ export const data = [
     ],
   },
 
-
-
   {
     name: "Pipeline",
     icon: FcKindle,
@@ -74,7 +70,6 @@ export const data = [
       { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
       { name: "Membership", icon: FcSettings, link: "/chat" },
     ],
-
   },
   {
     name: "Products",
@@ -123,13 +118,16 @@ export const data = [
     submenu: [
       { name: "Data", icon: FcFile, link: "/configuration/data" },
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
-      { name: "Integration", icon: FcAutomatic, link: "/configuration/integration" },
+      {
+        name: "Integration",
+        icon: FcAutomatic,
+        link: "/configuration/integration",
+      },
       { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
       { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
-
 
   // {
   //   name: "Event",
@@ -140,23 +138,25 @@ export const data = [
   // },
 ];
 
-
 export const dataApps = [
   {
-    name: 'AI',
+    name: "AI",
     icon: FcCustomerSupport,
-    link: 'https://ai.deoapp.com/'
-  }, {
-    name: 'LMS',
+    link: "https://ai.deoapp.com/",
+  },
+  {
+    name: "LMS",
     icon: FcLibrary,
-    link: 'https://lms.deoapp.com/'
-  }, {
-    name: 'HR',
+    link: "https://lms.deoapp.com/",
+  },
+  {
+    name: "HR",
     icon: FcCollaboration,
-    link:''
-  }, {
-    name: 'RMS',
+    link: "",
+  },
+  {
+    name: "RMS",
     icon: FcShop,
-    link: 'https://rms.deoapp.com/'
-  }
-]
+    link: "https://rms.deoapp.com/",
+  },
+];

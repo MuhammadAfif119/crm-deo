@@ -1,12 +1,17 @@
 import { create } from "zustand";
 
+const companyItem = localStorage.getItem("currentCompany");
+const pojectItem = localStorage.getItem("currentProject");
+
+console.log(companyItem, "ini company");
+
 const useUserStore = create((set, get) => ({
   isLoggedIn: false,
   companies: [],
   projects: [],
-  currentCompany: "",
+  currentCompany: companyItem || "",
+  currentProject: pojectItem || "",
   profileKey: "",
-  currentProject: "",
   uid: "",
   name: "",
   email: "",
@@ -15,7 +20,6 @@ const useUserStore = create((set, get) => ({
   roleProject: "",
   users: [],
   accessToken: "",
-  
 
   setUid: (data) => {
     set({
@@ -34,7 +38,6 @@ const useUserStore = create((set, get) => ({
       email: data,
     });
   },
-
 
   setIsLoggedIn: (data) => {
     set({
@@ -78,7 +81,6 @@ const useUserStore = create((set, get) => ({
     });
   },
 
-
   setCurrentXenditId: (data) => {
     set({
       currentXenditId: data,
@@ -98,4 +100,3 @@ const useUserStore = create((set, get) => ({
 }));
 
 export default useUserStore;
-

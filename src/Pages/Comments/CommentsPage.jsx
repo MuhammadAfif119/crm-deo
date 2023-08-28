@@ -10,6 +10,7 @@ import {
   AvatarBadge,
   Box,
   Button,
+  Center,
   Checkbox,
   Divider,
   Flex,
@@ -84,14 +85,13 @@ function CommentsPage() {
 
   const [loadingComment, setLoadingComment] = useState(false);
 
-
   const [barStatus, setBarStatus] = useState(false);
 
   const contentWidth = barStatus ? "85%" : "95%";
 
-  const { userDisplay } = useUserStore();
+  const globalState = useUserStore();
 
-  const profileKey = userDisplay.profileKey;
+  // const profileKey = globalState?.profileKey;
 
   const cancelRef = React.useRef();
 
@@ -106,14 +106,14 @@ function CommentsPage() {
   };
 
   const getHistory = async () => {
-    if (profileKey) {
+    // if (profileKey) {
+    if (globalState.currentProject) {
       if (startDate && endDate) {
         try {
-          ;
           const res = await ApiBackend.post("history", {
             lastRecords: lastRecords,
             lastDays: lastDays,
-            profileKey,
+            // profileKey,
           });
 
           const filtered = res.data.filter((item) => {
@@ -125,18 +125,15 @@ function CommentsPage() {
             );
           });
           setHistoryList(filtered);
-          ;
         } catch (error) {
           console.log(error, "ini error");
-          ;
         }
       } else {
         try {
-          ;
           const res = await ApiBackend.post("history", {
             lastRecords: lastRecords,
             lastDays: lastDays,
-            profileKey,
+            // profileKey,
           });
           if (res.data.status === "error") {
             toast({
@@ -148,14 +145,11 @@ function CommentsPage() {
             });
           }
           setHistoryList(res.data);
-          ;
         } catch (error) {
           console.log(error, "ini error");
-          ;
         }
       }
     }
-    ;
   };
 
   const handleDeleteModal = (idPost) => {
@@ -164,11 +158,12 @@ function CommentsPage() {
   };
 
   const handleDelete = async () => {
-    if (profileKey) {
+    // if (profileKey) {
+    if (globalState.currentProject) {
       try {
         const res = await ApiBackend.post("delete", {
           id: postActive.id,
-          profileKey,
+          // profileKey,
         });
         if (res.status === 200) {
           toast({
@@ -198,14 +193,14 @@ function CommentsPage() {
 
   const handleComment = async (idPost) => {
     console.log(idPost);
-    if (profileKey) {
+    if (globalState.currentProject) {
       setCommentModal(true);
       setCommentActive(idPost);
       setLoadingComment(true);
       try {
         const res = await ApiBackend.post("getcomment", {
           id: idPost.id,
-          profileKey,
+          // profileKey,
         });
         const obj = res.data;
         console.log(obj);
@@ -292,13 +287,14 @@ function CommentsPage() {
   ];
 
   const handlePostComment = async () => {
-    if (profileKey) {
+    // if (profileKey) {
+    if (globalState.currentProject) {
       try {
         const res = await ApiBackend.post("postcomment", {
           id: commentActive?.id,
           platforms: commentActive?.postIds?.map((x) => x.platform),
           comment: comment,
-          profileKey,
+          // profileKey,
         });
         if (res.status === 200) {
           toast({
@@ -334,14 +330,15 @@ function CommentsPage() {
   };
 
   const handleAnalytics = async (idPost) => {
-    if (profileKey) {
+    // if (profileKey) {
+    if (globalState.currentProject) {
       setAnalyticsModal(true);
 
       try {
         const res = await ApiBackend.post("analyticspost", {
           id: idPost.id,
           platforms: idPost.platforms,
-          profileKey,
+          // profileKey,
         });
         const obj = res.data;
         console.log(obj, "xxx");
@@ -365,7 +362,8 @@ function CommentsPage() {
     getHistory();
 
     return () => {};
-  }, [(startDate && endDate) || profileKey]);
+    // }, [(startDate && endDate) || profileKey]);
+  }, [startDate && endDate]);
 
   const handleErrorMessage = (message) => {
     toast({
@@ -607,10 +605,10 @@ function CommentsPage() {
               })}
             </>
           ) : (
-            <Box>
-              <Heading>No History</Heading>
-              <Spinner />
-            </Box>
+            <Center h={300}>
+              <Heading alignSelf={"center"}>No History</Heading>
+              {/* <Spinner /> */}
+            </Center>
           )}
         </Stack>
       </Flex>
