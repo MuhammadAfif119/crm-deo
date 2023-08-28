@@ -26,69 +26,7 @@ function App() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  // const fetchProjectsAndCompanies = async (uid) => {
-  //   const fetchCompanyId = localStorage.getItem('currentCompany')
-  //   const fetchProjectId = localStorage.getItem('currentProject')
-    
-  //   const conditions = [
-  //     {
-  //       field: "users",
-  //       operator: "array-contains",
-  //       value: uid,
-  //     },
-  //   ];
-
-  //   const [companies, projects] = await Promise.all([
-  //     getCollectionFirebase("companies", conditions),
-  //     getCollectionFirebase("projects", conditions),
-  //   ]);
-
-  //   if(!fetchCompanyId && !fetchProjectId){
-  //     try {
-  //       console.log('ga ada company')
-        
-  
-  //       const userRoleInCompany = getUserRole(companies, uid);
-  //       globalState.setCompanies(companies);
-  //       globalState.setCurrentCompany(companies[0]?.id);
-  //       globalState.setCurrentXenditId(companies[0]?.xenditId);
-  //       globalState.setRoleCompany(userRoleInCompany);
-  
-  //       if (companies[0]?.id) {
-  //         const userRoleInProject = getUserRole(projects, uid);
-  //         globalState.setProjects(projects);
-  //         globalState.setCurrentProject(projects[0]?.id);
-  //         globalState.setRoleProject(userRoleInProject);
-  //       }
-  //     } catch (error) {
-  //       console.log(error, "ini err");
-  //     }
-  //   } else {
-  //     console.log('ada company')
-      
-  //     const userRoleInCompany = getUserRole(companies, uid);
-  //       globalState.setCompanies(companies);
-  //       globalState.setCurrentCompany(fetchCompanyId);
-  //       globalState.setCurrentXenditId(companies[0]?.xenditId);
-  //       globalState.setRoleCompany(userRoleInCompany);
-  
-  //       if (companies[0]?.id) {
-  //         const userRoleInProject = getUserRole(projects, uid);
-  //         globalState.setProjects(projects);
-  //         globalState.setCurrentProject(fetchProjectId);
-  //         globalState.setRoleProject(userRoleInProject);
-  //       }
-
-  //       console.log(globalState.currentCompany, 'COMPANYYYY')
-  //       console.log(globalState.currentProject, 'PROJECTTT')
-
-  //   }
-    
-  // };
-
   const fetchProjectsAndCompanies = async (uid) => {
-    const fetchCompanyId = localStorage.getItem('currentCompany')
-
     const conditions = [
       {
         field: "users",
@@ -97,96 +35,28 @@ function App() {
       },
     ];
 
-     // const projects = await getCollectionFirebase("projects", conditions);
-     const companies = await getCollectionFirebase("companies", conditions);
+    try {
+      const [companies, projects] = await Promise.all([
+        getCollectionFirebase("companies", conditions),
+        getCollectionFirebase("projects", conditions),
+      ]);
 
-    if(!fetchCompanyId){
-      try {
       const userRoleInCompany = getUserRole(companies, uid);
+      globalState.setCompanies(companies);
+      globalState.setCurrentCompany(companies[0]?.id);
+      globalState.setCurrentXenditId(companies[0]?.xenditId);
+      globalState.setRoleCompany(userRoleInCompany);
 
-        globalState.setCompanies(companies);
-        globalState.setCurrentCompany(companies[0]?.id);
-        globalState.setCurrentXenditId(companies[0]?.xenditId);
-        localStorage.setItem('currentCompany', companies[0]?.id)
-        globalState.setRoleCompany(userRoleInCompany);
-
-        console.log(globalState.currentXenditId, 'gaada company localstorage')
-  
-
-  
-      } catch (error) {
-        console.log(error, "ini error");
+      if (companies[0]?.id) {
+        const userRoleInProject = getUserRole(projects, uid);
+        globalState.setProjects(projects);
+        globalState.setCurrentProject(projects[0]?.id);
+        globalState.setRoleProject(userRoleInProject);
       }
-    } else {
-
-      const getCompanies = await getSingleDocumentFirebase("companies", fetchCompanyId)
-      const userRoleInCompany = getUserRole(companies, uid);
-
-        globalState.setCompanies(companies);
-        globalState.setCurrentCompany(fetchCompanyId);
-        globalState.setCurrentXenditId(getCompanies?.xenditId);
-        globalState.setRoleCompany(userRoleInCompany);
-
-
-       
-
+    } catch (error) {
+      console.log(error, "ini err");
     }
   };
-
-  const fetchProjects = async(uid) => { 
-    const fetchProjectId = localStorage.getItem('currentProject')
-
-    const conditions = [
-      {
-        field: "users",
-        operator: "array-contains",
-        value: uid,
-      },
-      {
-        field: "companyId",
-        operator: "==",
-        value: globalState.currentCompany,
-      },
-    ];
-    
-    const projects = await getCollectionFirebase("projects", conditions);
-
-    if(!fetchProjectId){
-      try {
-        const userRoleInCompany = getUserRole(projects, uid);
-
-        globalState.setProjects(projects);
-        localStorage.setItem('currentProject', projects[0]?.id)
-        globalState.setCurrentProject(projects[0]?.id);
-        globalState.setRoleProject(userRoleInCompany);
-        
-  
-        // if (projects.length > 0 && projects[0].owner?.includes(uid)) {
-        //   globalState.setRoleProject("owner");
-        // } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
-        //   globalState.setRoleProject("managers");
-        // } else {
-        //   globalState.setRoleProject("user");
-        // }
-
-        
-      } catch (error) {
-        console.log(error, 'ini error');
-      }
-    } else {
-      const getProjects = await getSingleDocumentFirebase("projects", fetchProjectId)
-      
-      const userRoleInCompany = getUserRole(projects, uid);
-
-        globalState.setProjects(projects);
-        localStorage.setItem('currentProject', projects[0]?.id)
-        globalState.setCurrentProject(fetchProjectId);
-
-        globalState.setRoleProject(userRoleInCompany);
-        
-    }
-    
-  }
 
   const getUserRole = (data, uid) => {
     if (data.length > 0 && data[0].owner?.includes(uid)) {
@@ -279,19 +149,6 @@ function App() {
 
     return () => {};
   }, []);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        fetchProjects(user?.uid);
-      } else {
-        globalState.setIsLoggedIn(false);
-      }
-    });
-  
-    return () => {
-    }
-  }, [globalState.currentCompany])
 
   return (
     <Stack position={"relative"} overflow='hidden'>
