@@ -162,7 +162,7 @@ function PipelineViewPage() {
 						<Divider py={1} />
 						<Stack >
 							{detailActive && (
-								<DetailPipelineCard pipeline={datas} data={detailActive} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
+								<DetailPipelineCard fetchData={fetchData} pipeline={datas} data={detailActive} stages={pipelineList?.stages} navigate={navigate} handleModalClose={handleModalClose}
 								/>
 
 							)}
@@ -192,7 +192,7 @@ function PipelineViewPage() {
 						<Divider py={1} />
 						<Stack >
 							{pipelineList && (
-								<DetailPipelineAddCard handleSearchUsers={handleSearchUsers} searchResult={searchResult} formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalAddClose={handleModalAddClose}
+								<DetailPipelineAddCard fetchData={fetchData} handleSearchUsers={handleSearchUsers} searchResult={searchResult} formId={pipelineList?.formId[0]} stages={pipelineList?.stages} navigate={navigate} handleModalAddClose={handleModalAddClose}
 								/>
 							)}
 

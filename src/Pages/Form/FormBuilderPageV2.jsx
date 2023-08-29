@@ -305,12 +305,20 @@ function FormBuilderPage() {
                         {type === 'time' && <Input type="time" placeholder={inputPlaceholder} {...inputProps} />}
                         {type === 'file' && <Input type="file" placeholder={inputPlaceholder} {...inputProps} />}
 
+                        {type === "request" && (
+                            <Text fontStyle='italic' fontSize={'xs'} fontWeight={500}>Requested</Text>
+                        )}
+
                         <Box textAlign={'center'}>
                             {type === 'button' && <Button onClick={handleSubmit} colorScheme="blue">{label}</Button>}
                         </Box>
+
+                     
                     </FormControl>
                 );
-            });
+
+            }
+            )
         }
 
     };
@@ -602,6 +610,8 @@ function FormBuilderPage() {
 
                         <Heading size={'md'}>Facebook GTM-ID</Heading>
 
+                        
+
 
                         <Stack>
                             <FormControl>
@@ -664,7 +674,6 @@ function FormBuilderPage() {
                             <Stack onClick={() => console.log(ticketActive, 'ini xx')}>
                                 <TicketCard item={ticketActive} />
                             </Stack>
-                            <Stack></Stack>
                         </Stack>
                     )}
                     <Stack p={[1, 1, 5]} bgColor={'white'} minH={'530px'} spacing={5} borderRadius='md' shadow={'md'}>

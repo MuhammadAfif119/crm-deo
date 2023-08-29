@@ -6,7 +6,7 @@ import { getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/fireba
 import useUserStore from '../../Hooks/Zustand/Store';
 import { decryptToken } from '../../Utils/encrypToken';
 
-function DetailPipelineAddCard({ stages, handleModalAddClose, formId, searchResult, handleSearchUsers }) {
+function DetailPipelineAddCard({ stages, handleModalAddClose, formId, searchResult, handleSearchUsers, fetchData }) {
 
     const toast = useToast()
 
@@ -85,6 +85,10 @@ function DetailPipelineAddCard({ stages, handleModalAddClose, formId, searchResu
                 position: "top-right",
                 isClosable: true,
             });
+            if(result){
+                fetchData()
+
+            }
             console.log(result); // Pesan toast yang berhasil
         } catch (error) {
             console.log('Terjadi kesalahan:', error);

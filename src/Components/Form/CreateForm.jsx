@@ -315,6 +315,7 @@ function CreateForm({ setFormFields, formFields }) {
                                             <option value="file">File</option>
                                             <option value="textarea">Textarea</option>
                                             <option value="select">Select</option>
+                                            <option value="request">By Request</option>
                                             <option value="button">Button</option>
                                         </Select>
                                     </Stack>

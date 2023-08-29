@@ -68,7 +68,6 @@ export const data = [
     icon: FcKindle,
     submenu: [
       { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-      { name: "Membership", icon: FcSettings, link: "/chat" },
     ],
   },
   {
@@ -152,7 +151,7 @@ export const dataApps = [
   {
     name: "HR",
     icon: FcCollaboration,
-    link: "",
+    link: "https://recruitment-deoapp.web.app/",
   },
   {
     name: "RMS",

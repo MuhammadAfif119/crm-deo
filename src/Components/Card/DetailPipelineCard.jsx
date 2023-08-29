@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSingleDocumentFirebase, setDocumentFirebase } from '../../Api/firebaseApi';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DetailPipelineCard({ data, stages, handleModalClose, navigate, pipeline }) {
+function DetailPipelineCard({ data, stages, handleModalClose, navigate, pipeline, fetchData }) {
 
     const toast = useToast()
 
@@ -49,6 +49,9 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate, pipeline
                 position: "top-right",
                 isClosable: true,
             });
+            if(result){
+                fetchData()
+            }
             console.log(result); // Pesan toast yang berhasil
         } catch (error) {
             console.log('Terjadi kesalahan:', error);
@@ -59,10 +62,10 @@ function DetailPipelineCard({ data, stages, handleModalClose, navigate, pipeline
 
         try {
             const result = await getSingleDocumentFirebase('contacts', `${data?.phoneNumber}-${globalState.currentProject}`)
-            if(result){
+            if (result) {
                 navigate(`/contacts/detail/${data?.phoneNumber}-${globalState.currentProject}`, { state: { result: result, pipeline: pipeline, price: opportunityValueRef?.current?.value } })
 
-            }else{
+            } else {
                 toast({
                     title: "Deoapp.com",
                     description: "You dont have any contact",
