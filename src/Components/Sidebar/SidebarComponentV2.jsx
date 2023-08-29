@@ -56,19 +56,20 @@ function SidebarComponentV2({ layout }) {
 
 
 
-  const fetchProjects = async (uid) => {
+  const fetchProjects = async (id) => {
+
     const fetchProjectId = localStorage.getItem("currentProject");
 
     const conditions = [
       {
         field: "users",
         operator: "array-contains",
-        value: uid,
+        value: globalState.uid,
       },
       {
         field: "companyId",
         operator: "==",
-        value: globalState.currentCompany,
+        value: id,
       },
     ];
 
@@ -77,12 +78,14 @@ function SidebarComponentV2({ layout }) {
     if (!fetchProjectId) {
       try {
 
-        globalState.setProjects(projects);
-        globalState.setCurrentProject(projects[0]?.id);
+        globalState.setProjects(projects)
+        globalState.setCurrentProject(projects[0].id);
+        localStorage.setItem("currentProject", projects[0].id);
 
-        if (projects.length > 0 && projects[0].owner?.includes(uid)) {
+
+        if (projects.length > 0 && projects[0].owner?.includes(globalState.uid)) {
           globalState.setRoleProject("owner");
-        } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
+        } else if (projects.length > 0 && projects[0].managers?.includes(globalState.uid)) {
           globalState.setRoleProject("managers");
         } else {
           globalState.setRoleProject("user");
@@ -99,21 +102,25 @@ function SidebarComponentV2({ layout }) {
 
       globalState.setProjects(projects);
       globalState.setCurrentProject(fetchProjectId);
+      localStorage.setItem("currentProject", fetchProjectId);
 
-      if (getProjects?.owner?.includes(uid)) {
+      if (getProjects?.owner?.includes(globalState.uid)) {
         globalState.setRoleProject("owner");
-      } else if (getProjects?.managers?.includes(uid)) {
+      } else if (getProjects?.managers?.includes(globalState.uid)) {
         globalState.setRoleProject("managers");
       } else {
         globalState.setRoleProject("user");
       }
     }
+
     setListProject(projects)
   };
 
   useEffect(() => {
 
-    fetchProjects(globalState.uid);
+    fetchProjects(globalState.currentCompany);
+
+
 
     return () => { };
   }, [globalState.currentCompany]);
@@ -169,6 +176,7 @@ function SidebarComponentV2({ layout }) {
 
     if (findCompany.id || e) {
       fetchProjects(findCompany.id || e)
+      
     }
 
     if (findCompany.owner && findCompany.owner.includes(e)) {
