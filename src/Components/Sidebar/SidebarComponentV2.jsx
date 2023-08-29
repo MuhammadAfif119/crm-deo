@@ -402,7 +402,6 @@ function SidebarComponentV2({ layout }) {
                   </Stack>
 
                   <Spacer />
-                  <Button onClick={() => console.log(globalState)}>Check</Button>
 
                   <Stack>
                     <Button
