@@ -84,6 +84,7 @@ function CommentsPage() {
   const [analyticsDetailList, setAnalyticsDetailList] = useState([]);
 
   const [loadingComment, setLoadingComment] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   const [barStatus, setBarStatus] = useState(false);
 
@@ -160,6 +161,7 @@ function CommentsPage() {
   const handleDelete = async () => {
     // if (profileKey) {
     if (globalState.currentProject) {
+      setIsDelete(true);
       try {
         const res = await ApiBackend.post("delete", {
           id: postActive.id,
@@ -177,8 +179,11 @@ function CommentsPage() {
           setPostActive("");
           getHistory();
         }
+        setIsDelete(false);
       } catch (error) {
         console.log(error, "ini error");
+      } finally {
+        setIsDelete(false);
       }
     } else {
       toast({
@@ -633,9 +638,20 @@ function CommentsPage() {
               <Button ref={cancelRef} onClick={() => setDeleteModal(false)}>
                 Cancel
               </Button>
-              <Button colorScheme="red" onClick={() => handleDelete()} ml={3}>
-                Delete
-              </Button>
+              {isDelete === true ? (
+                <Button
+                  isLoading
+                  colorScheme="red"
+                  onClick={() => handleDelete()}
+                  ml={3}
+                >
+                  Delete
+                </Button>
+              ) : (
+                <Button colorScheme="red" onClick={() => handleDelete()} ml={3}>
+                  Delete
+                </Button>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

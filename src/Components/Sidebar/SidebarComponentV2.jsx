@@ -33,7 +33,10 @@ import { data, dataApps } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { getCollectionFirebase } from "../../Api/firebaseApi";
+import {
+  getCollectionFirebase,
+  getSingleDocumentFirebase,
+} from "../../Api/firebaseApi";
 import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "../../Utils/Helper";
@@ -156,11 +159,67 @@ function SidebarComponentV2({ layout }) {
   //   }
   // };
 
-  // useEffect(() => {
-  //   getProjectList(globalState.currentCompany);
+  const fetchProjects = async (uid) => {
+    const fetchProjectId = localStorage.getItem("currentProject");
 
-  //   return () => {};
-  // }, [globalState.currentCompany]);
+    const conditions = [
+      {
+        field: "users",
+        operator: "array-contains",
+        value: uid,
+      },
+      {
+        field: "companyId",
+        operator: "==",
+        value: globalState.currentCompany,
+      },
+    ];
+
+    const projects = await getCollectionFirebase("projects", conditions);
+
+    if (!fetchProjectId) {
+      try {
+        globalState.setProjects(projects);
+        localStorage.setItem("currentProject", projects[0]?.id);
+        globalState.setCurrentProject(projects[0]?.id);
+
+        if (projects.length > 0 && projects[0].owner?.includes(uid)) {
+          globalState.setRoleProject("owner");
+        } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
+          globalState.setRoleProject("managers");
+        } else {
+          globalState.setRoleProject("user");
+        }
+      } catch (error) {
+        console.log(error, "ini error");
+      }
+    } else {
+      const getProjects = await getSingleDocumentFirebase(
+        "projects",
+        fetchProjectId
+      );
+
+      globalState.setProjects(projects);
+      globalState.setCurrentProject(fetchProjectId);
+      localStorage.setItem("currentProject", projects[0]?.id);
+
+      if (getProjects.owner?.includes(uid)) {
+        globalState.setRoleProject("owner");
+      } else if (getProjects.managers?.includes(uid)) {
+        globalState.setRoleProject("managers");
+      } else {
+        globalState.setRoleProject("user");
+      }
+    }
+  };
+
+  useEffect(() => {
+    // getProjectList(globalState.currentCompany);
+    fetchProjects(globalState.uid);
+    localStorage.setItem("currentProject", globalState.currentProject);
+
+    return () => {};
+  }, [globalState.currentCompany]);
 
   const handleProjectSelect = (e) => {
     const dataProject = globalState.projects;
