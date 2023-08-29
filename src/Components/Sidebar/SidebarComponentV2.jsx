@@ -35,7 +35,10 @@ import { data, dataApps } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { getCollectionFirebase } from "../../Api/firebaseApi";
+import {
+  getCollectionFirebase,
+  getSingleDocumentFirebase,
+} from "../../Api/firebaseApi";
 import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "../../Utils/Helper";
@@ -50,91 +53,71 @@ function SidebarComponentV2({ layout }) {
 
   const globalState = useUserStore();
 
-  const handleCompanySelect = (e) => {
-    const dataCompany = globalState.companies;
 
-    const findCompany = dataCompany.find((x) => x.id === e);
 
-    globalState.setCurrentCompany(findCompany.id || e);
-    globalState.setUsers(findCompany.users);
-    globalState.setCurrentXenditId(findCompany?.xenditId);
 
-    if (findCompany.id || e) {
-      getProjectList(findCompany.id || e)
-    }
-
-    if (findCompany.owner && findCompany.owner.includes(e)) {
-      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
-      globalState.setRoleProject("owner");
-    } else if (findCompany.managers && findCompany.managers.includes(e)) {
-      globalState.setRoleProject("managers");
-    } else {
-      globalState.setRoleProject("user");
-    }
-  };
-
-  const getProjectList = async (id) => {
+  const fetchProjects = async (uid) => {
+    const fetchProjectId = localStorage.getItem("currentProject");
 
     const conditions = [
       {
         field: "users",
         operator: "array-contains",
-        value: globalState?.uid,
+        value: uid,
       },
       {
         field: "companyId",
         operator: "==",
-        value: id,
+        value: globalState.currentCompany,
       },
     ];
 
-    try {
+    const projects = await getCollectionFirebase("projects", conditions);
 
-      const projects = await getCollectionFirebase("projects", conditions);
+    if (!fetchProjectId) {
+      try {
+
+        globalState.setProjects(projects);
+        globalState.setCurrentProject(projects[0]?.id);
+
+        if (projects.length > 0 && projects[0].owner?.includes(uid)) {
+          globalState.setRoleProject("owner");
+        } else if (projects.length > 0 && projects[0].managers?.includes(uid)) {
+          globalState.setRoleProject("managers");
+        } else {
+          globalState.setRoleProject("user");
+        }
+      } catch (error) {
+        console.log(error, "ini error");
+      }
+    } else {
+      const getProjects = await getSingleDocumentFirebase(
+        "projects",
+        fetchProjectId
+      );
+
 
       globalState.setProjects(projects);
-      globalState.setCurrentProject(projects[0]?.id);
+      globalState.setCurrentProject(fetchProjectId);
 
-      if (projects.length > 0 && projects[0].owner?.includes(globalState?.uid)) {
+      if (getProjects?.owner?.includes(uid)) {
         globalState.setRoleProject("owner");
-      } else if (projects.length > 0 && projects[0].managers?.includes(globalState?.uid)) {
+      } else if (getProjects?.managers?.includes(uid)) {
         globalState.setRoleProject("managers");
       } else {
         globalState.setRoleProject("user");
       }
-      setListProject(projects)
-
-
-
-    } catch (error) {
-      console.log(error)
     }
-  }
+    setListProject(projects)
+  };
 
   useEffect(() => {
-    getProjectList(globalState.currentCompany)
 
-    return () => {
-    }
-  }, [globalState.currentCompany])
+    fetchProjects(globalState.uid);
 
+    return () => { };
+  }, [globalState.currentCompany]);
 
-  const handleProjectSelect = (e) => {
-    const dataProject = listProject
-
-    const findProject = dataProject.find((x) => x.id === e);
-
-    globalState.setCurrentProject(findProject.id || e);
-
-    if (findProject.owner && findProject.owner.includes(e)) {
-      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
-      globalState.setRoleProject("owner");
-    } else if (findProject.managers && findProject.managers.includes(e)) {
-      globalState.setRoleProject("managers");
-    } else {
-      globalState.setRoleProject("user");
-    }
-  };
 
   const navigate = useNavigate()
 
@@ -174,10 +157,47 @@ function SidebarComponentV2({ layout }) {
     setDesktopShow(!desktopShow);
   };
 
+  const handleCompanySelect = (e) => {
+    const dataCompany = globalState.companies;
 
-  useEffect(() => {
+    const findCompany = dataCompany.find((x) => x.id === e);
 
-  }, [globalState.isLoggedIn])
+    localStorage.setItem("currentCompany", findCompany.id || e);
+    globalState.setCurrentCompany(findCompany.id || e);
+    globalState.setUsers(findCompany.users);
+    globalState.setCurrentXenditId(findCompany?.xenditId);
+
+    if (findCompany.id || e) {
+      fetchProjects(findCompany.id || e)
+    }
+
+    if (findCompany.owner && findCompany.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findCompany.managers && findCompany.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
+    }
+  };
+
+  const handleProjectSelect = (e) => {
+    const dataProject = listProject
+
+    const findProject = dataProject.find((x) => x.id === e);
+    localStorage.setItem("currentProject", findProject.id || e);
+    globalState.setCurrentProject(findProject.id || e);
+
+    if (findProject.owner && findProject.owner.includes(e)) {
+      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+      globalState.setRoleProject("owner");
+    } else if (findProject.managers && findProject.managers.includes(e)) {
+      globalState.setRoleProject("managers");
+    } else {
+      globalState.setRoleProject("user");
+    }
+  };
+
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -252,14 +272,13 @@ function SidebarComponentV2({ layout }) {
                       <Select
                         w={["100%", "100%", "100%"]}
                         size={"sm"}
-                        defaultValue={globalState.companies[0]}
+                        value={globalState?.currentCompany}
                         onChange={(e) => {
                           handleCompanySelect(e.target.value);
                         }}
                       >
                         {globalState.companies?.map((select, i) => (
                           <option
-                            defaultValue={globalState.currentCompany}
                             key={i}
                             value={select?.id}
                           >
@@ -275,14 +294,13 @@ function SidebarComponentV2({ layout }) {
                       <Select
                         w={["100%", "100%", "100%"]}
                         size={"sm"}
-                        defaultValue={globalState?.projects[0]}
+                        value={globalState?.currentProject}
                         onChange={(e) => {
                           handleProjectSelect(e.target.value);
                         }}
                       >
                         {listProject?.map((select, i) => (
                           <option
-                            defaultValue={globalState?.currentProject}
                             key={i}
                             value={select?.id}
                           >
@@ -304,8 +322,8 @@ function SidebarComponentV2({ layout }) {
 
                         {data.map((x, i) => (
                           <AccordionItem
-                            key={i} 
-                            // isDisabled={x.name === "Social Media" ? true : false}
+                            key={i}
+                          // isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
                               <AccordionButton>
@@ -384,7 +402,7 @@ function SidebarComponentV2({ layout }) {
                   </Stack>
 
                   <Spacer />
-                  {/* <Button onClick={() => console.log(globalState)}>Check</Button> */}
+                  <Button onClick={() => console.log(globalState)}>Check</Button>
 
                   <Stack>
                     <Button
@@ -399,7 +417,7 @@ function SidebarComponentV2({ layout }) {
                           <Text>Setting</Text>
                         }
                       </HStack>
-                    </Button>                                                   
+                    </Button>
                     <Divider />
 
                     <SimpleGrid columns={isDesktop ? [dataApps.length] : [1]} w={'auto'} overflowX={'scroll'} justify={'center'} align={'center'} gap={5} >

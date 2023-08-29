@@ -27,6 +27,9 @@ function App() {
   const navigate = useNavigate();
 
   const fetchProjectsAndCompanies = async (uid) => {
+    const fetchCompanyId = localStorage.getItem("currentCompany");
+    const fetchProjectId = localStorage.getItem("currentProject");
+
     const conditions = [
       {
         field: "users",
@@ -41,16 +44,33 @@ function App() {
         getCollectionFirebase("projects", conditions),
       ]);
 
-      const userRoleInCompany = getUserRole(companies, uid);
-      globalState.setCompanies(companies);
-      globalState.setCurrentCompany(companies[0]?.id);
-      globalState.setCurrentXenditId(companies[0]?.xenditId);
-      globalState.setRoleCompany(userRoleInCompany);
+      if (!fetchCompanyId) {
+        const userRoleInCompany = getUserRole(companies, uid);
+        localStorage.setItem("currentCompany", companies[0]?.id);
+        globalState.setCompanies(companies);
+        globalState.setCurrentCompany(companies[0]?.id);
+        globalState.setCurrentXenditId(companies[0]?.xenditId);
+        globalState.setRoleCompany(userRoleInCompany);
+      } else {
+        globalState.setCurrentCompany(fetchCompanyId);
+        const userRoleInCompany = getUserRole(companies, uid);
+        globalState.setCompanies(companies);
+        globalState.setCurrentXenditId(companies[0]?.xenditId);
+        globalState.setRoleCompany(userRoleInCompany);
+      }
 
-      if (companies[0]?.id) {
+      if (!fetchProjectId) {
+        if (companies[0]?.id) {
+          const userRoleInProject = getUserRole(projects, uid);
+          localStorage.setItem("currentProject", projects[0]?.id);
+          globalState.setProjects(projects);
+          globalState.setCurrentProject(projects[0]?.id);
+          globalState.setRoleProject(userRoleInProject);
+        }
+      } else {
         const userRoleInProject = getUserRole(projects, uid);
         globalState.setProjects(projects);
-        globalState.setCurrentProject(projects[0]?.id);
+        globalState.setCurrentProject(fetchProjectId);
         globalState.setRoleProject(userRoleInProject);
       }
     } catch (error) {
@@ -142,6 +162,7 @@ function App() {
           globalState.setEmail(user.email);
           fetchProjectsAndCompanies(user?.uid);
         }
+
       } else {
         globalState.setIsLoggedIn(false);
       }
@@ -151,7 +172,7 @@ function App() {
   }, []);
 
   return (
-    <Stack position={"relative"} overflow='hidden'>
+    <Stack position={"relative"} overflow="hidden">
       {globalState.isLoggedIn ? (
         <Layout>
           <MainRouter />
@@ -160,12 +181,12 @@ function App() {
         <AuthRouter />
       )}
       <Stack position={"absolute"} bottom={5} right={5}>
-          <ChatPageFirst
-            module={"crm"}
-            companyId={globalState?.currentCompany || "8NCG4Qw0xVbNR6JCcJw1"}
-            projectId={globalState?.currentProject || "8NCG4Qw0xVbNR6JCcJw1"}
-            companyName={"edrus"}
-          />
+        <ChatPageFirst
+          module={"crm"}
+          companyId={globalState?.currentCompany || "8NCG4Qw0xVbNR6JCcJw1"}
+          projectId={globalState?.currentProject || "8NCG4Qw0xVbNR6JCcJw1"}
+          companyName={"edrus"}
+        />
       </Stack>
     </Stack>
   );
