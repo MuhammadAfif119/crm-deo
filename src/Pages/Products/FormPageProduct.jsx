@@ -748,7 +748,6 @@ function FormPageProduct() {
       modules: modules.map((module) => module.toLowerCase()),
     };
 
-    console.log(dataProduct, "ini data");
 
     if (filesImage[0]) {
       const resImage = await uploadFile(
@@ -778,7 +777,6 @@ function FormPageProduct() {
       console.log("ID Dokumen Baru:", docID);
 
       if (docID) {
-        const categoryCollectionName = "categories";
         const docName = projectId;
         const categoryField = "data";
         const categoryValues = modules;
@@ -796,7 +794,7 @@ function FormPageProduct() {
             await setDocumentFirebase(
               "categories",
               docName,
-              { [categoryField]: categoryValues },
+              { [categoryField]: categoryValues, },
               companyId
             );
           } else {
@@ -1323,7 +1321,7 @@ function FormPageProduct() {
                 <option value="false">False</option>
               </Select>
             </FormControl>
-            <FormControl id="modules">
+            <FormControl id="modules" >
               <FormLabel>Modules:</FormLabel>
               <Checkbox
                 value="rms"
@@ -1340,6 +1338,7 @@ function FormPageProduct() {
               >
                 Listing
               </Checkbox>
+
               <Checkbox
                 value="lms"
                 onChange={handleModulesChange}
@@ -1347,6 +1346,24 @@ function FormPageProduct() {
               >
                 LMS
               </Checkbox>
+
+              <Checkbox
+                value="product"
+                onChange={handleModulesChange}
+                isChecked={modules.includes("product")}
+                mx="5"
+              >
+                Product
+              </Checkbox>
+
+              <Checkbox
+                value="CRM"
+                onChange={handleModulesChange}
+                isChecked={modules.includes("crm")}
+              >
+                CRM
+              </Checkbox>
+
             </FormControl>
 
             {!idProject ? (
@@ -1402,24 +1419,6 @@ function FormPageProduct() {
         </Container>
       ) : formPage === false ? (
         <DetailProductComponent
-          // categoryDetails={categoryDetails}
-          // handleCategoryChange={handleCategoryChange}
-          // handleTicketChange={handleTicketChange}
-          // handleAddTicket={handleAddTicket}
-          // handleIncrement={handleIncrement}
-          // setDetailTicket={setDetailTicket}
-          // ticketCounts={ticketCounts}
-          // handleSubmit={handleSubmit}
-          // handleDeleteTicket={handleDeleteTicket}
-          // handleDeleteCategory={handleDeleteCategory}
-          // setCheckboxPrice={setCheckboxPrice}
-          // checkboxPrice={checkboxPrice}
-          // idProject={idProject}
-          // setFormPage={setFormPage}
-          // formPage={formPage}
-          // categoryCount={categoryCount}
-          // isError={isError}
-
           handleNext={handleNext}
         />
       ) : (

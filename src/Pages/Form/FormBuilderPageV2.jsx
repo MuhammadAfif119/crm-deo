@@ -320,7 +320,7 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/ticket/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -560,9 +560,8 @@ function FormBuilderPage() {
         try {
           const resultProduct = await getSingleDocumentFirebase(
             "listings_product",
-            result.product_used[1]
+            result.product_used[0]
           );
-          console.log(resultProduct);
           setProductActive(resultProduct);
           // setOpportunityValue(resultProduct?.price);
         } catch (error) {
@@ -671,7 +670,7 @@ function FormBuilderPage() {
   };
 
   const renderProductOptions = () => {
-    const paymentOptions = ["ticket", "membership", "listing", "none"]; // Ganti dengan opsi pembayaran yang sesuai
+    const paymentOptions = ["ticket", "membership", "listing", "product", "none"]; // Ganti dengan opsi pembayaran yang sesuai
     return (
       <Stack spacing={2}>
         <HStack spacing={5}>
@@ -829,6 +828,21 @@ function FormBuilderPage() {
           </Stack>
         </Stack>
         <Stack>
+
+        {productActive && (
+            <Stack
+              bgColor={"white"}
+              p={[1, 1, 5]}
+              spacing={5}
+              borderRadius="md"
+              shadow={"md"}
+            >
+              <Heading size={"md"}>Product Active</Heading>
+              <Stack onClick={() => console.log(ticketActive, "ini xx")}>
+                <ProductCard item={productActive} />
+              </Stack>
+            </Stack>
+          )}
           {ticketActive && (
             <Stack
               bgColor={"white"}
@@ -861,20 +875,7 @@ function FormBuilderPage() {
         </Stack>
 
         <Stack>
-          {productActive && (
-            <Stack
-              bgColor={"white"}
-              p={[1, 1, 5]}
-              spacing={5}
-              borderRadius="md"
-              shadow={"md"}
-            >
-              <Heading size={"md"}>Product Active</Heading>
-              <Stack onClick={() => console.log(ticketActive, "ini xx")}>
-                <ProductCard item={productActive} />
-              </Stack>
-            </Stack>
-          )}
+        
         </Stack>
       </Grid>
 

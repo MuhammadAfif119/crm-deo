@@ -37,7 +37,7 @@ function ProductCard({ item }) {
         }}
       >
         <Box p={2} align={"center"}>
-          <Image boxSize="sm" src={item?.image} />
+          <Image w={'full'} src={item?.image} />
         </Box>
         <Flex justify={"space-between"} align={"center"}>
           <Heading size={"sm"} textTransform="capitalize">

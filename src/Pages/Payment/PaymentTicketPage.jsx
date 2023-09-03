@@ -28,6 +28,8 @@ function PaymentTicketPage() {
 
     const navigate = useNavigate()
 
+    console.log(param.type, 'xxx')
+
 
 
 

@@ -181,7 +181,6 @@ const ProductPage = () => {
   }, [globalState.currentProject]);
 
   const handleDelete = async (listing) => {
-    const collectionName = "listings_product";
     const docName = listing.id;
 
     try {

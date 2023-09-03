@@ -312,7 +312,10 @@ export const setDocumentFirebase = async (
   companyId
 ) => {
   try {
-    if (!data.createdAt) data.lastUpdated = new Date();
+    if (!data.createdAt) {
+      data.lastUpdated = new Date();
+      data.createdAt = new Date()
+    }
     if(auth.currentUser){
       data.lastUpdatedBy = {
         uid: auth.currentUser.uid,
