@@ -32,11 +32,13 @@ import {
 import useUserStore from "../../Hooks/Zustand/Store";
 
 import { formatFrice } from "../../Utils/numberUtil";
-import { CloseIcon, EditIcon } from "@chakra-ui/icons";
-import { FcPhone } from "react-icons/fc";
+import { AddIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { FcPhone, FcPlus } from "react-icons/fc";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import AddButtons from "../../Components/Buttons/AddButtons";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-const ViewPageListing = () => {
+const ProductPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [categoryData, setCategoryData] = useState({});
@@ -59,7 +61,7 @@ const ViewPageListing = () => {
   const getData = async () => {
     try {
       const q = query(
-        collection(db, "listings"),
+        collection(db, "listings_product"),
         where("projectId", "==", projectId)
       );
 
@@ -116,7 +118,7 @@ const ViewPageListing = () => {
     setSelectedCategoryNiche(value);
     try {
       const q = query(
-        collection(db, "listings"),
+        collection(db, "listings_product"),
         where("category", "array-contains", value.toLowerCase()),
         where("projectId", "==", projectId)
       );
@@ -179,26 +181,30 @@ const ViewPageListing = () => {
   }, [globalState.currentProject]);
 
   const handleDelete = async (listing) => {
-    const collectionName = "listings";
+    const collectionName = "listings_product";
     const docName = listing.id;
 
     try {
-      deleteFileFirebase(`${listing.title}_800x800`, "listings").then(() => {
-        deleteFileFirebase(`${listing.title}-logo_800x800`, "listings").then(
-          () => {
-            deleteDocumentFirebase(collectionName, docName).then((res) => {
-              toast({
-                title: "Deleted!",
-                description: res,
-                status: "success",
-                duration: 9000,
-                isClosable: true,
-              });
-              setModalDelete(false);
-            });
-          }
-        );
-      });
+      deleteFileFirebase(`${listing.title}_800x800`, "listings_product").then(
+        () => {
+          deleteFileFirebase(`${listing.title}-logo_800x800`, "listings").then(
+            () => {
+              deleteDocumentFirebase("listings_product", docName).then(
+                (res) => {
+                  toast({
+                    title: "Deleted!",
+                    description: res,
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                  });
+                  setModalDelete(false);
+                }
+              );
+            }
+          );
+        }
+      );
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
     }
@@ -248,9 +254,25 @@ const ViewPageListing = () => {
   return (
     <Box>
       <Stack py={2}>
-        <Text fontSize={"xl"} fontWeight={500}>
-          Category
-        </Text>
+        <HStack>
+          <Text fontSize={"xl"} fontWeight={500}>
+            Category
+          </Text>
+          <Spacer />
+          <Button
+            onClick={() => navigate("/products/create")}
+            bgColor={"white"}
+            shadow="md"
+            variant="outline"
+            borderColor="#F05A28"
+            color="#F05A28"
+          >
+            <HStack>
+              <FcPlus />
+              <Text>Product</Text>
+            </HStack>
+          </Button>
+        </HStack>
         {categoryModule?.data?.length > 0 && (
           <HStack spacing={3}>
             <Text
@@ -327,7 +349,7 @@ const ViewPageListing = () => {
                 </AbsoluteCenter>
               </Box>
               <SimpleGrid columns={[1, 2, 3]} gap={5}>
-                {categoryListing?.map((listing, index) => {
+                {categoryListing?.map((product, index) => {
                   return (
                     <Stack
                       mb={2}
@@ -344,12 +366,12 @@ const ViewPageListing = () => {
                       }}
                       transition={"0.2s ease-in-out"}
                     >
-                      {listing.image && (
+                      {product.image && (
                         <Box flex="1" position={"relative"}>
                           <IconButton
                             icon={<MdDelete />}
-                            aria-label="Delete Listing"
-                            onClick={() => handleModalDelete(listing)}
+                            aria-label="Delete Listing Product"
+                            onClick={() => handleModalDelete(product)}
                             position="absolute"
                             right={2}
                             bottom={2}
@@ -358,25 +380,25 @@ const ViewPageListing = () => {
                             minH="150px"
                             objectFit={"fill"}
                             borderRadius={"md"}
-                            src={listing.image}
-                            alt={listing.title}
-                            onClick={() => handleModalDetail(listing)}
+                            src={product.image}
+                            alt={product.title}
+                            onClick={() => handleModalDetail(product)}
                           />
                         </Box>
                       )}
                       <Stack
                         spacing={1}
-                        onClick={() => handleModalDetail(listing)}
+                        onClick={() => handleModalDetail(product)}
                       >
                         <HStack>
                           <Text fontWeight={"bold"} fontSize="lg">
-                            Rp. {formatFrice(Number(listing.price))}
+                            Rp. {formatFrice(Number(product.price))}
                           </Text>
 
-                          {listing.priceEnd && (
+                          {product.priceEnd && (
                             <Text fontWeight={"bold"} fontSize="lg" mx="1">
                               {" "}
-                              - Rp. {formatFrice(Number(listing.priceEnd))}{" "}
+                              - Rp. {formatFrice(Number(product.priceEnd))}{" "}
                             </Text>
                           )}
                         </HStack>
@@ -386,10 +408,10 @@ const ViewPageListing = () => {
                           color="gray.500"
                           noOfLines={1}
                         >
-                          {listing.title}
+                          {product.title}
                         </Text>
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
-                          CP: {listing.contactPerson}
+                          Stock: {product.stock}
                         </Text>
                         {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
@@ -497,20 +519,22 @@ const ViewPageListing = () => {
             <HStack gap={3}>
               <HStack spacing={2}>
                 <Text color="gray.900" fontWeight={500} fontSize="md">
-                  CP:{detailActive.contactPerson}
+                  {/* CP:{detailActive.contactPerson} */}
+                  Stock: {detailActive.stock}
                 </Text>
-                <FcPhone size={20} />
               </HStack>
               <HStack>
-                {/* <Button leftIcon={<CloseIcon boxSize={3} />} colorScheme="red" onClick={() => handleCloseDetail()}>
-
-                  Cancel
-                </Button> */}
                 <Button
-                  leftIcon={<EditIcon boxSize={3} />}
+                  leftIcon={<CloseIcon boxSize={3} />}
+                  colorScheme="red"
+                  onClick={() => handleCloseDetail()}
+                >
+                  Cancel
+                </Button>
+                <Button
                   colorScheme="green"
                   onClick={() =>
-                    navigate(`/listing/edit?id=${detailActive.id}`)
+                    navigate(`/products/edit?id=${detailActive.id}`)
                   }
                 >
                   Edit
@@ -548,4 +572,4 @@ const ViewPageListing = () => {
   );
 };
 
-export default ViewPageListing;
+export default ProductPage;

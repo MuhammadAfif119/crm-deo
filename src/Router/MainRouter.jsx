@@ -16,6 +16,7 @@ import ConfigurationRouter from "./ConfigurationRouter";
 import ContactsRouter from "./ContactsRouter";
 import ChatRouter from "./ChatRouter";
 import MembershipRouter from "./MembershipRouter";
+import ProductRouter from "./ProductRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -36,10 +37,10 @@ function MainRouter() {
     ...ContactsRouter,
     ...ChatRouter,
     ...MembershipRouter,
+    ...ProductRouter,
   ];
   return (
     <Routes>
-
       {allRouter.map((item, index) => {
         return <Route key={index} path={item.path} element={item.element} />;
       })}

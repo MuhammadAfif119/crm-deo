@@ -25,6 +25,7 @@ import {
   FcFile,
   FcLike,
   FcPodiumWithSpeaker,
+  FcDeployment,
 } from "react-icons/fc";
 
 export const data = [
@@ -66,14 +67,13 @@ export const data = [
   {
     name: "Pipeline",
     icon: FcKindle,
-    submenu: [
-      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-    ],
+    submenu: [{ name: "Pipeline", icon: FcEditImage, link: "/pipeline" }],
   },
   {
     name: "Products",
     icon: FcConferenceCall,
     submenu: [
+      { name: "Products", icon: FcDeployment, link: "/products" },
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
       { name: "Membership", icon: FcLike, link: "/membership" },
       { name: "Forms", icon: FcSurvey, link: "/form-builder" },

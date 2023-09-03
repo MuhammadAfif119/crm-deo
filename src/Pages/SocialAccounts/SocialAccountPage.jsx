@@ -62,8 +62,10 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
@@ -72,12 +74,15 @@ import {
   getCollectionFirebase,
   getSingleDocumentFirebase,
 } from "../../Api/firebaseApi";
+import { PlatformArr, platformArr } from "./PlatformArr";
 
 function SocialAccountPage() {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  const globalState= useUserStore();
+  const globalState = useUserStore();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [barStatus, setBarStatus] = useState(false);
 
@@ -86,18 +91,16 @@ function SocialAccountPage() {
   const [userData, setUserData] = useState("");
   const [socialAccountList, setSocialAccountList] = useState([]);
   const [socialMediaList, setSocialMediaList] = useState([]);
-
   const navigate = useNavigate();
   const toast = useToast();
 
-  const currentUser = auth.currentUser
+  console.log(globalState);
 
-
+  const currentUser = globalState.uid;
 
   const profileKey = globalState.profileKey;
 
   const getListSocial = async () => {
-    ;
     const conditions = [
       {
         field: "users",
@@ -107,35 +110,59 @@ function SocialAccountPage() {
     ];
 
     try {
-      const res = await getCollectionFirebase("projects", conditions);
-      console.log(res, "xx");
+      // const res = await getCollectionFirebase("social_media", conditions);
+      // console.log(res, "xx");
 
-      const filterSocialMedia = res.filter((x) => x.name === titleAccount);
-      console.log(filterSocialMedia);
-      setSocialAccountList(filterSocialMedia);
+      const q = query(
+        collection(db, "social_media"),
+        where("projectId", "==", globalState.currentProject)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const socialArr = [];
+        querySnapshot.forEach((doc) => {
+          socialArr.push({ ...doc.data(), id: doc.id });
+        });
+
+        console.log(socialArr);
+        setSocialAccountList(socialArr);
+      });
 
       //get subcollection user inside project
-      const docRef = doc(
-        db,
-        "projects",
-        globalState.currentProject,
-        "users",
-        globalState.uid
-      );
-      const docSnapshot = await getDoc(docRef);
+      // const docRef = doc(
+      //   db,
+      //   "projects",
+      //   globalState.currentProject,
+      //   "users",
+      //   globalState.uid
+      // );
+      // const docSnapshot = await getDoc(docRef);
 
-      if (docSnapshot.exists) {
-        const docData = docSnapshot.data();
-        console.log(docData);
-        setSocialMediaList(docData.social_accounts);
-      } else {
-        console.log("Dokumen tidak ditemukan!");
-      }
+      // if (docSnapshot.exists) {
+      //   const docData = docSnapshot.data();
+      //   console.log(docData);
+      //   setSocialMediaList(docData.social_accounts);
+      // } else {
+      //   console.log("Dokumen tidak ditemukan!");
+      // }
 
-      ;
+      // const usersConditions = [
+      //   {
+      //     field: "users",
+      //     operator: "==",
+      //     // value: globalState?.uid,
+      //     value: "99tkBFd5y6yKKduP8amB",
+      //   },
+      // ];
+
+      // const userSubcol = await getCollectionFirebase(
+      //   `social_media/uKcwVmEpXA2hUxt0p2PN/users`
+      // );
+      // setSocialMediaList(userSubcol);
+      // console.log(socialMediaList);
+      // console.log(userSubcol, "ini subcol");
     } catch (error) {
       console.log(error);
-      ;
     }
   };
 
@@ -143,9 +170,9 @@ function SocialAccountPage() {
     //find role in company
     const conditions = [
       {
-        field: "owner",
+        field: "owners",
         operator: "array-contains",
-        value: currentUser?.uid,
+        value: globalState?.uid,
       },
     ];
 
@@ -155,10 +182,10 @@ function SocialAccountPage() {
     // if () {
     //   navigate(`/pricing/${currentUser.email}`);
     // }
-    if (res.length !== 0) {
+    if (res?.length !== 0) {
       setSocialAccountModal(true);
     }
-    if (res.length === undefined) {
+    if (res?.length === undefined) {
       toast({
         title: "Deoapp.com",
         description: "You must login",
@@ -166,105 +193,128 @@ function SocialAccountPage() {
         position: "top-right",
         isClosable: true,
       });
-      navigate(`/login`);
+      // navigate(`/login`);
     }
   };
 
   const handleSubmitAccount = async () => {
-    ;
     try {
+      setIsLoading(true);
       const res = await ApiBackend.post("createprofile", {
         title: titleAccount,
       });
       if (res.status === 200) {
         console.log(res.data, "xxx");
 
-        //add to project
+        //add to socialMedia
         try {
-          const docRef = await addDoc(collection(db, "projects"), {
+          const docRef = await addDoc(collection(db, "social_media"), {
             ayrshare_account: res.data,
             companyId: globalState?.currentCompany,
+            projectId: globalState?.currentProject,
             modules: arrayUnion("crm"),
             owner: arrayUnion(globalState?.uid),
             users: arrayUnion(globalState?.uid),
             name: titleAccount,
           });
+
+          if (docRef.id) {
+            await addDocumentFirebase(
+              `social_media/${docRef.id}/users`,
+              {
+                name: globalState.name,
+                uid: globalState.uid,
+              },
+              globalState.currentCompany
+            );
+          }
+
+          toast({
+            title: "Deoapp AI",
+            description: "Account Update",
+            duration: 3000,
+            status: "success",
+          });
           console.log("data created with ID", docRef.id);
+          setIsLoading(false);
         } catch (error) {
           console.log("Terjadi kesalahan:", error);
+        } finally {
+          setIsLoading(false);
         }
 
-        ;
         setSocialAccountModal(false);
       }
     } catch (error) {
       console.log(error, "ini error ");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDataAccount = async () => {
-    try {
-      const res = await ApiBackend.post("user", {
-        profileKey: profileKey,
-      });
+  // const handleDataAccount = async () => {
+  //   try {
+  //     const res = await ApiBackend.post("user", {
+  //       profileKey: profileKey,
+  //     });
 
-      if (res.status === 200) {
-        console.log(res.data);
+  //     if (res.status === 200) {
+  //       console.log(res.data);
 
-        if (socialMediaList.length === 0) {
-          await setDoc(
-            doc(
-              db,
-              "projects",
-              globalState.currentProject,
-              "users",
-              globalState.uid
-            ),
-            {
-              social_accounts: arrayUnion(res.data),
-              role: "users",
-              name: globalState.name,
-            }
-          );
-        } else {
-          await updateDoc(
-            doc(
-              db,
-              "projects",
-              globalState.currentProject,
-              "users",
-              globalState.uid
-            ),
-            {
-              social_accounts: deleteField(),
-            }
-          );
+  //       if (socialMediaList.length === 0) {
+  //           await setDoc(
+  //             doc(
+  //               db,
+  //               "social_media",
+  //               globalState.currentProject,
+  //               "users",
+  //               globalState.uid
+  //             ),
+  //             {
+  //               social_accounts: arrayUnion(res.data),
+  //               role: "users",
+  //               name: globalState.name,
+  //             }
+  //         );
+  //       } else {
+  //         await updateDoc(
+  //           doc(
+  //             db,
+  //             "projects",
+  //             globalState.currentProject,
+  //             "users",
+  //             globalState.uid
+  //           ),
+  //           {
+  //             social_accounts: deleteField(),
+  //           }
+  //         );
 
-          await updateDoc(
-            doc(
-              db,
-              "projects",
-              globalState.currentProject,
-              "users",
-              globalState.uid
-            ),
-            {
-              social_accounts: arrayUnion(res.data),
-            }
-          );
-        }
+  //         await updateDoc(
+  //           doc(
+  //             db,
+  //             "projects",
+  //             globalState.currentProject,
+  //             "users",
+  //             globalState.uid
+  //           ),
+  //           {
+  //             social_accounts: arrayUnion(res.data),
+  //           }
+  //         );
+  //       }
 
-        getListSocial();
-      }
-    } catch (error) {
-      toast({
-        status: "error",
-        title: "Deoapp",
-        description: "Not Linked to any account",
-        duration: 2000,
-      });
-    }
-  };
+  //       getListSocial();
+  //     }
+  //   } catch (error) {
+  //     toast({
+  //       status: "error",
+  //       title: "Deoapp",
+  //       description: "Not Linked to any account",
+  //       duration: 2000,
+  //     });
+  //   }
+  // };
 
   const handleDisconnected = async (data) => {
     if (profileKey) {
@@ -313,7 +363,8 @@ function SocialAccountPage() {
   useEffect(() => {
     getListSocial();
     return () => {};
-  }, [currentUser]);
+    // }, [globalState.uid]);
+  }, [globalState.currentProject]);
 
   return (
     <>
@@ -433,53 +484,177 @@ function SocialAccountPage() {
                   columns={(2, null, 3)}
                   borderRadius={"md"}
                 >
-                  {globalState.projects?.map((project, i) => (
-                    <Box
-                      borderRadius={"md"}
-                      bg={"white"}
-                      p={5}
-                      boxShadow={"md"}
-                    >
-                      <Center>
-                        <Avatar
-                          align={"center"}
-                          size="lg"
-                          name={project.data?.ayrshare_account?.title}
-                          src="#"
-                        />
-                      </Center>
-                      <Box align={"center"} mt={3}>
-                        <Text size={"xs"} fontWeight={"semibold"}>
-                          {capitalize(project.data?.ayrshare_account?.title)}
-                        </Text>
-                        <Text fontSize={"xs"} mt={2}>
-                          Profile Key:
-                        </Text>
-                        <Text fontSize={"xs"}>
-                          {project.data?.ayrshare_account?.profileKey}
-                        </Text>
+                  {socialAccountList?.map((project, i) => (
+                    <>
+                      <Box
+                        key={i}
+                        borderRadius={"md"}
+                        bg={"white"}
+                        p={5}
+                        boxShadow={"md"}
+                      >
+                        {/* <Flex gap={2} alignItems={"center"}> */}
+                        <Center>
+                          <Avatar
+                            // align={"center"}
+                            size="md"
+                            name={project?.ayrshare_account?.title}
+                            src="#"
+                          />
+                        </Center>
+                        <Box align={"center"} mt={3}>
+                          <Text fontSize={"md"} fontWeight={"semibold"}>
+                            {capitalize(project?.name)}
+                          </Text>
+                          {/* <HStack> */}
+                          <Text fontSize={"xs"}>
+                            Profile Key: {project?.ayrshare_account?.profileKey}
+                          </Text>
+                          {/* </HStack> */}
+                        </Box>
+                        {/* <Spacer /> */}
+                        {/* </Flex> */}
+
+                        <Box mt={5}>
+                          <Text
+                            textAlign={"center"}
+                            fontSize="sm"
+                            color={"gray.600"}
+                            fontWeight={"semibold"}
+                          >
+                            Social Media Accounts
+                          </Text>
+                          {project.socialAccounts?.length > 0 ? (
+                            <>
+                              <SimpleGrid columns={2} mt={3} spacing={3}>
+                                {project.socialAccounts?.map((x, i) => (
+                                  <Box>
+                                    <Stack
+                                      shadow={"md"}
+                                      alignItems={"center"}
+                                      _hover={{
+                                        transform: "scale(1.03)",
+                                        shadow: "xl",
+                                      }}
+                                      transition={"0.2s ease-in-out"}
+                                      justifyContent="center"
+                                      borderRadius="lg"
+                                      key={i}
+                                      bgColor={"white"}
+                                      borderTopWidth={5}
+                                      borderColor="blue.500"
+                                      p={5}
+                                    >
+                                      <Stack>
+                                        <Avatar
+                                          src={x.userImage}
+                                          alt={x.displayName}
+                                        >
+                                          <AvatarBadge
+                                            boxSize="1.25em"
+                                            bg="green.500"
+                                          >
+                                            {" "}
+                                            {platformArr.map((platform) =>
+                                              platform.name === x.platform
+                                                ? platform.icon
+                                                : null
+                                            )}
+                                          </AvatarBadge>
+                                        </Avatar>
+                                      </Stack>
+                                      <Spacer />
+                                      <Stack>
+                                        <Text
+                                          textAlign={"center"}
+                                          fontSize="xs"
+                                          color={"gray.600"}
+                                        >
+                                          {x.displayName}
+                                        </Text>
+                                      </Stack>
+
+                                      <Stack>
+                                        <SimpleGrid columns={[1]} gap={2}>
+                                          <Stack
+                                            alignItems={"center"}
+                                            justifyContent="center"
+                                          >
+                                            <a
+                                              href={x.profileUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                            >
+                                              <Button
+                                                size={"sm"}
+                                                colorScheme="twitter"
+                                              >
+                                                <Text fontSize={"xs"}>
+                                                  Go to website
+                                                </Text>
+                                              </Button>
+                                            </a>
+                                          </Stack>
+                                          <Stack
+                                            alignItems={"center"}
+                                            justifyContent="center"
+                                          >
+                                            <Button
+                                              size={"sm"}
+                                              colorScheme="blackAlpha"
+                                              onClick={
+                                                () => handleDisconnected(x)
+                                                // console.log(x)
+                                              }
+                                            >
+                                              <Text fontSize={"xs"}>
+                                                Disconnect
+                                              </Text>
+                                            </Button>
+                                          </Stack>
+                                        </SimpleGrid>
+                                      </Stack>
+                                    </Stack>
+                                  </Box>
+                                ))}
+                              </SimpleGrid>
+                            </>
+                          ) : (
+                            <Box align={"center"} my={5}>
+                              <Text
+                                textAlign={"center"}
+                                fontSize="sm"
+                                fontStyle={"italic"}
+                                color={"gray.600"}
+                              >
+                                No social media linked to this account
+                              </Text>
+                            </Box>
+                          )}
+
+                          <Box align={"center"} mt={4}>
+                            <Button
+                              colorScheme="telegram"
+                              size={"xs"}
+                              w={"fit-content"}
+                              onClick={() =>
+                                handleWindowConnected(
+                                  project?.ayrshare_account?.profileKey
+                                )
+                              }
+                            >
+                              Connect More Account
+                            </Button>
+                          </Box>
+                        </Box>
                       </Box>
-                      <Box align={"center"} mt={4}>
-                        <Button
-                          colorScheme="telegram"
-                          size={"sm"}
-                          w={100}
-                          onClick={() =>
-                            handleWindowConnected(
-                              project.data?.ayrshare_account?.profileKey
-                            )
-                          }
-                        >
-                          Connect
-                        </Button>
-                      </Box>
-                    </Box>
+                    </>
                   ))}
                 </SimpleGrid>
               </Box>
             </Box>
 
-            <Stack>
+            {/* <Stack>
               <HStack>
                 <Text>Account</Text>
                 <Spacer />
@@ -515,7 +690,7 @@ function SocialAccountPage() {
                             color="gray.900"
                             fontWeight={"bold"}
                           >
-                            {x?.title}
+                            {x?.name}
                           </Text>
                         </HStack>
                         <HStack>
@@ -539,8 +714,8 @@ function SocialAccountPage() {
 
                         <Stack>
                           <SimpleGrid columns={[1, 2, 4]} gap={3}>
-                            {x?.displayNames?.length > 0 &&
-                              x?.displayNames?.map((z, index) => {
+                            {x?.socialAccounts?.length > 0 &&
+                              x?.socialAccounts?.map((z, index) => {
                                 const PlatformArr = [
                                   {
                                     name: "youtube",
@@ -680,7 +855,7 @@ function SocialAccountPage() {
                     );
                   })}
               </SimpleGrid>
-            </Stack>
+            </Stack> */}
           </Stack>
         </Stack>
       </Flex>
@@ -719,14 +894,26 @@ function SocialAccountPage() {
             >
               Close
             </Button>
-            <Button
-              size={"sm"}
-              colorScheme="twitter"
-              mr={3}
-              onClick={() => handleSubmitAccount()}
-            >
-              Submit
-            </Button>
+            {isLoading === true ? (
+              <Button
+                isLoading
+                size={"sm"}
+                colorScheme="twitter"
+                mr={3}
+                onClick={() => handleSubmitAccount()}
+              >
+                Submit
+              </Button>
+            ) : (
+              <Button
+                size={"sm"}
+                colorScheme="twitter"
+                mr={3}
+                onClick={() => handleSubmitAccount()}
+              >
+                Submit
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

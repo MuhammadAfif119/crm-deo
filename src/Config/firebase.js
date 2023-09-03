@@ -14,6 +14,7 @@ import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
 const firebaseConfig = {
   apiKey: "AIzaSyDHwfzgKXqfknEy3bctrbrlu37_hKeJevo",
   authDomain: "deoapp-indonesia.firebaseapp.com",
@@ -25,6 +26,18 @@ const firebaseConfig = {
   measurementId: "G-B9FPJL2RD0",
   token_option: "BHcgLCKeUP3IkJIIMaGoVhFzbnjWx6-sSJ6JWQNKAU9nXMN3xK2TOmVEHVsqSJ1V9M_JGKW2rs0SbHZw1CDE3dA", // your vapid key
 };
+
+// const firebaseConfig = {
+//   apiKey: "AIzaSyA-p2OkCT9rjeta1lQM4krUfllcSWl_E1s",
+//   authDomain: "buildfire-project.firebaseapp.com",
+//   databaseURL: "https://buildfire-project-default-rtdb.asia-southeast1.firebasedatabase.app",
+//   projectId: "buildfire-project",
+//   storageBucket: "buildfire-project.appspot.com",
+//   messagingSenderId: "2213424327",
+//   appId: "1:2213424327:web:9f216a47897c3209fbe2e2",
+//   measurementId: "G-MMP1NFBP7C"
+// };
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);

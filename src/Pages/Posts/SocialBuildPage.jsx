@@ -80,6 +80,7 @@ import InstagramPosts from "./InstagramPosts";
 import PinterestPosts from "./PinterestPosts";
 import { CheckVideoResolution } from "../Middleware";
 import CommentsPage from "../Comments/CommentsPage";
+import { getSingleDocumentFirebase } from "../../Api/firebaseApi";
 
 function SocialBuildPage() {
   const width = window.innerWidth;
@@ -158,29 +159,38 @@ function SocialBuildPage() {
   };
 
   const getListSocial = async () => {
-    if (globalState.profileKey) {
-      try {
-        const docRef = doc(
-          db,
-          "projects",
-          globalState.currentProject,
-          "users",
-          currentUser.uid
-        );
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const socialArr = docSnap.data().social_accounts;
-          console.log(socialArr);
-          const socialFilterData = socialArr.filter((x) => x.title === title);
-          setSocialFilter(socialFilterData);
-          console.log(socialFilterData);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    // if (globalState.profileKey) {
+    try {
+      // const docRef = doc(
+      //   db,
+      //   "projects",
+      //   globalState.currentProject,
+      //   "users",
+      //   currentUser.uid
+      // );
+      // const docSnap = await getDoc(docRef);
+      // if (docSnap.exists()) {
+      //   const socialArr = docSnap.data().social_accounts;
+      //   console.log(socialArr);
+      //   const socialFilterData = socialArr.filter((x) => x.title === title);
+      //   setSocialFilter(socialFilterData);
+      //   console.log(socialFilterData);
+      // } else {
+      //   console.log("No such document!");
+      // }
+
+      const getActiveAccounts = await getSingleDocumentFirebase(
+        `social_media/uKcwVmEpXA2hUxt0p2PN/users`,
+        "99tkBFd5y6yKKduP8amB"
+      );
+
+      // const socialFilterData = getActiveAccounts.filter((x) => x.title === title);
+
+      setSocialFilter(getActiveAccounts);
+    } catch (error) {
+      console.log(error);
     }
+    // }
   };
 
   const getDataFolderFeed = () => {
@@ -231,10 +241,11 @@ function SocialBuildPage() {
   }, []);
 
   const handleAddPlatform = (media) => {
+    console.log(media);
+    console.log(socialFilter.activePlatforms);
     setPlatformEndpoints(media);
     if (
-      socialFilter?.filter((x) => x.activeSocialAccounts?.includes(media))
-        .length > 0
+      socialFilter.activePlatforms?.filter((x) => x?.includes(media)).length > 0
     ) {
       setPlatformActive([media]);
       if (!platformActive.includes(media)) {
@@ -475,7 +486,7 @@ function SocialBuildPage() {
           }
         });
       } else {
-        if (posting !== "" || platformActive.length !== 0) {
+        if (posting !== "" || platformActive?.length !== 0) {
           try {
             const res = await ApiBackend.post("post", data);
             if (res.status === 200) {
