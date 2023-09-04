@@ -21,7 +21,8 @@ import {
   Container,
   Flex,
   Heading,
-  Spacer, // Tambahkan import untuk Checkbox
+  Spacer,
+  Center, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import CreatableSelece from "react-select/creatable";
@@ -36,6 +37,7 @@ import {
 import { db } from "../../Config/firebase";
 import {
   addDocumentFirebase,
+  arrayRemoveFirebase,
   arrayUnionFirebase,
   getCollectionFirebase,
   getSingleDocumentFirebase,
@@ -468,7 +470,7 @@ const FormPage = ({
           variant={"outline"}
           colorScheme="blue"
         >
-          Back to Ticket Form
+          Back to Product Form
         </Button>
         {idProject ? (
           <Button
@@ -511,6 +513,7 @@ function FormPageProduct() {
   const [details, setDetails] = useState([]);
   const [image, setImage] = useState("");
   const [logo, setLogo] = useState();
+  const [formId, setFormId] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
   const [selectedCategory, setSelectedCategory] = useState([]);
@@ -523,6 +526,7 @@ function FormPageProduct() {
   const [categoryList, setCategoryList] = useState([]);
   const [formPage, setFormPage] = useState(false);
   const [queries, setQueries] = useState("");
+  const [lastFormId, setLastFormId] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
   const [detailProduct, setDetailProduct] = useState(false);
   const [stock, setStock] = useState();
@@ -556,6 +560,8 @@ function FormPageProduct() {
     setProjectName(res.projectName);
     setPriceEnd(res.priceEnd);
     setProjectId(res.projectId);
+    setFormId(res.formId);
+    setLastFormId(res.formId);
     let cat = res.category;
     let arr = [];
     cat.map((c) => {
@@ -745,9 +751,11 @@ function FormPageProduct() {
       })),
       stock: stock,
       is_active: isActive,
+      formId: formId,
       modules: modules.map((module) => module.toLowerCase()),
     };
 
+    console.log(formId);
 
     if (filesImage[0]) {
       const resImage = await uploadFile(
@@ -771,7 +779,7 @@ function FormPageProduct() {
     try {
       const docID = await addDocumentFirebase(
         "listings_product",
-        dataProduct,
+        newListing,
         companyId
       );
       console.log("ID Dokumen Baru:", docID);
@@ -794,7 +802,7 @@ function FormPageProduct() {
             await setDocumentFirebase(
               "categories",
               docName,
-              { [categoryField]: categoryValues, },
+              { [categoryField]: categoryValues },
               companyId
             );
           } else {
@@ -843,7 +851,7 @@ function FormPageProduct() {
         }
       }
 
-      if (dataProduct.formId) {
+      if (newListing?.formId) {
         const collectionName = "forms";
         const docName = dataProduct.formId;
         const field = "product_used";
@@ -852,7 +860,7 @@ function FormPageProduct() {
         try {
           const result = await arrayUnionFirebase(
             "forms",
-            dataProduct.formId,
+            formId,
             field,
             values
           );
@@ -871,12 +879,12 @@ function FormPageProduct() {
       } else {
         toast({
           title: "Deoapp.com",
-          description: `success add new ticket with document id ${idProject}`,
+          description: `success add new product with document id ${idProject}`,
           status: "success",
           position: "top-right",
           isClosable: true,
         });
-        navigate("/ticket");
+        navigate("/products");
       }
 
       console.log("berhasil");
@@ -896,6 +904,7 @@ function FormPageProduct() {
       setSelectedCategory([]);
       setModules([]);
       setPriceEnd("");
+      setFormId("");
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
     }
@@ -942,6 +951,10 @@ function FormPageProduct() {
     }
   };
 
+  console.log(idProject);
+  console.log(formId);
+  console.log(lastFormId);
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -962,6 +975,7 @@ function FormPageProduct() {
       })),
       stock: stock,
       is_active: isActive,
+      formId: formId,
       modules: modules.map((module) => module.toLowerCase()),
     };
 
@@ -991,6 +1005,29 @@ function FormPageProduct() {
         newListing
       );
       console.log("ID Dokumen Baru:", docID);
+
+      if (docID && formId !== lastFormId) {
+        try {
+          const result = await arrayRemoveFirebase(
+            "forms",
+            lastFormId,
+            "product_used",
+            [idProject]
+          );
+          console.log(result);
+
+          console.log(formId);
+
+          const newArr = await arrayUnionFirebase(
+            "forms",
+            formId,
+            "product_used",
+            [idProject]
+          );
+
+          console.log(newArr);
+        } catch (error) {}
+      }
 
       if (docID) {
         const categoryCollectionName = "categories";
@@ -1321,7 +1358,7 @@ function FormPageProduct() {
                 <option value="false">False</option>
               </Select>
             </FormControl>
-            <FormControl id="modules" >
+            <FormControl id="modules">
               <FormLabel>Modules:</FormLabel>
               <Checkbox
                 value="rms"
@@ -1363,41 +1400,74 @@ function FormPageProduct() {
               >
                 CRM
               </Checkbox>
-
             </FormControl>
 
+            <Stack>
+              <Box>
+                <Text fontWeight={"semibold"}>
+                  Choose form to display this product
+                </Text>
+              </Box>
+
+              {dataForm?.length > 0 ? (
+                <SimpleGrid columns={3} spacing={2}>
+                  {dataForm?.map((form, i) => (
+                    <Stack
+                      key={i}
+                      borderWidth="1px"
+                      p={3}
+                      cursor="pointer"
+                      onClick={() => setFormId(form.id)}
+                      rounded={5}
+                      borderColor={formId === form.id && "black"}
+                    >
+                      <Text>{form.title}</Text>
+                      {form.category.length > 0 &&
+                        form.category.map((y, i) => {
+                          return <Text key={i}>{y}</Text>;
+                        })}
+                    </Stack>
+                  ))}
+                </SimpleGrid>
+              ) : (
+                <Center>
+                  <Text>No Form Data</Text>
+                </Center>
+              )}
+            </Stack>
+
             {!idProject ? (
-              // !loading ? (
-              //   <Flex align={"right"} justify={"right"}>
-              //     <Button
-              //       variant={"outline"}
-              //       colorScheme="blue"
-              //       onClick={handleSubmit}
-              //     >
-              //       Add Listing Product
-              //     </Button>
-              //   </Flex>
-              // ) : (
-              //   <Flex align={"right"} justify={"right"}>
-              //     <Button
-              //       isLoading
-              //       variant={"outline"}
-              //       colorScheme="blue"
-              //       isDisabled
-              //     >
-              //       Add Listing Product
-              //     </Button>
-              //   </Flex>
-              // )
-              <Button
-                rightIcon={<FiChevronRight />}
-                variant={"outline"}
-                colorScheme="blue"
-                onClick={() => handleNext()}
-              >
-                Next
-              </Button>
-            ) : !loading ? (
+              !loading ? (
+                <Flex align={"right"} justify={"right"}>
+                  <Button
+                    variant={"outline"}
+                    colorScheme="blue"
+                    onClick={handleSubmit}
+                  >
+                    Add Product
+                  </Button>
+                </Flex>
+              ) : (
+                <Flex align={"right"} justify={"right"}>
+                  <Button
+                    isLoading
+                    variant={"outline"}
+                    colorScheme="blue"
+                    isDisabled
+                  >
+                    Add Product
+                  </Button>
+                </Flex>
+              )
+            ) : // <Button
+            //   rightIcon={<FiChevronRight />}
+            //   variant={"outline"}
+            //   colorScheme="blue"
+            //   onClick={() => handleNext()}
+            // >
+            //   Next
+            // </Button>
+            !loading ? (
               <Button
                 variant={"outline"}
                 colorScheme="blue"
@@ -1418,9 +1488,7 @@ function FormPageProduct() {
           </VStack>
         </Container>
       ) : formPage === false ? (
-        <DetailProductComponent
-          handleNext={handleNext}
-        />
+        <DetailProductComponent handleNext={handleNext} />
       ) : (
         <FormPage
           handleSubmit={handleSubmit}

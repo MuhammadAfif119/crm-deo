@@ -25,6 +25,7 @@ import { MdDelete } from "react-icons/md";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import {
+  arrayRemoveFirebase,
   deleteDocumentFirebase,
   deleteFileFirebase,
   getSingleDocumentFirebase,
@@ -180,13 +181,17 @@ const ProductPage = () => {
     };
   }, [globalState.currentProject]);
 
-  const handleDelete = async (listing) => {
-    const docName = listing.id;
+  const handleDelete = async (product) => {
+    const docName = product.id;
 
     try {
-      deleteFileFirebase(`${listing.title}_800x800`, "listings_product").then(
+      await arrayRemoveFirebase("forms", product.formId, "product_used", [
+        docName,
+      ]);
+
+      deleteFileFirebase(`${product.title}_800x800`, "listings_product").then(
         () => {
-          deleteFileFirebase(`${listing.title}-logo_800x800`, "listings").then(
+          deleteFileFirebase(`${product.title}-logo_800x800`, "listings").then(
             () => {
               deleteDocumentFirebase("listings_product", docName).then(
                 (res) => {
