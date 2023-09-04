@@ -6,20 +6,22 @@ import QRCode from 'react-qr-code'
 import { useNavigate, useParams } from 'react-router-dom'
 import { addDocumentFirebase, deleteDocumentFirebase, getCollectionFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi'
 import TicketCard from '../../Components/Card/TicketCard'
-import PaymentTicketDetail from '../../Components/Payment/PaymentTicketDetail'
+import PaymentTicketDetail from '../../Components/Payment/PaymentDetail'
 import PaymentXenditRecurring from '../../Components/Payment/PaymentXenditRecurring'
 import { decryptToken, encryptToken } from '../../Utils/encrypToken'
 import _axios from '../../Api/AxiosBarrier';
 import MembershipCard from '../../Components/Card/MembershipCard'
 import { formatFrice } from '../../Utils/Helper'
+import PaymentDetail from '../../Components/Payment/PaymentDetail'
 
-function PaymentTicketPage() {
+function PaymentPage() {
 
 
     const param = useParams()
 
     const [dataLeads, setDataLeads] = useState("")
     const [dataTicket, setDataTicket] = useState("")
+    const [dataProduct, setDataProduct] = useState("")
     const [dataForm, setDataForm] = useState("")
     const [membershipList, setMembershipList] = useState([])
 
@@ -52,12 +54,12 @@ function PaymentTicketPage() {
 
 
             setDataLeads(...res)
-            getDataTicket(res[0].formId)
             getDataForm(res[0].formId)
 
             if (res[0].orderId !== undefined) {
                 checkOrderSummary(res[0].orderId)
             }
+
         } catch (error) {
             console.log(error, "ini error");
         }
@@ -102,6 +104,8 @@ function PaymentTicketPage() {
                 limitValue
             );
 
+            console.log(res, 'ini res')
+
             if (res[0].membership_used) {
                 getDataMembership(res[0].membership_used)
             }
@@ -111,11 +115,24 @@ function PaymentTicketPage() {
                 getLeadsGTM(res[0]?.facebookPixelId)
             }
 
+            if(res[0].ticket_used){
+                getDataTicket(res[0].ticket_used)
+            }
+            if(res[0].product_used){
+                getDataProduct(res[0].product_used)
+            }
+
         } catch (error) {
             console.log(error, "ini error");
         }
 
     }
+
+    const getDataProduct = (formId) => {
+        console.log(formId, 'xxx')
+        setDataProduct()
+    }
+
 
     const getDataMembership = async (data) => {
         try {
@@ -223,7 +240,7 @@ function PaymentTicketPage() {
                                     <>
                                         <Stack>
                                             {param.method === "xendit" ? (
-                                                <PaymentTicketDetail dataLeads={dataLeads} dataTicket={dataTicket} dataForm={dataForm} />
+                                                <PaymentDetail dataLeads={dataLeads} dataTicket={dataTicket} dataProduct={dataProduct} dataForm={dataForm} />
 
                                             ) :
                                                 param.method === "xendit recurring" ? (
@@ -252,4 +269,4 @@ function PaymentTicketPage() {
     )
 }
 
-export default PaymentTicketPage
+export default PaymentPage

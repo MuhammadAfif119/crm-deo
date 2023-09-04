@@ -41,17 +41,17 @@ export const data = [
     link: "/contacts",
   },
 
-  {
-    name: "Social Media",
-    icon: FcPodiumWithSpeaker,
-    submenu: [
-      { name: "Create Post", icon: FcEditImage, link: "/create-post" },
-      { name: "Calendar", icon: FcCalendar, link: "/calendar" },
-      { name: "Comments", icon: FcComments, link: "/comment" },
-      { name: "Reports", icon: FcLineChart, link: "/reports" },
-      { name: "Social Accounts", icon: FcShare, link: "/social-account" },
-    ],
-  },
+  // {
+  //   name: "Social Media",
+  //   icon: FcPodiumWithSpeaker,
+  //   submenu: [
+  //     { name: "Create Post", icon: FcEditImage, link: "/create-post" },
+  //     { name: "Calendar", icon: FcCalendar, link: "/calendar" },
+  //     { name: "Comments", icon: FcComments, link: "/comment" },
+  //     { name: "Reports", icon: FcLineChart, link: "/reports" },
+  //     { name: "Social Accounts", icon: FcShare, link: "/social-account" },
+  //   ],
+  // },
 
   {
     name: "Chat",

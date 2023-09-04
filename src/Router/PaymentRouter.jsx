@@ -1,11 +1,11 @@
 import React from "react";
+import PaymentPage from "../Pages/Payment/PaymentPage";
 import PaymentSummaryPage from "../Pages/Payment/PaymentSummaryPage";
-import PaymentTicketPage from "../Pages/Payment/PaymentTicketPage";
 
 const PaymentRouter = [
   {
     path: "/payment/:type/:method/:id/:phone/:name",
-    element: <PaymentTicketPage />,
+    element: <PaymentPage />,
   },
   {
     path: "/payment/summary/:orderId",
