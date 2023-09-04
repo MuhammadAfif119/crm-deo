@@ -417,6 +417,7 @@ const ProductPage = () => {
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
                           Stock: {product.stock}
                         </Text>
+
                         {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
                     <HStack key={index} spacing={2} alignItems="center">
@@ -435,17 +436,17 @@ const ProductPage = () => {
       })}
 
       <Modal
-        size={"2xl"}
+        size={"lg"}
         isOpen={modalDetail}
         onClose={() => handleCloseDetail()}
-        isCentered
+        // isCentered
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Detail</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Stack spacing={1} py={3}>
+            <Stack spacing={1} py={2}>
               <Image
                 borderRadius="md"
                 src={detailActive.image}
@@ -477,58 +478,56 @@ const ProductPage = () => {
                     <></>
                   )}
                 </Flex>
+
                 <Text color="gray.500">{detailActive.description}</Text>
-                <Stack justifyContent="space-around" alignItems="flex-start">
-                  <Stack spacing={0} alignItems="flex-end" w={"full"}>
-                    <Text color="gray.600">Price</Text>
-                    <HStack>
-                      <Text fontWeight={"bold"} fontSize="lg">
-                        Rp. {formatFrice(Number(detailActive.price))}
-                      </Text>
-
-                      {detailActive?.priceEnd && (
-                        <Text fontWeight={"bold"} fontSize="lg" mx="1">
-                          {" "}
-                          - Rp. {formatFrice(
-                            Number(detailActive.priceEnd)
-                          )}{" "}
-                        </Text>
-                      )}
-                    </HStack>
+                <Stack
+                  justifyContent="space-around"
+                  alignItems="flex-start"
+                  border={"1px"}
+                >
+                  <Stack spacing={0} w={"full"}>
+                    <Stack border={"1px"}>
+                      <Text color="gray.600">Details:</Text>
+                      {detailActive?.details?.map((detail, index) => (
+                        <HStack key={index} spacing={2} alignItems="center">
+                          <Text
+                            fontSize="sm"
+                            // maxW={"500px"}
+                            textTransform="capitalize"
+                            fontWeight="bold"
+                          >
+                            {detail.key}:
+                          </Text>
+                          <Spacer />
+                          {renderValue(detail)}
+                        </HStack>
+                      ))}
+                    </Stack>
+                    {/* <Text color="gray.600">Price</Text> */}
                   </Stack>
 
-                  <Spacer />
-                  <Stack h={"250px"} overflowY="scroll">
-                    <Text color="gray.600">Details:</Text>
-                    {detailActive?.details?.map((detail, index) => (
-                      <HStack key={index} spacing={2} alignItems="center">
-                        <Text
-                          fontSize="sm"
-                          maxW={"500px"}
-                          textTransform="capitalize"
-                          fontWeight="bold"
-                        >
-                          {detail.key}:
-                        </Text>
-                        <Spacer />
-                        {renderValue(detail)}
-                      </HStack>
-                    ))}
-                  </Stack>
+                  {/* <Spacer /> */}
                 </Stack>
               </Stack>
             </Stack>
           </ModalBody>
           <ModalFooter>
             <HStack gap={3}>
-              <HStack spacing={2}>
-                <Text color="gray.900" fontWeight={500} fontSize="md">
-                  {/* CP:{detailActive.contactPerson} */}
-                  Stock: {detailActive.stock}
+              <HStack>
+                <Text fontWeight={"bold"} fontSize="lg">
+                  Rp. {formatFrice(Number(detailActive.price))}
                 </Text>
+
+                {detailActive?.priceEnd && (
+                  <Text fontWeight={"bold"} fontSize="lg" mx="1">
+                    {" "}
+                    - Rp. {formatFrice(Number(detailActive.priceEnd))}{" "}
+                  </Text>
+                )}
               </HStack>
               <HStack>
                 <Button
+                  size={"sm"}
                   leftIcon={<CloseIcon boxSize={3} />}
                   colorScheme="red"
                   onClick={() => handleCloseDetail()}
@@ -536,6 +535,7 @@ const ProductPage = () => {
                   Cancel
                 </Button>
                 <Button
+                  size={"sm"}
                   colorScheme="green"
                   onClick={() =>
                     navigate(`/products/edit?id=${detailActive.id}`)
