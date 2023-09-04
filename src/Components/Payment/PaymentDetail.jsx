@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { addDocumentFirebase, deleteDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import { formatFrice } from '../../Utils/Helper';
 
-function PaymentTicketDetail({ dataLeads, dataTicket, dataForm }) {
+function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
     const [paymentVA, setPaymentVA] = useState("");
     const [orderId, setOrderId] = useState("")
@@ -519,4 +519,4 @@ function PaymentTicketDetail({ dataLeads, dataTicket, dataForm }) {
     )
 }
 
-export default PaymentTicketDetail
+export default PaymentDetail

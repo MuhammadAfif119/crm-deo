@@ -12,7 +12,6 @@ import {
   logoutIfExpired,
   logoutUserWithIp,
 } from "./Hooks/Middleware/sessionMiddleWare";
-import { removeSymbols } from "./Utils/Helper";
 import { Stack, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import store from "store";

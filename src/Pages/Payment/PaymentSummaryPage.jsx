@@ -37,6 +37,13 @@ function PaymentSummaryPage() {
                 const resCheck = await _axios.post('membershipPay', data)
                 if(resCheck.status === true){
                     window.open(resCheck.message.link, "_blank")
+                }else{
+                    toast({
+                        status: "error",
+                        description: resCheck.message,
+                        duration: 2000,
+                        isClosable: true
+                      });  
                 }
             } catch (error) {
                 console.log(error, 'ini error')
