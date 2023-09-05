@@ -13,6 +13,7 @@ import _axios from '../../Api/AxiosBarrier';
 import MembershipCard from '../../Components/Card/MembershipCard'
 import { formatFrice } from '../../Utils/Helper'
 import PaymentDetail from '../../Components/Payment/PaymentDetail'
+import ProductCard from '../../Components/Card/ProductCard'
 
 function PaymentPage() {
 
@@ -30,7 +31,7 @@ function PaymentPage() {
 
     const navigate = useNavigate()
 
-    console.log(param.type, 'xxx')
+
 
 
 
@@ -104,22 +105,23 @@ function PaymentPage() {
                 limitValue
             );
 
-            console.log(res, 'ini res')
-
-            if (res[0].membership_used) {
-                getDataMembership(res[0].membership_used)
-            }
             setDataForm(...res)
 
-            if (res[0]?.facebookPixelId) {
+            if ( param.type ==="membership" && res[0].membership_used?.length > 0 ) {
+                getDataMembership(res[0].membership_used)
+                console.log('masuk')
+            }
+
+            if (res?.facebookPixelId) {
                 getLeadsGTM(res[0]?.facebookPixelId)
             }
 
-            if(res[0].ticket_used){
-                getDataTicket(res[0].ticket_used)
+            if ( param.type ==="ticket" && res[0].ticket_used?.length > 0) {
+                getDataTicket(res[0].token)
             }
-            if(res[0].product_used){
-                getDataProduct(res[0].product_used)
+            if ( param.type ==="product" && res[0].product_used?.length > 0 ) {
+
+                getDataProduct(res[0].token)
             }
 
         } catch (error) {
@@ -128,11 +130,28 @@ function PaymentPage() {
 
     }
 
-    const getDataProduct = (formId) => {
-        console.log(formId, 'xxx')
-        setDataProduct()
-    }
+    const getDataProduct = async (formId) => {
+        const conditions = [
+            { field: "formId", operator: "==", value: decryptToken(formId) },
+        ];
+        const sortBy = { field: "createdAt", direction: "asc" };
+        const limitValue = 1;
 
+        try {
+            const res = await getCollectionFirebase(
+                "listings_product",
+                conditions
+                // sortBy,
+                // limitValue
+            );
+
+            console.log(res[0]);
+            setDataProduct(res[0]);
+        } catch (error) {
+            console.log(error, "ini error");
+        }
+        console.log(formId, "xxx");
+    };
 
     const getDataMembership = async (data) => {
         try {
@@ -185,17 +204,34 @@ function PaymentPage() {
                 <Stack >
                     {param.method !== "none" ? (
                         <SimpleGrid columns={[1, null, 2]} gap={3} >
+
+                            {dataProduct && (
+                                <Stack
+                                    bgColor={"white"}
+                                    p={[1, 1, 5]}
+                                    spacing={5}
+                                    borderRadius="md"
+                                    shadow={"md"}
+                                >
+                                    <Heading size={"md"}>Product Active</Heading>
+                                    <Stack onClick={() => console.log(dataProduct, "ini xx")}>
+                                        <ProductCard item={dataProduct} />
+                                    </Stack>
+                                </Stack>
+                            )}
+
+
                             {dataTicket && (
                                 <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
-                                    <Heading size={'md'}>Product Active</Heading>
-                                    <Stack onClick={() => console.log(dataTicket, 'ini xx')}>
+                                    <Heading size={'md'}>Ticket Active</Heading>
+                                    <Stack >
                                         <TicketCard item={dataTicket} />
                                     </Stack>
                                 </Stack>
                             )}
 
                             {membershipList.length > 0 && (
-                                <Stack  bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
+                                <Stack bgColor={'white'} p={[1, 1, 5]} spacing={5} borderRadius='md' shadow={'md'}>
                                     <SimpleGrid columns={[1, 2, 3]} gap={3}>
                                         {membershipList?.map((x, index) => {
                                             return (
@@ -209,8 +245,8 @@ function PaymentPage() {
                                                     key={index}
                                                     onClick={() => setPackageActive(x.package_code)}
                                                     cursor='pointer'
-                                                     borderColor={packageActive === x.package_code ? "#ffd600" : "black"}
-                                                     borderWidth={0.5}
+                                                    borderColor={packageActive === x.package_code ? "#ffd600" : "black"}
+                                                    borderWidth={0.5}
 
                                                 >
                                                     <Text textTransform={'capitalize'} fontWeight={500}>{x.package_name}</Text>
@@ -240,11 +276,11 @@ function PaymentPage() {
                                     <>
                                         <Stack>
                                             {param.method === "xendit" ? (
-                                                <PaymentDetail dataLeads={dataLeads} dataTicket={dataTicket} dataProduct={dataProduct} dataForm={dataForm} />
+                                                <PaymentDetail dataLeads={dataLeads} dataTicket={dataTicket} dataProduct={dataProduct} dataForm={dataForm}  />
 
                                             ) :
                                                 param.method === "xendit recurring" ? (
-                                                    <PaymentXenditRecurring dataLeads={dataLeads} dataTicket={dataTicket} dataForm={dataForm} packageActive={packageActive} membershipList={membershipList}/>
+                                                    <PaymentXenditRecurring dataLeads={dataLeads} dataTicket={dataTicket} dataForm={dataForm} packageActive={packageActive} membershipList={membershipList} />
                                                 ) : (
                                                     <Stack>
                                                         <Heading size={'md'}>We dont have any method payment</Heading>

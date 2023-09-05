@@ -2,11 +2,23 @@ import { Box, Button, Divider, Flex, Heading, HStack, Image, Input, Radio, Radio
 import axios from 'axios';
 import React, { useState } from 'react'
 import QRCode from 'react-qr-code';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { addDocumentFirebase, deleteDocumentFirebase, getSingleDocumentFirebase, updateDocumentFirebase } from '../../Api/firebaseApi';
 import { formatFrice } from '../../Utils/Helper';
 
 function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
+
+    const param = useParams()
+
+    let dataParam = ""
+
+    if(param.type === "product"){
+        dataParam = dataProduct
+    }
+
+    if(param.type === "ticket"){
+        dataParam = dataTicket
+    }
 
     const [paymentVA, setPaymentVA] = useState("");
     const [orderId, setOrderId] = useState("")
@@ -69,9 +81,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
             amount: fixPrice,
             bankCode: selectedPaymentMethod,
             name: updatedOrder.name,
-            companyId: dataTicket.companyId,
-            projectId: dataTicket.projectId,
-            outletId: dataTicket.projectId,
+            companyId: dataParam.companyId,
+            projectId: dataParam.projectId,
+            outletId: dataParam.projectId,
             module: "crm",
             userId: dataLeads.id,
             feeRule: true
@@ -150,14 +162,14 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
 
 
-        const fixPrice = dataTicket.price * quantity
+        const fixPrice = dataParam.price * quantity
 
         const dataOrder = [
             {
-                name: dataTicket.title,
-                price: dataTicket.price,
+                name: dataParam.title,
+                price: dataParam.price,
                 qty: quantity,
-                id: dataTicket.id,
+                id: dataParam.id,
             }
         ]
 
@@ -169,21 +181,21 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
             orderStatus: "onProcess",
             paymentMethod: "XENDIT_VA",
             module: "crm",
-            category: "ticket",
-            companyId: dataTicket.companyId,
-            projectId: dataTicket.projectId,
-            outletId: dataTicket.projectId,
+            category: param.type === "ticket" ?  "ticket" : "product",
+            companyId: dataParam.companyId,
+            projectId: dataParam.projectId,
+            outletId: dataParam.projectId,
             name: dataLeads.name || "",
             email: dataLeads.email || "",
             phoneNumber: dataLeads.phoneNumber || "",
-            amount: Number(dataTicket.price) * quantity,
+            amount: Number(dataParam.price) * quantity,
             quantity: quantity,
             userId: dataLeads.id || ""
         };
 
 
 
-        addDocumentFirebase("orders", updatedOrder, dataTicket.companyId).then((x) => {
+        addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then((x) => {
             setOrderSummary(updatedOrder);
             return handlePaymentTransfer(x, updatedOrder, fixPrice);
         });
@@ -208,7 +220,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
         updateDocumentFirebase("leads", dataLeads.id, {
             status: "won",
-            opportunity_value: Number(dataTicket.price) * quantity,
+            opportunity_value: Number(dataParam.price) * quantity,
             orderId: orderId,
         }).then((res) => {
             console.log('berhasil update')
@@ -296,7 +308,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
                             <HStack justifyContent="space-between" fontSize="sm" my={1}>
                                 <Text fontWeight="bold">Ticket:</Text>
                                 <Spacer />
-                                <Text textAlign="right" textTransform={'capitalize'}>{dataTicket.title}</Text>
+                                <Text textAlign="right" textTransform={'capitalize'}>{dataParam.title}</Text>
                             </HStack>
 
                             {orderSummary.paymentMethod && (
@@ -488,7 +500,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
                         <Stack>
                             <Text>Amount :</Text>
-                            <Text fontWeight={500} >Rp. {formatFrice(Number(dataTicket.price) * quantity)}</Text>
+                            <Text fontWeight={500} >Rp. {formatFrice(Number(dataParam?.price) * quantity)}</Text>
                         </Stack>
 
                         <Text mt="4">Pilih metode pembayaran :</Text>
