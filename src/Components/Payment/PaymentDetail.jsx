@@ -412,19 +412,51 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
     }
   };
 
-  console.log(dataProduct);
-
-  const sucessOrder = (res) => {
-    updateDocumentFirebase("leads", dataLeads.id, {
+  const sucessOrder = async (res) => {
+    const data = {
       status: "won",
-      opportunity_value: Number(dataTicket.price) * quantity,
+      opportunity_value: Number(dataProduct.price) * quantity,
       orderId: orderId,
-    })
-      .then((res) => {
-        console.log("berhasil update");
-        setThanksPage(true);
+      lastUpdated: new Date(),
+    };
+
+    console.log(data);
+
+    if (dataTicket) {
+      await updateDocumentFirebase("leads", dataLeads.id, {
+        status: "won",
+        opportunity_value: Number(dataTicket.price) * quantity,
+        orderId: orderId,
       })
-      .catch((err) => console.log(err, "ini err"));
+        .then((res) => {
+          console.log("berhasil update");
+          setThanksPage(true);
+        })
+        .catch((err) => console.log(err, "ini err"));
+    }
+
+    if (dataProduct) {
+      console.log(Number(dataProduct.price) * quantity);
+      await updateDocumentFirebase("leads", dataLeads.id, data)
+        .then((res) => {
+          console.log("berhasil update");
+          setThanksPage(true);
+        })
+        .catch((err) => console.log(err, "ini err"));
+    }
+
+    if (membershipList) {
+      await updateDocumentFirebase("leads", dataLeads.id, {
+        status: "won",
+        opportunity_value: Number(membershipList[0]?.package_amount) * quantity,
+        orderId: orderId,
+      })
+        .then((res) => {
+          console.log("berhasil update");
+          setThanksPage(true);
+        })
+        .catch((err) => console.log(err, "ini err"));
+    }
   };
 
   const handleInputPayment = async () => {
@@ -445,6 +477,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
           updated_bill: new Date(),
           orderStatus: "success",
         }).then((res) => {
+          console.log(res, "ini res");
           if (res) {
             sucessOrder(res);
           }
@@ -503,7 +536,13 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
                 <Text textAlign="right">{orderSummary.quantity}</Text>
               </HStack>
               <HStack justifyContent="space-between" fontSize="sm" my={1}>
-                <Text fontWeight="bold">Ticket:</Text>
+                {dataTicket ? (
+                  <Text fontWeight="bold">Ticket:</Text>
+                ) : dataProduct ? (
+                  <Text fontWeight="bold">Product:</Text>
+                ) : (
+                  <Text fontWeight="bold">Membership:</Text>
+                )}
                 <Spacer />
                 <Text textAlign="right" textTransform={"capitalize"}>
                   {dataTicket.title}
@@ -572,10 +611,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
       </Stack>
     );
   }
-
-  console.log(dataLeads, "ini leads");
-  console.log(dataTicket, "ini ticket");
-  console.log(dataProduct, "ini product");
 
   return (
     <Stack spacing={4}>
