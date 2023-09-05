@@ -1014,9 +1014,6 @@ function FormPageProduct() {
             "product_used",
             [idProject]
           );
-          console.log(result);
-
-          console.log(formId);
 
           const newArr = await arrayUnionFirebase(
             "forms",
@@ -1024,8 +1021,6 @@ function FormPageProduct() {
             "product_used",
             [idProject]
           );
-
-          console.log(newArr);
         } catch (error) {}
       }
 

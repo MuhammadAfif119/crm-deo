@@ -20,6 +20,11 @@ import {
   ModalBody,
   Spacer,
   useToast,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionIcon,
+  AccordionPanel,
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
@@ -417,7 +422,6 @@ const ProductPage = () => {
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
                           Stock: {product.stock}
                         </Text>
-
                         {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
                     <HStack key={index} spacing={2} alignItems="center">
@@ -436,7 +440,7 @@ const ProductPage = () => {
       })}
 
       <Modal
-        size={"lg"}
+        size={"xl"}
         isOpen={modalDetail}
         onClose={() => handleCloseDetail()}
         // isCentered
@@ -446,18 +450,18 @@ const ProductPage = () => {
           <ModalHeader>Detail</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Stack spacing={1} py={2}>
+            <Stack spacing={1} py={3}>
               <Image
                 borderRadius="md"
                 src={detailActive.image}
                 alt={detailActive.title}
               />
-              <Stack spacing={1} py={2}>
+              <Stack spacing={1} py={3}>
                 <Flex justify={"space-between"} gap="5">
                   <Text
                     textTransform="capitalize"
                     color="gray.800"
-                    fontSize="lg"
+                    fontSize={28}
                     fontWeight="bold"
                   >
                     {detailActive.title}
@@ -465,7 +469,7 @@ const ProductPage = () => {
                   {detailActive.logo ? (
                     <>
                       <Spacer />
-                      <Text color="gray.600">Logo:</Text>
+                      {/* <Text color="gray.600">Logo:</Text> */}
                       <Image
                         src={detailActive.logo}
                         alt={detailActive.title}
@@ -479,52 +483,78 @@ const ProductPage = () => {
                   )}
                 </Flex>
 
-                <Text color="gray.500">{detailActive.description}</Text>
-                <Stack
-                  justifyContent="space-around"
-                  alignItems="flex-start"
-                  border={"1px"}
-                >
-                  <Stack spacing={0} w={"full"}>
-                    <Stack border={"1px"}>
-                      <Text color="gray.600">Details:</Text>
-                      {detailActive?.details?.map((detail, index) => (
-                        <HStack key={index} spacing={2} alignItems="center">
-                          <Text
-                            fontSize="sm"
-                            // maxW={"500px"}
-                            textTransform="capitalize"
-                            fontWeight="bold"
-                          >
-                            {detail.key}:
-                          </Text>
-                          <Spacer />
-                          {renderValue(detail)}
-                        </HStack>
-                      ))}
-                    </Stack>
-                    {/* <Text color="gray.600">Price</Text> */}
-                  </Stack>
+                <HStack spacing={2}>
+                  <Text color="gray.900" fontWeight={500} fontSize="md">
+                    {/* CP:{detailActive.contactPerson} */}
+                    Stock: {detailActive.stock}
+                  </Text>
+                </HStack>
 
+                <Text py={3} color="gray.500">
+                  {detailActive.description}
+                </Text>
+
+                <Stack justifyContent="space-around" alignItems="flex-start">
                   {/* <Spacer /> */}
+                  <Stack
+                  // h={"250px"} overflowY="scroll"
+                  >
+                    {/* <Text color="gray.600">Details:</Text> */}
+
+                    <Accordion allowToggle w={"500px"}>
+                      <AccordionItem>
+                        <AccordionButton>
+                          <Box as="span" flex="1" textAlign="left">
+                            Detail Product
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+
+                        <AccordionPanel pb={4}>
+                          {detailActive?.details?.map((detail, index) => (
+                            <HStack key={index} spacing={2} alignItems="center">
+                              <Text
+                                fontSize="sm"
+                                // maxW={"500px"}
+                                textTransform="capitalize"
+                                fontWeight="bold"
+                              >
+                                {detail.key}:
+                              </Text>
+                              {/* <Spacer /> */}
+                              {renderValue(detail)}
+                            </HStack>
+                          ))}
+                        </AccordionPanel>
+                      </AccordionItem>
+                    </Accordion>
+                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
           </ModalBody>
           <ModalFooter>
             <HStack gap={3}>
-              <HStack>
-                <Text fontWeight={"bold"} fontSize="lg">
-                  Rp. {formatFrice(Number(detailActive.price))}
-                </Text>
-
-                {detailActive?.priceEnd && (
-                  <Text fontWeight={"bold"} fontSize="lg" mx="1">
-                    {" "}
-                    - Rp. {formatFrice(Number(detailActive.priceEnd))}{" "}
+              <Stack
+                spacing={0}
+                // alignItems="flex-end"
+                w={"full"}
+              >
+                {/* <Text color="gray.600">Price</Text> */}
+                <HStack>
+                  <Text fontWeight={"bold"} fontSize={20}>
+                    Rp. {formatFrice(Number(detailActive.price))}
                   </Text>
-                )}
-              </HStack>
+
+                  {detailActive?.priceEnd && (
+                    <Text fontWeight={"bold"} fontSize={20} mx="1">
+                      {" "}
+                      - Rp. {formatFrice(Number(detailActive.priceEnd))}{" "}
+                    </Text>
+                  )}
+                </HStack>
+              </Stack>
+              <Spacer />
               <HStack>
                 <Button
                   size={"sm"}
