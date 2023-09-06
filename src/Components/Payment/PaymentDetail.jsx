@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import React, { useState } from "react";
 import QRCode from "react-qr-code";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   addDocumentFirebase,
   deleteDocumentFirebase,
@@ -27,7 +27,19 @@ import {
 } from "../../Api/firebaseApi";
 import { formatFrice } from "../../Utils/Helper";
 
-function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
+function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
+  const param = useParams();
+
+  let dataParam = "";
+
+  if (param.type === "product") {
+    dataParam = dataProduct;
+  }
+
+  if (param.type === "ticket") {
+    dataParam = dataTicket;
+  }
+
   const [paymentVA, setPaymentVA] = useState("");
   const [orderId, setOrderId] = useState("");
 
@@ -37,13 +49,11 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
 
   const [orderSummary, setOrderSummary] = useState("");
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState("");
 
   const [loadingPay, setLoadingPay] = useState(false);
 
   const [thanksPage, setThanksPage] = useState(false);
-
-  console.log(membershipList, "ini membership");
 
   const handleQuantityChange = (e) => {
     const newQuantity = e.target.value;
@@ -77,48 +87,18 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
     setOrderId(id);
     setLoadingPay(true);
 
-    console.log(id);
-
     const baseUrl =
       "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/";
 
-    const ticketData = {
+    const data = {
       xenditId: "6479f64913999eb3b3fe7283",
       orderId: id,
       amount: fixPrice,
       bankCode: selectedPaymentMethod,
       name: updatedOrder.name,
-      companyId: dataTicket.companyId,
-      projectId: dataTicket.projectId,
-      outletId: dataTicket.projectId,
-      module: "crm",
-      userId: dataLeads.id,
-      feeRule: true,
-    };
-
-    const membershipData = {
-      xenditId: "6479f64913999eb3b3fe7283",
-      orderId: id,
-      amount: fixPrice,
-      bankCode: selectedPaymentMethod,
-      name: updatedOrder.name,
-      companyId: dataLeads.companyId,
-      projectId: dataLeads.projectId,
-      outletId: dataLeads.projectId,
-      module: "crm",
-      userId: dataLeads.id,
-      feeRule: true,
-    };
-
-    const productData = {
-      xenditId: "6479f64913999eb3b3fe7283",
-      orderId: id,
-      amount: fixPrice,
-      bankCode: selectedPaymentMethod,
-      name: updatedOrder.name,
-      companyId: dataProduct.companyId,
-      projectId: dataProduct.projectId,
-      outletId: dataProduct.projectId,
+      companyId: dataParam.companyId,
+      projectId: dataParam.projectId,
+      outletId: dataParam.projectId,
       module: "crm",
       userId: dataLeads.id,
       feeRule: true,
@@ -131,119 +111,38 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
       },
     };
 
-    if (dataTicket) {
-      try {
-        const res = await axios.post(
-          `${baseUrl}/paymentCreateVA`,
-          ticketData,
-          options
-        );
-        if (res.data.status === true) {
-          setPaymentVA(res.data.data);
-          setLoadingPay(false);
-        } else {
-          console.log(res.data.data);
-
-          toast({
-            title: "Warning!",
-            description:
-              "Terjadi Kesalah Generate VA, Silahkan menghubungi Admin.",
-            status: "warning",
-            duration: 9000,
-            isClosable: true,
-          });
-
-          setLoadingPay(false);
-        }
-      } catch (error) {
-        console.log(error, "ini error");
+    try {
+      const res = await axios.post(`${baseUrl}/paymentCreateVA`, data, options);
+      if (res.data.status === true) {
+        setPaymentVA(res.data.data);
+        setLoadingPay(false);
+      } else {
+        console.log(res.data.data);
 
         toast({
-          title: "Error!",
-          description: "Terjadi Kesalah, Silahkan menghubungi Admin.",
-          status: error,
+          title: "Warning!",
+          description:
+            "Terjadi Kesalah Generate VA, Silahkan menghubungi Admin.",
+          status: "warning",
           duration: 9000,
           isClosable: true,
         });
 
         setLoadingPay(false);
       }
-    } else if (dataProduct) {
-      try {
-        const res = await axios.post(
-          `${baseUrl}/paymentCreateVA`,
-          productData,
-          options
-        );
-        if (res.data.status === true) {
-          setPaymentVA(res.data.data);
-          setLoadingPay(false);
-        } else {
-          console.log(res.data.data);
+    } catch (error) {
+      console.log(error, "ini error");
 
-          toast({
-            title: "Warning!",
-            description:
-              "Terjadi Kesalah Generate VA, Silahkan menghubungi Admin.",
-            status: "warning",
-            duration: 9000,
-            isClosable: true,
-          });
+      toast({
+        title: "Error!",
+        description: "Terjadi Kesalah, Silahkan menghubungi Admin.",
+        status: error,
+        duration: 9000,
+        isClosable: true,
+      });
 
-          setLoadingPay(false);
-        }
-      } catch (error) {
-        console.log(error, "ini error");
-
-        toast({
-          title: "Error!",
-          description: "Terjadi Kesalah, Silahkan menghubungi Admin.",
-          status: error,
-          duration: 9000,
-          isClosable: true,
-        });
-
-        setLoadingPay(false);
-      }
-    } else {
-      try {
-        const res = await axios.post(
-          `${baseUrl}/paymentCreateVA`,
-          membershipData,
-          options
-        );
-        if (res.data.status === true) {
-          setPaymentVA(res.data.data);
-          setLoadingPay(false);
-        } else {
-          console.log(res.data.data);
-
-          toast({
-            title: "Warning!",
-            description:
-              "Terjadi Kesalah Generate VA, Silahkan menghubungi Admin.",
-            status: "warning",
-            duration: 9000,
-            isClosable: true,
-          });
-
-          setLoadingPay(false);
-        }
-      } catch (error) {
-        console.log(error, "ini error");
-
-        toast({
-          title: "Error!",
-          description: "Terjadi Kesalah, Silahkan menghubungi Admin.",
-          status: error,
-          duration: 9000,
-          isClosable: true,
-        });
-
-        setLoadingPay(false);
-      }
+      setLoadingPay(false);
     }
-
     setLoadingPay(false);
   };
 
@@ -269,135 +168,41 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
 
-    console.log("xxxx");
-    console.log(dataLeads);
+    const fixPrice = dataParam.price * quantity;
 
-    const fixPriceTicket = dataTicket?.price * quantity;
-    const fixPriceProduct = dataProduct?.price * quantity;
-    const fixPriceMembership = membershipList[0]?.package_amount * quantity;
-
-    console.log(fixPriceProduct);
-    console.log(fixPriceTicket);
-
-    const dataOrderTicket = [
+    const dataOrder = [
       {
-        name: dataTicket.title,
-        price: dataTicket.price,
+        name: dataParam.title,
+        price: dataParam.price,
         qty: quantity,
-        id: dataTicket.id,
+        id: dataParam.id,
       },
     ];
 
-    const dataOrderProduct = [
-      {
-        name: dataProduct.title,
-        price: dataProduct.price,
-        qty: quantity,
-        id: dataProduct.id,
-      },
-    ];
-
-    const dataOrderMembership = [
-      {
-        name: membershipList[0]?.package_name,
-        price: membershipList[0]?.package_amount,
-        qty: quantity,
-        id: membershipList[0]?._id,
-      },
-    ];
-
-    const updatedOrderTicket = {
-      orders: dataOrderTicket,
+    const updatedOrder = {
+      orders: dataOrder,
       paymentStatus: "open",
       orderStatus: "onProcess",
       paymentMethod: "XENDIT_VA",
       module: "crm",
-      category: "product",
-      companyId: dataTicket.companyId,
-      projectId: dataTicket.projectId,
-      outletId: dataTicket.projectId,
+      category: param.type === "ticket" ? "ticket" : "product",
+      companyId: dataParam.companyId,
+      projectId: dataParam.projectId,
+      outletId: dataParam.projectId,
       name: dataLeads.name || "",
       email: dataLeads.email || "",
       phoneNumber: dataLeads.phoneNumber || "",
-      amount: Number(dataTicket.price) * quantity,
+      amount: Number(dataParam.price) * quantity,
       quantity: quantity,
       userId: dataLeads.id || "",
     };
 
-    const updatedOrderProduct = {
-      orders: dataOrderProduct,
-      paymentStatus: "open",
-      orderStatus: "onProcess",
-      paymentMethod: "XENDIT_VA",
-      module: "crm",
-      category: "product",
-      companyId: dataProduct.companyId,
-      projectId: dataProduct.projectId,
-      outletId: dataProduct.projectId,
-      name: dataLeads.name || "",
-      email: dataLeads.email || "",
-      phoneNumber: dataLeads.phoneNumber || "",
-      amount: Number(dataProduct.price) * quantity,
-      quantity: quantity,
-      userId: dataLeads.id || "",
-    };
-
-    const updatedOrderMembership = {
-      orders: dataOrderMembership,
-      paymentStatus: "open",
-      orderStatus: "onProcess",
-      paymentMethod: "XENDIT_VA",
-      module: "crm",
-      category: "product",
-      companyId: dataLeads.companyId,
-      projectId: dataLeads.projectId,
-      outletId: dataLeads.projectId,
-      name: dataLeads.name || "",
-      email: dataLeads.email || "",
-      phoneNumber: dataLeads.phoneNumber || "",
-      amount: Number(membershipList[0]?.package_amount) * quantity,
-      quantity: quantity,
-      userId: dataLeads.id || "",
-    };
-
-    console.log(dataLeads.companyId);
-    console.log(dataLeads.projectId);
-
-    console.log(updatedOrderProduct);
-    console.log(updatedOrderMembership);
-
-    if (dataTicket) {
-      addDocumentFirebase(
-        "orders",
-        updatedOrderTicket,
-        dataTicket?.companyId
-      ).then((x) => {
-        setOrderSummary(updatedOrderTicket);
-        return handlePaymentTransfer(x, updatedOrderTicket, fixPriceTicket);
-      });
-    } else if (dataProduct) {
-      addDocumentFirebase(
-        "orders",
-        updatedOrderProduct,
-        dataProduct?.companyId
-      ).then((x) => {
-        setOrderSummary(updatedOrderProduct);
-        return handlePaymentTransfer(x, updatedOrderProduct, fixPriceProduct);
-      });
-    } else {
-      addDocumentFirebase(
-        "orders",
-        updatedOrderMembership,
-        dataLeads?.companyId
-      ).then((x) => {
-        setOrderSummary(updatedOrderMembership);
-        return handlePaymentTransfer(
-          x,
-          updatedOrderMembership,
-          fixPriceMembership
-        );
-      });
-    }
+    addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then(
+      (x) => {
+        setOrderSummary(updatedOrder);
+        return handlePaymentTransfer(x, updatedOrder, fixPrice);
+      }
+    );
   };
 
   const handleCancelPayment = async () => {
@@ -412,51 +217,17 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
     }
   };
 
-  const sucessOrder = async (res) => {
-    const data = {
+  const sucessOrder = (res) => {
+    updateDocumentFirebase("leads", dataLeads.id, {
       status: "won",
-      opportunity_value: Number(dataProduct.price) * quantity,
+      opportunity_value: Number(dataParam.price) * quantity,
       orderId: orderId,
-      lastUpdated: new Date(),
-    };
-
-    console.log(data);
-
-    if (dataTicket) {
-      await updateDocumentFirebase("leads", dataLeads.id, {
-        status: "won",
-        opportunity_value: Number(dataTicket.price) * quantity,
-        orderId: orderId,
+    })
+      .then((res) => {
+        console.log("berhasil update");
+        setThanksPage(true);
       })
-        .then((res) => {
-          console.log("berhasil update");
-          setThanksPage(true);
-        })
-        .catch((err) => console.log(err, "ini err"));
-    }
-
-    if (dataProduct) {
-      console.log(Number(dataProduct.price) * quantity);
-      await updateDocumentFirebase("leads", dataLeads.id, data)
-        .then((res) => {
-          console.log("berhasil update");
-          setThanksPage(true);
-        })
-        .catch((err) => console.log(err, "ini err"));
-    }
-
-    if (membershipList) {
-      await updateDocumentFirebase("leads", dataLeads.id, {
-        status: "won",
-        opportunity_value: Number(membershipList[0]?.package_amount) * quantity,
-        orderId: orderId,
-      })
-        .then((res) => {
-          console.log("berhasil update");
-          setThanksPage(true);
-        })
-        .catch((err) => console.log(err, "ini err"));
-    }
+      .catch((err) => console.log(err, "ini err"));
   };
 
   const handleInputPayment = async () => {
@@ -477,7 +248,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
           updated_bill: new Date(),
           orderStatus: "success",
         }).then((res) => {
-          console.log(res, "ini res");
           if (res) {
             sucessOrder(res);
           }
@@ -536,16 +306,10 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
                 <Text textAlign="right">{orderSummary.quantity}</Text>
               </HStack>
               <HStack justifyContent="space-between" fontSize="sm" my={1}>
-                {dataTicket ? (
-                  <Text fontWeight="bold">Ticket:</Text>
-                ) : dataProduct ? (
-                  <Text fontWeight="bold">Product:</Text>
-                ) : (
-                  <Text fontWeight="bold">Membership:</Text>
-                )}
+                <Text fontWeight="bold">Ticket:</Text>
                 <Spacer />
                 <Text textAlign="right" textTransform={"capitalize"}>
-                  {dataTicket.title}
+                  {dataParam.title}
                 </Text>
               </HStack>
 
@@ -754,22 +518,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct, membershipList }) {
 
             <Stack>
               <Text>Amount :</Text>
-              {dataTicket ? (
-                <Text fontWeight={500}>
-                  Rp. {formatFrice(Number(dataTicket.price) * quantity)}
-                </Text>
-              ) : dataProduct ? (
-                <Text fontWeight={500}>
-                  Rp. {formatFrice(Number(dataProduct.price) * quantity)}
-                </Text>
-              ) : (
-                <Text fontWeight={500}>
-                  Rp.{" "}
-                  {formatFrice(
-                    Number(membershipList[0]?.package_amount) * quantity
-                  )}
-                </Text>
-              )}
+              <Text fontWeight={500}>
+                Rp. {formatFrice(Number(dataParam?.price) * quantity)}
+              </Text>
             </Stack>
 
             <Text mt="4">Pilih metode pembayaran :</Text>

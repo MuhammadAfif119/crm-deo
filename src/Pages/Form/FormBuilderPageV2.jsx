@@ -23,6 +23,7 @@ import {
   ModalFooter,
   Spacer,
   Checkbox,
+  Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -246,6 +247,8 @@ function FormBuilderPage() {
   const [enableFacebookPixel, setEnableFacebookPixel] = useState(false);
   const [facebookPixelId, setFacebookPixelId] = useState("");
   const [isActive, setIsActive] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const [apiSubmitUrl, setApiSubmitUrl] = useState(
     "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead"
@@ -418,6 +421,9 @@ function FormBuilderPage() {
       });
     }
   };
+
+  const getScrollPosition = window.scrollY;
+  console.log(getScrollPosition);
 
   const handleEmbedCode = () => {
     setModalEmbedCode(true);
@@ -670,7 +676,13 @@ function FormBuilderPage() {
   };
 
   const renderProductOptions = () => {
-    const paymentOptions = ["ticket", "membership", "listing", "product", "none"]; // Ganti dengan opsi pembayaran yang sesuai
+    const paymentOptions = [
+      "ticket",
+      "membership",
+      "listing",
+      "product",
+      "none",
+    ]; // Ganti dengan opsi pembayaran yang sesuai
     return (
       <Stack spacing={2}>
         <HStack spacing={5}>
@@ -686,7 +698,8 @@ function FormBuilderPage() {
             </Checkbox>
           ))}
         </HStack>
-        <Stack>
+
+        {/* <Stack>
           {selectedProductMethod === "membership" && (
             <Stack spacing={5}>
               <Stack>
@@ -710,7 +723,7 @@ function FormBuilderPage() {
               </Stack>
             </Stack>
           )}
-        </Stack>
+        </Stack> */}
       </Stack>
     );
   };
@@ -752,8 +765,15 @@ function FormBuilderPage() {
       </HStack>
 
       <Divider />
-      <Grid templateColumns={{ base: "1fr", md: "1.3fr 1fr" }} gap={4} py={5}>
-        <Stack>
+
+      <Flex
+        pos={"relative"}
+        flexDir={"row"}
+        // templateColumns={{ base: "1fr", md: "1.3fr 1fr" }}
+        gap={4}
+        py={5}
+      >
+        <Stack w={"60%"}>
           <Stack
             minH={"500px"}
             bgColor={"white"}
@@ -826,58 +846,84 @@ function FormBuilderPage() {
               </Button>
             </HStack>
           </Stack>
-        </Stack>
-        <Stack>
 
-        {productActive && (
-            <Stack
-              bgColor={"white"}
-              p={[1, 1, 5]}
-              spacing={5}
-              borderRadius="md"
-              shadow={"md"}
-            >
-              <Heading size={"md"}>Product Active</Heading>
-              <Stack onClick={() => console.log(ticketActive, "ini xx")}>
-                <ProductCard item={productActive} />
+          <Stack>
+            {productActive && (
+              <Stack
+                bgColor={"white"}
+                p={[1, 1, 5]}
+                spacing={5}
+                borderRadius="md"
+                shadow={"md"}
+              >
+                <Heading size={"md"}>Product Active</Heading>
+                <Stack onClick={() => console.log(ticketActive, "ini xx")}>
+                  <ProductCard item={productActive} />
+                </Stack>
+              </Stack>
+            )}
+            {ticketActive && (
+              <Stack
+                bgColor={"white"}
+                p={[1, 1, 5]}
+                spacing={5}
+                borderRadius="md"
+                shadow={"md"}
+              >
+                <Heading size={"md"}>Ticket Active</Heading>
+                <Stack onClick={() => console.log(ticketActive, "ini xx")}>
+                  <TicketCard item={ticketActive} />
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+
+          {selectedProductMethod === "membership" && (
+            <Stack p={[1, 1, 5]} bg={"white"} borderRadius={"md"} shadow={"md"}>
+              <Stack spacing={5}>
+                <Stack>
+                  <Heading size={"md"}>Membership</Heading>
+                </Stack>
+                <Stack>
+                  {membershipList.length > 0 && (
+                    <SimpleGrid columns={[1, 2, 3]} gap={3}>
+                      {membershipList?.map((x, index) => {
+                        return (
+                          <MembershipCard
+                            key={index}
+                            membership={x}
+                            selectedMemberships={selectedMemberships}
+                            handleMembershipSelect={handleMembershipSelect}
+                          />
+                        );
+                      })}
+                    </SimpleGrid>
+                  )}
+                </Stack>
               </Stack>
             </Stack>
           )}
-          {ticketActive && (
-            <Stack
-              bgColor={"white"}
-              p={[1, 1, 5]}
-              spacing={5}
-              borderRadius="md"
-              shadow={"md"}
-            >
-              <Heading size={"md"}>Product Active</Heading>
-              <Stack onClick={() => console.log(ticketActive, "ini xx")}>
-                <TicketCard item={ticketActive} />
-              </Stack>
-            </Stack>
-          )}
-          <Stack
-            p={[1, 1, 5]}
-            bgColor={"white"}
-            minH={"530px"}
-            spacing={5}
-            borderRadius="md"
-            shadow={"md"}
-          >
-            <Stack>
-              <Heading size={"md"}>Data penerima: </Heading>
-            </Stack>
-            <Stack spacing={3} p={[1, 1, 5]}>
-              {renderFormFields(opportunityValue)}
-            </Stack>
+        </Stack>
+
+        <Stack
+          pos={"absolute"}
+          right={-5}
+          w={"40%"}
+          p={[1, 1, 5]}
+          bgColor={"white"}
+          minH={"530px"}
+          spacing={5}
+          borderRadius="md"
+          shadow={"md"}
+        >
+          <Stack>
+            <Heading size={"md"}>Data penerima: </Heading>
+          </Stack>
+          <Stack spacing={3} p={[1, 1, 5]}>
+            {renderFormFields(opportunityValue)}
           </Stack>
         </Stack>
-
-        <Stack>
-        
-        </Stack>
-      </Grid>
+      </Flex>
 
       <Modal isOpen={modalEmbedCode} onClose={() => setModalEmbedCode(false)}>
         <ModalOverlay />

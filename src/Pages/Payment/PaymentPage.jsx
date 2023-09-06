@@ -50,8 +50,6 @@ function PaymentPage() {
 
   const navigate = useNavigate();
 
-  console.log(param.type, "xxx");
-
   const getDataLeads = async () => {
     const conditions = [
       { field: "projectId", operator: "==", value: param.id },
@@ -69,8 +67,6 @@ function PaymentPage() {
         limitValue
       );
 
-      console.log(res);
-
       setDataLeads(...res);
       getDataForm(res[0].formId);
 
@@ -83,7 +79,6 @@ function PaymentPage() {
   };
 
   const getDataTicket = async (formId) => {
-    console.log(formId, "ini formid");
     const conditions = [
       { field: "formId", operator: "==", value: decryptToken(formId) },
     ];
@@ -97,7 +92,6 @@ function PaymentPage() {
         sortBy,
         limitValue
       );
-      console.log(res);
       setDataTicket(...res);
     } catch (error) {
       console.log(error, "ini error");
@@ -117,21 +111,21 @@ function PaymentPage() {
         limitValue
       );
 
-      console.log(res, "ini res");
-
-      if (res[0].membership_used) {
-        getDataMembership(res[0].membership_used);
-      }
       setDataForm(...res);
 
-      if (res[0]?.facebookPixelId) {
+      if (param.type === "membership" && res[0].membership_used?.length > 0) {
+        getDataMembership(res[0].membership_used);
+        console.log("masuk");
+      }
+
+      if (res?.facebookPixelId) {
         getLeadsGTM(res[0]?.facebookPixelId);
       }
 
-      if (res[0].ticket_used) {
+      if (param.type === "ticket" && res[0].ticket_used?.length > 0) {
         getDataTicket(res[0].token);
       }
-      if (res[0].product_used) {
+      if (param.type === "product" && res[0].product_used?.length > 0) {
         getDataProduct(res[0].token);
       }
     } catch (error) {
@@ -162,8 +156,6 @@ function PaymentPage() {
     console.log(formId, "xxx");
   };
 
-  console.log(dataProduct);
-
   const getDataMembership = async (data) => {
     try {
       const res = await _axios.get("membershipList");
@@ -172,8 +164,6 @@ function PaymentPage() {
       const filteredMemberships = dataArr.filter((membership) =>
         data.includes(membership.package_code)
       );
-
-      console.log(filteredMemberships, "ini membership");
       setMembershipList(filteredMemberships);
       setPackageActive(filteredMemberships[0].package_code);
     } catch (error) {
@@ -209,21 +199,6 @@ function PaymentPage() {
         <Stack>
           {param.method !== "none" ? (
             <SimpleGrid columns={[1, null, 2]} gap={3}>
-              {dataTicket && (
-                <Stack
-                  bgColor={"white"}
-                  p={[1, 1, 5]}
-                  spacing={5}
-                  borderRadius="md"
-                  shadow={"md"}
-                >
-                  <Heading size={"md"}>Product Active</Heading>
-                  <Stack onClick={() => console.log(dataTicket, "ini xx")}>
-                    <TicketCard item={dataTicket} />
-                  </Stack>
-                </Stack>
-              )}
-
               {dataProduct && (
                 <Stack
                   bgColor={"white"}
@@ -235,6 +210,21 @@ function PaymentPage() {
                   <Heading size={"md"}>Product Active</Heading>
                   <Stack onClick={() => console.log(dataProduct, "ini xx")}>
                     <ProductCard item={dataProduct} />
+                  </Stack>
+                </Stack>
+              )}
+
+              {dataTicket && (
+                <Stack
+                  bgColor={"white"}
+                  p={[1, 1, 5]}
+                  spacing={5}
+                  borderRadius="md"
+                  shadow={"md"}
+                >
+                  <Heading size={"md"}>Ticket Active</Heading>
+                  <Stack>
+                    <TicketCard item={dataTicket} />
                   </Stack>
                 </Stack>
               )}
@@ -313,12 +303,10 @@ function PaymentPage() {
                           dataTicket={dataTicket}
                           dataProduct={dataProduct}
                           dataForm={dataForm}
-                          membershipList={membershipList}
                         />
                       ) : param.method === "xendit recurring" ? (
                         <PaymentXenditRecurring
                           dataLeads={dataLeads}
-                          dataProduct={dataProduct}
                           dataTicket={dataTicket}
                           dataForm={dataForm}
                           packageActive={packageActive}

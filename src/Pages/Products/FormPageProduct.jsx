@@ -951,10 +951,6 @@ function FormPageProduct() {
     }
   };
 
-  console.log(idProject);
-  console.log(formId);
-  console.log(lastFormId);
-
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
