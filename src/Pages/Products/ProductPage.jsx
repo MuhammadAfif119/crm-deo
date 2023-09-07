@@ -104,10 +104,12 @@ const ProductPage = () => {
   };
 
   const handleCategory = async (value) => {
+    console.log(value);
+    console.log(categoryModule);
     if (categoryModule) {
       try {
         const result = await getSingleDocumentFirebase(
-          `categories/${projectId}/${value}`,
+          `categories/${projectId}/product`,
           "data"
         );
         setCategoryList(result);
@@ -302,7 +304,7 @@ const ProductPage = () => {
                 fontWeight={selectedCategory === x ? 500 : "normal"}
                 color={selectedCategory === x ? "blue.500" : "gray.600"}
               >
-                {x}
+                {x === "product" ? x : "product"}
               </Text>
             ))}
           </HStack>

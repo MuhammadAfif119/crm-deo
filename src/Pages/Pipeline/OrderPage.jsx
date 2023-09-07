@@ -18,6 +18,12 @@ import {
   Heading,
   Spacer,
   Button,
+  Modal,
+  useDisclosure,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { getCollectionFirebase } from "../../Api/firebaseApi";
@@ -29,6 +35,9 @@ const OrderPage = () => {
   const [dataOrders, setDataOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [detailOrder, setDetailOrder] = useState({});
+
+  const orderDetail = useDisclosure();
 
   const globalState = useUserStore();
 
@@ -57,6 +66,12 @@ const OrderPage = () => {
     } catch (error) {
       console.log(error, "ini error");
     }
+  };
+
+  const handleOpenModal = (detail) => {
+    orderDetail.onOpen();
+    setDetailOrder(detail);
+    console.log(detail);
   };
 
   const handleLoadMore = () => {
@@ -115,15 +130,25 @@ const OrderPage = () => {
                         {moment(order?.createdAt.seconds * 1000).format("LLL")}
                       </Td>
                       <Td textTransform={"capitalize"}>
-                        <Badge
-                          colorScheme={
-                            order.orderStatus === "onProcess"
-                              ? "yellow"
-                              : "green"
-                          }
-                        >
-                          {order.orderStatus}
-                        </Badge>
+                        <HStack>
+                          <Badge
+                            colorScheme={
+                              order.orderStatus === "onProcess"
+                                ? "yellow"
+                                : "green"
+                            }
+                          >
+                            {order.orderStatus}
+                          </Badge>
+                          <Spacer />
+                          <Button
+                            colorScheme="blue"
+                            size={"sm"}
+                            onClick={() => handleOpenModal(order)}
+                          >
+                            Detail
+                          </Button>
+                        </HStack>
                       </Td>
                     </Tr>
                   ))}
@@ -142,6 +167,20 @@ const OrderPage = () => {
           )}
         </Stack>
       </Stack>
+
+      <Modal isOpen={orderDetail.isOpen} onClose={orderDetail.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Detail Order</ModalHeader>
+          <ModalBody>
+            {/* <Heading size={"md"}>{detailOrder?.orders[0]?.name}</Heading> */}
+            <Text>User Profile</Text>
+            <Text size={"md"} textTransform={"capitalize"}>
+              Name: {detailOrder.name}
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

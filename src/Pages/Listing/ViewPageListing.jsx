@@ -22,7 +22,15 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import {
   deleteDocumentFirebase,
@@ -46,6 +54,9 @@ const ViewPageListing = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const [detailActive, setDetailActive] = useState("");
 
   const [modalDetail, setModalDetail] = useState("");
@@ -61,7 +72,9 @@ const ViewPageListing = () => {
     try {
       const q = query(
         collection(db, "listings"),
-        where("projectId", "==", projectId)
+        where("projectId", "==", projectId),
+        orderBy("createdAt", "asc"),
+        limit(pageSize * page)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -96,11 +109,15 @@ const ViewPageListing = () => {
     }
   };
 
+  const handleLoadMore = () => {
+    setPage(page + 1); // Increment the page number to fetch the next page of data
+  };
+
   const handleCategory = async (value) => {
     if (categoryModule) {
       try {
         const result = await getSingleDocumentFirebase(
-          `categories/${projectId}/${value}`,
+          `categories/${projectId}/listing`,
           "data"
         );
         setCategoryList(result);
@@ -177,7 +194,7 @@ const ViewPageListing = () => {
       setSelectedCategory(null);
       setSelectedCategoryNiche(null);
     };
-  }, [globalState.currentProject]);
+  }, [globalState.currentProject, page]);
 
   const handleDelete = async (listing) => {
     const collectionName = "listings";
@@ -272,7 +289,7 @@ const ViewPageListing = () => {
                 fontWeight={selectedCategory === x ? 500 : "normal"}
                 color={selectedCategory === x ? "blue.500" : "gray.600"}
               >
-                {x}
+                {x === "listing" ? x : "listing"}
               </Text>
             ))}
           </HStack>
@@ -329,7 +346,6 @@ const ViewPageListing = () => {
               </Box>
               <SimpleGrid columns={[1, 2, 3]} gap={5}>
                 {categoryListing?.map((listing, index) => {
-                  console.log(listing);
                   return (
                     <Stack
                       mb={2}
@@ -415,6 +431,19 @@ const ViewPageListing = () => {
           )
         );
       })}
+
+      <Box align={"center"}>
+        <Button
+          onClick={() => handleLoadMore()}
+          variant="outline"
+          colorScheme="blue"
+          size="md"
+          alignSelf="center"
+          mt={4}
+        >
+          Load More
+        </Button>
+      </Box>
 
       <Modal
         size={"2xl"}
