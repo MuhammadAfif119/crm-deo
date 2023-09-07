@@ -9,7 +9,8 @@ import OutletPage from "../Pages/Configurations/OutletPage";
 import OutletNewPage from "../Pages/Configurations/OutletNewPage";
 import UserPage from "../Pages/Configurations/UserPage";
 import OauthPage from "../Pages/Configurations/OauthPage";
-import IndexDataPage from "../Pages/Configurations/DataPage"
+import IndexDataPage from "../Pages/Configurations/DataPage";
+import BackupPage from "../Pages/Configurations/BackupPage";
 
 const PipelineRouter = [
   {
@@ -51,6 +52,10 @@ const PipelineRouter = [
   {
     path: "/configuration/user",
     element: <UserPage />,
+  },
+  {
+    path: "/configuration/backup",
+    element: <BackupPage />,
   },
   {
     path: "/configuration/integration/oauth/:projectId/:sourceType",

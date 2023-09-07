@@ -24,6 +24,7 @@ import React, { useEffect, useState } from "react";
 import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import {
+  arrayRemoveFirebase,
   deleteDocumentFirebase,
   deleteFileFirebase,
   getCollectionWhereFirebase,
@@ -85,6 +86,9 @@ const TicketPage = () => {
   const handleDelete = async (x) => {
     try {
       console.log(x);
+
+      await arrayRemoveFirebase("forms", x.formId, "ticket_used", [x.id]);
+
       deleteFileFirebase(`${x.title}_800x800`, `tickets`).then(() => {
         deleteFileFirebase(`${x.title}-logo_800x800`, `tickets`).then(() => {
           deleteDocumentFirebase("tickets", x?.id).then((res) => {

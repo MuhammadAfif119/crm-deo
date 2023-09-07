@@ -35,6 +35,7 @@ import { formatFrice } from "../../Utils/numberUtil";
 import { CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { FcPhone } from "react-icons/fc";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { FiEye } from "react-icons/fi";
 
 const ViewPageListing = () => {
   const navigate = useNavigate();
@@ -328,6 +329,7 @@ const ViewPageListing = () => {
               </Box>
               <SimpleGrid columns={[1, 2, 3]} gap={5}>
                 {categoryListing?.map((listing, index) => {
+                  console.log(listing);
                   return (
                     <Stack
                       mb={2}
@@ -391,6 +393,12 @@ const ViewPageListing = () => {
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
                           CP: {listing.contactPerson}
                         </Text>
+                        <HStack>
+                          <FiEye color="gray" size={15} />
+                          <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
+                            {listing.seen ? listing.seen?.length : 0}
+                          </Text>
+                        </HStack>
                         {/* <Text>Details:</Text>
                   {listing?.details?.map((detail, index) => (
                     <HStack key={index} spacing={2} alignItems="center">

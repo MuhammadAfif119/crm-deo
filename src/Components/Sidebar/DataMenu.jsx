@@ -26,6 +26,8 @@ import {
   FcLike,
   FcPodiumWithSpeaker,
   FcDeployment,
+  FcInTransit,
+  FcEnteringHeavenAlive,
 } from "react-icons/fc";
 
 export const data = [
@@ -67,7 +69,10 @@ export const data = [
   {
     name: "Pipeline",
     icon: FcKindle,
-    submenu: [{ name: "Pipeline", icon: FcEditImage, link: "/pipeline" }],
+    submenu: [
+      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+      { name: "Orders", icon: FcInTransit, link: "/orders" },
+    ],
   },
   {
     name: "Products",
@@ -122,9 +127,14 @@ export const data = [
         icon: FcAutomatic,
         link: "/configuration/integration",
       },
+      {
+        name: "Backup",
+        icon: FcEnteringHeavenAlive,
+        link: "/configuration/backup",
+      },
       { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
-      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
       { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
+      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
     ],
   },
 

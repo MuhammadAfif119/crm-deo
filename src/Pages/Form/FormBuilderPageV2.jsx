@@ -422,9 +422,6 @@ function FormBuilderPage() {
     }
   };
 
-  const getScrollPosition = window.scrollY;
-  console.log(getScrollPosition);
-
   const handleEmbedCode = () => {
     setModalEmbedCode(true);
     const formHTML = generateHTML(formFields);

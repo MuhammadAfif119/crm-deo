@@ -82,7 +82,6 @@ function MessageUser({ id, companyId, companyName, notif }) {
     }
   };
 
-
   const handleChatChange = (e) => {
     setChat(e.target.value);
   };
@@ -126,7 +125,6 @@ function MessageUser({ id, companyId, companyName, notif }) {
     };
   }, [id]);
 
-
   const handleChat = async () => {
     const collectionName = `messages/${id}/conversation`;
     const data = {
@@ -155,6 +153,7 @@ function MessageUser({ id, companyId, companyName, notif }) {
             docName,
             data
           );
+          setChat("");
           setValue("");
         } catch (error) {
           console.log("Terjadi kesalahan:", error);
@@ -350,7 +349,7 @@ function MessageUser({ id, companyId, companyName, notif }) {
               type="text"
               bgColor={"white"}
               width={"full"}
-              defaultValue={chat}
+              value={chat}
               onChange={handleChatChange}
               onKeyDown={handleChatKeyDown}
             />

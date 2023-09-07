@@ -526,6 +526,7 @@ function FormPageProduct() {
   const [categoryList, setCategoryList] = useState([]);
   const [formPage, setFormPage] = useState(false);
   const [queries, setQueries] = useState("");
+  const [currentForm, setCurrentForm] = useState();
   const [lastFormId, setLastFormId] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
   const [detailProduct, setDetailProduct] = useState(false);
@@ -534,6 +535,7 @@ function FormPageProduct() {
   const globalState = useUserStore();
   const toast = useToast();
   const navigate = useNavigate();
+  const params = useParams();
   const [dataProduct, setDataProduct] = useState({});
   const companyId = globalState.currentCompany;
 
@@ -572,6 +574,14 @@ function FormPageProduct() {
     if (res.priceEnd) {
       setCheckPrice(true);
     }
+
+    //get form
+    const conditions = [
+      { field: "product_used", operator: "array-contains", value: idProject },
+    ];
+    const productForm = await getCollectionFirebase("forms", conditions);
+    console.log(productForm, "product form");
+    setCurrentForm(productForm);
   };
 
   const getDataForms = async () => {
@@ -1393,6 +1403,39 @@ function FormPageProduct() {
               </Checkbox>
             </FormControl>
 
+            {params.type === "edit" ? (
+              <Box>
+                <Text fontWeight={"semibold"} my={2}>
+                  Current Form Plugged in this product
+                </Text>
+                {currentForm?.length > 0 ? (
+                  <SimpleGrid>
+                    {currentForm.map((x, i) => (
+                      <Stack
+                        key={i}
+                        w={300}
+                        borderWidth="1px"
+                        p={3}
+                        cursor="pointer"
+                        rounded={5}
+                        borderColor={"black"}
+                      >
+                        <Text fontWeight={"semibold"}>{x.title}</Text>
+                        <HStack>
+                          {x.category?.length > 0 &&
+                            x.category.map((y, i) => {
+                              return <Text key={i}>{y}</Text>;
+                            })}
+                        </HStack>
+                      </Stack>
+                    ))}
+                  </SimpleGrid>
+                ) : (
+                  <Text>Product is not assigned to any form</Text>
+                )}
+              </Box>
+            ) : null}
+
             <Stack>
               <Box>
                 <Text fontWeight={"semibold"}>
@@ -1404,6 +1447,8 @@ function FormPageProduct() {
                 <SimpleGrid columns={3} spacing={2}>
                   {dataForm?.map((form, i) => (
                     <Stack
+                      _hover={{ transform: "scale(1.02)", transition: "0.3s" }}
+                      shadow={"sm"}
                       key={i}
                       borderWidth="1px"
                       p={3}
