@@ -37,6 +37,9 @@ import {
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 
+import "react-date-range/dist/styles";
+import "react-date-range/dist/theme/default.css";
+
 import { formatFrice } from "../../Utils/numberUtil";
 import { AddIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { FcPhone, FcPlus } from "react-icons/fc";
@@ -104,8 +107,6 @@ const ProductPage = () => {
   };
 
   const handleCategory = async (value) => {
-    console.log(value);
-    console.log(categoryModule);
     if (categoryModule) {
       try {
         const result = await getSingleDocumentFirebase(

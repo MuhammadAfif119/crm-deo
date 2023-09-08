@@ -54,6 +54,7 @@ const ViewPageListing = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
 
+  const [pageFilter, setPageFilter] = useState(1);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -68,11 +69,13 @@ const ViewPageListing = () => {
 
   // const companyId = userDisplay.currentProject;
 
-  const getData = async () => {
+  const getData = async (category) => {
+    console.log(categoryData, "ini category data");
     try {
       const q = query(
         collection(db, "listings"),
         where("projectId", "==", projectId),
+        // where("category", 'array-contains', categoryData)
         orderBy("createdAt", "asc"),
         limit(pageSize * page)
       );
@@ -113,6 +116,10 @@ const ViewPageListing = () => {
     setPage(page + 1); // Increment the page number to fetch the next page of data
   };
 
+  const handleLoadMoreFilter = () => {
+    setPageFilter(pageFilter + 1); // Increment the page number to fetch the next page of data
+  };
+
   const handleCategory = async (value) => {
     if (categoryModule) {
       try {
@@ -132,11 +139,14 @@ const ViewPageListing = () => {
 
   const handleCategoryFilter = async (value) => {
     setSelectedCategoryNiche(value);
+    console.log(value);
     try {
       const q = query(
         collection(db, "listings"),
-        where("category", "array-contains", value.toLowerCase()),
-        where("projectId", "==", projectId)
+        where("category", "array-contains", value?.toLowerCase()),
+        where("projectId", "==", projectId),
+        orderBy("createdAt", "asc"),
+        limit(10 * pageFilter)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -158,6 +168,7 @@ const ViewPageListing = () => {
         });
 
         setCategoryData(mappedData);
+        console.log(mappedData);
       });
 
       return () => {
@@ -262,6 +273,14 @@ const ViewPageListing = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!selectedCategoryNiche) {
+      null;
+    } else {
+      handleCategoryFilter(selectedCategoryNiche);
+    }
+  }, [globalState.currentProject, pageFilter]);
 
   return (
     <Box>
@@ -427,23 +446,37 @@ const ViewPageListing = () => {
                   );
                 })}
               </SimpleGrid>
+              {selectedCategory === "All" ? (
+                <Box align={"center"}>
+                  <Button
+                    onClick={() => handleLoadMore()}
+                    variant="outline"
+                    colorScheme="blue"
+                    size="md"
+                    alignSelf="center"
+                    mt={4}
+                  >
+                    Load More
+                  </Button>
+                </Box>
+              ) : (
+                <Box align={"center"}>
+                  <Button
+                    onClick={() => handleLoadMoreFilter()}
+                    variant="outline"
+                    colorScheme="blue"
+                    size="md"
+                    alignSelf="center"
+                    mt={4}
+                  >
+                    Load More
+                  </Button>
+                </Box>
+              )}
             </Stack>
           )
         );
       })}
-
-      <Box align={"center"}>
-        <Button
-          onClick={() => handleLoadMore()}
-          variant="outline"
-          colorScheme="blue"
-          size="md"
-          alignSelf="center"
-          mt={4}
-        >
-          Load More
-        </Button>
-      </Box>
 
       <Modal
         size={"2xl"}
