@@ -276,7 +276,7 @@ const ViewPageListing = () => {
 
   useEffect(() => {
     if (!selectedCategoryNiche) {
-      null;
+      return
     } else {
       handleCategoryFilter(selectedCategoryNiche);
     }
