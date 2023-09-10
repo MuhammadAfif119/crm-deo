@@ -13,8 +13,6 @@ const DatePicker = ({ onDateChange }) => {
     },
   ]);
 
-  console.log(date, "ini date");
-
   const handleDateRangeChange = (item) => {
     setDate([item.selection]);
     onDateChange(item.selection); // Pass the date range to the parent component

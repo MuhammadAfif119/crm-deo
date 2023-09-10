@@ -116,9 +116,6 @@ const OrderPage = () => {
 
       console.log(filteredOrders);
       setFilteredData(filteredOrders);
-
-      // const totalOrders = await getCollectionFirebase("orders", conditions);
-      // setTotalPages(Math.ceil(totalOrders.length / itemsPerPage));
     } catch (error) {
       console.log(error, "ini error");
     }
@@ -140,8 +137,6 @@ const OrderPage = () => {
             Data Orders
           </Heading>
           <Spacer />
-          {/* <Button size='sm' onClick={handleModalOpen} colorScheme='green'>+</Button> */}
-          {/* <DatePicker /> */}
           <Button
             size={"sm"}
             colorScheme="green"
@@ -171,7 +166,7 @@ const OrderPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {selectedDateRange &&
+              {!selectedDateRange ||
               Object.keys(selectedDateRange).length === 0 ? (
                 <>
                   {dataOrders?.length > 0 ? (
