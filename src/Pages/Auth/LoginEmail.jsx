@@ -23,21 +23,22 @@ import {
   MdVpnKey,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import {  signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
-import { checkUserAccess, loginUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
-import store from 'store'
+import {
+  checkUserAccess,
+  loginUserWithIp,
+} from "../../Hooks/Middleware/sessionMiddleWare";
+import store from "store";
 import { encryptToken } from "../../Utils/encrypToken";
 import { removeSymbols } from "../../Utils/Helper";
-
 
 function LoginEmail() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
 
   const globalState = useUserStore();
 
@@ -47,87 +48,87 @@ function LoginEmail() {
   const logout = async () => {
     await signOut(auth)
       .then(() => {
-
-
         globalState.setIsLoggedIn(false);
         store.clearAll();
       })
       .catch((error) => {
         console.log(error, "ini error");
-      }).finally(() => {
-
-        navigate("/login");
       })
-
+      .finally(() => {
+        navigate("/login");
+      });
   };
 
   const middleWareAccess = () => {
-    
     toast({
-      title: 'Error',
+      title: "Error",
       description: `Your account still online, please logout in another place. `,
-      status: 'error',
+      status: "error",
       duration: 9000,
       isClosable: true,
     });
-
-  }
-
+  };
 
   const handleLogin = async () => {
     if (email !== "" && password !== "") {
+      const pathLink = "crm";
+      const resCheck = await checkUserAccess(
+        window.location.hostname,
+        email,
+        pathLink
+      );
 
-      const pathLink = 'crm'
-      const resCheck = await checkUserAccess(window.location.hostname, email, pathLink);
+      console.log(resCheck, "xxx");
 
-      console.log(resCheck, 'xxx')
-
-
-      if(!resCheck){
-        return middleWareAccess()
+      if (!resCheck) {
+        return middleWareAccess();
       }
-
 
       try {
         setLoading(true);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
         const user = userCredential.user;
 
-        if(user){
-          const pathLink = 'crm'
-          const res = await loginUserWithIp(window.location.hostname, email, pathLink);
-    
-          if(!res){
-            return middleWareAccess()
+        if (user) {
+          const pathLink = "crm";
+          const res = await loginUserWithIp(
+            window.location.hostname,
+            email,
+            pathLink
+          );
+
+          if (!res) {
+            return middleWareAccess();
           }
         }
 
-
-
-        globalState.setUid(user.uid)
-        globalState.setName(user.displayName)
-        globalState.setEmail(user.email)
+        globalState.setUid(user.uid);
+        globalState.setName(user.displayName);
+        globalState.setEmail(user.email);
         globalState.setIsLoggedIn(true);
 
-   
-  
         toast({
-          title: 'Login Successful',
+          title: "Login Successful",
           description: `You have successfully logged in as ${userCredential.user.email}`,
-          status: 'success',
+          status: "success",
           duration: 9000,
           isClosable: true,
         });
-  
+
         navigate("/");
       } catch (error) {
-        console.log(error, 'ini error');
+        console.log(error, "ini error");
         toast({
-          title: 'Error',
-          description: error.code === 'auth/wrong-password'
-            ? 'Wrong email or password. Please try again.'
-            : 'An error occurred. Please try again.',
-          status: 'error',
+          title: "Error",
+          description:
+            error.code === "auth/wrong-password"
+              ? "Wrong email or password. Please try again."
+              : "An error occurred. Please try again.",
+          status: "error",
           duration: 9000,
           isClosable: true,
         });
@@ -136,8 +137,6 @@ function LoginEmail() {
       }
     }
   };
-  
-
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -278,7 +277,7 @@ function LoginEmail() {
                 <Text color={"gray.400"} fontSize={["xs", null, "sm"]}>
                   Don't have any account ?
                 </Text>
-                {/* <Text
+                <Text
                   color={"gray.400"}
                   fontSize={["xs", null, "sm"]}
                   cursor="pointer"
@@ -286,15 +285,13 @@ function LoginEmail() {
                   onClick={() => navigate("/signup")}
                 >
                   Join now !
-                </Text> */}
+                </Text>
               </HStack>
             </Stack>
           </Stack>
           <Spacer />
 
-          <Stack>
-            {/* <AppSponsor /> */}
-          </Stack>
+          <Stack>{/* <AppSponsor /> */}</Stack>
         </Stack>
       </Stack>
     </>
