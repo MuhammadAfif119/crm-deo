@@ -62,6 +62,23 @@ function FormPageV2() {
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 6;
 
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = dataForm.filter((form) => {
+        const itemData = form.title
+          ? form.title.toUpperCase()
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchForm(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchForm(dataForm);
+      setInputSearch(text);
+    }
+  };
+
   const getData = async () => {
     const conditions = [
       { field: "companyId", operator: "==", value: globalState.currentCompany },
@@ -80,23 +97,6 @@ function FormPageV2() {
       setDataForm(res);
     } catch (error) {
       console.log(error, "ini error");
-    }
-  };
-
-  const searchFilterFunction = (text) => {
-    if (text) {
-      const newData = dataForm.filter((form) => {
-        const itemData = form.title
-          ? form.title.toUpperCase()
-          : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setDataSearchForm(newData);
-      setInputSearch(text);
-    } else {
-      setDataSearchForm(dataForm);
-      setInputSearch(text);
     }
   };
 
@@ -318,6 +318,9 @@ function FormPageV2() {
                         {moment(x.createdAt.seconds * 1000).fromNow()}
                       </Text>
                     </HStack>
+                    <Text fontSize={9} mt={2}>
+                      Created by: {x.createdBy}
+                    </Text>
                   </Stack>
                 );
               })}
@@ -327,7 +330,8 @@ function FormPageV2() {
 
       <Stack alignItems={"center"} justifyContent="center">
         <Box>
-          {dataSearchForms?.length > startIndex && (
+          {(dataSearchForms?.length > startIndex ||
+            dataForm?.length > startIndex) && (
             <Button onClick={handleLoadMore} size="sm">
               Load More
             </Button>

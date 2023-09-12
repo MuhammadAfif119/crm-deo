@@ -56,450 +56,14 @@ import {
 import moment from "moment";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
-const DetailProductComponent = ({
-  handleNext,
-  isError,
-  setFormPage,
-  setCheckboxPrice,
-  checkboxPrice,
-  handleDeleteCategory,
-  handleDeleteTicket,
-  handleSubmit,
-  categoryDetails,
-  handleCategoryChange,
-  handleTicketChange,
-  handleAddTicket,
-  handleIncrement,
-  setDetailTicket,
-  ticketCounts,
-}) => {
-  return (
-    <>
-      <Stack
-        align={"left"}
-        w="full"
-        bg={"white"}
-        bgColor={"white"}
-        p={[1, 1, 5]}
-        spacing={5}
-        borderRadius="md"
-        shadow={"md"}
-        my={5}
-      >
-        <HStack gap={5}>
-          {/* <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}
-                           variant={'outline'} colorScheme="blue"
-                           w='fit-content'
-                      >Back to Event Form</Button> */}
-          <Heading size="md">
-            Input your category and ticket for your event
-          </Heading>
-        </HStack>
-
-        {categoryDetails.map((category, categoryIndex) => {
-          return (
-            <SimpleGrid columns={2} key={`category-${categoryIndex}`} gap={5}>
-              <Stack>
-                <Flex justify={"space-between"} align={"center"} gap="5">
-                  <Heading size="md">Category {categoryIndex + 1}</Heading>
-                  <Spacer />
-                  {categoryIndex !== 0 && (
-                    <Button
-                      leftIcon={<DeleteIcon />}
-                      colorScheme="red"
-                      variant={"outline"}
-                      onClick={() => handleDeleteCategory(categoryIndex)}
-                    >
-                      Delete Category
-                    </Button>
-                  )}
-                  <Button
-                    leftIcon={<AddIcon />}
-                    onClick={() => handleIncrement()}
-                    variant={"outline"}
-                    colorScheme="blue"
-                  >
-                    Add Category
-                  </Button>
-                </Flex>
-
-                <FormControl
-                  isRequired
-                  isInvalid={isError.includes(
-                    `categoryDetails[${categoryIndex}].title`
-                  )}
-                >
-                  <FormLabel>Title</FormLabel>
-                  <Input
-                    onChange={(e) =>
-                      handleCategoryChange(
-                        categoryIndex,
-                        "title",
-                        e.target.value
-                      )
-                    }
-                    value={category?.title}
-                  />
-                </FormControl>
-                <HStack w="100%" gap="5">
-                  <FormControl w="25%" id="price">
-                    <FormLabel>Price Start</FormLabel>
-                    <Input
-                      type="number"
-                      value={category?.price}
-                      onChange={(e) =>
-                        handleCategoryChange(
-                          categoryIndex,
-                          "price",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormControl>
-                  <Checkbox
-                    isChecked={checkboxPrice}
-                    onChange={(e) => setCheckboxPrice(e.target.checked)}
-                  >
-                    Add Range Price
-                  </Checkbox>
-                  {checkboxPrice && (
-                    <FormControl w="25%" id="price">
-                      <FormLabel>Price End</FormLabel>
-                      <Input
-                        value={category?.priceEnd}
-                        type="number"
-                        onChange={(e) =>
-                          handleCategoryChange(
-                            categoryIndex,
-                            "priceEnd",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </FormControl>
-                  )}
-                </HStack>
-                <FormControl>
-                  <FormLabel>Details</FormLabel>
-                  <Textarea
-                    value={category.details}
-                    onChange={(e) =>
-                      handleCategoryChange(
-                        categoryIndex,
-                        "details",
-                        e.target.value
-                      )
-                    }
-                  />
-                </FormControl>
-              </Stack>
-              <Box>
-                <Flex justify={"space-between"} align={"center"}>
-                  <Heading size={"md"}>
-                    Ticket Category {categoryIndex + 1}
-                  </Heading>
-                  <Button
-                    leftIcon={<AddIcon />}
-                    onClick={() => handleAddTicket(categoryIndex)}
-                    variant={"outline"}
-                    colorScheme="blue"
-                  >
-                    Add Ticket
-                  </Button>
-                </Flex>
-                {Array.from({ length: ticketCounts[categoryIndex] }).map(
-                  (_, ticketIndex) => {
-                    return (
-                      <ProductComponent
-                        keyuniq={`ticket-${categoryIndex}-${ticketIndex}`}
-                        categoryIndex={categoryIndex}
-                        category={category}
-                        ticketIndex={ticketIndex}
-                        handleTicketChange={handleTicketChange}
-                        handleDeleteTicket={handleDeleteTicket}
-                        isError={isError}
-                      />
-                    );
-                  }
-                )}
-              </Box>
-            </SimpleGrid>
-          );
-        })}
-        <Flex align="end" justify={"space-between"} mt="5">
-          <Button
-            leftIcon={<FiChevronLeft />}
-            onClick={() => setDetailTicket(false)}
-            variant={"outline"}
-            colorScheme="blue"
-          >
-            Back to Event Form
-          </Button>
-          <Button
-            rightIcon={<FiChevronRight />}
-            onClick={() => handleNext()}
-            variant={"outline"}
-            colorScheme="blue"
-          >
-            Next
-          </Button>
-        </Flex>
-      </Stack>
-      {/* <Flex justify={'space-between'} mt='5'>
-                 <Button leftIcon={<FiChevronLeft />} onClick={() => setDetailTicket(false)}>Back</Button>
-                 {idProject ?
-                      <Button onClick={() => handleSubmit('edit')}>Edit</Button>
-                      :
-                      <Button onClick={() => handleSubmit('create')}>Submit</Button>
-                 }
-
-            </Flex> */}
-    </>
-  );
-};
-
-const ProductComponent = ({
-  isError,
-  handleDeleteTicket,
-  categoryIndex,
-  ticketIndex,
-  handleTicketChange,
-  category,
-  keyuniq,
-}) => {
-  return (
-    <Flex
-      border={"1px solid black"}
-      p="5"
-      rounded={5}
-      gap={5}
-      mt="5"
-      key={keyuniq}
-    >
-      <Stack paddingBottom="5">
-        <FormControl
-          isRequired
-          isInvalid={isError.includes(
-            `categoryDetails[${categoryIndex}].tickets[${ticketIndex}].title`
-          )}
-        >
-          <FormLabel>Title</FormLabel>
-          <Input
-            onChange={(e) =>
-              handleTicketChange(
-                categoryIndex,
-                ticketIndex,
-                "title",
-                e.target.value
-              )
-            }
-            value={category?.tickets[ticketIndex]?.title}
-          />
-        </FormControl>
-        <HStack>
-          <FormControl
-            py="5"
-            isRequired
-            w="33.3%"
-            isInvalid={isError.includes(
-              `categoryDetails[${categoryIndex}].tickets[${ticketIndex}].price`
-            )}
-          >
-            <FormLabel>Price</FormLabel>
-            <Input
-              type="number"
-              onChange={(e) =>
-                handleTicketChange(
-                  categoryIndex,
-                  ticketIndex,
-                  "price",
-                  e.target.value
-                )
-              }
-              value={category?.tickets[ticketIndex]?.price}
-            />
-          </FormControl>
-          <FormControl
-            py="5"
-            isRequired
-            w="fit-content"
-            isInvalid={isError.includes(
-              `categoryDetails[${categoryIndex}].tickets[${ticketIndex}].endTicket`
-            )}
-          >
-            <FormLabel>End Sales Ticket</FormLabel>
-            <Input
-              type="date"
-              onChange={(e) =>
-                handleTicketChange(
-                  categoryIndex,
-                  ticketIndex,
-                  "endTicket",
-                  e.target.value
-                )
-              }
-              value={category?.tickets[ticketIndex]?.endTicket}
-            />
-          </FormControl>
-          <Spacer />
-          <FormControl
-            w="25%"
-            id="price"
-            isRequired
-            isInvalid={isError.includes(
-              `categoryDetails[${categoryIndex}].tickets[${ticketIndex}].totalAudience`
-            )}
-          >
-            <FormLabel>Total Audience</FormLabel>
-            <Input
-              type="number"
-              onChange={(e) =>
-                handleTicketChange(
-                  categoryIndex,
-                  ticketIndex,
-                  "totalAudience",
-                  e.target.value
-                )
-              }
-              value={category?.tickets[ticketIndex]?.totalAudience}
-            />
-          </FormControl>
-        </HStack>
-        <FormControl
-          isRequired
-          isInvalid={isError.includes(
-            `categoryDetails[${categoryIndex}].tickets[${ticketIndex}].notes`
-          )}
-        >
-          <FormLabel>Notes</FormLabel>
-          <Textarea
-            onChange={(e) =>
-              handleTicketChange(
-                categoryIndex,
-                ticketIndex,
-                "notes",
-                e.target.value
-              )
-            }
-            value={category?.tickets[ticketIndex]?.notes}
-          />
-        </FormControl>
-      </Stack>
-      {ticketIndex !== 0 && (
-        <Flex
-          w="10%"
-          alignItems={"center"}
-          justifyContent={"center"}
-          flexDir={"column"}
-        >
-          <Button
-            leftIcon={<DeleteIcon />}
-            colorScheme="red"
-            variant={"outline"}
-            transform={"rotate(90deg)"}
-            onClick={() => handleDeleteTicket(categoryIndex, ticketIndex)}
-          >
-            Delete Ticket
-          </Button>
-        </Flex>
-      )}
-      {/* <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px'></Box>
-                 <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px' my='10'></Box>
-                 <Box rounded={'100%'} border={'solid 1px black'} w='30px' h='30px'></Box> */}
-    </Flex>
-  );
-};
-
-const FormPage = ({
-  data,
-  setData,
-  handleSubmit,
-  idProject,
-  setFormPage,
-  setDetailTicket,
-  dataForm,
-}) => {
-  return (
-    <Stack
-      bg={"white"}
-      bgColor={"white"}
-      p={[1, 1, 5]}
-      spacing={5}
-      borderRadius="md"
-      shadow={"md"}
-      my="5"
-    >
-      <HStack align={"center"} gap={5}>
-        {/* <Button leftIcon={<FiChevronLeft />} onClick={() => { setDetailTicket(true); setFormPage(false) }} variant={'outline'} colorScheme='blue' w='fit-content'>Back to Ticket Form</Button> */}
-        <Heading size="md">Pick form builder for this tickets</Heading>
-      </HStack>
-
-      <Stack my="5">
-        <SimpleGrid columns={[1, 2, 3]} gap={3}>
-          {dataForm?.length > 0 &&
-            dataForm?.map((x, index) => {
-              return (
-                <Stack
-                  key={index}
-                  borderWidth="1px"
-                  p={3}
-                  cursor="pointer"
-                  onClick={() => setData({ ...data, formId: x.id })}
-                  rounded={5}
-                  borderColor={data?.formId === x.id && "black"}
-                >
-                  <Text>{x.title}</Text>
-                  {x.category.length > 0 &&
-                    x.category.map((y, index) => {
-                      return <Text key={index}>{y}</Text>;
-                    })}
-                </Stack>
-              );
-            })}
-        </SimpleGrid>
-      </Stack>
-
-      <Flex justify={"space-between"} mt="5">
-        <Button
-          leftIcon={<FiChevronLeft />}
-          onClick={() => {
-            setDetailTicket(true);
-            setFormPage(false);
-          }}
-          variant={"outline"}
-          colorScheme="blue"
-        >
-          Back to Product Form
-        </Button>
-        {idProject ? (
-          <Button
-            onClick={() => handleSubmit("edit")}
-            variant={"outline"}
-            colorScheme="blue"
-          >
-            Edit
-          </Button>
-        ) : (
-          <Button
-            onClick={() => handleSubmit("create")}
-            variant={"outline"}
-            colorScheme="blue"
-          >
-            {" "}
-            Submit
-          </Button>
-        )}
-      </Flex>
-    </Stack>
-  );
-};
+import Shipping from "../../Components/Shipment/Shipping";
 
 function FormPageProduct() {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const idProject = searchParams.get("id");
 
+  const [isShipping, setIsShipping] = useState(true);
   const [projectList, setProjectList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
@@ -519,7 +83,7 @@ function FormPageProduct() {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [filesImageLogo, setFilesImageLogo] = useState([]);
   const [filesLogo, setFilesLogo] = useState([]);
-  const [categoryInput, setCategoryInput] = useState("");
+
   const [categoryData, setCategoryData] = useState([]);
   const [checkPrice, setCheckPrice] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -541,6 +105,7 @@ function FormPageProduct() {
 
   const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
 
+  console.log(isShipping, "ini shipping");
   const getProject = () => {
     const res = globalState?.projects?.find(
       (e) => e.id === globalState?.currentProject
@@ -564,11 +129,13 @@ function FormPageProduct() {
     setProjectId(res.projectId);
     setFormId(res.formId);
     setLastFormId(res.formId);
+
     let cat = res.category;
     let arr = [];
     cat.map((c) => {
       arr.push({ value: c, label: c });
     });
+
     setSelectedCategory(arr);
     setDetails(res.details);
     if (res.priceEnd) {
@@ -595,7 +162,11 @@ function FormPageProduct() {
         const data = [];
         snapshot.forEach((doc) => {
           const docData = doc.data();
-          if (!docData.ticket_used || docData.ticket_used.length === 0) {
+          if (
+            (!docData.ticket_used || docData.ticket_used.length === 0) &&
+            (!docData.product_used || docData.product_used.length === 0) &&
+            (!docData.membership_used || docData.membership_used.length === 0)
+          ) {
             data.push({ id: doc.id, ...docData });
           }
         });
@@ -696,50 +267,6 @@ function FormPageProduct() {
     }
   }, [globalState.currentCompany, categories?.data?.length]);
 
-  const handleNext = async () => {
-    const newListing = {
-      title: title,
-      description: description,
-      type: "product",
-      category: selectedCategory?.map((categories) =>
-        categories?.value.toLowerCase()
-      ),
-      price: price.toLowerCase(),
-      priceEnd: priceEnd.toLowerCase(),
-      projectId: projectId,
-      projectName: projectName.toLowerCase(),
-      details: details.map((detail) => ({
-        key: detail.key.toLowerCase(),
-        value: detail.value.toLowerCase(),
-      })),
-      stock: stock,
-      is_active: isActive,
-      modules: modules.map((module) => module.toLowerCase()),
-    };
-
-    if (filesImage[0]) {
-      const resImage = await uploadFile(
-        `${title}-${moment(new Date()).valueOf()}`,
-        "listings_product",
-        filesImage[0]
-      );
-      newListing.image = resImage;
-    }
-    if (filesImageLogo[0]) {
-      const resImage = await uploadFile(
-        `${title}-${moment(new Date()).valueOf()}-logo`,
-        "listings_product",
-        filesImageLogo[0]
-      );
-      newListing.logo = resImage;
-    }
-
-    setDataProduct(newListing);
-    console.log(newListing);
-    console.log(dataProduct);
-    setFormPage(true);
-  };
-
   const handleSubmit = async (e) => {
     // e.preventDefault();
     setLoading(true);
@@ -761,6 +288,7 @@ function FormPageProduct() {
       })),
       stock: stock,
       is_active: isActive,
+      is_shipping: isShipping,
       formId: formId,
       modules: modules.map((module) => module.toLowerCase()),
     };
@@ -981,6 +509,7 @@ function FormPageProduct() {
       })),
       stock: stock,
       is_active: isActive,
+      is_shipping: isShipping,
       formId: formId,
       modules: modules.map((module) => module.toLowerCase()),
     };
@@ -1012,6 +541,15 @@ function FormPageProduct() {
       );
       console.log("ID Dokumen Baru:", docID);
 
+      if (!formId) {
+        const newArr = await arrayUnionFirebase(
+          "forms",
+          formId,
+          "product_used",
+          [idProject]
+        );
+      }
+
       if (docID && formId !== lastFormId) {
         try {
           const result = await arrayRemoveFirebase(
@@ -1027,7 +565,11 @@ function FormPageProduct() {
             "product_used",
             [idProject]
           );
-        } catch (error) {}
+
+          console.log(newArr);
+        } catch (error) {
+          console.log(error);
+        }
       }
 
       if (docID) {
@@ -1359,6 +901,18 @@ function FormPageProduct() {
                 <option value="false">False</option>
               </Select>
             </FormControl>
+
+            <FormControl id="isShipping">
+              <FormLabel>Use Shipping:</FormLabel>
+              <Select
+                value={isShipping}
+                onChange={(e) => setIsShipping(e.target.value === "true")}
+              >
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </Select>
+            </FormControl>
+
             <FormControl id="modules">
               <FormLabel>Modules:</FormLabel>
               <Checkbox
@@ -1523,19 +1077,7 @@ function FormPageProduct() {
             )}
           </VStack>
         </Container>
-      ) : formPage === false ? (
-        <DetailProductComponent handleNext={handleNext} />
-      ) : (
-        <FormPage
-          handleSubmit={handleSubmit}
-          idProject={idProject}
-          setFormPage={setFormPage}
-          setDetailProduct={setDetailProduct}
-          dataForm={dataForm}
-          setData={setDataProduct}
-          data={dataProduct}
-        />
-      )}
+      ) : null}
     </>
   );
 }

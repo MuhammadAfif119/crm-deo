@@ -258,6 +258,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     }
   };
 
+  console.log(dataParam, "ini data");
+  console.log(dataLeads, "ini data leads");
+
   if (thanksPage === true) {
     return (
       <Stack>
@@ -399,9 +402,18 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
           <Spacer />
           <Text textAlign="right">{dataLeads?.email}</Text>
         </HStack>
+
+        <HStack justifyContent="space-between" fontSize="sm" my={1}>
+          <Text fontWeight="bold">Address :</Text>
+          <Spacer />
+          <Text textAlign="right">{dataLeads?.shippingDetails?.address}</Text>
+        </HStack>
       </Stack>
       <Stack>
         <Heading size={"md"}>Payment: </Heading>
+        <Text fontSize={10} fontStyle={"italic"}>
+          Include Shipping
+        </Text>
       </Stack>
       <Stack>
         {paymentVA !== "" ? (
@@ -519,7 +531,11 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
             <Stack>
               <Text>Amount :</Text>
               <Text fontWeight={500}>
-                Rp. {formatFrice(Number(dataParam?.price) * quantity)}
+                Rp.{" "}
+                {formatFrice(
+                  Number(dataParam?.price) * quantity +
+                    parseInt(dataLeads.shippingDetails.price)
+                )}
               </Text>
             </Stack>
 

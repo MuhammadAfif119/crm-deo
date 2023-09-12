@@ -24,6 +24,11 @@ import {
   Spacer,
   Checkbox,
   Flex,
+  InputGroup,
+  InputRightElement,
+  Icon,
+  List,
+  ListItem,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -42,6 +47,8 @@ import CreateForm from "../../Components/Form/CreateForm";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { formatFrice } from "../../Utils/Helper";
 import ProductCard from "../../Components/Card/ProductCard";
+import Shipping from "../../Components/Shipment/Shipping";
+import { AiOutlineClose } from "react-icons/ai";
 
 function generateHTML(formFields) {
   let html = "";
@@ -258,6 +265,16 @@ function FormBuilderPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [selectedProductMethod, setSelectedProductMethod] = useState("");
 
+  const [destinationResults, setDestinationResults] = useState([]);
+  const [destinationSearch, setDestinationSearch] = useState("");
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [priceSuggestions, setPriceSuggestions] = useState({});
+  const [fetchingDestinations, setFetchingDestinations] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState({});
+  const [fullAddress, setFullAddress] = useState();
+  const [selectedCourier, setSelectedCourier] = useState();
+
   const [ticketActive, setTicketActive] = useState("");
 
   const [embedCode, setEmbedCode] = useState("");
@@ -293,7 +310,18 @@ function FormBuilderPage() {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+
+    if (
+      productActive &&
+      productActive.is_shipping === true &&
+      formValues.city
+    ) {
+      setDestinationSearch(formValues.city);
+    }
   };
+
+  console.log(formValues, "ini form value");
+  console.log(selectedCourier, "ini form value");
 
   const renderFormFields = (opportunityValue) => {
     if (formFields?.length > 0) {
@@ -311,12 +339,24 @@ function FormBuilderPage() {
         const handleSubmit = async () => {
           let updateData = formValues;
           updateData.formId = formId;
+
+          updateData.shippingDetails = {
+            region: selectedCourier.origin_name,
+            destination: selectedCourier.destination_name,
+            price: selectedCourier.price,
+            currency: selectedCourier.currency,
+            address: fullAddress,
+          };
+
+          updateData.totalPrice =
+            parseInt(opportunityValue) + parseInt(selectedCourier.price);
           updateData.opportunity_value = opportunityValue
             ? opportunityValue
             : "0";
           updateData.status = "open";
 
           const data = updateData;
+          console.log(data, "ini submitted data");
           try {
             const res = await axios.post(
               "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead",
@@ -404,9 +444,14 @@ function FormBuilderPage() {
             )}
 
             {type === "request" && (
-              <Text fontStyle="italic" fontSize={"xs"} fontWeight={500}>
-                Requested
-              </Text>
+              <Shipping
+                my={3}
+                selectedDestination={selectedDestination}
+                setSelectedDestination={setSelectedDestination}
+                selectedCourier={selectedCourier}
+                setSelectedCourier={setSelectedCourier}
+                setFullAddress={setFullAddress}
+              />
             )}
 
             <Box textAlign={"center"}>
@@ -566,7 +611,7 @@ function FormBuilderPage() {
             result.product_used[0]
           );
           setProductActive(resultProduct);
-          // setOpportunityValue(resultProduct?.price);
+          setOpportunityValue(parseInt(resultProduct?.price));
         } catch (error) {
           console.log(error, "ini error");
         }
@@ -597,24 +642,42 @@ function FormBuilderPage() {
             isRequired: true,
           },
           {
-            label: "phone number",
+            label: "Phone number",
             type: "number",
             name: "phoneNumber",
             placeholder: "Masukkan nomor telpon",
             isRequired: true,
           },
           {
-            label: "Pesan",
+            label: "Additional message",
             type: "textarea",
             name: "pesan",
             placeholder: "Masukkan pesan Anda",
           },
+          // {
+          //   label: "City",
+          //   type: "text",
+          //   name: "city",
+          //   placeholder: "Kota/Kecamatan",
+          // },
+          // {
+          //   label: "Address",
+          //   type: "textarea",
+          //   name: "alamat",
+          //   placeholder: "Masukkan pesan Anda",
+          // },
           {
             label: "Pilihan",
             type: "select",
             name: "pilihan",
             options: ["Pilihan 1", "Pilihan 2", "Pilihan 3"],
           },
+          // {
+          //   label: "City Selection",
+          //   type: "select",
+          //   name: "citySelection",
+          //   options: destinationSuggestions,
+          // },
           { label: "date", type: "date", name: "date", isRequired: true },
           {
             label: "File",
@@ -634,6 +697,38 @@ function FormBuilderPage() {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const getDestination = async () => {
+    if (productActive && productActive.is_shipping === true) {
+      setFetchingDestinations(true);
+      const url = "https://getdestination-qwuyxef5gq-uc.a.run.app";
+      const config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: url,
+        data: {
+          username: "DBRAND",
+          api_key: "e34a6683064f208340e6b8e683c7163f",
+          is_production: true,
+        },
+      };
+      try {
+        const result = await axios(config);
+        // console.log("result destination", result)
+        if (
+          result?.data?.data !== undefined &&
+          result?.data?.data?.detail?.length > 0
+        ) {
+          setDestinationResults(result?.data?.data?.detail);
+          console.log(result);
+        }
+      } catch (error) {
+        console.log(error, "error getting destination");
+      } finally {
+        setFetchingDestinations(false);
+      }
     }
   };
 

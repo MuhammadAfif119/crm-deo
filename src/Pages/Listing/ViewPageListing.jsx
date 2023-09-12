@@ -69,7 +69,7 @@ const ViewPageListing = () => {
 
   // const companyId = userDisplay.currentProject;
 
-  const getData = async (category) => {
+  const getData = async () => {
     console.log(categoryData, "ini category data");
     try {
       const q = query(
@@ -168,7 +168,6 @@ const ViewPageListing = () => {
         });
 
         setCategoryData(mappedData);
-        console.log(mappedData);
       });
 
       return () => {
@@ -446,37 +445,37 @@ const ViewPageListing = () => {
                   );
                 })}
               </SimpleGrid>
-              {selectedCategory === "All" ? (
-                <Box align={"center"}>
-                  <Button
-                    onClick={() => handleLoadMore()}
-                    variant="outline"
-                    colorScheme="blue"
-                    size="md"
-                    alignSelf="center"
-                    mt={4}
-                  >
-                    Load More
-                  </Button>
-                </Box>
-              ) : (
-                <Box align={"center"}>
-                  <Button
-                    onClick={() => handleLoadMoreFilter()}
-                    variant="outline"
-                    colorScheme="blue"
-                    size="md"
-                    alignSelf="center"
-                    mt={4}
-                  >
-                    Load More
-                  </Button>
-                </Box>
-              )}
             </Stack>
           )
         );
       })}
+      {selectedCategory === "All" ? (
+        <Box align={"center"}>
+          <Button
+            onClick={() => handleLoadMore()}
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            alignSelf="center"
+            mt={4}
+          >
+            Load More
+          </Button>
+        </Box>
+      ) : (
+        <Box align={"center"}>
+          <Button
+            onClick={() => handleLoadMoreFilter()}
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            alignSelf="center"
+            mt={4}
+          >
+            Load More
+          </Button>
+        </Box>
+      )}
 
       <Modal
         size={"2xl"}

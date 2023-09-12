@@ -980,7 +980,11 @@ const FormTicketPage = () => {
         snapshot.forEach((doc) => {
           const docData = doc.data();
 
-          if (!docData.ticket_used || docData.ticket_used.length === 0) {
+          if (
+            (!docData.ticket_used || docData.ticket_used.length === 0) &&
+            (!docData.product_used || docData.product_used.length === 0) &&
+            (!docData.membership_used || docData.membership_used.length === 0)
+          ) {
             data.push({ id: doc.id, ...docData });
           }
         });
@@ -1021,6 +1025,7 @@ const FormTicketPage = () => {
       setFilesImage(newFiles);
     }
   };
+
   const handleFileLogoInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles?.length) {
