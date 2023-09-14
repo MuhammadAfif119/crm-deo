@@ -1,6 +1,5 @@
 import { Icon } from "@chakra-ui/icons";
 import {
-
   Accordion,
   AccordionButton,
   AccordionIcon,
@@ -30,7 +29,6 @@ import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Config/firebase";
 
-
 import { data, dataApps } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
@@ -49,15 +47,11 @@ function SidebarComponentV2({ layout }) {
   const [desktopShow, setDesktopShow] = useState(true);
   const isDesktop = useBreakpointValue({ base: false, lg: desktopShow });
 
-  const [listProject, setListProject] = useState([])
+  const [listProject, setListProject] = useState([]);
 
   const globalState = useUserStore();
 
-
-
-
   const fetchProjects = async (id) => {
-
     const fetchProjectId = localStorage.getItem("currentProject");
 
     const conditions = [
@@ -77,15 +71,20 @@ function SidebarComponentV2({ layout }) {
 
     if (!fetchProjectId) {
       try {
-
-        globalState.setProjects(projects)
+        globalState.setProjects(projects);
+        console.log(projects, "ini project");
         globalState.setCurrentProject(projects[0].id);
         localStorage.setItem("currentProject", projects[0].id);
 
-
-        if (projects.length > 0 && projects[0].owner?.includes(globalState.uid)) {
+        if (
+          projects.length > 0 &&
+          projects[0].owner?.includes(globalState.uid)
+        ) {
           globalState.setRoleProject("owner");
-        } else if (projects.length > 0 && projects[0].managers?.includes(globalState.uid)) {
+        } else if (
+          projects.length > 0 &&
+          projects[0].managers?.includes(globalState.uid)
+        ) {
           globalState.setRoleProject("managers");
         } else {
           globalState.setRoleProject("user");
@@ -99,10 +98,11 @@ function SidebarComponentV2({ layout }) {
         fetchProjectId
       );
 
+      console.log(projects);
 
       globalState.setProjects(projects);
       globalState.setCurrentProject(fetchProjectId);
-      localStorage.setItem("currentProject", fetchProjectId);
+      localStorage.setItem("currentProject", projects[0]?.id);
 
       if (getProjects?.owner?.includes(globalState.uid)) {
         globalState.setRoleProject("owner");
@@ -113,34 +113,29 @@ function SidebarComponentV2({ layout }) {
       }
     }
 
-    setListProject(projects)
+    setListProject(projects);
   };
 
   useEffect(() => {
-
     fetchProjects(globalState.currentCompany);
 
-
-
-    return () => { };
+    return () => {};
   }, [globalState.currentCompany]);
 
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const toast = useToast()
-
-
+  const toast = useToast();
 
   const logout = async () => {
-
-    const pathLink = 'crm'
-    await logoutUserWithIp(window.location.hostname, globalState?.email, pathLink);
+    const pathLink = "crm";
+    await logoutUserWithIp(
+      window.location.hostname,
+      globalState?.email,
+      pathLink
+    );
 
     signOut(auth)
       .then(() => {
-
-
         // Sign-out successful.
         toast({
           status: "success",
@@ -153,11 +148,10 @@ function SidebarComponentV2({ layout }) {
       })
       .catch((error) => {
         console.log(error, "ini error");
-      }).finally(() => {
-
-        navigate("/login");
       })
-
+      .finally(() => {
+        navigate("/login");
+      });
   };
 
   const handleClick = () => {
@@ -175,8 +169,7 @@ function SidebarComponentV2({ layout }) {
     globalState.setCurrentXenditId(findCompany?.xenditId);
 
     if (findCompany.id || e) {
-      fetchProjects(findCompany.id || e)
-      
+      fetchProjects(findCompany.id || e);
     }
 
     if (findCompany.owner && findCompany.owner.includes(e)) {
@@ -190,7 +183,7 @@ function SidebarComponentV2({ layout }) {
   };
 
   const handleProjectSelect = (e) => {
-    const dataProject = listProject
+    const dataProject = listProject;
 
     const findProject = dataProject.find((x) => x.id === e);
     localStorage.setItem("currentProject", findProject.id || e);
@@ -206,6 +199,7 @@ function SidebarComponentV2({ layout }) {
     }
   };
 
+  console.log(globalState.currentProject);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -222,8 +216,7 @@ function SidebarComponentV2({ layout }) {
           roundedTopRight={"lg"}
           backgroundColor={themeConfig.color.colorFirst}
         >
-          <Box position="sticky" overflowY="auto"
-          >
+          <Box position="sticky" overflowY="auto">
             <Stack
               position={"absolute"}
               right={0}
@@ -239,7 +232,7 @@ function SidebarComponentV2({ layout }) {
                 <IoIosArrowForward size={20} />
               )}
             </Stack>
-            <Flex as="section" minH="100vh" >
+            <Flex as="section" minH="100vh">
               <Flex
                 flex="1"
                 bg="bg-surface"
@@ -257,9 +250,7 @@ function SidebarComponentV2({ layout }) {
                   sm: "6",
                 }}
               >
-                <Stack
-                  justify="space-between" spacing={3}
-                >
+                <Stack justify="space-between" spacing={3}>
                   <Stack spacing={4} shouldWrapChildren>
                     {/* <Logo /> */}
                     {isDesktop ? (
@@ -286,10 +277,7 @@ function SidebarComponentV2({ layout }) {
                         }}
                       >
                         {globalState.companies?.map((select, i) => (
-                          <option
-                            key={i}
-                            value={select?.id}
-                          >
+                          <option key={i} value={select?.id}>
                             <Text textTransform={"capitalize"}>
                               {select?.name}
                             </Text>
@@ -308,10 +296,7 @@ function SidebarComponentV2({ layout }) {
                         }}
                       >
                         {listProject?.map((select, i) => (
-                          <option
-                            key={i}
-                            value={select?.id}
-                          >
+                          <option key={i} value={select?.id}>
                             <Text textTransform={"capitalize"}>
                               {select?.name}
                             </Text>
@@ -320,24 +305,24 @@ function SidebarComponentV2({ layout }) {
                       </Select>
                     </Stack>
 
-
-                    <Stack
-                      alignItems={"center"}
-
-                    >
-
+                    <Stack alignItems={"center"}>
                       <Accordion allowToggle>
-
                         {data.map((x, i) => (
                           <AccordionItem
                             key={i}
-                          // isDisabled={x.name === "Social Media" ? true : false}
+                            // isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
                               <AccordionButton>
-                                {x.name === 'Scoreboard' || x.name === 'Contacts' ?
-                                  <HStack spacing={2} onClick={() => navigate(x?.link)} align={'center'}>
-                                    <Icon as={x.icon}
+                                {x.name === "Scoreboard" ||
+                                x.name === "Contacts" ? (
+                                  <HStack
+                                    spacing={2}
+                                    onClick={() => navigate(x?.link)}
+                                    align={"center"}
+                                  >
+                                    <Icon
+                                      as={x.icon}
                                       boxSize={isDesktop ? 5 : 7}
                                     />
                                     {isDesktop && (
@@ -352,9 +337,12 @@ function SidebarComponentV2({ layout }) {
                                       </>
                                     )}
                                   </HStack>
-                                  :
-                                  <HStack spacing={2} >
-                                    <Icon as={x.icon} boxSize={isDesktop ? 5 : 7} />
+                                ) : (
+                                  <HStack spacing={2}>
+                                    <Icon
+                                      as={x.icon}
+                                      boxSize={isDesktop ? 5 : 7}
+                                    />
                                     {isDesktop && (
                                       <Text
                                         fontWeight={500}
@@ -366,9 +354,8 @@ function SidebarComponentV2({ layout }) {
                                     )}
                                     <Spacer />
                                     <AccordionIcon />
-
                                   </HStack>
-                                }
+                                )}
                               </AccordionButton>
                             </h2>
                             {x.submenu ? (
@@ -378,10 +365,7 @@ function SidebarComponentV2({ layout }) {
                                     {x.submenu?.map((subitem, i) => (
                                       <Link to={subitem.link} key={i}>
                                         <HStack spacing="3">
-                                          <Icon
-                                            as={subitem.icon}
-                                            boxSize={5}
-                                          />
+                                          <Icon as={subitem.icon} boxSize={5} />
                                           {isDesktop && (
                                             <>
                                               <Text
@@ -419,20 +403,40 @@ function SidebarComponentV2({ layout }) {
                       justifyContent="start"
                     >
                       <HStack spacing="3">
-                        <Icon as={FiSettings} boxSize={isDesktop ? 5 : 7} color="subtle" />
-                        {isDesktop &&
-                          <Text>Setting</Text>
-                        }
+                        <Icon
+                          as={FiSettings}
+                          boxSize={isDesktop ? 5 : 7}
+                          color="subtle"
+                        />
+                        {isDesktop && <Text>Setting</Text>}
                       </HStack>
                     </Button>
                     <Divider />
 
-                    <SimpleGrid columns={isDesktop ? [dataApps.length] : [1]} w={'auto'} overflowX={'scroll'} justify={'center'} align={'center'} gap={5} >
+                    <SimpleGrid
+                      columns={isDesktop ? [dataApps.length] : [1]}
+                      w={"auto"}
+                      overflowX={"scroll"}
+                      justify={"center"}
+                      align={"center"}
+                      gap={5}
+                    >
                       {dataApps.map((x, id) => (
-                        <a href={x.link} target="_blank" rel="noopener noreferrer" key={id}>
-                          <Stack justify={'center'} align={'center'} cursor={'pointer'} >
-                            <Icon as={x.icon} fontSize={'25px'} />
-                            <Text fontWeight={'medium'} size={'sm'}>{x.name}</Text>
+                        <a
+                          href={x.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          key={id}
+                        >
+                          <Stack
+                            justify={"center"}
+                            align={"center"}
+                            cursor={"pointer"}
+                          >
+                            <Icon as={x.icon} fontSize={"25px"} />
+                            <Text fontWeight={"medium"} size={"sm"}>
+                              {x.name}
+                            </Text>
                           </Stack>
                         </a>
                       ))}
@@ -440,25 +444,19 @@ function SidebarComponentV2({ layout }) {
                     <Divider />
                   </Stack>
 
-
-
-                  <Stack alignItems={'center'} justifyContent='center'>
+                  <Stack alignItems={"center"} justifyContent="center">
                     <Stack
                       spacing={{
                         base: "5",
                         sm: "6",
                       }}
                     >
-
                       {layout.type === "vertical" && (
                         <>
                           {globalState.isLoggedIn ? (
                             <>
-
-                              {isDesktop ?
+                              {isDesktop ? (
                                 <>
-
-
                                   <UserProfile
                                     name={globalState.name}
                                     image={
@@ -471,15 +469,15 @@ function SidebarComponentV2({ layout }) {
                                   <Button
                                     w={"full"}
                                     colorScheme="red"
-                                    variant={'outline'}
+                                    variant={"outline"}
                                     size={"sm"}
                                     onClick={logout}
                                   >
                                     Logout
                                   </Button>
                                 </>
-                                :
-                                <VStack justify={'left'} align={'left'}>
+                              ) : (
+                                <VStack justify={"left"} align={"left"}>
                                   <UserProfile
                                     image={
                                       globalState.email === null
@@ -487,7 +485,7 @@ function SidebarComponentV2({ layout }) {
                                         : globalState.email
                                     }
                                   />
-                                  <Box pl='2'>
+                                  <Box pl="2">
                                     <Icon
                                       as={FiLogOut}
                                       aria-current="page"
@@ -497,13 +495,12 @@ function SidebarComponentV2({ layout }) {
                                       cursor={"pointer"}
                                       shadow="inherit"
                                       color={"red"}
-                                      border={'1px red solid'}
+                                      border={"1px red solid"}
                                       onClick={() => logout()}
                                     />
                                   </Box>
                                 </VStack>
-                              }
-
+                              )}
                             </>
                           ) : (
                             <Box>
@@ -549,22 +546,12 @@ function SidebarComponentV2({ layout }) {
                         </Stack>
                       )}
                     </Stack>
-
                   </Stack>
-
-
-
-
-
-
                 </Stack>
               </Flex>
             </Flex>
           </Box>
-
-
         </Box>
-
       </>
     );
 

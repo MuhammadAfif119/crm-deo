@@ -83,7 +83,12 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     });
   };
 
-  const handlePaymentTransfer = async (id, updatedOrder, fixPrice) => {
+  const handlePaymentTransfer = async (
+    id,
+    updatedOrder,
+    fixPrice,
+    fixPriceShipment
+  ) => {
     setOrderId(id);
     setLoadingPay(true);
 
@@ -93,7 +98,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     const data = {
       xenditId: "6479f64913999eb3b3fe7283",
       orderId: id,
-      amount: fixPrice,
+      amount: dataLeads.shippingDetails.price ? fixPriceShipment : fixPrice,
       bankCode: selectedPaymentMethod,
       name: updatedOrder.name,
       companyId: dataParam.companyId,
@@ -168,6 +173,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
 
+    const fixPriceShipment =
+      dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
+
     const fixPrice = dataParam.price * quantity;
 
     const dataOrder = [
@@ -200,7 +208,12 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then(
       (x) => {
         setOrderSummary(updatedOrder);
-        return handlePaymentTransfer(x, updatedOrder, fixPrice);
+        return handlePaymentTransfer(
+          x,
+          updatedOrder,
+          fixPrice,
+          fixPriceShipment
+        );
       }
     );
   };
@@ -220,7 +233,10 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   const sucessOrder = (res) => {
     updateDocumentFirebase("leads", dataLeads.id, {
       status: "won",
-      opportunity_value: Number(dataParam.price) * quantity,
+      opportunity_value: !dataLeads.shippingDetails
+        ? Number(dataParam.price) * quantity
+        : Number(dataParam.price) * quantity +
+          parseInt(dataLeads.shippingDetails.price),
       orderId: orderId,
     })
       .then((res) => {
@@ -257,9 +273,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
       console.log(error);
     }
   };
-
-  console.log(dataParam, "ini data");
-  console.log(dataLeads, "ini data leads");
 
   if (thanksPage === true) {
     return (
@@ -411,9 +424,13 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
       </Stack>
       <Stack>
         <Heading size={"md"}>Payment: </Heading>
-        <Text fontSize={10} fontStyle={"italic"}>
-          Include Shipping
-        </Text>
+        {dataLeads.shippingDetails ? (
+          <Text fontSize={10} fontStyle={"italic"}>
+            Include Shipping
+          </Text>
+        ) : (
+          <></>
+        )}
       </Stack>
       <Stack>
         {paymentVA !== "" ? (
@@ -530,13 +547,19 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
             <Stack>
               <Text>Amount :</Text>
-              <Text fontWeight={500}>
-                Rp.{" "}
-                {formatFrice(
-                  Number(dataParam?.price) * quantity +
-                    parseInt(dataLeads.shippingDetails.price)
-                )}
-              </Text>
+              {dataLeads.shippingDetails ? (
+                <Text fontWeight={500}>
+                  Rp.{" "}
+                  {formatFrice(
+                    Number(dataParam?.price) * quantity +
+                      parseInt(dataLeads.shippingDetails.price)
+                  )}
+                </Text>
+              ) : (
+                <Text>
+                  Rp. {formatFrice(Number(dataParam?.price) * quantity)}
+                </Text>
+              )}
             </Stack>
 
             <Text mt="4">Pilih metode pembayaran :</Text>

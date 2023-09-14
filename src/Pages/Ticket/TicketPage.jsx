@@ -98,7 +98,9 @@ const TicketPage = () => {
     try {
       console.log(x);
 
-      await arrayRemoveFirebase("forms", x.formId, "ticket_used", [x.id]);
+      if (x.formId) {
+        await arrayRemoveFirebase("forms", x.formId, "ticket_used", [x.id]);
+      }
 
       deleteFileFirebase(`${x.title}_800x800`, `tickets`).then(() => {
         deleteFileFirebase(`${x.title}-logo_800x800`, `tickets`).then(() => {

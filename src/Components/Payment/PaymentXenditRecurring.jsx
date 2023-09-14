@@ -69,8 +69,8 @@ function PaymentXenditRecurring({
         user_name: dataLeads.name,
         user_email: dataLeads.email,
         user_phone: dataLeads.phoneNumber,
-        redirect_url: "https://crm.deoapp.com",
-        // redirect_url: window.location.href
+        // redirect_url: "https://crm.deoapp.com",
+        redirect_url: window.location.href,
       };
 
       const res = await _axios.post(`${baseUrl}/membershipCreate`, data);

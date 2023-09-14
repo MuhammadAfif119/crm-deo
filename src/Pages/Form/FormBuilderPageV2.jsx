@@ -336,17 +336,19 @@ function FormBuilderPage() {
           value: formValues[name] || "",
         };
 
-        const handleSubmit = async () => {
+        const handleSubmitProduct = async () => {
           let updateData = formValues;
           updateData.formId = formId;
 
-          updateData.shippingDetails = {
-            region: selectedCourier.origin_name,
-            destination: selectedCourier.destination_name,
-            price: selectedCourier.price,
-            currency: selectedCourier.currency,
-            address: fullAddress,
-          };
+          if (formData?.product_used) {
+            updateData.shippingDetails = {
+              region: selectedCourier?.origin_name,
+              destination: selectedCourier?.destination_name,
+              price: selectedCourier?.price,
+              currency: selectedCourier?.currency,
+              address: fullAddress,
+            };
+          }
 
           updateData.totalPrice =
             parseInt(opportunityValue) + parseInt(selectedCourier.price);
@@ -363,7 +365,33 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            // window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+          } catch (error) {
+            console.log(error, "ini error");
+          }
+          // Implement your form submission logic here
+        };
+
+        const handleSubmit = async () => {
+          let updateData = formValues;
+          updateData.formId = formId;
+
+          updateData.opportunity_value = opportunityValue
+            ? opportunityValue
+            : "0";
+          updateData.status = "open";
+
+          const data = updateData;
+          console.log(data, "ini submitted data");
+          try {
+            const res = await axios.post(
+              "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead",
+              data
+            );
+
+            // window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
           } catch (error) {
             console.log(error, "ini error");
           }
@@ -456,7 +484,12 @@ function FormBuilderPage() {
 
             <Box textAlign={"center"}>
               {type === "button" && (
-                <Button onClick={handleSubmit} colorScheme="blue">
+                <Button
+                  onClick={
+                    formData.product_used ? handleSubmitProduct : handleSubmit
+                  }
+                  colorScheme="blue"
+                >
                   {label}
                 </Button>
               )}
@@ -699,6 +732,8 @@ function FormBuilderPage() {
       console.log(error);
     }
   };
+
+  console.log(formData);
 
   const getDestination = async () => {
     if (productActive && productActive.is_shipping === true) {

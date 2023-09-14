@@ -127,142 +127,140 @@ const Shipping = ({
   }, [selectedDestination]);
 
   return (
-    <Center my={3}>
-      <Box w="md">
-        <Text>Dikirim dari :</Text>
-        <Text fontWeight="bold">Jakarta Selatan</Text>
+    <Box w="md">
+      <Text>Dikirim dari :</Text>
+      <Text fontWeight="bold">Jakarta Selatan</Text>
 
-        <Stack gap={3}>
-          <Text fontWeight="bold" mt={3}>
-            {" "}
-            Silakan Isi Alamatmu:
-          </Text>
-          <InputGroup>
-            <Input
-              value={
-                Object.keys(selectedDestination).length > 0
-                  ? selectedDestination?.City_Name
-                  : destinationSearch
-              }
-              placeholder={
-                fetchingDestinations ? "Loading..." : "Kota / Kabupaten Tujuan"
-              }
-              onChange={(e) => handleDestinationSearch(e.target.value)}
-              isDisabled={fetchingDestinations}
-            />
-            <InputRightElement
-              _hover={{
-                bg: "gray.200",
-              }}
-              cursor="pointer"
-              onClick={() => {
-                setSelectedDestination({});
-                setDestinationSearch("");
-                setDestinationSuggestions([]);
-              }}
-            >
-              <Icon as={AiOutlineClose} />
-            </InputRightElement>
-          </InputGroup>
-          {destinationSuggestions.length > 0 &&
-            Object.entries(selectedDestination).length === 0 && (
-              <List bg="gray.50" mt={-3}>
-                {destinationSuggestions.map((suggestion, index) => (
-                  <ListItem
-                    onClick={() => {
-                      // console.log(suggestion)
-                      setSelectedDestination(suggestion);
-                    }}
-                    borderBottomWidth={1}
-                    p={2}
-                    cursor="pointer"
-                    _hover={{
-                      backgroundColor: "gray.200",
-                    }}
-                    key={index}
-                  >
-                    <strong>{suggestion?.City_Name}</strong>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-          {/* {destinationSuggestions?.length === 0 && destinationSearch?.length !== 0 && 
+      <Stack gap={3}>
+        <Text fontWeight="bold" mt={3}>
+          {" "}
+          Silakan Isi Alamatmu:
+        </Text>
+        <InputGroup>
+          <Input
+            value={
+              Object.keys(selectedDestination).length > 0
+                ? selectedDestination?.City_Name
+                : destinationSearch
+            }
+            placeholder={
+              fetchingDestinations ? "Loading..." : "Kota / Kabupaten Tujuan"
+            }
+            onChange={(e) => handleDestinationSearch(e.target.value)}
+            isDisabled={fetchingDestinations}
+          />
+          <InputRightElement
+            _hover={{
+              bg: "gray.200",
+            }}
+            cursor="pointer"
+            onClick={() => {
+              setSelectedDestination({});
+              setDestinationSearch("");
+              setDestinationSuggestions([]);
+            }}
+          >
+            <Icon as={AiOutlineClose} />
+          </InputRightElement>
+        </InputGroup>
+        {destinationSuggestions.length > 0 &&
+          Object.entries(selectedDestination).length === 0 && (
+            <List bg="gray.50" mt={-3}>
+              {destinationSuggestions.map((suggestion, index) => (
+                <ListItem
+                  onClick={() => {
+                    // console.log(suggestion)
+                    setSelectedDestination(suggestion);
+                  }}
+                  borderBottomWidth={1}
+                  p={2}
+                  cursor="pointer"
+                  _hover={{
+                    backgroundColor: "gray.200",
+                  }}
+                  key={index}
+                >
+                  <strong>{suggestion?.City_Name}</strong>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        {/* {destinationSuggestions?.length === 0 && destinationSearch?.length !== 0 && 
                             <Text color="gray.800">
                                 <i>Kota / kecamatan tidak ditemukan.</i>
                             </Text>
                         } */}
-        </Stack>
-        <Stack>
-          <Text>Alamat Lengkap:</Text>
-          <Textarea
-            placeholder="Jl. Wana Kencana blok J1/10, Tangerang Selatan"
-            onChange={(e) => setFullAddress(e.target.value)}
-          />
-        </Stack>
+      </Stack>
+      <Stack>
+        <Text>Alamat Lengkap:</Text>
+        <Textarea
+          placeholder="Jl. Wana Kencana blok J1/10, Tangerang Selatan"
+          onChange={(e) => setFullAddress(e.target.value)}
+        />
+      </Stack>
 
-        {fetchingPrice ? (
-          <Center my={5}>
-            <Spinner color="gray.500" />
-          </Center>
-        ) : priceSuggestions?.data?.data?.length > 0 ? (
-          priceSuggestions?.data?.data
-            ?.sort((a, b) => parseInt(a.price) - parseInt(b.price))
-            .map((x, i) => (
-              <Flex
-                cursor="pointer"
-                _hover={{
-                  bg: "gray.200",
-                }}
-                _active={{
-                  bg: "gray.300",
-                }}
-                bg={
-                  selectedCourier?.service_code === x?.service_code
-                    ? "gray.100"
-                    : "white"
-                }
-                justifyContent="space-between"
-                borderBottomWidth={1}
-                gap={2}
-                key={i}
-                p={1}
-                onClick={() => {
-                  // requestOrderJne(x)
-                  setSelectedCourier(x);
-                }}
-              >
-                <Stack>
-                  <Text>
-                    <strong>{x?.service_display}</strong>{" "}
-                    <i style={{ color: "gray", fontSize: 12 }}>
-                      ({x?.goods_type})
-                    </i>
-                  </Text>
-                  <Text fontSize={12} color="gray.600">
-                    Estimasi{" "}
-                    {x?.etd_from !== x?.etd_thru
-                      ? x?.etd_from + "-" + x?.etd_thru
-                      : x?.etd_from}
-                    {x?.times === "D" && " hari"}
-                  </Text>
-                </Stack>
-                <Stack alignItems="flex-end">
-                  <Text fontWeight={"bold"}>
-                    {x?.currency} {formatFrice(parseInt(x?.price))}
-                  </Text>
-                  {selectedCourier?.service_code === x?.service_code ? (
-                    <Icon as={FcCheckmark} />
-                  ) : (
-                    <></>
-                  )}
-                </Stack>
-              </Flex>
-            ))
-        ) : (
-          <></>
-        )}
-      </Box>
-    </Center>
+      {fetchingPrice ? (
+        <Center my={5}>
+          <Spinner color="gray.500" />
+        </Center>
+      ) : priceSuggestions?.data?.data?.length > 0 ? (
+        priceSuggestions?.data?.data
+          ?.sort((a, b) => parseInt(a.price) - parseInt(b.price))
+          .map((x, i) => (
+            <Flex
+              cursor="pointer"
+              _hover={{
+                bg: "gray.200",
+              }}
+              _active={{
+                bg: "gray.300",
+              }}
+              bg={
+                selectedCourier?.service_code === x?.service_code
+                  ? "gray.100"
+                  : "white"
+              }
+              justifyContent="space-between"
+              borderBottomWidth={1}
+              gap={2}
+              key={i}
+              p={1}
+              onClick={() => {
+                // requestOrderJne(x)
+                setSelectedCourier(x);
+              }}
+            >
+              <Stack>
+                <Text>
+                  <strong>{x?.service_display}</strong>{" "}
+                  <i style={{ color: "gray", fontSize: 12 }}>
+                    ({x?.goods_type})
+                  </i>
+                </Text>
+                <Text fontSize={12} color="gray.600">
+                  Estimasi{" "}
+                  {x?.etd_from !== x?.etd_thru
+                    ? x?.etd_from + "-" + x?.etd_thru
+                    : x?.etd_from}
+                  {x?.times === "D" && " hari"}
+                </Text>
+              </Stack>
+              <Stack alignItems="flex-end">
+                <Text fontWeight={"bold"}>
+                  {x?.currency} {formatFrice(parseInt(x?.price))}
+                </Text>
+                {selectedCourier?.service_code === x?.service_code ? (
+                  <Icon as={FcCheckmark} />
+                ) : (
+                  <></>
+                )}
+              </Stack>
+            </Flex>
+          ))
+      ) : (
+        <></>
+      )}
+    </Box>
   );
 };
 

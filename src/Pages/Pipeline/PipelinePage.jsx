@@ -22,6 +22,7 @@ import {
   useToast,
   Grid,
   Heading,
+  Center,
 } from "@chakra-ui/react";
 import { FiCheck, FiFilter } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
@@ -43,6 +44,9 @@ function PipelinePage() {
     name: "",
     stages: [],
   });
+
+  const [dataSearchPipeline, setDataSearchPipeline] = useState([]);
+  const [inputSearch, setInputSearch] = useState("");
 
   const [selectedFormId, setSelectedFormId] = useState(null);
 
@@ -176,8 +180,13 @@ function PipelinePage() {
       const resForm = await getCollectionFirebase("forms", conditions, sortBy);
 
       const formFilter = resForm.filter(
-        (x) => !x.product_used || x.product_used?.length === 0
+        (x) =>
+          (!x.product_used || x.product_used?.length === 0) &&
+          (!x.ticket_used || x.ticket_used?.length === 0) &&
+          (!x.membership_used || x.membership_used?.length === 0)
       );
+
+      console.log(formFilter, "ini form");
 
       setListPipeline(res);
       // setFormList(resForm);
@@ -186,6 +195,23 @@ function PipelinePage() {
       console.log(error, "ini error");
     }
   };
+
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = listPipeline.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchPipeline(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchPipeline(listPipeline);
+      setInputSearch(text);
+    }
+  };
+
+  console.log(dataSearchPipeline, "ini pipeline");
 
   const handleFormToggle = (formId) => {
     setSelectedFormId((prev) => (prev === formId ? null : formId));
@@ -199,7 +225,7 @@ function PipelinePage() {
 
   return (
     <Stack p={[1, 1, 5]}>
-      <Stack>
+      <Stack spacing={5}>
         <HStack>
           <Heading size={"md"} textTransform="capitalize">
             pipeline
@@ -210,7 +236,12 @@ function PipelinePage() {
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" mb={2} />
               </InputLeftElement>
-              <Input placeholder="Search" size={"sm"} bg={"white"} />
+              <Input
+                placeholder="Search"
+                size={"sm"}
+                bg={"white"}
+                onChange={(e) => searchFilterFunction(e.target.value)}
+              />
             </InputGroup>
 
             <Button
@@ -225,49 +256,90 @@ function PipelinePage() {
         </HStack>
 
         <Box
+          borderRadius={"md"}
           bg={"white"}
           minHeight="700px"
           my={4}
           p={[1, 1, 5]}
           boxShadow={"sm"}
         >
-          <SimpleGrid columns={[2, null, 4]} spacing={3}>
-            {listPipeline?.map((x, i) => {
-              return (
-                <Stack
-                  key={i}
-                  borderWidth="1px"
-                  p={3}
-                  bgColor="white"
-                  shadow={"md"}
-                  rounded={5}
-                  cursor="pointer"
-                  onClick={() =>
-                    navigate(`/pipeline/view/${x.id}`, { state: x })
-                  }
-                  _hover={{
-                    bg: "gray.100",
-                    transform: "scale(1.02)",
-                    transition: "0.3s",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Heading textTransform={"capitalize"} size="sm">
-                    {x.name}
-                  </Heading>
-                  <Text color={"gray.700"}>{x.project}</Text>
-                  <Spacer />
-
-                  <HStack>
+          {inputSearch === "" ? (
+            <SimpleGrid columns={[2, null, 4]} spacing={3}>
+              {listPipeline?.map((x, i) => {
+                return (
+                  <Stack
+                    key={i}
+                    borderWidth="1px"
+                    p={3}
+                    bgColor="white"
+                    shadow={"md"}
+                    rounded={5}
+                    cursor="pointer"
+                    onClick={() =>
+                      navigate(`/pipeline/view/${x.id}`, { state: x })
+                    }
+                    _hover={{
+                      bg: "gray.100",
+                      transform: "scale(1.02)",
+                      transition: "0.3s",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Heading textTransform={"capitalize"} size="sm">
+                      {x.name}
+                    </Heading>
+                    <Text color={"gray.700"}>{x.project}</Text>
                     <Spacer />
-                    <Text fontSize={"xs"} color={"gray.500"}>
-                      {moment(x.createdAt.seconds * 1000).fromNow()}
-                    </Text>
-                  </HStack>
-                </Stack>
-              );
-            })}
-          </SimpleGrid>
+
+                    <HStack>
+                      <Spacer />
+                      <Text fontSize={"xs"} color={"gray.500"}>
+                        {moment(x.createdAt.seconds * 1000).fromNow()}
+                      </Text>
+                    </HStack>
+                  </Stack>
+                );
+              })}
+            </SimpleGrid>
+          ) : (
+            <SimpleGrid columns={[2, null, 4]} spacing={3}>
+              {dataSearchPipeline?.map((x, i) => {
+                return (
+                  <Stack
+                    key={i}
+                    borderWidth="1px"
+                    p={3}
+                    bgColor="white"
+                    shadow={"md"}
+                    rounded={5}
+                    cursor="pointer"
+                    onClick={() =>
+                      navigate(`/pipeline/view/${x.id}`, { state: x })
+                    }
+                    _hover={{
+                      bg: "gray.100",
+                      transform: "scale(1.02)",
+                      transition: "0.3s",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Heading textTransform={"capitalize"} size="sm">
+                      {x.name}
+                    </Heading>
+                    <Text color={"gray.700"}>{x.project}</Text>
+                    <Spacer />
+
+                    <HStack>
+                      <Spacer />
+                      <Text fontSize={"xs"} color={"gray.500"}>
+                        {moment(x.createdAt.seconds * 1000).fromNow()}
+                      </Text>
+                    </HStack>
+                  </Stack>
+                );
+              })}
+            </SimpleGrid>
+          )}
         </Box>
       </Stack>
 
@@ -292,30 +364,52 @@ function PipelinePage() {
                   }
                 />
               </Stack>
+
               <Stack spacing={2}>
                 <Text>Form Active</Text>
-                {formList?.length > 0 &&
-                  formList?.map((x, index) => (
-                    <HStack
-                      key={index}
-                      p={2}
-                      borderRadius="md"
-                      borderWidth={1}
-                      borderColor="blackAlpha.200"
-                    >
-                      <Text>{x.title}</Text>
-                      <Spacer />
-                      <IconButton
-                        size="sm"
-                        icon={<FiCheck size={20} />}
-                        bgColor={
-                          x.token === selectedFormId ? "green.300" : "gray.200"
-                        }
-                        onClick={() => handleFormToggle(x.token)}
-                      />
-                    </HStack>
-                  ))}
+                {formList?.length > 0 ? (
+                  <>
+                    {formList?.map((x, index) => (
+                      <HStack
+                        key={index}
+                        p={2}
+                        borderRadius="md"
+                        borderWidth={1}
+                        borderColor="blackAlpha.200"
+                      >
+                        <Text>{x.title}</Text>
+                        <Spacer />
+                        <IconButton
+                          size="sm"
+                          icon={<FiCheck size={20} />}
+                          bgColor={
+                            x.token === selectedFormId
+                              ? "green.300"
+                              : "gray.200"
+                          }
+                          onClick={() => handleFormToggle(x.token)}
+                        />
+                      </HStack>
+                    ))}
+                  </>
+                ) : (
+                  <Center>
+                    <Box align={"center"} fontSize={12}>
+                      <Text>No Form Data. All Forms are used</Text>
+                      <Text>You can create your first form</Text>
+                      <Button
+                        my={2}
+                        colorScheme="blue"
+                        size={"xs"}
+                        onClick={() => navigate("/form-builder")}
+                      >
+                        Here
+                      </Button>
+                    </Box>
+                  </Center>
+                )}
               </Stack>
+
               {dataPipeline?.stages?.map((stage, index) => (
                 <Grid
                   gap={4}
