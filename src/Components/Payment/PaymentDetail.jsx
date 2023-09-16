@@ -87,7 +87,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     id,
     updatedOrder,
     fixPrice,
-    fixPriceShipment
   ) => {
     setOrderId(id);
     setLoadingPay(true);
@@ -98,7 +97,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     const data = {
       xenditId: "6479f64913999eb3b3fe7283",
       orderId: id,
-      amount: dataLeads.shippingDetails.price ? fixPriceShipment : fixPrice,
+      amount: dataLeads?.shippingDetails?.price || fixPrice,
       bankCode: selectedPaymentMethod,
       name: updatedOrder.name,
       companyId: dataParam.companyId,
@@ -173,10 +172,13 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
 
-    const fixPriceShipment =
-      dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
+    let fixPrice = 0
+    if(dataLeads?.shippingDetails){
+      fixPrice =  dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
 
-    const fixPrice = dataParam.price * quantity;
+    }else{
+      fixPrice = dataParam.price * quantity;
+    }
 
     const dataOrder = [
       {
@@ -212,7 +214,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
           x,
           updatedOrder,
           fixPrice,
-          fixPriceShipment
         );
       }
     );
