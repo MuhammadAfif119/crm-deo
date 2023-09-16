@@ -25,6 +25,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Input,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { getCollectionFirebase } from "../../Api/firebaseApi";
@@ -38,6 +39,9 @@ const OrderPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [detailOrder, setDetailOrder] = useState({});
+
+  const [dataSearchOrder, setDataSearchOrder] = useState([]);
+  const [inputSearch, setInputSearch] = useState("");
 
   const [selectedDateRange, setSelectedDateRange] = useState();
   const [filteredData, setFilteredData] = useState([]);
@@ -90,8 +94,6 @@ const OrderPage = () => {
     setSelectedDateRange(dateRange);
   };
 
-  console.log(selectedDateRange);
-
   const getDataFilter = async () => {
     const conditions = [
       {
@@ -113,12 +115,32 @@ const OrderPage = () => {
 
     try {
       const filteredOrders = await getCollectionFirebase("orders", conditions);
-
-      console.log(filteredOrders);
-      setFilteredData(filteredOrders);
+      setDataOrders(filteredOrders);
+      console.log(dataOrders);
     } catch (error) {
       console.log(error, "ini error");
     }
+  };
+
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = dataOrders.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchOrder(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchOrder(dataOrders);
+      setInputSearch(text);
+    }
+  };
+
+  const inputStyles = {
+    "&::placeholder": {
+      color: "gray.500",
+    },
   };
 
   useEffect(() => {
@@ -145,6 +167,19 @@ const OrderPage = () => {
             Filter By Date
           </Button>
         </HStack>
+
+        <Input
+          mb={3}
+          mt={5}
+          type="text"
+          placeholder="Search Contact"
+          bgColor="white"
+          color="black"
+          sx={inputStyles}
+          fontSize="sm"
+          onChange={(e) => searchFilterFunction(e.target.value)}
+        />
+
         <Stack
           bgColor="white"
           spacing={1}
@@ -166,8 +201,7 @@ const OrderPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {!selectedDateRange ||
-              Object.keys(selectedDateRange).length === 0 ? (
+              {inputSearch === "" ? (
                 <>
                   {dataOrders?.length > 0 ? (
                     <>
@@ -221,9 +255,9 @@ const OrderPage = () => {
                 </>
               ) : (
                 <>
-                  {filteredData?.length > 0 ? (
+                  {dataSearchOrder?.length > 0 ? (
                     <>
-                      {filteredData.map((order, i) => (
+                      {dataSearchOrder.map((order, i) => (
                         <Tr fontSize={13} key={i}>
                           <Td textTransform={"capitalize"}>{order.name}</Td>
                           <Td textTransform={"capitalize"}>
@@ -277,7 +311,7 @@ const OrderPage = () => {
 
           {(!selectedDateRange ||
             Object.keys(selectedDateRange).length === 0) &&
-            (dataOrders?.length > 0 ? (
+            (dataOrders?.length > 0 || dataSearchOrder?.length > 0 ? (
               <Button
                 colorScheme={"blue"}
                 fontSize="sm"
@@ -371,7 +405,7 @@ const OrderPage = () => {
               <Button
                 size={"sm"}
                 colorScheme="blue"
-                onClick={() => setSelectedDateRange({})}
+                onClick={() => setSelectedDateRange()}
               >
                 Clear
               </Button>

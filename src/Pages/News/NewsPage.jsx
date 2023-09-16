@@ -1,150 +1,345 @@
 import {
+  Badge,
   Box,
   Button,
-  Container,
-  Stack,
+  Center,
+  Checkbox,
+  HStack,
+  Heading,
+  IconButton,
+  Image,
+  Input,
   InputGroup,
   InputLeftElement,
-  Icon,
-  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spacer,
+  Stack,
+  Table,
+  Tbody,
+  Td,
   Text,
-  ButtonGroup,
-  Input,
-  useBreakpointValue,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import { FiSearch } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
-import { getCollectionWhereFirebase } from "../../Api/firebaseApi";
-// import { useGlobalState } from '../../Hooks/Contexts';
-// import BreadCrumbComponent from '../../Components/BreadCrumbs/BreadCrumbComponent';
-import { useNavigate } from "react-router-dom";
-import { NewsTableComponent } from "../../Components/Table/OffersTable";
+import {
+  deleteDocumentFirebase,
+  deleteFileFirebase,
+  getCollectionFirebase,
+} from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
-import AddButtons from "../../Components/Buttons/AddButtons";
-
-// import { NewsTable } from '../Offers/OffersTable';
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { SearchIcon } from "@chakra-ui/icons";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../Config/firebase";
 
 const NewsPage = () => {
-  const [news, setNews] = useState([]);
-
-  const globalState = useUserStore();
-
-  const projectId = globalState.currentProject;
-
+  const toast = useToast();
   const navigate = useNavigate();
-  const breadcrumbData = [
-    { title: "Home", link: "/" },
-    { title: "News", link: "/news" },
-  ];
+  const globalState = useUserStore();
+  const deleteModal = useDisclosure();
 
-  const getNews = async () => {
-    const result = await getCollectionWhereFirebase(
-      "news",
-      "projectsId",
-      "==",
-      projectId
+  const [news, setNews] = useState([]);
+  const [dataModal, setDataModal] = useState();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [dataSearchNews, setDataSearchNews] = useState([]);
+  const [inputSearch, setInputSearch] = useState("");
+
+  const [startIndex, setStartIndex] = useState(0);
+  const itemsPerPage = 6;
+
+  const getNewsData = async () => {
+    const q = query(
+      collection(db, "news"),
+      where("projectId", "==", globalState.currentProject),
+      orderBy("createdAt", "desc"),
+      limit(startIndex + itemsPerPage)
     );
-    if (result) {
-      setNews(result);
-      console.log(result);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const newsArr = [];
+      querySnapshot.forEach((doc) => {
+        newsArr.push({ ...doc.data(), id: doc.id });
+      });
+      setNews(newsArr);
+    });
+  };
+
+  const handleDeleteModal = async (data) => {
+    deleteModal.onOpen();
+    setDataModal(data);
+  };
+
+  const handleDeleteNews = async () => {
+    const collectionName = "news";
+    const docName = dataModal.id;
+
+    try {
+      deleteFileFirebase(`${dataModal.title}_800x800`, "articles").then(() => {
+        deleteDocumentFirebase(collectionName, docName).then((res) => {
+          toast({
+            title: "Deleted!",
+            description: res,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          deleteModal.onClose();
+        });
+      });
+    } catch (error) {
+      console.log("Terjadi kesalahan:", error);
     }
   };
 
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = news.filter((item) => {
+        const itemData = item.title
+          ? item.title.toUpperCase()
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchNews(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchNews(news);
+      setInputSearch(text);
+    }
+  };
+
+  const handleLoadMore = () => {
+    setStartIndex((prev) => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
+  };
+
+  const totalItems = news?.length || dataSearchNews?.length || 0;
+  const shouldShowLoadMore = totalItems >= startIndex + itemsPerPage;
+
+  const inputStyles = {
+    "&::placeholder": {
+      color: "gray.500",
+    },
+  };
+
   useEffect(() => {
-    getNews();
-  }, [projectId]);
+    getNewsData();
+
+    return () => {};
+  }, [globalState.currentProject]);
 
   return (
-    <Box p={[1, 1, 5]}>
-      <AddButtons type={"News"} link={"/news/create"} />
-      {/* <BreadCrumbComponent data={breadcrumbData} /> */}
+    <Box>
+      <Heading>News</Heading>
 
-      <NewsComponent news={news} getNews={getNews} />
-    </Box>
-  );
-};
-
-const NewsComponent = (props) => {
-  const { news, getNews } = props;
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
-  return (
-    <Container
-      py={{
-        base: "2",
-        md: "2",
-      }}
-      maxW="7xl"
-    >
-      <Box
-        bg="bg-surface"
-        boxShadow={{
-          base: "none",
-          md: "sm",
-        }}
-        borderRadius={{
-          base: "none",
-          md: "lg",
-        }}
-      >
-        <Stack spacing="5">
-          <Box
-            px={{
-              base: "4",
-              md: "0",
-            }}
-            pt="2"
+      <Stack my={5} bgColor={"white"}>
+        <HStack p={[1, 1, 5]} py={3}>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.300" mb={2} />
+            </InputLeftElement>
+            <Input
+              w={300}
+              placeholder="Search"
+              size={"sm"}
+              bg={"white"}
+              onChange={(e) => searchFilterFunction(e.target.value)}
+            />
+          </InputGroup>
+          <Spacer />
+          <Button
+            onClick={() => navigate("/news/create")}
+            size={"sm"}
+            colorScheme="blue"
           >
-            <Stack
-              direction={{
-                base: "column",
-                md: "row",
-              }}
-              justify="space-between"
+            + Add News
+          </Button>
+        </HStack>
+
+        <Table>
+          <Thead>
+            <Tr>
+              <Th>Title</Th>
+              <Th>Created at</Th>
+              <Th>Created By</Th>
+              <Th>Status</Th>
+              <Th>Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {inputSearch === "" ? (
+              <>
+                {news?.map((x, index) => (
+                  <Tr key={index}>
+                    <Td>
+                      <Image
+                        w={{ base: "100%", lg: "50%" }}
+                        src={x?.thumbnail}
+                      />
+                    </Td>
+                    <Td>{x.title}</Td>
+                    <Td>
+                      <Text color="gray.600" fontSize={10}>
+                        {moment.unix(x.createdAt?.seconds).format()}
+                      </Text>
+                    </Td>
+                    <Td>
+                      <Text color="muted" fontSize={10}>
+                        {x.createdBy}
+                      </Text>
+                    </Td>
+                    <Td w={{ base: "10%", lg: "15%" }}>
+                      <Badge
+                        colorScheme={
+                          x.status === "published" ? "green" : "gray"
+                        }
+                      >
+                        {x.status}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <HStack spacing="1">
+                        <IconButton
+                          icon={<FiTrash2 fontSize="1.25rem" />}
+                          variant="ghost"
+                          aria-label="Delete news"
+                          onClick={() => handleDeleteModal(x)}
+                        />
+                        <IconButton
+                          icon={<FiEdit2 fontSize="1.25rem" />}
+                          variant="ghost"
+                          aria-label="Edit news"
+                          onClick={() => navigate(`/news/edit?id=${x.id}`)}
+                        />
+                      </HStack>
+                    </Td>
+                  </Tr>
+                ))}
+              </>
+            ) : (
+              <>
+                {dataSearchNews?.map((x, index) => (
+                  <Tr key={index}>
+                    <Td>
+                      <Image
+                        w={{ base: "100%", lg: "50%" }}
+                        src={x?.thumbnail}
+                      />
+                    </Td>
+                    <Td>{x.title}</Td>
+                    <Td>
+                      <Text color="gray.600" fontSize={10}>
+                        {moment.unix(x.createdAt?.seconds).format()}
+                      </Text>
+                    </Td>
+                    <Td>
+                      <Text color="muted" fontSize={10}>
+                        {x.createdBy}
+                      </Text>
+                    </Td>
+                    <Td w={{ base: "10%", lg: "15%" }}>
+                      <Badge
+                        colorScheme={
+                          x.status === "published" ? "green" : "gray"
+                        }
+                      >
+                        {x.status}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <HStack spacing="1">
+                        <IconButton
+                          icon={<FiTrash2 fontSize="1.25rem" />}
+                          variant="ghost"
+                          aria-label="Delete news"
+                          onClick={() => handleDeleteModal(x)}
+                        />
+                        <IconButton
+                          icon={<FiEdit2 fontSize="1.25rem" />}
+                          variant="ghost"
+                          aria-label="Edit news"
+                          onClick={() =>
+                            navigate(`/news/edit?id=${x.id}`, { state: x })
+                          }
+                        />
+                      </HStack>
+                    </Td>
+                  </Tr>
+                ))}
+              </>
+            )}
+          </Tbody>
+        </Table>
+
+        {news?.length === 0 ? (
+          <Center py={4}>
+            <Text>No Data</Text>
+          </Center>
+        ) : (
+          <></>
+        )}
+      </Stack>
+
+      <Stack alignItems={"center"} justifyContent="center">
+        <Box>
+          {shouldShowLoadMore && (
+            <Button onClick={handleLoadMore} size="sm">
+              Load More
+            </Button>
+          )}
+        </Box>
+      </Stack>
+
+      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete {dataModal?.title} Form</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to delete this form?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              isLoading={isDeleting}
+              variant={"outline"}
+              size="sm"
+              colorScheme="blue"
+              mr={3}
+              onClick={handleDeleteNews}
             >
-              <InputGroup maxW="xs">
-                <InputLeftElement pointerEvents="none">
-                  <Icon as={FiSearch} color="muted" boxSize="5" />
-                </InputLeftElement>
-                <Input placeholder="Search" />
-              </InputGroup>
-            </Stack>
-          </Box>
-          <Box overflowX="auto">
-            <NewsTableComponent data={news ? news : null} getNews={getNews} />
-          </Box>
-          <Box
-            px={{
-              base: "4",
-              md: "6",
-            }}
-            pb="5"
-          >
-            <HStack spacing="3" justify="space-between">
-              {!isMobile && (
-                <Text color="muted" fontSize="sm">
-                  Showing 1 to 5 of 42 results
-                </Text>
-              )}
-              <ButtonGroup
-                spacing="3"
-                justifyContent="space-between"
-                width={{
-                  base: "full",
-                  md: "auto",
-                }}
-                variant="secondary"
-              >
-                <Button>Previous</Button>
-                <Button>Next</Button>
-              </ButtonGroup>
-            </HStack>
-          </Box>
-        </Stack>
-      </Box>
-    </Container>
+              Yes
+            </Button>
+            <Button
+              variant={"outline"}
+              size="sm"
+              colorScheme="red"
+              mr={3}
+              onClick={deleteModal.onClose}
+            >
+              No
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 };
 

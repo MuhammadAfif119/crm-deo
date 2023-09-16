@@ -39,7 +39,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./quill.css";
 import { serverTimestamp } from "firebase/firestore";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useUserStore from "../../Hooks/Zustand/Store";
 
 import BackButtons from "../../Components/Buttons/BackButtons";
@@ -49,10 +49,11 @@ const CreateNewsPage = () => {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const idProject = searchParams.get("id");
+  const location = useLocation();
+  const datas = location.state;
 
   const navigate = useNavigate();
   const { onOpen, isOpen, onClose } = useDisclosure();
-  // const { currentProject } = useGlobalState();
 
   const globalState = useUserStore();
 
@@ -68,12 +69,11 @@ const CreateNewsPage = () => {
   const [loading, setLoading] = useState(false);
   const contentRef = useRef();
 
+  console.log(contentRef, "ini ref");
+
   const toast = useToast();
-  const breadcrumbData = [
-    { title: "Home", link: "/" },
-    { title: "News", link: "/news" },
-    { title: "Create", link: "/Create" },
-  ];
+
+  console.log(dataInput, "ini data");
 
   const getNews = async () => {
     const res = await getSingleDocumentFirebase("news", idProject);
@@ -91,6 +91,9 @@ const CreateNewsPage = () => {
     }
   }, [idProject]);
 
+  console.log(idProject);
+  console.log(dataInput.content);
+
   const handleDropImage = async (file) => {
     const filesFormats = ["image/jpg", "image/jpeg", "image/png", "image/heic"];
     const isRightFormat = filesFormats.includes(file?.type);
@@ -105,14 +108,30 @@ const CreateNewsPage = () => {
       return;
     }
     setIsUploading(true);
-    await uploadFile(dataInput.title, "articles", file).then((uploadedImg) => {
-      console.log(uploadedImg, "this is data result");
-      setDataInput({
-        ...dataInput,
-        thumbnailURL: uploadedImg,
-      });
+
+    if (dataInput.title || dataInput.title === "") {
+      await uploadFile(dataInput.title, "articles", file).then(
+        (uploadedImg) => {
+          console.log(uploadedImg, "this is data result");
+          setDataInput({
+            ...dataInput,
+            thumbnailURL: uploadedImg,
+          });
+          setIsUploading(false);
+        }
+      );
+
       setIsUploading(false);
-    });
+    } else {
+      toast({
+        status: "warning",
+        title: " Deoapp CRM",
+        description: "Please input title first",
+        duration: 2000,
+      });
+    }
+
+    setIsUploading(false);
   };
 
   console.log(dataInput);
@@ -145,7 +164,7 @@ const CreateNewsPage = () => {
           status: "active",
           createdAt: new Date(),
           timestamp: serverTimestamp(),
-          projectsId: projectId,
+          projectId: globalState.currentProject,
           thumbnail:
             dataInput?.thumbnailURL ??
             "https://cdn0-production-images-kly.akamaized.net/vX9Wn584ZkWXU4ehZAr2hpApnKM=/640x360/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/3181463/original/093797600_1594883363-r5t6y7u8989HL.jpg",
@@ -166,7 +185,8 @@ const CreateNewsPage = () => {
           console.log(err.message);
           toast({
             title: "Which project you want to post this article to?",
-            description: "Please select project from the sidebar on the left",
+            description:
+              "Please select project from the sidebar on the left and make sure to fill the content",
             isClosable: true,
             duration: 9000,
             status: "warning",
@@ -180,13 +200,14 @@ const CreateNewsPage = () => {
       // })
     }
   };
+
   const handleEdit = async () => {
     setLoading(true);
-    setDataInput({
-      ...dataInput,
-      content: contentRef.current,
-      projectId: projectId,
-    });
+    // setDataInput({
+    //   ...dataInput,
+    //   content: contentRef?.current,
+    //   projectId: projectId,
+    // });
     if (Object.keys(projectId)?.length === 0) {
       setLoading(false);
       toast({
@@ -197,20 +218,7 @@ const CreateNewsPage = () => {
         status: "warning",
       });
     } else {
-      updateDocumentFirebase(
-        "news",
-        idProject,
-        {
-          ...dataInput,
-          content: contentRef.current,
-          updatedAt: new Date(),
-          projectsId: projectId,
-          thumbnail:
-            dataInput?.thumbnailURL ??
-            "https://cdn0-production-images-kly.akamaized.net/vX9Wn584ZkWXU4ehZAr2hpApnKM=/640x360/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/3181463/original/093797600_1594883363-r5t6y7u8989HL.jpg",
-        },
-        companyId
-      )
+      updateDocumentFirebase("news", idProject, dataInput, companyId)
         .then((id) => {
           toast({
             title: "Edit article success",
@@ -232,6 +240,7 @@ const CreateNewsPage = () => {
         });
     }
   };
+
   const handleSaveTag = () => {
     let arr = [...dataInput.tags];
     arr.push(newTag);
@@ -261,6 +270,8 @@ const CreateNewsPage = () => {
 
   const contentChange = (value) => {
     contentRef.current = value;
+    console.log(contentRef.current);
+    setDataInput({ ...dataInput, content: value });
   };
 
   return (
@@ -271,7 +282,7 @@ const CreateNewsPage = () => {
       </Flex>
       {/* <BreadCrumbComponent data={breadcrumbData} /> */}
       <Box my={10}>
-        <FormControl>
+        <FormControl isRequired>
           <FormLabel>Title</FormLabel>
           <Input
             bg="white"
@@ -399,6 +410,7 @@ const CreateNewsPage = () => {
           </Button>
         )}
       </Box>
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

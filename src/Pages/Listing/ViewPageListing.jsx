@@ -20,6 +20,7 @@ import {
   ModalBody,
   Spacer,
   useToast,
+  Input,
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 import {
@@ -273,6 +274,27 @@ const ViewPageListing = () => {
     }
   };
 
+  const searchFilterFunction = (text) => {
+    // if (text) {
+    //   const newData = dataOrders.filter((item) => {
+    //     const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+    //     const textData = text.toUpperCase();
+    //     return itemData.indexOf(textData) > -1;
+    //   });
+    //   setDataSearchOrder(newData);
+    //   setInputSearch(text);
+    // } else {
+    //   setDataSearchOrder(dataOrders);
+    //   setInputSearch(text);
+    // }
+  };
+
+  const inputStyles = {
+    "&::placeholder": {
+      color: "gray.500",
+    },
+  };
+
   useEffect(() => {
     if (!selectedCategoryNiche) {
       null;
@@ -350,6 +372,18 @@ const ViewPageListing = () => {
         <Divider />
       </Stack>
 
+      <Input
+        mb={3}
+        mt={5}
+        type="text"
+        placeholder="Search Listing"
+        bgColor="white"
+        color="black"
+        sx={inputStyles}
+        fontSize="sm"
+        onChange={(e) => searchFilterFunction(e.target.value)}
+      />
+
       {Object.entries(categoryData).map(([category, categoryListing]) => {
         return (
           (!selectedCategoryNiche || selectedCategoryNiche === category) && (
@@ -362,6 +396,7 @@ const ViewPageListing = () => {
                   </Text>
                 </AbsoluteCenter>
               </Box>
+
               <SimpleGrid columns={[1, 2, 3]} gap={5}>
                 {categoryListing?.map((listing, index) => {
                   return (

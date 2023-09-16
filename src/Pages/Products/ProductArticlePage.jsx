@@ -39,6 +39,9 @@ const ProductArticlePage = () => {
   const globalState = useUserStore();
   const navigate = useNavigate();
 
+  const [startIndex, setStartIndex] = useState(0);
+  const itemsPerPage = 6;
+
   const [dataProducts, setDataProducts] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchedDataProduct, setSearchedDataProduct] = useState([]);
@@ -47,15 +50,29 @@ const ProductArticlePage = () => {
     const conditions = [
       { field: "projectId", operator: "==", value: globalState.currentProject },
     ];
+    const sortBy = { field: "createdAt", direction: "desc" };
+    const limitValue = startIndex + itemsPerPage;
 
     try {
-      const res = await getCollectionFirebase("listings_product", conditions);
+      const res = await getCollectionFirebase(
+        "listings_product",
+        conditions,
+        sortBy,
+        limitValue
+      );
       console.log(res);
       setDataProducts(res);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleLoadMore = () => {
+    setStartIndex((prev) => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
+  };
+
+  const totalItems = dataProducts?.length || searchedDataProduct?.length || 0;
+  const shouldShowLoadMore = totalItems >= startIndex + itemsPerPage;
 
   const searchFilterFunction = (text) => {
     if (text || text !== "") {
@@ -240,6 +257,16 @@ const ProductArticlePage = () => {
               )}
             </>
           )}
+        </Stack>
+
+        <Stack alignItems={"center"} justifyContent="center">
+          <Box>
+            {shouldShowLoadMore && (
+              <Button onClick={handleLoadMore} size="sm">
+                Load More
+              </Button>
+            )}
+          </Box>
         </Stack>
       </Stack>
     </Stack>

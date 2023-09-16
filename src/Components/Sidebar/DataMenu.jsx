@@ -31,11 +31,11 @@ import {
 } from "react-icons/fc";
 
 export const data = [
-  {
-    name: "Scoreboard",
-    icon: FcDisplay,
-    link: "/",
-  },
+  // {
+  //   name: "Scoreboard",
+  //   icon: FcDisplay,
+  //   link: "/",
+  // },
 
   {
     name: "Contacts",
