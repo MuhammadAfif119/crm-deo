@@ -31,11 +31,11 @@ import {
 } from "react-icons/fc";
 
 export const data = [
-  {
-    name: "Scoreboard",
-    icon: FcDisplay,
-    link: "/",
-  },
+  // {
+  //   name: "Scoreboard",
+  //   icon: FcDisplay,
+  //   link: "/",
+  // },
 
   {
     name: "Contacts",
@@ -84,6 +84,7 @@ export const data = [
       { name: "Forms", icon: FcSurvey, link: "/form-builder" },
       { name: "Listings", icon: FcParallelTasks, link: "/listing" },
       { name: "News", icon: FcNews, link: "/news" },
+      { name: "List Product", icon: FcNews, link: "/products/articles" },
     ],
   },
   // {

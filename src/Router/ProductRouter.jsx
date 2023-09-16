@@ -4,6 +4,10 @@ import ListingPage from "../Pages/Listing/ListingPage";
 import MyFeedRssPage from "../Pages/MyFeeds/MyFeedRssPage";
 import ProductPage from "../Pages/Products/ProductPage";
 import FormPageProduct from "../Pages/Products/FormPageProduct";
+import ProductArticlePage from "../Pages/Products/ProductArticlePage";
+import ProductSinglePage from "../Pages/Products/ProductSinglePage";
+import ShippingPaymentPage from "../Pages/Shipping/ShippingPaymentPage";
+import ProductEditSinglePage from "../Pages/Products/ProductEditSinglePage";
 
 const ListingRouter = [
   {
@@ -14,6 +18,19 @@ const ListingRouter = [
   {
     path: "/products/:type",
     element: <FormPageProduct />,
+  },
+
+  {
+    path: "/products/articles",
+    element: <ProductArticlePage />,
+  },
+  {
+    path: "/products/article/edit/:id",
+    element: <ProductEditSinglePage />,
+  },
+  {
+    path: "/payment/shipping/data",
+    element: <ShippingPaymentPage />,
   },
 ];
 

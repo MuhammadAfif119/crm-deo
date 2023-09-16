@@ -3,6 +3,7 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   Image,
@@ -27,6 +28,7 @@ import {
   arrayRemoveFirebase,
   deleteDocumentFirebase,
   deleteFileFirebase,
+  getCollectionFirebase,
   getCollectionWhereFirebase,
 } from "../../Api/firebaseApi";
 import moment from "moment";
@@ -47,19 +49,8 @@ const TicketPage = () => {
   const [dataSearchTicket, setDataSearchTicket] = useState([]);
   const [inputSearch, setInputSearch] = useState("");
 
-  const getData = async () => {
-    try {
-      const res = await getCollectionWhereFirebase(
-        "tickets",
-        "projectId",
-        "==",
-        globalState?.currentProject
-      );
-      setData(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [startIndex, setStartIndex] = useState(0);
+  const itemsPerPage = 6;
 
   const searchFilterFunction = (text) => {
     if (text) {
@@ -78,6 +69,26 @@ const TicketPage = () => {
     }
   };
 
+  const getData = async () => {
+    const conditions = [
+      { field: "projectId", operator: "==", value: globalState.currentProject },
+    ];
+    const sortBy = { field: "createdAt", direction: "desc" };
+    const limitValue = startIndex + itemsPerPage;
+    try {
+      const res = await getCollectionFirebase(
+        "tickets",
+        conditions,
+        sortBy,
+        limitValue
+      );
+      console.log(res);
+      setData(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleModal = (type, item) => {
     onOpen();
     setSelectedData({ type: type, item: item });
@@ -87,7 +98,9 @@ const TicketPage = () => {
     try {
       console.log(x);
 
-      await arrayRemoveFirebase("forms", x.formId, "ticket_used", [x.id]);
+      if (x.formId) {
+        await arrayRemoveFirebase("forms", x.formId, "ticket_used", [x.id]);
+      }
 
       deleteFileFirebase(`${x.title}_800x800`, `tickets`).then(() => {
         deleteFileFirebase(`${x.title}-logo_800x800`, `tickets`).then(() => {
@@ -113,6 +126,10 @@ const TicketPage = () => {
         isClosable: true,
       });
     }
+  };
+
+  const handleLoadMore = () => {
+    setStartIndex((prev) => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
   };
 
   useEffect(() => {
@@ -154,7 +171,7 @@ const TicketPage = () => {
       />
 
       {inputSearch !== "" ? (
-        <SimpleGrid my={5} columns={data.length !== 0 ? [2, 3] : 1} gap="5">
+        <SimpleGrid my={5} columns={data?.length !== 0 ? [2, 3] : 1} gap="5">
           {dataSearchTicket.length !== 0 ? (
             dataSearchTicket
               // ?.filter((item) =>
@@ -264,94 +281,95 @@ const TicketPage = () => {
           )}
         </SimpleGrid>
       ) : (
-        <SimpleGrid my={5} columns={data.length !== 0 ? [2, 3] : 1} gap="5">
-          {data.length !== 0 ? (
-            data
-              // ?.filter((item) =>
-              //   active
-              //     ? active === item?.isActive && today.isBefore(item?.dateStart)
-              //     : active === item?.isActive ||
-              //       today.isSameOrAfter(item?.dateStart)
-              // )
-              .map((item, index) => {
-                return (
-                  <>
-                    <Box pos={"relative"} key={index}>
-                      <VStack
-                        rounded={5}
-                        borderWidth="1px"
-                        p={3}
-                        bgColor="white"
-                        shadow={"md"}
-                        align={"left"}
-                        justify={"space-between"}
-                        cursor={"pointer"}
-                        _hover={{
-                          bg: "gray.100",
-                          transform: "scale(1.02)",
-                          transition: "0.3s",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {item.isActive === true ? (
-                          <Badge
-                            fontSize={9}
-                            w={"fit-content"}
-                            variant="solid"
-                            colorScheme="green"
-                          >
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge
-                            fontSize={9}
-                            w={"fit-content"}
-                            variant="solid"
-                            colorScheme="red"
-                          >
-                            Inactive
-                          </Badge>
-                        )}
-                        <Flex justify={"space-between"} align={"center"}>
-                          <Heading
-                            size={"sm"}
-                            onClick={() => handleModal("read", item)}
-                          >
-                            {item?.title}
-                          </Heading>
-                          <Button
-                            variant={"unstyled"}
-                            onClick={() => handleModal("delete", item)}
-                          >
-                            <DeleteIcon />
-                          </Button>
-                        </Flex>
-                        <Box onClick={() => handleModal("read", item)}>
-                          <Flex gap={2} align={"center"}>
-                            <FiCalendar />
-                            <Text size={"sm"}>
-                              {moment(item?.dateStart).format("DD")}{" "}
-                              {monthNames[moment(item?.dateStart).month()]}{" "}
-                              {moment(item?.dateStart).format("YYYY")}
-                            </Text>
-                            {item?.dateEnd && (
-                              <Text size={"sm"}>
-                                - {moment(item?.dateEnd).format("DD")}{" "}
-                                {monthNames[moment(item?.dateEnd).month()]}{" "}
-                                {moment(item?.dateEnd).format("YYYY")}
-                              </Text>
-                            )}
-                          </Flex>
-                          <Flex align={"center"} gap="2">
-                            <FiClock />
-                            <Text size={"sm"}>{item?.time}</Text>
-                            <Text size="sm"> - {item?.timeEnd}</Text>
-                          </Flex>
-                          <Flex align={"center"} gap={2}>
-                            <FiMapPin />
-                            <Text size={"sm"}>{item?.address || "Zoom"}</Text>
-                          </Flex>
+        <>
+          <SimpleGrid my={5} columns={data?.length !== 0 ? [2, 3] : 1} gap="5">
+            {data?.length !== 0 ? (
+              data
+                // ?.filter((item) =>
+                //   active
+                //     ? active === item?.isActive && today.isBefore(item?.dateStart)
+                //     : active === item?.isActive ||
+                //       today.isSameOrAfter(item?.dateStart)
+                // )
+                ?.map((item, index) => {
+                  return (
+                    <>
+                      <Box pos={"relative"} key={index}>
+                        <VStack
+                          rounded={5}
+                          borderWidth="1px"
+                          p={3}
+                          bgColor="white"
+                          shadow={"md"}
+                          align={"left"}
+                          justify={"space-between"}
+                          cursor={"pointer"}
+                          _hover={{
+                            bg: "gray.100",
+                            transform: "scale(1.02)",
+                            transition: "0.3s",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {item.isActive === true ? (
+                            <Badge
+                              fontSize={9}
+                              w={"fit-content"}
+                              variant="solid"
+                              colorScheme="green"
+                            >
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge
+                              fontSize={9}
+                              w={"fit-content"}
+                              variant="solid"
+                              colorScheme="red"
+                            >
+                              Inactive
+                            </Badge>
+                          )}
                           <Flex justify={"space-between"} align={"center"}>
+                            <Heading
+                              size={"sm"}
+                              onClick={() => handleModal("read", item)}
+                            >
+                              {item?.title}
+                            </Heading>
+                            <Button
+                              variant={"unstyled"}
+                              onClick={() => handleModal("delete", item)}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </Flex>
+                          <Box onClick={() => handleModal("read", item)}>
+                            <Flex gap={2} align={"center"}>
+                              <FiCalendar />
+                              <Text size={"sm"}>
+                                {moment(item?.dateStart).format("DD")}{" "}
+                                {monthNames[moment(item?.dateStart).month()]}{" "}
+                                {moment(item?.dateStart).format("YYYY")}
+                              </Text>
+                              {item?.dateEnd && (
+                                <Text size={"sm"}>
+                                  - {moment(item?.dateEnd).format("DD")}{" "}
+                                  {monthNames[moment(item?.dateEnd).month()]}{" "}
+                                  {moment(item?.dateEnd).format("YYYY")}
+                                </Text>
+                              )}
+                            </Flex>
+                            <Flex align={"center"} gap="2">
+                              <FiClock />
+                              <Text size={"sm"}>{item?.time}</Text>
+                              <Text size="sm"> - {item?.timeEnd}</Text>
+                            </Flex>
+                            <Flex align={"center"} gap={2}>
+                              <FiMapPin />
+                              <Text size={"sm"}>{item?.address || "Zoom"}</Text>
+                            </Flex>
+                            {/* <Flex justify={"space-between"} align={"center"}> */}
                             {/* <PriceTag price={x.price} />
               {x.sold === true ? <Text textTransform={'uppercase'} fontWeight={'medium'}>fully booked</Text> :
                 today.isAfter(x?.endTicket) ?
@@ -360,20 +378,38 @@ const TicketPage = () => {
                   :
                   <Button size={'sm'} colorScheme={value?.webConfig?.colorScheme}>Buy Ticket</Button>
               } */}
-                          </Flex>
-                        </Box>
-                      </VStack>
-                    </Box>
-                  </>
-                );
-              })
-          ) : (
-            <Heading my="5" size="sm" textAlign={"center"}>
-              You don't have any ticket yet in this project.
-            </Heading>
-          )}
-        </SimpleGrid>
+                            {/* </Flex> */}
+                            <Text fontSize={9} mt={2}>
+                              Created by: {item.createdBy}
+                            </Text>
+                          </Box>
+                        </VStack>
+                      </Box>
+                    </>
+                  );
+                })
+            ) : (
+              <Heading my="5" size="sm" textAlign={"center"}>
+                You don't have any ticket yet in this project.
+              </Heading>
+            )}
+          </SimpleGrid>
+        </>
       )}
+
+      {data?.length > itemsPerPage ||
+      dataSearchTicket?.length > itemsPerPage ? (
+        <Center>
+          <Button
+            variant={"outline"}
+            colorScheme="blue"
+            onClick={handleLoadMore}
+          >
+            Load More
+          </Button>
+        </Center>
+      ) : null}
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

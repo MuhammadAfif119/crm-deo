@@ -4,6 +4,7 @@ import {
   Center,
   Checkbox,
   Container,
+  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -555,17 +556,6 @@ const FormTicketPage = () => {
   const [filesLogo, setFilesLogo] = useState("");
   const [checkboxDate, setCheckboxDate] = useState(false);
   const [checkboxPrice, setCheckboxPrice] = useState(false);
-  const [categoryDetails, setCategoryDetails] = useState([
-    {
-      title: "",
-      price: "",
-      priceEnd: "",
-      details: "",
-      tickets: [
-        { title: "", price: "", endTicket: "", totalAudience: "", notes: "" },
-      ],
-    },
-  ]);
   const [data, setData] = useState({
     isActive: true,
     title: "",
@@ -577,6 +567,25 @@ const FormTicketPage = () => {
     timeEnd: "",
     tnc: "",
   });
+
+  const [categoryDetails, setCategoryDetails] = useState({
+    title: "",
+    price: "",
+    priceEnd: "",
+    details: "",
+    tickets: [
+      {
+        title: data.title,
+        price: data?.price,
+        endTicket: data?.timeEnd,
+        totalAudience: "",
+        notes: "",
+      },
+    ],
+  });
+
+  console.log(categoryDetails);
+
   const [eventType, setEventType] = useState([]);
   const [formPage, setFormPage] = useState(false);
   const [dataForm, setDataForm] = useState({});
@@ -644,7 +653,7 @@ const FormTicketPage = () => {
       setLogo(res.logo);
       setFiles(res.thumbnail);
       setCategoryDetails(res.category);
-      setTicketCounts([res.category[0].tickets.length]);
+      setTicketCounts([res.category[0]?.tickets?.length]);
       setLastFormId(res.formId);
     }
 
@@ -656,6 +665,8 @@ const FormTicketPage = () => {
 
   console.log(lastFormId, "ini last form");
   console.log(data.formId, "ini new form");
+  console.log(categoryDetails, "ini category");
+  console.log(data, "ini data");
 
   // const handleNext = () => {
   //   if (!detailTicket) {
@@ -812,7 +823,7 @@ const FormTicketPage = () => {
       if (type === "create") {
         const newDatas = {
           ...data,
-          category: categoryDetails,
+          category: [categoryDetails],
           projectId: projectId,
           projectName: projectName,
         };
@@ -846,6 +857,15 @@ const FormTicketPage = () => {
           position: "top-right",
           isClosable: true,
         });
+
+        if (newDatas.formId && newDatas.formId !== "") {
+          const result = await updateDocumentFirebase(
+            "forms",
+            newDatas?.formId,
+            { ticket_used: [res] }
+          );
+        }
+
         navigate("/ticket");
       } else {
         let newData = {
@@ -881,6 +901,7 @@ const FormTicketPage = () => {
           idProject,
           newData
         );
+
         if (resUpdate && data.formId) {
           const collectionName = "forms";
           const docName = data.formId;
@@ -888,7 +909,7 @@ const FormTicketPage = () => {
           const values = [idProject];
 
           try {
-            if (data.formId !== lastFormId) {
+            if (lastFormId !== undefined && data.formId !== lastFormId) {
               const result = await arrayRemoveFirebase(
                 "forms",
                 lastFormId,
@@ -980,7 +1001,11 @@ const FormTicketPage = () => {
         snapshot.forEach((doc) => {
           const docData = doc.data();
 
-          if (!docData.ticket_used || docData.ticket_used.length === 0) {
+          if (
+            (!docData.ticket_used || docData.ticket_used.length === 0) &&
+            (!docData.product_used || docData.product_used.length === 0) &&
+            (!docData.membership_used || docData.membership_used.length === 0)
+          ) {
             data.push({ id: doc.id, ...docData });
           }
         });
@@ -1021,6 +1046,7 @@ const FormTicketPage = () => {
       setFilesImage(newFiles);
     }
   };
+
   const handleFileLogoInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles?.length) {
@@ -1068,7 +1094,9 @@ const FormTicketPage = () => {
           <FormControl isRequired isInvalid={isError.includes("title")}>
             <FormLabel>Event Name</FormLabel>
             <Input
-              onChange={(e) => setData({ ...data, title: e.target.value })}
+              onChange={(e) => {
+                setData({ ...data, title: e.target.value });
+              }}
               value={data?.title}
             />
           </FormControl>
@@ -1163,7 +1191,9 @@ const FormTicketPage = () => {
             <Input
               type="number"
               value={data?.price}
-              onChange={(e) => setData({ ...data, price: e.target.value })}
+              onChange={(e) => {
+                setData({ ...data, price: e.target.value });
+              }}
             />
           </FormControl>
 
@@ -1185,9 +1215,9 @@ const FormTicketPage = () => {
               <FormLabel>Date Start</FormLabel>
               <Input
                 type="date"
-                onChange={(e) =>
-                  setData({ ...data, dateStart: e.target.value })
-                }
+                onChange={(e) => {
+                  setData({ ...data, dateStart: e.target.value });
+                }}
                 value={data?.dateStart}
               />
             </FormControl>
@@ -1202,9 +1232,9 @@ const FormTicketPage = () => {
                 <FormLabel>Date End</FormLabel>
                 <Input
                   type="date"
-                  onChange={(e) =>
-                    setData({ ...data, dateEnd: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setData({ ...data, dateEnd: e.target.value });
+                  }}
                   value={data?.dateEnd}
                 />
               </FormControl>
@@ -1231,7 +1261,9 @@ const FormTicketPage = () => {
               <FormLabel>Time End</FormLabel>
               <Input
                 type="time"
-                onChange={(e) => setData({ ...data, timeEnd: e.target.value })}
+                onChange={(e) => {
+                  setData({ ...data, timeEnd: e.target.value });
+                }}
                 value={data?.timeEnd}
               />
             </FormControl>
@@ -1375,11 +1407,146 @@ const FormTicketPage = () => {
                 ))}
               </SimpleGrid>
             ) : (
-              <Center>
-                <Text>No Form Data</Text>
+              <Center py={3}>
+                <Stack alignItems={"center"}>
+                  <Text>No Form Data</Text>
+                  <Button
+                    size={"xs"}
+                    colorScheme="blue"
+                    onClick={() => navigate("/form-builder")}
+                  >
+                    Create Form
+                  </Button>
+                </Stack>
               </Center>
             )}
           </Box>
+
+          <Divider />
+
+          <Flex gap={5} py={5}>
+            <Box w={"50%"}>
+              <Text fontWeight={"semibold"}>
+                Data Details To Be Displayed in PageView
+              </Text>
+              <FormControl mt={2} isRequired>
+                <FormLabel>Ticket Name/Title</FormLabel>
+                <Input
+                  placeholder="Enter title..."
+                  value={categoryDetails[0]?.title}
+                  onChange={(e) =>
+                    setCategoryDetails({
+                      ...categoryDetails,
+                      title: e.target.value,
+                    })
+                  }
+                />
+              </FormControl>
+
+              <FormControl my={2} isRequired>
+                <FormLabel>Ticket Price</FormLabel>
+                <Input
+                  placeholder="Enter price..."
+                  value={categoryDetails[0]?.price}
+                  onChange={(e) =>
+                    setCategoryDetails({
+                      ...categoryDetails,
+                      price: e.target.value,
+                    })
+                  }
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>Ticket Detail</FormLabel>
+                <Input
+                  placeholder="Enter Detail..."
+                  value={categoryDetails[0]?.details}
+                  onChange={(e) =>
+                    setCategoryDetails({
+                      ...categoryDetails,
+                      details: e.target.value,
+                    })
+                  }
+                />
+              </FormControl>
+            </Box>
+
+            <Box w={"50%"}>
+              <Text fontWeight={"semibold"}>
+                Ticket Information Based On The Event Ticket
+              </Text>
+              <FormControl mt={2} isRequired>
+                <FormLabel>Title</FormLabel>
+                <Input
+                  placeholder="Enter title..."
+                  value={categoryDetails[0]?.tickets[0]?.title}
+                  onChange={(e) =>
+                    setCategoryDetails((prevCategory) => ({
+                      ...prevCategory,
+                      tickets: prevCategory.tickets.map((ticket) => ({
+                        ...ticket,
+                        title: e.target.value,
+                      })),
+                    }))
+                  }
+                />
+              </FormControl>
+
+              <FormControl my={2} isRequired>
+                <FormLabel>Price</FormLabel>
+                <Input
+                  placeholder="Enter price..."
+                  value={categoryDetails[0]?.tickets[0]?.price}
+                  onChange={(e) =>
+                    setCategoryDetails((prevCategory) => ({
+                      ...prevCategory,
+                      tickets: prevCategory.tickets.map((ticket) => ({
+                        ...ticket,
+                        price: e.target.value,
+                      })),
+                    }))
+                  }
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>End Date</FormLabel>
+                <Input
+                  type="date"
+                  placeholder="Enter Detail..."
+                  value={categoryDetails[0]?.tickets[0]?.endTicket}
+                  onChange={(e) =>
+                    setCategoryDetails((prevCategory) => ({
+                      ...prevCategory,
+                      tickets: prevCategory.tickets.map((ticket) => ({
+                        ...ticket,
+                        endTicket: e.target.value,
+                      })),
+                    }))
+                  }
+                />
+              </FormControl>
+
+              <FormControl mt={2} isRequired>
+                <FormLabel>Notes</FormLabel>
+                <Textarea
+                  placeholder="Enter Notes..."
+                  value={categoryDetails[0]?.tickets[0]?.notes}
+                  onChange={(e) =>
+                    setCategoryDetails((prevCategory) => ({
+                      ...prevCategory,
+                      tickets: prevCategory.tickets.map((ticket) => ({
+                        ...ticket,
+                        notes: e.target.value,
+                      })),
+                    }))
+                  }
+                />
+              </FormControl>
+            </Box>
+          </Flex>
+
           {params.type === "create" ? (
             <Flex align="end" justify={"end"}>
               <Button

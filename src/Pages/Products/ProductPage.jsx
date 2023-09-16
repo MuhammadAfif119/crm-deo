@@ -27,7 +27,15 @@ import {
   AccordionPanel,
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import {
   arrayRemoveFirebase,
@@ -56,12 +64,17 @@ const ProductPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const [pageFilter, setPageFilter] = useState(1);
+
   const [detailActive, setDetailActive] = useState("");
 
   const [modalDetail, setModalDetail] = useState("");
   const [modalDelete, setModalDelete] = useState("");
 
   const globalState = useUserStore();
+
+  const pageSize = 10;
 
   const projectId = globalState.currentProject;
 
@@ -71,7 +84,9 @@ const ProductPage = () => {
     try {
       const q = query(
         collection(db, "listings_product"),
-        where("projectId", "==", projectId)
+        where("projectId", "==", projectId),
+        orderBy("createdAt", "asc"),
+        limit(pageSize * page)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -129,7 +144,9 @@ const ProductPage = () => {
       const q = query(
         collection(db, "listings_product"),
         where("category", "array-contains", value.toLowerCase()),
-        where("projectId", "==", projectId)
+        where("projectId", "==", projectId),
+        orderBy("createdAt", "asc"),
+        limit(10 * pageFilter)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -187,7 +204,7 @@ const ProductPage = () => {
       setSelectedCategory(null);
       setSelectedCategoryNiche(null);
     };
-  }, [globalState.currentProject]);
+  }, [globalState.currentProject, page]);
 
   const handleDelete = async (product) => {
     const docName = product.id;
@@ -220,6 +237,14 @@ const ProductPage = () => {
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
     }
+  };
+
+  const handleLoadMore = () => {
+    setPage(page + 1); // Increment the page number to fetch the next page of data
+  };
+
+  const handleLoadMoreFilter = () => {
+    setPageFilter(pageFilter + 1); // Increment the page number to fetch the next page of data
   };
 
   const handleModalDelete = (value) => {
@@ -441,6 +466,34 @@ const ProductPage = () => {
           )
         );
       })}
+
+      {selectedCategory === "All" ? (
+        <Box align={"center"}>
+          <Button
+            onClick={() => handleLoadMore()}
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            alignSelf="center"
+            mt={4}
+          >
+            Load More
+          </Button>
+        </Box>
+      ) : (
+        <Box align={"center"}>
+          <Button
+            onClick={() => handleLoadMoreFilter()}
+            variant="outline"
+            colorScheme="blue"
+            size="md"
+            alignSelf="center"
+            mt={4}
+          >
+            Load More
+          </Button>
+        </Box>
+      )}
 
       <Modal
         size={"xl"}

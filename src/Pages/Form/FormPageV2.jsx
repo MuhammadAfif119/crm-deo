@@ -3,6 +3,7 @@ import {
   Button,
   Heading,
   HStack,
+  Icon,
   Input,
   Modal,
   ModalBody,
@@ -18,7 +19,14 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { BsFillCheckCircleFill } from "react-icons/bs";
@@ -26,6 +34,7 @@ import { IoLogoFacebook } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import {
   addDocumentFirebase,
+  deleteDocumentFirebase,
   getCollectionFirebase,
   updateDocumentFirebase,
 } from "../../Api/firebaseApi";
@@ -34,14 +43,20 @@ import { checkIdSelect } from "../../Hooks/Middleware/UserMiddleWare";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { encryptToken } from "../../Utils/encrypToken";
 import { FcPlus } from "react-icons/fc";
+import { FiTrash } from "react-icons/fi";
+import { clientTypessense } from "../../Api/Typesense";
 
 function FormPageV2() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const globalState = useUserStore();
   const [loading, setLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [inputSearch, setInputSearch] = useState("");
   const [dataSearchForms, setDataSearchForm] = useState([]);
+
+  const deleteModal = useDisclosure();
+  const [dataModal, setDataModal] = useState();
 
   const [dataForm, setDataForm] = useState([]);
 
@@ -61,6 +76,23 @@ function FormPageV2() {
 
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 6;
+
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = dataForm.filter((form) => {
+        const itemData = form.title
+          ? form.title.toUpperCase()
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchForm(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchForm(dataForm);
+      setInputSearch(text);
+    }
+  };
 
   const getData = async () => {
     const conditions = [
@@ -83,26 +115,32 @@ function FormPageV2() {
     }
   };
 
-  const searchFilterFunction = (text) => {
-    if (text) {
-      const newData = dataForm.filter((form) => {
-        const itemData = form.title
-          ? form.title.toUpperCase()
-          : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setDataSearchForm(newData);
-      setInputSearch(text);
-    } else {
-      setDataSearchForm(dataForm);
-      setInputSearch(text);
-    }
-  };
-
   const handleLoadMore = () => {
     setStartIndex((prev) => prev + itemsPerPage); // Tambahkan jumlah data per halaman saat tombol "Load More" diklik
   };
+
+  // const handleSearch = (q) => {
+  //   setInputSearch(q);
+
+  //   const searchParameters = {
+  //     q: q,
+  //     query_by: "title",
+  //     filter_by: `projectId:${globalState.projectId}`,
+  //     sort_by: "_text_match:desc",
+  //   };
+  //   clientTypessense
+  //     .collections("forms")
+  //     .documents()
+  //     .search(searchParameters)
+  //     .then((x) => {
+  //       const hits = x.hits.map((x) => x.document);
+  //       setDataSearchForm(hits);
+  //     })
+  //     .catch((err) => console.log(err.message));
+  // };
+
+  const totalItems = dataSearchForms?.length || dataForm?.length || 0;
+  const shouldShowLoadMore = totalItems >= startIndex + itemsPerPage;
 
   useEffect(() => {
     getData();
@@ -186,6 +224,32 @@ function FormPageV2() {
     }
   };
 
+  const handleOpenModal = (data) => {
+    deleteModal.onOpen();
+    setDataModal(data);
+  };
+
+  const handleDeleteForm = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await deleteDocumentFirebase("forms", dataModal.id);
+      setIsDeleting(false);
+
+      toast({
+        description: "Success delete form",
+        title: "Deoapp CRM",
+        duration: 3000,
+        status: "success",
+      });
+      getData();
+      deleteModal.onClose();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const inputStyles = {
     "&::placeholder": {
       color: "gray.500",
@@ -221,6 +285,7 @@ function FormPageV2() {
           color="black"
           sx={inputStyles}
           fontSize="sm"
+          // onChange={(e) => searchFilterFunction(e.target.value)}
           onChange={(e) => searchFilterFunction(e.target.value)}
         />
 
@@ -286,7 +351,6 @@ function FormPageV2() {
                     shadow={"md"}
                     rounded={5}
                     cursor="pointer"
-                    onClick={() => navigate(`/form-builder/${x.id}`)}
                     _hover={{
                       bg: "gray.100",
                       transform: "scale(1.02)",
@@ -294,29 +358,42 @@ function FormPageV2() {
                       cursor: "pointer",
                     }}
                   >
-                    <Heading textTransform={"capitalize"} size="sm">
-                      {x.title}
-                    </Heading>
-                    <Text color={"gray.700"}>{x.description}</Text>
-                    <Spacer />
-
-                    <HStack>
-                      {x.isActive && <BsFillCheckCircleFill color="green" />}
-
-                      {x.enableFacebookPixel && <IoLogoFacebook color="blue" />}
-
-                      {x.category.length > 0 &&
-                        x.category.map((y, index) => {
-                          return (
-                            <Text key={index} textTransform="capitalize">
-                              {y}
-                            </Text>
-                          );
-                        })}
+                    <Stack onClick={() => navigate(`/form-builder/${x.id}`)}>
+                      <Heading textTransform={"capitalize"} size="sm">
+                        {x.title}
+                      </Heading>
+                      <Text color={"gray.700"}>{x.description}</Text>
                       <Spacer />
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        {moment(x.createdAt.seconds * 1000).fromNow()}
+
+                      <HStack>
+                        {x.isActive && <BsFillCheckCircleFill color="green" />}
+
+                        {x.enableFacebookPixel && (
+                          <IoLogoFacebook color="blue" />
+                        )}
+
+                        {x.category.length > 0 &&
+                          x.category.map((y, index) => {
+                            return (
+                              <Text key={index} textTransform="capitalize">
+                                {y}
+                              </Text>
+                            );
+                          })}
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          {moment(x.createdAt.seconds * 1000).fromNow()}
+                        </Text>
+                      </HStack>
+                    </Stack>
+                    <HStack>
+                      <Text fontSize={9} mt={2}>
+                        Created by: {x.createdBy}
                       </Text>
+                      <Spacer />
+                      <Button size={"xs"} onClick={() => handleOpenModal(x)}>
+                        <Icon as={FiTrash} />
+                      </Button>
                     </HStack>
                   </Stack>
                 );
@@ -327,7 +404,7 @@ function FormPageV2() {
 
       <Stack alignItems={"center"} justifyContent="center">
         <Box>
-          {dataSearchForms?.length > startIndex && (
+          {shouldShowLoadMore && (
             <Button onClick={handleLoadMore} size="sm">
               Load More
             </Button>
@@ -391,6 +468,38 @@ function FormPageV2() {
               onClick={onClose}
             >
               Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete {dataModal?.title} Form</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to delete this form?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              isLoading={isDeleting}
+              variant={"outline"}
+              size="sm"
+              colorScheme="blue"
+              mr={3}
+              onClick={handleDeleteForm}
+            >
+              Yes
+            </Button>
+            <Button
+              variant={"outline"}
+              size="sm"
+              colorScheme="red"
+              mr={3}
+              onClick={deleteModal.onClose}
+            >
+              No
             </Button>
           </ModalFooter>
         </ModalContent>

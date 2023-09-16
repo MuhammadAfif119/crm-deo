@@ -46,6 +46,8 @@ const ContactsPage = () => {
 
   const [modalContact, setModalContact] = useState(false);
   const [dataNew, setDataNew] = useState();
+  const [dataSearchContact, setDataSearchContact] = useState([]);
+  const [inputSearch, setInputSearch] = useState("");
 
   const modalFilterDate = useDisclosure();
   const navigate = useNavigate();
@@ -216,6 +218,27 @@ const ContactsPage = () => {
     }
   };
 
+  const searchFilterFunction = (text) => {
+    if (text) {
+      const newData = contactList.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setDataSearchContact(newData);
+      setInputSearch(text);
+    } else {
+      setDataSearchContact(contactList);
+      setInputSearch(text);
+    }
+  };
+
+  const inputStyles = {
+    "&::placeholder": {
+      color: "gray.500",
+    },
+  };
+
   return (
     <Stack p={[1, 1, 5]}>
       <Stack spacing={4}>
@@ -237,6 +260,19 @@ const ContactsPage = () => {
             </Button>
           </HStack>
         </HStack>
+
+        <Input
+          mb={3}
+          mt={5}
+          type="text"
+          placeholder="Search Contact"
+          bgColor="white"
+          color="black"
+          sx={inputStyles}
+          fontSize="sm"
+          onChange={(e) => searchFilterFunction(e.target.value)}
+        />
+
         <Stack
           bgColor="white"
           spacing={1}
@@ -258,32 +294,65 @@ const ContactsPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {contactList?.length > 0 &&
-                contactList?.map((x, index) => (
-                  <Tr key={index}>
-                    <Td fontSize="sm" textTransform={"capitalize"}>
-                      {x?.name}
-                    </Td>
-                    <Td fontSize="sm">{x?.phoneNumber}</Td>
-                    <Td fontSize="sm">{x?.email}</Td>
-                    <Td fontSize="sm">
-                      {moment(x?.createdAt.seconds * 1000).format("LLL")}
-                    </Td>
-                    <Td fontSize="sm">
-                      {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
-                    </Td>
-                    <Td fontSize="sm">{x?.tags}</Td>
-                    <Td fontSize="sm">
-                      <Button
-                        colorScheme={"yellow"}
-                        fontSize="sm"
-                        onClick={() => handleDetail(x)}
-                      >
-                        Detail
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+              {inputSearch === "" ? (
+                <>
+                  {contactList?.length > 0 &&
+                    contactList?.map((x, index) => (
+                      <Tr key={index}>
+                        <Td fontSize="sm" textTransform={"capitalize"}>
+                          {x?.name}
+                        </Td>
+                        <Td fontSize="sm">{x?.phoneNumber}</Td>
+                        <Td fontSize="sm">{x?.email}</Td>
+                        <Td fontSize="sm">
+                          {moment(x?.createdAt.seconds * 1000).format("LLL")}
+                        </Td>
+                        <Td fontSize="sm">
+                          {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
+                        </Td>
+                        <Td fontSize="sm">{x?.tags}</Td>
+                        <Td fontSize="sm">
+                          <Button
+                            colorScheme={"yellow"}
+                            fontSize="sm"
+                            onClick={() => handleDetail(x)}
+                          >
+                            Detail
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                </>
+              ) : (
+                <>
+                  {dataSearchContact?.length > 0 &&
+                    dataSearchContact?.map((x, index) => (
+                      <Tr key={index}>
+                        <Td fontSize="sm" textTransform={"capitalize"}>
+                          {x?.name}
+                        </Td>
+                        <Td fontSize="sm">{x?.phoneNumber}</Td>
+                        <Td fontSize="sm">{x?.email}</Td>
+                        <Td fontSize="sm">
+                          {moment(x?.createdAt.seconds * 1000).format("LLL")}
+                        </Td>
+                        <Td fontSize="sm">
+                          {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
+                        </Td>
+                        <Td fontSize="sm">{x?.tags}</Td>
+                        <Td fontSize="sm">
+                          <Button
+                            colorScheme={"yellow"}
+                            fontSize="sm"
+                            onClick={() => handleDetail(x)}
+                          >
+                            Detail
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                </>
+              )}
             </Tbody>
           </Table>
           {currentPage < totalPages && (
@@ -415,7 +484,7 @@ const ContactsPage = () => {
               <Button
                 size={"sm"}
                 colorScheme="blue"
-                onClick={() => setSelectedDateRange({})}
+                onClick={() => setSelectedDateRange()}
               >
                 Clear
               </Button>
