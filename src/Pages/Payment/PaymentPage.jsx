@@ -50,6 +50,8 @@ function PaymentPage() {
 
   const navigate = useNavigate();
 
+  console.log(dataLeads, "ini leads");
+
   const getDataLeads = async () => {
     const conditions = [
       { field: "projectId", operator: "==", value: param.id },
@@ -98,6 +100,8 @@ function PaymentPage() {
     }
   };
 
+  console.log(dataForm);
+
   const getDataForm = async (formId) => {
     const conditions = [{ field: "token", operator: "==", value: formId }];
     const sortBy = { field: "createdAt", direction: "asc" };
@@ -134,6 +138,7 @@ function PaymentPage() {
   };
 
   const getDataProduct = async (formId) => {
+    console.log(formId);
     const conditions = [
       { field: "formId", operator: "==", value: decryptToken(formId) },
     ];
@@ -194,7 +199,7 @@ function PaymentPage() {
   };
 
   return (
-    <Stack h={"100vh"} alignItems="center" justifyContent={"center"}>
+    <Stack h={"100vh"} p={40} alignItems="center" justifyContent={"center"}>
       <Box p={2}>
         <Stack>
           {param.method !== "none" ? (
