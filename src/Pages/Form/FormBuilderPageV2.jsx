@@ -383,7 +383,6 @@ function FormBuilderPage() {
           updateData.status = "open";
 
           const data = updateData;
-          console.log(data, "ini submitted data");
           try {
             const res = await axios.post(
               "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead",
@@ -392,9 +391,6 @@ function FormBuilderPage() {
 
             // window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
             window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
-
-            <button onClick={handleSubmit}>Click here if cannot direct</button>
-
           } catch (error) {
             console.log(error, "ini error");
           }
