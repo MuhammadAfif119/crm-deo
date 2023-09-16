@@ -83,11 +83,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     });
   };
 
-  const handlePaymentTransfer = async (
-    id,
-    updatedOrder,
-    fixPrice,
-  ) => {
+  const handlePaymentTransfer = async (id, updatedOrder, fixPrice) => {
     setOrderId(id);
     setLoadingPay(true);
 
@@ -169,14 +165,16 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     },
   ];
 
+  console.log(dataLeads, "ini leads");
+
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
 
-    let fixPrice = 0
-    if(dataLeads?.shippingDetails){
-      fixPrice =  dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
-
-    }else{
+    let fixPrice = 0;
+    if (dataLeads?.shippingDetails) {
+      fixPrice =
+        dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
+    } else {
       fixPrice = dataParam.price * quantity;
     }
 
@@ -210,11 +208,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then(
       (x) => {
         setOrderSummary(updatedOrder);
-        return handlePaymentTransfer(
-          x,
-          updatedOrder,
-          fixPrice,
-        );
+        return handlePaymentTransfer(x, updatedOrder, fixPrice);
       }
     );
   };

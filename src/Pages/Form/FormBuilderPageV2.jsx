@@ -239,8 +239,6 @@ function FormBuilderPage() {
 
   const [formData, setFormData] = useState("");
 
-  const [loading, setLoading] = useState(false);
-
   const globalState = useUserStore();
 
   const [projectId, setProjectId] = useState(globalState.currentProject);
@@ -254,7 +252,7 @@ function FormBuilderPage() {
   const [enableFacebookPixel, setEnableFacebookPixel] = useState(false);
   const [facebookPixelId, setFacebookPixelId] = useState("");
   const [isActive, setIsActive] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const [apiSubmitUrl, setApiSubmitUrl] = useState(
@@ -337,6 +335,8 @@ function FormBuilderPage() {
         };
 
         const handleSubmitProduct = async () => {
+          setLoading(true);
+
           let updateData = formValues;
           updateData.formId = formId;
 
@@ -365,15 +365,19 @@ function FormBuilderPage() {
               data
             );
 
-            // window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
-            window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
           } catch (error) {
             console.log(error, "ini error");
+          } finally {
+            setLoading(false);
           }
           // Implement your form submission logic here
         };
 
         const handleSubmit = async () => {
+          setLoading(true);
+
           let updateData = formValues;
           updateData.formId = formId;
 
@@ -393,6 +397,8 @@ function FormBuilderPage() {
             window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
           } catch (error) {
             console.log(error, "ini error");
+          } finally {
+            setLoading(false);
           }
           // Implement your form submission logic here
         };
@@ -470,7 +476,7 @@ function FormBuilderPage() {
               />
             )}
 
-            {type === "request" && (
+            {type === "request" && formData.product_used?.length > 0 ? (
               <Shipping
                 my={3}
                 selectedDestination={selectedDestination}
@@ -479,11 +485,14 @@ function FormBuilderPage() {
                 setSelectedCourier={setSelectedCourier}
                 setFullAddress={setFullAddress}
               />
+            ) : (
+              <></>
             )}
 
             <Box textAlign={"center"}>
               {type === "button" && (
                 <Button
+                  isLoading={loading}
                   onClick={
                     formData.product_used ? handleSubmitProduct : handleSubmit
                   }
@@ -686,35 +695,23 @@ function FormBuilderPage() {
             name: "pesan",
             placeholder: "Masukkan pesan Anda",
           },
-          // {
-          //   label: "City",
-          //   type: "text",
-          //   name: "city",
-          //   placeholder: "Kota/Kecamatan",
-          // },
-          // {
-          //   label: "Address",
-          //   type: "textarea",
-          //   name: "alamat",
-          //   placeholder: "Masukkan pesan Anda",
-          // },
           {
             label: "Pilihan",
             type: "select",
             name: "pilihan",
             options: ["Pilihan 1", "Pilihan 2", "Pilihan 3"],
           },
-          // {
-          //   label: "City Selection",
-          //   type: "select",
-          //   name: "citySelection",
-          //   options: destinationSuggestions,
-          // },
           { label: "date", type: "date", name: "date", isRequired: true },
           {
             label: "File",
             type: "file",
             name: "bukti transfer",
+            isRequired: true,
+          },
+          {
+            label: "Shipping",
+            type: "request",
+            name: "Shipping proses",
             isRequired: true,
           },
           {

@@ -1002,9 +1002,15 @@ const FormTicketPage = () => {
           const docData = doc.data();
 
           if (
-            (!docData.ticket_used || docData.ticket_used.length === 0) &&
-            (!docData.product_used || docData.product_used.length === 0) &&
-            (!docData.membership_used || docData.membership_used.length === 0)
+            (!docData.ticket_used ||
+              docData.ticket_used.length === 0 ||
+              docData.ticket_used[0] === null) &&
+            (!docData.product_used ||
+              docData.product_used.length === 0 ||
+              docData.product_used[0] === null) &&
+            (!docData.membership_used ||
+              docData.membership_used.length === 0 ||
+              docData.membership_used[0] === null)
           ) {
             data.push({ id: doc.id, ...docData });
           }
