@@ -394,7 +394,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={4} p={5}>
       <Stack>
         <Heading size={"md"}>Receipent: </Heading>
       </Stack>
