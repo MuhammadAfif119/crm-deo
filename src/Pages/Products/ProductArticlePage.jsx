@@ -50,15 +50,15 @@ const ProductArticlePage = () => {
     const conditions = [
       { field: "projectId", operator: "==", value: globalState.currentProject },
     ];
-    const sortBy = { field: "createdAt", direction: "desc" };
-    const limitValue = startIndex + itemsPerPage;
+    // const sortBy = { field: "createdAt", direction: "desc" };
+    // const limitValue = startIndex + itemsPerPage;
 
     try {
       const res = await getCollectionFirebase(
         "listings_product",
-        conditions,
-        sortBy,
-        limitValue
+        conditions
+        // sortBy,
+        // limitValue
       );
       console.log(res);
       setDataProducts(res);
@@ -155,7 +155,6 @@ const ProductArticlePage = () => {
                           </Text>
                         </Box>
                         <Box>
-                          {/* <Text fontSize={12}>{product?.description}</Text> */}
                           <Text
                             fontSize={12}
                             cursor={"pointer"}
@@ -163,9 +162,7 @@ const ProductArticlePage = () => {
                               navigate(`/products/article/view/${product.id}`)
                             }
                           >
-                            {/* <a href={`/products/article/${product.id}`}> */}
                             View product article
-                            {/* </a> */}
                           </Text>
                           <Text
                             fontSize={12}
@@ -174,9 +171,7 @@ const ProductArticlePage = () => {
                               navigate(`/products/article/edit/${product.id}`)
                             }
                           >
-                            {/* <a href={`/products/article/${product.id}`}> */}
                             Edit product article
-                            {/* </a> */}
                           </Text>
                         </Box>
                       </Stack>

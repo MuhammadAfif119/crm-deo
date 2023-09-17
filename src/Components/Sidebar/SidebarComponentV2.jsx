@@ -98,7 +98,6 @@ function SidebarComponentV2({ layout }) {
         fetchProjectId
       );
 
-      console.log(projects);
 
       globalState.setProjects(projects);
       globalState.setCurrentProject(fetchProjectId);
@@ -199,7 +198,6 @@ function SidebarComponentV2({ layout }) {
     }
   };
 
-  console.log(globalState.currentProject);
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
