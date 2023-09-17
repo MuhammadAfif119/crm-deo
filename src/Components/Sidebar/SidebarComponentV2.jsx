@@ -311,7 +311,7 @@ function SidebarComponentV2({ layout }) {
                             // isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
-                              <AccordionButton>
+                              <AccordionButton w={'100%'}>
                                 {x.name === "Scoreboard" ||
                                 x.name === "Contacts" ? (
                                   <HStack
@@ -336,7 +336,7 @@ function SidebarComponentV2({ layout }) {
                                     )}
                                   </HStack>
                                 ) : (
-                                  <HStack spacing={2}>
+                                  <HStack spacing={2} w={'100%'}>
                                     <Icon
                                       as={x.icon}
                                       boxSize={isDesktop ? 5 : 7}

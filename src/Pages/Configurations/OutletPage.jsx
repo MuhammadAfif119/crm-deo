@@ -112,7 +112,7 @@ function OutletPage() {
 					</HStack>
 				</Button>
 			</HStack>
-			<Input type='text' w='full' p='2' m='2' placeholder='Search' />
+			{/* <Input type='text' w='full' p='2' m='2' placeholder='Search' /> */}
 
 			<SimpleGrid columns={{ base: 3, lg: 4 }} p="2" spacing={4} my={5}>
 				{data?.map((x, i) =>
