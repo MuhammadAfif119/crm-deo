@@ -297,7 +297,7 @@ const ViewPageListing = () => {
 
   useEffect(() => {
     if (!selectedCategoryNiche) {
-      return
+      return;
     } else {
       handleCategoryFilter(selectedCategoryNiche);
     }
@@ -372,7 +372,7 @@ const ViewPageListing = () => {
         <Divider />
       </Stack>
 
-      <Input
+      {/* <Input
         mb={3}
         mt={5}
         type="text"
@@ -382,7 +382,7 @@ const ViewPageListing = () => {
         sx={inputStyles}
         fontSize="sm"
         onChange={(e) => searchFilterFunction(e.target.value)}
-      />
+      /> */}
 
       {Object.entries(categoryData).map(([category, categoryListing]) => {
         return (
