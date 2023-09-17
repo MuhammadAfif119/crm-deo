@@ -28,6 +28,7 @@ import {
   FcDeployment,
   FcInTransit,
   FcEnteringHeavenAlive,
+  FcRules,
 } from "react-icons/fc";
 
 export const data = [
@@ -84,7 +85,7 @@ export const data = [
       { name: "Forms", icon: FcSurvey, link: "/form-builder" },
       { name: "Listings", icon: FcParallelTasks, link: "/listing" },
       { name: "News", icon: FcNews, link: "/news" },
-      { name: "List Product", icon: FcNews, link: "/products/articles" },
+      { name: "Pages", icon: FcRules, link: "/products/articles" },
     ],
   },
   // {

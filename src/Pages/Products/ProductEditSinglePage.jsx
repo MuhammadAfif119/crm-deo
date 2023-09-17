@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getSingleDocumentFirebase,
   updateDocumentFirebase,
@@ -12,6 +12,7 @@ import {
   HStack,
   Heading,
   Image,
+  Input,
   Stack,
   Text,
   useToast,
@@ -20,15 +21,25 @@ import { formatFrice } from "../../Utils/Helper";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import ReactQuill from "react-quill";
 import RichTextEditor from "../../Components/Quill/RichTextEditor";
+import DropboxUploader from "../../Components/DropBox/DropboxUploader";
+import useUserStore from "../../Hooks/Zustand/Store";
 
 const ProductEditSinglePage = () => {
+  const navigate = useNavigate();
   const params = useParams();
   const toast = useToast();
 
+  const globalState = useUserStore();
   const [data, setData] = useState();
-  const [value, setValue] = useState(data?.articleContent);
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [title, setTitle] = useState(data?.title);
+  const [value, setValue] = useState(data?.content);
+  const [modalUploadOpen, setModalUploadOpen] = useState(false);
 
   const getDataProduct = async () => {
+    setLoading(true);
     try {
       const res = await getSingleDocumentFirebase(
         "listings_product",
@@ -38,19 +49,24 @@ const ProductEditSinglePage = () => {
       setData(res);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSave = async () => {
-    const data = { articleContent: value };
+    const dataInput = {
+      title: title || data?.title,
+      content: value || data?.content,
+    };
 
-    console.log(data, "ini data");
+    console.log(dataInput);
 
     try {
       const res = await updateDocumentFirebase(
         "listings_product",
         params.id,
-        data
+        dataInput
       );
 
       toast({
@@ -59,14 +75,52 @@ const ProductEditSinglePage = () => {
         title: "DeoApp CRM",
         description: "Data update",
       });
+
+      navigate(-1);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleShareLinkChange = (x) => {
+    if (x !== "") {
+      setShareLink({ link: x.link, type: x.type });
+      const { link, type } = x;
+      let htmlContent = "";
+
+      if (type === "image") {
+        htmlContent = `<p><img src="${link}" alt="Image" width="500px" /></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else if (type === "audio") {
+        htmlContent = `<p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else if (type === "video") {
+        htmlContent = `<p><iframe class="ql-audio" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else {
+        htmlContent = `<p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p><br/> `;
+      }
+
+      setContent((prevContent) => prevContent + ` ${htmlContent}`);
     }
   };
 
   const handleContentChange = (value) => {
     setValue(value);
   };
+
+  const openModal = () => {
+    setModalUploadOpen(true);
+  };
+
+  function closeModal() {
+    setModalUploadOpen(false);
+  }
 
   useEffect(() => {
     getDataProduct();
@@ -87,10 +141,17 @@ const ProductEditSinglePage = () => {
       >
         <Stack my={5} alignItems={"center"}>
           <Box>
-            <Heading align={"center"}>Product</Heading>
+            <Input
+              fontSize={40}
+              fontWeight={"bold"}
+              variant={"flushed"}
+              defaultValue={data?.title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            {/* <Heading align={"center"}>Product</Heading>
             <Heading align={"center"} mt={1}>
               {data?.title}
-            </Heading>
+            </Heading> */}
             <HStack my={2} justifyContent={"center"}>
               {data?.category?.map((x, i) => (
                 <Text
@@ -110,7 +171,7 @@ const ProductEditSinglePage = () => {
             </HStack>
           </Box>
           <Box py={3}>
-            <Image src={data?.image} boxSize="300px" objectFit="cover" />
+            <Image src={data?.thumbnailURL} boxSize="300px" objectFit="cover" />
           </Box>
 
           <Divider />
@@ -123,17 +184,38 @@ const ProductEditSinglePage = () => {
             <></>
           )} */}
         </Stack>
-
+        <Box align={"right"} my={3}>
+          <Button
+            onClick={openModal}
+            size="sm"
+            colorScheme={"blue"}
+            variant="outline"
+          >
+            Add File
+          </Button>
+        </Box>
         <Stack>
           <RichTextEditor
-            value={data?.articleContent ? data?.articleContent : value}
+            value={data?.content ? data?.content : value}
             onChange={handleContentChange}
           />
         </Stack>
-        <Button onClick={() => handleSave()} colorScheme="blue">
+        <Button
+          isLoading={loading}
+          onClick={() => handleSave()}
+          colorScheme="blue"
+        >
           Save Content
         </Button>
       </Box>
+
+      <DropboxUploader
+        isActive={modalUploadOpen}
+        onClose={closeModal}
+        parentPath={`/${globalState.currentCompanies}/docs-file`}
+        shareLink={shareLink}
+        setShareLink={handleShareLinkChange}
+      />
     </Box>
   );
 };

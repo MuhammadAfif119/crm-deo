@@ -72,7 +72,7 @@ const ProductSinglePage = () => {
   }, []);
 
   return (
-    <Box my={5}>
+    <Box my={[null, null, 5]}>
       <Box
         bg={"white"}
         borderRadius={"md"}
@@ -81,14 +81,14 @@ const ProductSinglePage = () => {
         gap={4}
         shadow={"base"}
       >
-        <Stack my={5} alignItems={"center"}>
+        <Stack my={[null, null, 5]} alignItems={[null, "center"]}>
           <Box>
             <Heading align={"center"}>Product</Heading>
             <Heading align={"center"} mt={1}>
               {data?.title}
             </Heading>
             <HStack my={2} justifyContent={"center"}>
-              {data?.category?.map((x, i) => (
+              {data?.tags?.map((x, i) => (
                 <Text
                   fontSize={10}
                   key={i}
@@ -105,75 +105,22 @@ const ProductSinglePage = () => {
               ))}
             </HStack>
           </Box>
-          <Box py={3}>
-            <Image src={data?.image} boxSize="300px" objectFit="cover" />
+          <Box py={3} align={"center"}>
+            <Image src={data?.thumbnailURL} boxSize="300px" objectFit="cover" />
           </Box>
 
           <Divider />
-          <Center w={700}>
-            {data?.articleContent ? (
+          <Box w={["100", null, 700]}>
+            {data?.content ? (
               <div
-                dangerouslySetInnerHTML={{ __html: data?.articleContent }}
+                dangerouslySetInnerHTML={{ __html: data?.content }}
                 style={{ fontSize: "13px", width: "100%", overflow: "hidden" }}
               />
             ) : (
               <></>
             )}
-          </Center>
+          </Box>
         </Stack>
-
-        {/* <Flex bg={"white"} borderRadius={"md"} w={"100%"} p={5} gap={4}>
-        <Stack w={"30%"}>
-          <Image src={data?.image} boxSize="300px" objectFit="cover" />
-        </Stack>
-        <Box w={"70%"}>
-          <Heading size={"lg"}>Product - {data?.title}</Heading>
-          <HStack my={2}>
-            {data?.category?.map((x, i) => (
-              <Text
-                fontSize={10}
-                key={i}
-                py={1}
-                px={2}
-                borderRadius={"md"}
-                bg={"#ffd600"}
-                color={"black"}
-                w={"fit-content"}
-                textTransform={"capitalize"}
-              >
-                {x}
-              </Text>
-            ))}
-          </HStack>
-          <Stack my={5}>
-            <Text fontWeight={"semibold"}>Description</Text>
-            <Text textTransform={"capitalize"}>{data?.description}</Text>
-          </Stack>
-
-          <Stack my={3}>
-            <Text fontWeight={"semibold"}>Detail Product</Text>
-            <Divider />
-            {data?.details?.map((x, i) => (
-              <HStack key={i}>
-                <Text
-                  w={200}
-                  fontWeight={"semibold"}
-                  textTransform={"capitalize"}
-                >
-                  {x?.key}
-                </Text>
-                <Text textTransform={"capitalize"}>{x?.value}</Text>
-              </HStack>
-            ))}
-          </Stack>
-        </Box>
-      </Flex> */}
-        {/* <Stack>
-          <RichTextEditor value={value} onChange={handleContentChange} />
-        </Stack> */}
-        {/* <Button onClick={() => console.log(value)} colorScheme="blue">
-          Save Content
-        </Button> */}
       </Box>
     </Box>
   );

@@ -8,6 +8,7 @@ import ProductArticlePage from "../Pages/Products/ProductArticlePage";
 import ProductSinglePage from "../Pages/Products/ProductSinglePage";
 import ShippingPaymentPage from "../Pages/Shipping/ShippingPaymentPage";
 import ProductEditSinglePage from "../Pages/Products/ProductEditSinglePage";
+import ProductArticleCreatePage from "../Pages/Products/ProductArticleCreatePage";
 
 const ListingRouter = [
   {
@@ -23,6 +24,10 @@ const ListingRouter = [
   {
     path: "/products/articles",
     element: <ProductArticlePage />,
+  },
+  {
+    path: "/products/articles/create",
+    element: <ProductArticleCreatePage />,
   },
   {
     path: "/products/article/edit/:id",

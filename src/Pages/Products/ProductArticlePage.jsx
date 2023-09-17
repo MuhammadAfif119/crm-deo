@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
@@ -25,40 +26,50 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
+  deleteDocumentFirebase,
   getCollectionFirebase,
   updateDocumentFirebase,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import AddButtons from "../../Components/Buttons/AddButtons";
+import { FcPlus } from "react-icons/fc";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 const ProductArticlePage = () => {
+  const modalDelete = useDisclosure();
   const globalState = useUserStore();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 6;
 
   const [dataProducts, setDataProducts] = useState([]);
+  const [dataModal, setDataModal] = useState();
   const [searchInput, setSearchInput] = useState("");
   const [searchedDataProduct, setSearchedDataProduct] = useState([]);
 
   const getDataProduct = async () => {
     const conditions = [
       { field: "projectId", operator: "==", value: globalState.currentProject },
+      { field: "type", operator: "==", value: "pages" },
     ];
-    const sortBy = { field: "createdAt", direction: "desc" };
-    const limitValue = startIndex + itemsPerPage;
+    // const sortBy = { field: "createdAt", direction: "desc" };
+    // const limitValue = startIndex + itemsPerPage;
 
     try {
       const res = await getCollectionFirebase(
         "listings_product",
-        conditions,
-        sortBy,
-        limitValue
+        conditions
+        // sortBy,
+        // limitValue
       );
       console.log(res);
       setDataProducts(res);
@@ -91,6 +102,36 @@ const ProductArticlePage = () => {
     }
   };
 
+  const handleModal = (data) => {
+    modalDelete.onOpen();
+    setDataModal(data);
+  };
+
+  console.log(dataModal);
+
+  const handleDeletePages = async () => {
+    const collectionName = "listings_product";
+    const docName = dataModal.id;
+
+    try {
+      const result = await deleteDocumentFirebase(collectionName, docName);
+      console.log(result);
+
+      toast({
+        title: "Deoapp.com",
+        description: "success delete article",
+        status: "success",
+        position: "top-right",
+        isClosable: true,
+      });
+
+      modalDelete.onClose();
+      getDataProduct();
+    } catch (error) {
+      console.log("Terjadi kesalahan:", error);
+    }
+  };
+
   const inputStyles = {
     "&::placeholder": {
       color: "gray.500",
@@ -112,7 +153,7 @@ const ProductArticlePage = () => {
           </Heading>
           <Spacer />
         </HStack>
-        <Box>
+        <HStack>
           <Input
             mb={3}
             mt={5}
@@ -124,7 +165,21 @@ const ProductArticlePage = () => {
             fontSize="sm"
             onChange={(e) => searchFilterFunction(e.target.value)}
           />
-        </Box>
+          <Spacer />
+          <Button
+            onClick={() => navigate("/products/articles/create")}
+            bgColor={"white"}
+            shadow="md"
+            variant="outline"
+            borderColor="#F05A28"
+            color="#F05A28"
+          >
+            <HStack>
+              <FcPlus />
+              <Text>Article</Text>
+            </HStack>
+          </Button>
+        </HStack>
         <Stack>
           {searchInput !== "" ? (
             <>
@@ -140,7 +195,7 @@ const ProductArticlePage = () => {
                     >
                       <Stack>
                         <Image
-                          src={product?.image}
+                          src={product?.thumbnailURL}
                           boxSize="150px"
                           objectFit="cover"
                         />
@@ -155,7 +210,6 @@ const ProductArticlePage = () => {
                           </Text>
                         </Box>
                         <Box>
-                          {/* <Text fontSize={12}>{product?.description}</Text> */}
                           <Text
                             fontSize={12}
                             cursor={"pointer"}
@@ -163,9 +217,7 @@ const ProductArticlePage = () => {
                               navigate(`/products/article/view/${product.id}`)
                             }
                           >
-                            {/* <a href={`/products/article/${product.id}`}> */}
                             View product article
-                            {/* </a> */}
                           </Text>
                           <Text
                             fontSize={12}
@@ -174,11 +226,16 @@ const ProductArticlePage = () => {
                               navigate(`/products/article/edit/${product.id}`)
                             }
                           >
-                            {/* <a href={`/products/article/${product.id}`}> */}
                             Edit product article
-                            {/* </a> */}
                           </Text>
                         </Box>
+                        <Spacer />
+                        <Button
+                          variant={"unstyled"}
+                          onClick={() => handleModal(product)}
+                        >
+                          <DeleteIcon />
+                        </Button>
                       </Stack>
                     </Flex>
                   ))}
@@ -205,7 +262,7 @@ const ProductArticlePage = () => {
                     >
                       <Stack>
                         <Image
-                          src={product?.image}
+                          src={product?.thumbnailURL}
                           boxSize="150px"
                           objectFit="cover"
                         />
@@ -244,6 +301,13 @@ const ProductArticlePage = () => {
                             {/* </a> */}
                           </Text>
                         </Box>
+                        <Spacer />
+                        <Button
+                          w={"fit-content"}
+                          onClick={() => handleModal(product)}
+                        >
+                          <DeleteIcon boxSize={4} />
+                        </Button>
                       </Stack>
                     </Flex>
                   ))}
@@ -269,6 +333,30 @@ const ProductArticlePage = () => {
           </Box>
         </Stack>
       </Stack>
+
+      <Modal isOpen={modalDelete.isOpen} onClose={modalDelete.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete Article</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Are you sure want to delete article <b>{dataModal?.title}</b>?
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              leftIcon={<DeleteIcon />}
+              onClick={() => handleDeletePages()}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 };

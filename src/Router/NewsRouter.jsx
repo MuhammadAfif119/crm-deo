@@ -1,18 +1,23 @@
 import React from "react";
 import NewsPage from "../Pages/News/NewsPage";
 
-import CreateNewsPage from "../Pages/News/CreateNewsPage";
+import NewsEditPage from "../Pages/News/NewsEditPage";
+import NewsCreatePage from "../Pages/News/NewsCreatePage";
 
 const NewsRouter = [
-     {
-          path: "/news",
-          element: <NewsPage />,
-     },
+  {
+    path: "/news",
+    element: <NewsPage />,
+  },
 
-     {
-          path: "/news/:type",
-          element: <CreateNewsPage />,
-     },
+  {
+    path: "/news/edit/:id",
+    element: <NewsEditPage />,
+  },
+  {
+    path: "/news/create",
+    element: <NewsCreatePage />,
+  },
 ];
 
 export default NewsRouter;
