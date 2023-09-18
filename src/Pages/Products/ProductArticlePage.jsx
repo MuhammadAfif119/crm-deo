@@ -32,6 +32,7 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   deleteDocumentFirebase,
+  deleteFileFirebase,
   getCollectionFirebase,
   updateDocumentFirebase,
 } from "../../Api/firebaseApi";
@@ -114,19 +115,19 @@ const ProductArticlePage = () => {
     const docName = dataModal.id;
 
     try {
-      const result = await deleteDocumentFirebase(collectionName, docName);
-      console.log(result);
-
-      toast({
-        title: "Deoapp.com",
-        description: "success delete article",
-        status: "success",
-        position: "top-right",
-        isClosable: true,
+      deleteFileFirebase(`${dataModal.title}_800x800`, "articles").then(() => {
+        deleteDocumentFirebase(collectionName, docName).then((res) => {
+          toast({
+            title: "Deleted!",
+            description: res,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          modalDelete.onClose();
+          getDataProduct();
+        });
       });
-
-      modalDelete.onClose();
-      getDataProduct();
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
     }

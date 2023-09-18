@@ -103,8 +103,6 @@ const ProductArticleCreatePage = () => {
       projectId: globalState?.currentProject,
       type: "pages",
     });
-
-    console.log(dataInput);
     //
     //
 
@@ -187,7 +185,6 @@ const ProductArticleCreatePage = () => {
     setModalUploadOpen(false);
   }
 
-  console.log(dataInput, "ini data input");
   return (
     <>
       <BackButtons />
