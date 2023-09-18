@@ -1,4 +1,4 @@
-import { InfoIcon } from '@chakra-ui/icons'
+import { AddIcon, CloseIcon, InfoIcon } from '@chakra-ui/icons'
 import {
 	Avatar, Box, Button, Center, Heading, Modal,
 	ModalOverlay,
@@ -6,241 +6,537 @@ import {
 	ModalHeader,
 	ModalFooter,
 	ModalBody,
-	ModalCloseButton, HStack, Input, SimpleGrid, Spacer, Text, useDisclosure, Stack, Grid, Divider
+	ModalCloseButton, HStack, Input, SimpleGrid, Spacer, Text, useDisclosure, Stack, Grid, Divider, Flex, useToast
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { arrayRemoveFirebase, arrayUnionFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
+import { addDocumentFirebase, arrayRemoveFirebase, arrayUnionFirebase, deleteDocumentFirebase, getCollectionFirebase } from '../../Api/firebaseApi'
 import { createUserFunctions } from '../../Api/firebaseFunction'
 import { clientTypessense } from '../../Api/Typesense'
 import useUserStore from '../../Hooks/Zustand/Store'
-import Swal from 'sweetalert2'
+import CompanyCard from "../../Components/Card/CompanyCard";
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import { db } from '../../Config/firebase'
+import BackButtons from '../../Components/Buttons/BackButtons'
+
 
 function UsersPage() {
-	const globalState = useUserStore()
-	const [data, setData] = useState()
-	const [counter, setCounter] = useState(0)
-	const [name, setName] = useState()
-	const [email, setEmail] = useState()
-	const [search,setSearch]=useState({})
-	const [loading,setLoading]=useState(false)
-	const { isOpen, onOpen, onClose } = useDisclosure()
+	const [loading, setLoading] = useState(false);
+	const [companyData, setCompanyData] = useState([]);
+	const [userDetails, setUserDetails] = useState();
+	const [companyActive, setCompanyActive] = useState("");
+	const [modalCompanyUser, setModalCompanyUser] = useState(false);
+	const [modalCompanyUserTeam, setModalCompanyUserTeam] = useState(false);
 
 
-	const handleAddNewUser = async () => {
-		setLoading(true);
-		if (!name || name.trim() === "" || !email) {
-			onClose();
-			Swal.fire({
-			  icon: 'warning',
-			  title: 'Oops...',
-			  text: 'Please complate input',
+	const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
+
+
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+
+	const globalState = useUserStore();
+
+	const toast = useToast({ position: "top", align: "center" });
+
+	const navigate = useNavigate();
+
+	//   const getDataCompany = async () => {
+	//     setCompanyData(globalState.companies);
+	//   };
+
+	const getDataCompany = async () => {
+		const q = query(
+			collection(db, "companies"),
+			where("users", "array-contains", globalState.uid)
+		);
+
+		const unsubscribe = onSnapshot(q, (snapshot) => {
+			const promises = snapshot.docs.map(async (doc) => {
+				const companyData = { id: doc.id, ...doc.data() };
+
+				if (companyData) {
+					const userSnapshot = await getDocs(collection(db, "users"));
+
+					const userData = userSnapshot.docs
+						.filter((userDoc) => companyData.users.includes(userDoc.id)) // Filter users based on company's user array
+						.map((userDoc) => {
+							const userData = userDoc.data();
+							return {
+								id: userDoc.id,
+								name: userData.name,
+								email: userData.email,
+							};
+						});
+
+					companyData.usersCompanyData = userData;
+
+					console.log(companyData.usersCompanyData);
+					return companyData;
+				}
+
+				return null;
 			});
-			setLoading(false);
-			return; // Stop execution
-		  }
 
-		const conditions = [
-			{ field: "email", operator: "==", value: email.toLowerCase() },
-		];
-
-		try {
-			const x = await getCollectionFirebase('users', conditions);
-
-			if (x.length > 0) {
-				await arrayUnionFirebase('companies', globalState.currentCompany, 'users', [x[0].id]);
-				setLoading(false);
-				onClose();
-				Swal.fire({
-					icon: 'success',
-					title: 'Success',
-					text: 'Success Create User',
-				});
-				setData(prevData => [x[0], ...prevData]);
-			} else {
-				const createNewUser = await createUserFunctions({ email: email, name: name, companyId: globalState.currentCompany });
-				setLoading(false);
-				onClose();
-				Swal.fire({
-				  icon: 'success',
-				  title: 'Success',
-				  text: 'Success Create New User',
-				});
-				const newUser = { email: email, id: createNewUser.data.uid, name: name };
-				setData(prevData => [newUser, ...prevData]);
-			}
-		} catch (err) {
-			console.log(err.message);
-			setLoading(false);
-			Swal.fire({
-			  icon: 'error',
-			  title: 'Oops...',
-			  text: 'An error occurred while processing your request.',
+			Promise.all(promises).then((resolvedCompanies) => {
+				const companyData = resolvedCompanies.filter(
+					(company) => company !== null
+				);
+				setCompanyData(companyData);
 			});
-		  }
-	}
-
-	const handleSearch=(q,p)=>{
-		setSearch({query:q,page:p})
-		const searchParameters = {
-			q: q,
-			query_by: "email",
-			filter_by: `id: [${globalState?.users}]`,
-			page:p,
-			sort_by: "_text_match:desc"
-		};
-		clientTypessense
-			.collections("users")
-			.documents()
-			.search(searchParameters)
-			.then((x) => {
-				setCounter(x.found)
-				const newData = x.hits.map((y) => { return { ...y.document } })
-				if(p===1)
-				setData(newData)
-				else
-				setData([...data,...newData])
-
-			});
-	}
-
-	const handleRemoveUser = (uid) => {
-		Swal.fire({
-			title: 'Are you sure?',
-			text: 'You won\'t be able to revert this!',
-			icon: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Yes, delete it!'
-		}).then((result) => {
-		setLoading(true);
-			if (result.isConfirmed) {
-				arrayRemoveFirebase('companies', globalState.currentCompany, 'users', [uid])
-				.then(() => {
-				setLoading(false);
-					Swal.fire({
-						icon: 'success',
-						title: 'Success',
-						text: 'User has been deleted successfully!',
-					});
-					const newData = data.filter((user) => user.id !== uid);
-					setData(newData);
-				})
-				.catch((err) => {
-					setLoading(false);
-					console.log(err.message);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'An error occurred while deleting user.',
-					});
-				});
-			}
 		});
+
+		// Unsubscribe from the snapshot listener when the component unmounts
+		return () => unsubscribe();
 	};
 
-	useEffect(() => {
-		// getData(counter)
-		handleSearch('*',1)
-		return () => {
-			setData()
+	const handleAddUser = async () => {
+		if (globalState.roleCompany !== "owner") {
+			return toast({
+				title: "Alert!",
+				description: "You dont have access to create new project.",
+				status: "warning",
+				duration: 9000,
+				isClosable: true,
+			});
 		}
-	}, [globalState?.users?.length])
+
+		const conditions = [{ field: "email", operator: "==", value: email }];
+		const sortBy = null;
+		const limitValue = 1;
+
+		try {
+			setLoading(true);
+
+			const existingUser = await getCollectionFirebase("users", conditions, sortBy, limitValue);
+
+			if (existingUser.length > 0) {
+				const collectionName = "companies";
+				const docName = companyActive.id;
+				const field = "users";
+				const values = [existingUser[0].id];
+
+				try {
+					const result = await arrayUnionFirebase(
+						collectionName,
+						docName,
+						field,
+						values
+					);
+					console.log(result);
+					// Pesan toast yang berhasil
+					toast({
+						status: "success",
+						description: "Add new Team success",
+						duration: 2000,
+					});
+					setModalCompanyUser(false);
+					setLoading(false);
+				} catch (error) {
+					console.log("Terjadi kesalahan:", error);
+				}
+
+				setLoading(false);
+			} else {
+				setLoading(true);
+				const baseURL =
+					"https://asia-southeast2-deoapp-indonesia.cloudfunctions.net";
+				const options = {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: process.env.REACT_APP_FUNCTIONS_KEY,
+					},
+				};
+				const data = { email: email, name: name, companyId: companyActive.id };
+
+				try {
+					const newUrl = `${baseURL}/createUser`;
+					const res = await axios.post(newUrl, data, options);
+					if (res.status === 200) {
+						toast({
+							status: "success",
+							description: "Add new Team success",
+							duration: 2000,
+						});
+						setModalCompanyUser(false);
+					}
+
+				} catch (error) {
+					setLoading(false);
+					console.log(error, "ini error");
+				}
+				finally {
+					setLoading(false);
+
+				}
+			}
+		} catch (error) {
+			console.log(error, "ini error");
+			setLoading(false);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleDeleteUser = async (value) => {
+		if (globalState.roleCompany !== "owner") {
+			return toast({
+				title: "Alert!",
+				description: "You dont have access to delete user",
+				status: "warning",
+				duration: 9000,
+				isClosable: true,
+			});
+		} else {
+			setLoading(true);
+
+			const config = {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: "pFa08EJkVRoT7GDiqk1",
+				},
+			};
+
+			const data = {
+				uid: userDetails.id,
+			};
+
+			try {
+				const res = await axios.post(
+					"https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/accountDelete",
+					data,
+					config
+				);
+
+				console.log(res, "ini ress");
+
+				if (res.status === 200) {
+					//delete from all firestore
+
+					try {
+						//delete from company
+						const dataConditions = [
+							{
+								field: "users",
+								operator: "array-contains",
+								value: userDetails.id,
+							},
+						];
+						const deleteUserFromCompany = await getCollectionFirebase(
+							"companies",
+							dataConditions
+						);
+
+						console.log(deleteUserFromCompany);
+
+						const updateCompanyPromises = deleteUserFromCompany.map(
+							async (company) => {
+								const updatedOwners = await arrayRemoveFirebase(
+									"companies",
+									company?.id,
+									"owner",
+									[userDetails?.id]
+								);
+								const updatedUsers = await arrayRemoveFirebase(
+									"companies",
+									company?.id,
+									"users",
+									[userDetails?.id]
+								);
+
+								console.log(updatedOwners, updatedUsers);
+							}
+						);
+
+						//wait for all update
+						await Promise.all(updateCompanyPromises);
+
+						//deleteFromProject
+						const conditions = [
+							{ field: "companyId", operator: "==", value: companyActive.id },
+							{
+								field: "users",
+								operator: "array-contains",
+								value: userDetails.id,
+							},
+						];
+						const CompanyProject = await getCollectionFirebase(
+							"projects",
+							conditions
+						);
+
+						const updateProjectPromises = CompanyProject.map(
+							async (project) => {
+								const updatedOwners = await arrayRemoveFirebase(
+									"projects",
+									project?.id,
+									"owner",
+									[userDetails?.id]
+								);
+								const updatedUsers = await arrayRemoveFirebase(
+									"projects",
+									project?.id,
+									"users",
+									[userDetails?.id]
+								);
+
+								//deleteFromSubcolProjects
+								const getSubcol = await getCollectionFirebase(
+									`projects/${project.Id}/users`
+								);
+
+								console.log(getSubcol);
+
+								if (getSubcol && getSubcol.length > 0) {
+									const getProjectSubcollection = await deleteDocumentFirebase(
+										`projects/${project.id}/users`,
+										userDetails.id
+									);
+								}
+							}
+						);
+
+						console.log(CompanyProject);
+
+						//wait for all update
+						await Promise.all(updateProjectPromises);
+
+						//delete from user collection
+						await deleteDocumentFirebase("users", userDetails.id);
+					} catch (error) {
+						console.log(error, "ini error");
+					}
+				}
+
+				setLoading(false);
+				setModalConfirmDelete(false);
+				setModalCompanyUserTeam(false);
+
+				toast({
+					title: "Deoapp AI",
+					status: "success",
+					description: "Account deleted",
+					duration: 3000,
+				});
+			} catch (error) {
+				console.log(error, "ini error");
+				setLoading(false);
+			} finally {
+				setLoading(false);
+			}
+		}
+	};
+
+	const handleModalConfirmDelete = (value) => {
+		console.log(value);
+		setModalConfirmDelete(true);
+		setUserDetails(value);
+	};
+
+	const handleOpenModalCompanyTeam = (value) => {
+		setModalCompanyUserTeam(true);
+		setCompanyActive(value);
+	};
+
+	const handleOpenModalCompany = (value) => {
+		setModalCompanyUser(true);
+		setCompanyActive(value);
+	};
 
 
-	
+
+	useEffect(() => {
+		getDataCompany();
+
+		return () => { };
+	}, [globalState.currentCompany]);
+
+
 	return (
-		<>
-			<Box>
-				<HStack>
-					<Box>
-						<Heading>Users</Heading>
-						<HStack>
-							<InfoIcon />
-							<Text>Add or remove people in company</Text>
-						</HStack>
-					</Box>
-					<Spacer />
+		<Stack>
+			<HStack px={[1, 1 ,5]} pt={[1, 1, 5]}>
+				<BackButtons/>
+				<Spacer />
+				<Heading  textAlign='end' size='md'>User Configuration</Heading>
+			</HStack>
+			<CompanyCard
+				companyData={companyData}
+				navigate={navigate}
+				handleOpenModalCompany={handleOpenModalCompany}
+				handleOpenModalCompanyTeam={handleOpenModalCompanyTeam}
+			/>
 
-					<Button colorScheme='green' onClick={onOpen}>Add User</Button>
-				</HStack>
-				
-				<Input type='text' m='1' placeholder='Search User' onChange={(e)=>handleSearch(e.target.value,1)}/>
-				
-				<SimpleGrid columns='2'>
-					{
-						data?.length > 0 ?
-							data?.map((x, i) =>
-								<HStack key={i} bgColor='white' borderRadius='md' p='2' m='2'>
-									<Avatar name={x?.name} />
-									<Box>
-										<Text>{x?.name}</Text>
-										<Text>{x?.email}</Text>
-										<Text fontSize='2xs'>ID: {x?.id}</Text>
-									</Box>
-									<Spacer/>
-									<Button alignSelf='start' onClick={()=>handleRemoveUser(x.id)}>x</Button>
-								</HStack>)
-							:
-							<></>
-					}
-				</SimpleGrid>
-				<Center>
-					{data?.length < counter ?
-						<>
-						<Box textAlign='center'>
-							<Text>{data.length}/{counter}</Text>
-							<Button colorScheme='green' onClick={() => handleSearch(search?.query,search.page+1)}>Load More</Button>
-						</Box>
-
-						</>	
-						:
-						<>
-						{/* <Text>{data.length}</Text> */}
-						</>
-					}
-				</Center>
-			</Box>
-			<Modal isOpen={isOpen} onClose={onClose}>
+			<Modal
+				isOpen={modalCompanyUser}
+				onClose={() => setModalCompanyUser(false)}
+				isCentered
+			>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Add User</ModalHeader>
-					<Divider />
+					<ModalHeader>Company Team</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-						<Stack>
-							{/* <Lorem count={2} /> */}
-							<Grid templateColumns={{ base: '1fr', md: '1fr' }}>
-								<Stack p={2}>
-									<Stack>
-										<Text>Name</Text>
-										<Input type='text' placeholder='name' onChange={(e) => setName(e.target.value)} />
-									</Stack>
-
-									<Stack>
-										<Text>Email</Text>
-										<Input type='text' placeholder='email' onChange={(e) => setEmail(e.target.value)} />
-									</Stack>
-								</Stack>
-							</Grid>
+						<Stack spacing={1} py={3}>
+							<Stack m="1">
+								<Input
+									type="text"
+									placeholder="Name"
+									onChange={(e) => setName(e.target.value)}
+								/>
+								<Input
+									type="text"
+									placeholder="Email"
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+							</Stack>
 						</Stack>
 					</ModalBody>
-
 					<ModalFooter>
-						{
-						loading?
-							<Button colorScheme='green' mr={3} isLoading>
-							Save
+						<Flex gap={5}>
+							<Button
+								isLoading={loading}
+								leftIcon={<AddIcon boxSize={3} />}
+								colorScheme="green"
+								onClick={() => handleAddUser()}
+							>
+								Add Team
 							</Button>
-							:
-							<Button colorScheme='green' mr={3} onClick={() => handleAddNewUser()}>
-								Save
+							<Button
+								leftIcon={<CloseIcon boxSize={3} />}
+								colorScheme="red"
+								onClick={() => {
+									setModalCompanyUser(false);
+								}}
+							>
+								Cancel
 							</Button>
-						}
+						</Flex>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</>
+
+			<Modal
+				isOpen={modalConfirmDelete}
+				onClose={() => setModalConfirmDelete(false)}
+				isCentered
+			>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Delete User</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Text>User will be delete permanently. Are you sure?</Text>
+					</ModalBody>
+					<ModalFooter>
+						<Flex gap={5}>
+							{loading === true ? (
+								<Button
+									isLoading
+									colorScheme="green"
+									onClick={handleDeleteUser}
+								>
+									Yes
+								</Button>
+							) : (
+								<Button colorScheme="green" onClick={handleDeleteUser}>
+									Yes
+								</Button>
+							)}
+							<Button
+								leftIcon={<CloseIcon boxSize={3} />}
+								colorScheme="red"
+								onClick={() => {
+									setModalConfirmDelete(false);
+								}}
+							>
+								Cancel
+							</Button>
+						</Flex>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+
+			<Modal
+				isOpen={modalCompanyUserTeam}
+				onClose={() => setModalCompanyUserTeam(false)}
+				isCentered
+			>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>User In This Company</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody h={200}>
+						<Stack spacing={1} py={3}>
+							{companyActive?.usersCompanyData?.length > 0 &&
+								companyActive?.usersCompanyData?.map((x, index) => {
+									let roleUser = "";
+									if (companyActive?.owners?.includes(x.id)) {
+										roleUser = "owner";
+									} else if (companyActive?.managers?.includes(x.id)) {
+										roleUser = "manager";
+									} else if (companyActive?.users?.includes(x.id)) {
+										roleUser = "user";
+									} else if (companyActive?.admin?.includes(x.id)) {
+										roleUser = "admin";
+									}
+
+									return (
+										<HStack
+											cursor={"pointer"}
+											spacing={2}
+											key={index}
+											p={2}
+											borderRadius="lg"
+										>
+											<Stack>
+												<Avatar size={"sm"} name={x?.name} />
+											</Stack>
+
+											<Stack spacing={0}>
+												<Text
+													fontSize={"sm"}
+													fontWeight={500}
+													textTransform="capitalize"
+												>
+													{x?.name}
+												</Text>
+												<Text fontSize={"xs"}>{x?.email}</Text>
+											</Stack>
+											<Spacer />
+											<Stack>
+												<Button
+													size={"sm"}
+													onClick={() => handleModalConfirmDelete(x)}
+												>
+													<Text fontSize={"2xs"}>
+														Delete Account Permanently
+													</Text>
+												</Button>
+											</Stack>
+										</HStack>
+									);
+								})}
+						</Stack>
+					</ModalBody>
+					<ModalFooter>
+						<Flex gap={5}>
+							<Button
+								size={"sm"}
+								leftIcon={<CloseIcon boxSize={3} />}
+								colorScheme="red"
+								onClick={() => {
+									setModalCompanyUserTeam(false);
+								}}
+							>
+								Cancel
+							</Button>
+						</Flex>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+
+		</Stack>
 	)
 }
 
