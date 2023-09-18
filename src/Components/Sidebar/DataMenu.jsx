@@ -135,8 +135,8 @@ export const data = [
         link: "/configuration/backup",
       },
       { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
-      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
 
