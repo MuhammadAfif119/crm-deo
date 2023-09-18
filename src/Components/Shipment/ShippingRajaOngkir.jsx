@@ -8,6 +8,7 @@ import {
   InputRightElement,
   List,
   ListItem,
+  Select,
   Spinner,
   Stack,
   Text,
@@ -28,6 +29,7 @@ const ShippingRajaOngkir = ({
   selectedDestination,
 }) => {
   const [destinationResults, setDestinationResults] = useState([]);
+  const [cityDestination, setCityDestination] = useState([]);
   const [destinationSearch, setDestinationSearch] = useState("");
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [fetchingPrice, setFetchingPrice] = useState(false);
@@ -37,13 +39,14 @@ const ShippingRajaOngkir = ({
   const getDestination = async () => {
     setFetchingDestinations(true);
     try {
-      const result = await provinceList();
-      console.log("result destination", result);
+      const result = await axios.get("http://localhost:5000/listProvince");
+      console.log(result.data?.rajaongkir?.results);
+
       if (
-        result?.data?.data !== undefined &&
-        result?.data?.data?.detail?.length > 0
+        result.data?.rajaongkir?.results !== undefined &&
+        result.data?.rajaongkir?.results?.length > 0
       ) {
-        setDestinationResults(result?.data?.data?.detail);
+        setDestinationResults(result.data?.rajaongkir?.results);
         console.log(result);
       }
     } catch (error) {
@@ -52,6 +55,22 @@ const ShippingRajaOngkir = ({
       setFetchingDestinations(false);
     }
   };
+
+  const getDataCities = async () => {
+    try {
+      const result = await axios.get("http://localhost:5000/listCities", {
+        params: { province_id: selectedDestination.province_id },
+      });
+      console.log(result.data?.rajaongkir?.results);
+      setCityDestination(result.data?.rajaongkir?.results);
+    } catch (error) {
+      console.log(error, "error getting destination");
+    } finally {
+      setFetchingDestinations(false);
+    }
+  };
+
+  console.log(cityDestination, "ini city");
 
   const handleDestinationSearch = (value) => {
     setDestinationSearch(value);
@@ -112,9 +131,12 @@ const ShippingRajaOngkir = ({
   }, [destinationSearch]);
 
   useEffect(() => {
-    if (Object.keys(selectedDestination).length !== 0) getPricing();
+    if (Object.keys(selectedDestination).length !== 0) getDataCities();
+    // getPricing();
     return () => {};
   }, [selectedDestination]);
+
+  console.log(selectedDestination, "ini destination");
 
   return (
     <Box w="md">
@@ -130,7 +152,7 @@ const ShippingRajaOngkir = ({
           <Input
             value={
               Object.keys(selectedDestination).length > 0
-                ? selectedDestination?.City_Name
+                ? selectedDestination?.province
                 : destinationSearch
             }
             placeholder={
@@ -170,7 +192,7 @@ const ShippingRajaOngkir = ({
                   }}
                   key={index}
                 >
-                  <strong>{suggestion?.City_Name}</strong>
+                  <strong>{suggestion?.province}</strong>
                 </ListItem>
               ))}
             </List>
@@ -180,6 +202,13 @@ const ShippingRajaOngkir = ({
                                   <i>Kota / kecamatan tidak ditemukan.</i>
                               </Text>
                           } */}
+      </Stack>
+      <Stack my={2}>
+        <Select placeholder="Pilih Kota">
+          {cityDestination?.map((x) => (
+            <option value={x}>{x.city_name}</option>
+          ))}
+        </Select>
       </Stack>
       <Stack>
         <Text>Alamat Lengkap:</Text>
