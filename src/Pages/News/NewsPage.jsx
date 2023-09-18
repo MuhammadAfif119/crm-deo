@@ -350,20 +350,6 @@ const NewsPage = () => {
             News
           </Heading>
           <Spacer />
-        </HStack>
-        <HStack>
-          <Input
-            mb={3}
-            mt={5}
-            type="text"
-            placeholder="Search News ..."
-            bgColor="white"
-            color="black"
-            sx={inputStyles}
-            fontSize="sm"
-            onChange={(e) => searchFilterFunction(e.target.value)}
-          />
-          <Spacer />
           <Button
             onClick={() => navigate("/news/create")}
             bgColor={"white"}
@@ -377,6 +363,19 @@ const NewsPage = () => {
               <Text>News</Text>
             </HStack>
           </Button>
+        </HStack>
+        <HStack>
+          <Input
+            mb={3}
+            mt={5}
+            type="text"
+            placeholder="Search News ..."
+            bgColor="white"
+            color="black"
+            sx={inputStyles}
+            fontSize="sm"
+            onChange={(e) => searchFilterFunction(e.target.value)}
+          />
         </HStack>
         <Stack>
           {inputSearch !== "" ? (
@@ -410,10 +409,14 @@ const NewsPage = () => {
 
                         <Spacer />
                         <HStack>
-                          <Button onClick={() => handleDeleteModal(item)}>
+                          <Button
+                            variant={"unstyled"}
+                            onClick={() => handleDeleteModal(item)}
+                          >
                             <FiTrash2 size={15} />
                           </Button>
                           <Button
+                            variant={"unstyled"}
                             onClick={() => navigate(`/news/edit/${item.id}`)}
                           >
                             <FiEdit2 size={15} />
@@ -470,10 +473,14 @@ const NewsPage = () => {
                         </Box> */}
                         <Spacer />
                         <HStack>
-                          <Button onClick={() => handleDeleteModal(item)}>
+                          <Button
+                            variant={"unstyled"}
+                            onClick={() => handleDeleteModal(item)}
+                          >
                             <FiTrash2 size={15} />
                           </Button>
                           <Button
+                            variant={"unstyled"}
                             onClick={() => navigate(`/news/edit/${item.id}`)}
                           >
                             <FiEdit2 size={15} />

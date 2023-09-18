@@ -33,6 +33,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 import { formatFrice } from "../../Utils/numberUtil";
 import moment from "moment";
 import DatePicker from "../../Components/DatePicker/DatePicker";
+import { FaRegCalendar } from "react-icons/fa";
 
 const OrderPage = () => {
   const [dataOrders, setDataOrders] = useState([]);
@@ -160,11 +161,13 @@ const OrderPage = () => {
           </Heading>
           <Spacer />
           <Button
-            size={"sm"}
-            colorScheme="green"
+            size="sm"
             onClick={modalFilterDate.onOpen}
+            colorScheme="blue"
+            // variant={"outline"}
+            leftIcon={<FaRegCalendar />}
           >
-            Filter By Date
+            Filter date
           </Button>
         </HStack>
 
@@ -236,7 +239,7 @@ const OrderPage = () => {
                               </Badge>
                               <Spacer />
                               <Button
-                                colorScheme="blue"
+                                colorScheme="yellow"
                                 size={"sm"}
                                 onClick={() => handleOpenModal(order)}
                               >
@@ -288,7 +291,7 @@ const OrderPage = () => {
                               </Badge>
                               <Spacer />
                               <Button
-                                colorScheme="blue"
+                                colorScheme="yellow"
                                 size={"sm"}
                                 onClick={() => handleOpenModal(order)}
                               >
@@ -393,21 +396,27 @@ const OrderPage = () => {
             </Center>
 
             <HStack>
-              <Stack>
-                <Text>
-                  Start Date:{" "}
-                  {moment(selectedDateRange?.startDate).format("LLL")}
-                </Text>
-                <Text>
-                  End Date: {moment(selectedDateRange?.endDate).format("LLL")}
-                </Text>
-              </Stack>
+              <HStack spacing={4}>
+                <Stack fontSize={12} spacing={1}>
+                  <Text fontWeight={"semibold"}>Start Date: </Text>
+                  <Text>
+                    {moment(selectedDateRange?.startDate).format("LLL")}
+                  </Text>
+                </Stack>
+                <Stack fontSize={12} spacing={1}>
+                  <Text fontWeight={"semibold"}>End Date:</Text>
+                  <Text>
+                    {moment(selectedDateRange?.endDate).format("LLL")}
+                  </Text>
+                </Stack>
+              </HStack>
+              <Spacer />
               <Button
-                size={"sm"}
+                size={"xs"}
                 colorScheme="blue"
                 onClick={() => setSelectedDateRange()}
               >
-                Clear
+                Clear Filter
               </Button>
             </HStack>
           </ModalBody>

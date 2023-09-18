@@ -334,6 +334,19 @@ function FormPageV2() {
                         {moment(x.createdAt.seconds * 1000).fromNow()}
                       </Text>
                     </HStack>
+                    <HStack>
+                      <Text fontSize={9} mt={2}>
+                        Created by: {x.createdBy}
+                      </Text>
+                      <Spacer />
+                      <Button
+                        variant={"unstyled"}
+                        size={"xs"}
+                        onClick={() => handleOpenModal(x)}
+                      >
+                        <Icon as={FiTrash} />
+                      </Button>
+                    </HStack>
                   </Stack>
                 );
               })}
@@ -391,7 +404,11 @@ function FormPageV2() {
                         Created by: {x.createdBy}
                       </Text>
                       <Spacer />
-                      <Button size={"xs"} onClick={() => handleOpenModal(x)}>
+                      <Button
+                        variant={"unstyled"}
+                        size={"xs"}
+                        onClick={() => handleOpenModal(x)}
+                      >
                         <Icon as={FiTrash} />
                       </Button>
                     </HStack>
@@ -405,7 +422,7 @@ function FormPageV2() {
       <Stack alignItems={"center"} justifyContent="center">
         <Box>
           {shouldShowLoadMore && (
-            <Button onClick={handleLoadMore} size="sm">
+            <Button onClick={handleLoadMore} colorScheme="blue" size="sm">
               Load More
             </Button>
           )}
@@ -452,7 +469,7 @@ function FormPageV2() {
           <ModalFooter>
             <Button
               isLoading={loading}
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               colorScheme="blue"
               mr={3}
@@ -461,7 +478,7 @@ function FormPageV2() {
               Submit
             </Button>
             <Button
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               colorScheme="red"
               mr={3}
@@ -484,7 +501,7 @@ function FormPageV2() {
           <ModalFooter>
             <Button
               isLoading={isDeleting}
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               colorScheme="blue"
               mr={3}
@@ -493,7 +510,7 @@ function FormPageV2() {
               Yes
             </Button>
             <Button
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               colorScheme="red"
               mr={3}

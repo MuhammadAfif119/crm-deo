@@ -49,6 +49,7 @@ import { formatFrice } from "../../Utils/Helper";
 import ProductCard from "../../Components/Card/ProductCard";
 import Shipping from "../../Components/Shipment/Shipping";
 import { AiOutlineClose } from "react-icons/ai";
+import ShippingRajaOngkir from "../../Components/Shipment/ShippingRajaOngkir";
 
 function generateHTML(formFields) {
   let html = "";
@@ -477,7 +478,7 @@ function FormBuilderPage() {
             )}
 
             {type === "request" && formData.product_used?.length > 0 ? (
-              <Shipping
+              <ShippingRajaOngkir
                 my={3}
                 selectedDestination={selectedDestination}
                 setSelectedDestination={setSelectedDestination}

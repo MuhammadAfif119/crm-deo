@@ -488,7 +488,7 @@ const ViewPageListing = () => {
         <Box align={"center"}>
           <Button
             onClick={() => handleLoadMore()}
-            variant="outline"
+            // variant="outline"
             colorScheme="blue"
             size="md"
             alignSelf="center"
@@ -501,7 +501,7 @@ const ViewPageListing = () => {
         <Box align={"center"}>
           <Button
             onClick={() => handleLoadMoreFilter()}
-            variant="outline"
+            // variant="outline"
             colorScheme="blue"
             size="md"
             alignSelf="center"

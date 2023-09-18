@@ -32,6 +32,7 @@ import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaRegCalendar } from "react-icons/fa";
 import {
   addDocumentFirebase,
   getCollectionFirebase,
@@ -239,6 +240,8 @@ const ContactsPage = () => {
     },
   };
 
+  console.log(contactList);
+
   return (
     <Stack p={[1, 1, 5]}>
       <Stack spacing={4}>
@@ -251,11 +254,18 @@ const ContactsPage = () => {
             <Button
               size="sm"
               onClick={modalFilterDate.onOpen}
-              colorScheme="green"
+              colorScheme="blue"
+              // variant={"outline"}
+              leftIcon={<FaRegCalendar />}
             >
               Filter date
             </Button>
-            <Button size="sm" onClick={handleModalOpen} colorScheme="green">
+            <Button
+              size="sm"
+              onClick={handleModalOpen}
+              colorScheme="blue"
+              // variant={"outline"}
+            >
               + Add Contact
             </Button>
           </HStack>
@@ -289,7 +299,7 @@ const ContactsPage = () => {
                 <Th fontSize="sm">Email</Th>
                 <Th fontSize="sm">Created</Th>
                 <Th fontSize="sm">Last Activity</Th>
-                <Th fontSize="sm">Tags</Th>
+                {/* <Th fontSize="sm">Tags</Th> */}
                 <Th fontSize="sm">Action</Th>
               </Tr>
             </Thead>
@@ -310,11 +320,11 @@ const ContactsPage = () => {
                         <Td fontSize="sm">
                           {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
                         </Td>
-                        <Td fontSize="sm">{x?.tags}</Td>
+                        {/* <Td fontSize="sm">{x?.tags}</Td> */}
                         <Td fontSize="sm">
                           <Button
                             colorScheme={"yellow"}
-                            fontSize="sm"
+                            size="sm"
                             onClick={() => handleDetail(x)}
                           >
                             Detail
@@ -339,11 +349,11 @@ const ContactsPage = () => {
                         <Td fontSize="sm">
                           {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
                         </Td>
-                        <Td fontSize="sm">{x?.tags}</Td>
+                        {/* <Td fontSize="sm">{x?.tags}</Td> */}
                         <Td fontSize="sm">
                           <Button
                             colorScheme={"yellow"}
-                            fontSize="sm"
+                            size="sm"
                             onClick={() => handleDetail(x)}
                           >
                             Detail
@@ -438,7 +448,7 @@ const ContactsPage = () => {
           <ModalFooter>
             <Button
               colorScheme="blue"
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               mr={3}
               onClick={handleSaveContact}
@@ -447,7 +457,7 @@ const ContactsPage = () => {
             </Button>
             <Button
               colorScheme="red"
-              variant={"outline"}
+              // variant={"outline"}
               size="sm"
               mr={3}
               onClick={handleModalClose}
@@ -472,21 +482,27 @@ const ContactsPage = () => {
             </Center>
 
             <HStack>
-              <Stack>
-                <Text>
-                  Start Date:{" "}
-                  {moment(selectedDateRange?.startDate).format("LLL")}
-                </Text>
-                <Text>
-                  End Date: {moment(selectedDateRange?.endDate).format("LLL")}
-                </Text>
-              </Stack>
+              <HStack spacing={4}>
+                <Stack fontSize={12} spacing={1}>
+                  <Text fontWeight={"semibold"}>Start Date: </Text>
+                  <Text>
+                    {moment(selectedDateRange?.startDate).format("LLL")}
+                  </Text>
+                </Stack>
+                <Stack fontSize={12} spacing={1}>
+                  <Text fontWeight={"semibold"}>End Date:</Text>
+                  <Text>
+                    {moment(selectedDateRange?.endDate).format("LLL")}
+                  </Text>
+                </Stack>
+              </HStack>
+              <Spacer />
               <Button
-                size={"sm"}
+                size={"xs"}
                 colorScheme="blue"
                 onClick={() => setSelectedDateRange()}
               >
-                Clear
+                Clear Filter
               </Button>
             </HStack>
           </ModalBody>

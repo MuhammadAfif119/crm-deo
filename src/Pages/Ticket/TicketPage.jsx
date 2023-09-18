@@ -5,6 +5,7 @@ import {
   Button,
   Center,
   Flex,
+  HStack,
   Heading,
   Image,
   Input,
@@ -16,13 +17,21 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Spacer,
+  Stack,
   Text,
   VStack,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiClock,
+  FiMapPin,
+  FiTrash,
+  FiTrash2,
+} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import {
   arrayRemoveFirebase,
@@ -82,7 +91,7 @@ const TicketPage = () => {
         sortBy,
         limitValue
       );
-      console.log(res);
+
       setData(res);
     } catch (error) {
       console.log(error);
@@ -226,15 +235,14 @@ const TicketPage = () => {
                           >
                             {item?.title}
                           </Heading>
-                          <Button
-                            variant={"unstyled"}
-                            onClick={() => handleModal("delete", item)}
-                          >
-                            <DeleteIcon />
-                          </Button>
                         </Flex>
-                        <Box onClick={() => handleModal("read", item)}>
-                          <Flex gap={2} align={"center"}>
+
+                        <Box>
+                          <Flex
+                            gap={2}
+                            align={"center"}
+                            onClick={() => handleModal("read", item)}
+                          >
                             <FiCalendar />
                             <Text size={"sm"}>
                               {moment(item?.dateStart).format("DD")}{" "}
@@ -258,8 +266,8 @@ const TicketPage = () => {
                             <FiMapPin />
                             <Text size={"sm"}>{item?.address || "Zoom"}</Text>
                           </Flex>
-                          <Flex justify={"space-between"} align={"center"}>
-                            {/* <PriceTag price={x.price} />
+                          {/* <Flex justify={"space-between"} align={"center"}> */}
+                          {/* <PriceTag price={x.price} />
               {x.sold === true ? <Text textTransform={'uppercase'} fontWeight={'medium'}>fully booked</Text> :
                 today.isAfter(x?.endTicket) ?
                   <Text color={'red'} textTransform={'uppercase'} fontWeight={'medium'}>sale ended</Text>
@@ -267,7 +275,19 @@ const TicketPage = () => {
                   :
                   <Button size={'sm'} colorScheme={value?.webConfig?.colorScheme}>Buy Ticket</Button>
               } */}
-                          </Flex>
+                          {/* </Flex> */}
+                          <HStack>
+                            <Text fontSize={9} mt={2}>
+                              Created by: {item.createdBy}
+                            </Text>
+                            <Spacer />
+                            <Button
+                              variant={"unstyled"}
+                              onClick={() => handleModal("delete", item)}
+                            >
+                              <FiTrash2 size={15} />
+                            </Button>
+                          </HStack>
                         </Box>
                       </VStack>
                     </Box>
@@ -337,15 +357,13 @@ const TicketPage = () => {
                             >
                               {item?.title}
                             </Heading>
-                            <Button
-                              variant={"unstyled"}
-                              onClick={() => handleModal("delete", item)}
-                            >
-                              <DeleteIcon />
-                            </Button>
                           </Flex>
-                          <Box onClick={() => handleModal("read", item)}>
-                            <Flex gap={2} align={"center"}>
+                          <Box>
+                            <Flex
+                              gap={2}
+                              align={"center"}
+                              onClick={() => handleModal("read", item)}
+                            >
                               <FiCalendar />
                               <Text size={"sm"}>
                                 {moment(item?.dateStart).format("DD")}{" "}
@@ -379,9 +397,18 @@ const TicketPage = () => {
                   <Button size={'sm'} colorScheme={value?.webConfig?.colorScheme}>Buy Ticket</Button>
               } */}
                             {/* </Flex> */}
-                            <Text fontSize={9} mt={2}>
-                              Created by: {item.createdBy}
-                            </Text>
+                            <HStack>
+                              <Text fontSize={9} mt={2}>
+                                Created by: {item.createdBy}
+                              </Text>
+                              <Spacer />
+                              <Button
+                                variant={"unstyled"}
+                                onClick={() => handleModal("delete", item)}
+                              >
+                                <FiTrash2 size={15} />
+                              </Button>
+                            </HStack>
                           </Box>
                         </VStack>
                       </Box>
@@ -421,6 +448,7 @@ const TicketPage = () => {
             {selectedData?.type === "read" ? (
               <>
                 <Image
+                  alignSelf={"center"}
                   src={
                     selectedData?.item?.thumbnail ||
                     selectedData?.item?.thumbnaill
@@ -429,36 +457,53 @@ const TicketPage = () => {
                   objectFit={"contain"}
                   maxH={"300px"}
                 />
-                <Text fontWeight={"bold"} fontSize="lg">
+                <Text
+                  textTransform={"capitalize"}
+                  fontWeight={"bold"}
+                  fontSize="lg"
+                >
                   {selectedData?.item?.title}
                 </Text>
-                <Text>{selectedData?.item?.description}</Text>
-                <Flex gap={2} align={"center"}>
-                  <FiCalendar />
-                  <Text size={"sm"}>
-                    {moment(selectedData?.item?.dateStart).format("DD")}{" "}
-                    {monthNames[moment(selectedData?.item?.dateStart).month()]}{" "}
-                    {moment(selectedData?.item?.dateStart).format("YYYY")}
-                  </Text>
-                  {selectedData?.item?.dateEnd && (
+                <Text textTransform={"capitalize"}>
+                  {selectedData?.item?.description}
+                </Text>
+
+                <Stack my={3}>
+                  <Flex gap={2} align={"center"}>
+                    <FiCalendar />
                     <Text size={"sm"}>
-                      - {moment(selectedData?.item?.dateEnd).format("DD")}{" "}
-                      {monthNames[moment(selectedData?.item?.dateEnd).month()]}{" "}
-                      {moment(selectedData?.item?.dateEnd).format("YYYY")}
+                      {moment(selectedData?.item?.dateStart).format("DD")}{" "}
+                      {
+                        monthNames[
+                          moment(selectedData?.item?.dateStart).month()
+                        ]
+                      }{" "}
+                      {moment(selectedData?.item?.dateStart).format("YYYY")}
                     </Text>
-                  )}
-                </Flex>
-                <Flex align={"center"} gap="2">
-                  <FiClock />
-                  <Text size={"sm"}>{selectedData?.item?.time}</Text>
-                  <Text size="sm"> - {selectedData?.item?.timeEnd}</Text>
-                </Flex>
-                <Flex align={"center"} gap={2}>
-                  <FiMapPin />
-                  <Text size={"sm"}>
-                    {selectedData?.item?.address || "Zoom"}
-                  </Text>
-                </Flex>
+                    {selectedData?.item?.dateEnd && (
+                      <Text size={"sm"}>
+                        - {moment(selectedData?.item?.dateEnd).format("DD")}{" "}
+                        {
+                          monthNames[
+                            moment(selectedData?.item?.dateEnd).month()
+                          ]
+                        }{" "}
+                        {moment(selectedData?.item?.dateEnd).format("YYYY")}
+                      </Text>
+                    )}
+                  </Flex>
+                  <Flex align={"center"} gap="2">
+                    <FiClock />
+                    <Text size={"sm"}>{selectedData?.item?.time}</Text>
+                    <Text size="sm"> - {selectedData?.item?.timeEnd}</Text>
+                  </Flex>
+                  <Flex align={"center"} gap={2}>
+                    <FiMapPin size={20} />
+                    <Text size={"sm"}>
+                      {selectedData?.item?.address || "Zoom"}
+                    </Text>
+                  </Flex>
+                </Stack>
               </>
             ) : (
               <Text>

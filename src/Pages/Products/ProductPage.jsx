@@ -468,10 +468,10 @@ const ProductPage = () => {
       })}
 
       {selectedCategory === "All" ? (
-        <Box align={"center"}>
+        <Box align={"center"} my={2}>
           <Button
             onClick={() => handleLoadMore()}
-            variant="outline"
+            // variant="outline"
             colorScheme="blue"
             size="md"
             alignSelf="center"
@@ -481,10 +481,10 @@ const ProductPage = () => {
           </Button>
         </Box>
       ) : (
-        <Box align={"center"}>
+        <Box align={"center"} my={2}>
           <Button
             onClick={() => handleLoadMoreFilter()}
-            variant="outline"
+            // variant="outline"
             colorScheme="blue"
             size="md"
             alignSelf="center"
