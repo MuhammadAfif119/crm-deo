@@ -57,12 +57,41 @@ const ShippingRajaOngkir = ({
   };
 
   const getDataCities = async () => {
+    const config = {
+      method: "post",
+      url: "http://localhost:5000/listCities",
+      data: { province: selectedDestination.province_id },
+    };
+
     try {
-      const result = await axios.get("http://localhost:5000/listCities", {
-        params: { province_id: selectedDestination.province_id },
-      });
+      const result = await axios(config);
       console.log(result.data?.rajaongkir?.results);
       setCityDestination(result.data?.rajaongkir?.results);
+    } catch (error) {
+      console.log(error, "error getting destination");
+    } finally {
+      setFetchingDestinations(false);
+    }
+  };
+
+  const getDataCost = async () => {
+    const payload = {
+      origin: 501,
+      originType: "city",
+      destination: 574,
+      destinationType: "subdistrict",
+      weight: 1700,
+      courier: "jne",
+    };
+    const config = {
+      method: "post",
+      url: "https://us-central1-intrapreneuer.cloudfunctions.net/costrajaongkir",
+      data: payload,
+    };
+
+    try {
+      const result = await axios(config);
+      console.log(result);
     } catch (error) {
       console.log(error, "error getting destination");
     } finally {
@@ -135,6 +164,12 @@ const ShippingRajaOngkir = ({
     // getPricing();
     return () => {};
   }, [selectedDestination]);
+
+  useEffect(() => {
+    getDataCost();
+
+    return () => {};
+  }, []);
 
   console.log(selectedDestination, "ini destination");
 

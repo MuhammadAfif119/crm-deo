@@ -96,6 +96,8 @@ const ProductPage = () => {
           data.push({ id: doc.id, ...docData });
         });
 
+        console.log(data);
+
         const mappedData = {};
         data.forEach((listing) => {
           const categories = listing.category;

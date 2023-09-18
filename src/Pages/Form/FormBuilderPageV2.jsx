@@ -478,7 +478,7 @@ function FormBuilderPage() {
             )}
 
             {type === "request" && formData.product_used?.length > 0 ? (
-              <Shipping
+              <ShippingRajaOngkir
                 my={3}
                 selectedDestination={selectedDestination}
                 setSelectedDestination={setSelectedDestination}

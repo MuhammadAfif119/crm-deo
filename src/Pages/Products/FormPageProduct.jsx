@@ -541,14 +541,22 @@ function FormPageProduct() {
       );
       console.log("ID Dokumen Baru:", docID);
 
-      if (!formId) {
-        const newArr = await arrayUnionFirebase(
-          "forms",
-          formId,
-          "product_used",
-          [idProject]
-        );
+      const getForm = await getSingleDocumentFirebase("forms", formId);
+
+      if (!getForm.product_used || getForm.product_used?.length === 0) {
+        await updateDocumentFirebase("forms", formId, {
+          product_used: [idProject],
+        });
       }
+
+      // if (!formId) {
+      //   const newArr = await arrayUnionFirebase(
+      //     "forms",
+      //     formId,
+      //     "product_used",
+      //     [idProject]
+      //   );
+      // }
 
       if (docID && formId !== lastFormId) {
         try {
