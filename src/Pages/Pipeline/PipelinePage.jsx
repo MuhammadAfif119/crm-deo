@@ -23,6 +23,7 @@ import {
   Grid,
   Heading,
   Center,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FiCheck, FiFilter } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
@@ -30,13 +31,15 @@ import useUserStore from "../../Hooks/Zustand/Store";
 
 import {
   addDocumentFirebase,
+  deleteDocumentFirebase,
   getCollectionFirebase,
   getCollectionWithSnapshotFirebase,
+  updateDocumentFirebase,
 } from "../../Api/firebaseApi";
 import { useNavigate } from "react-router-dom";
-import { SearchIcon } from "@chakra-ui/icons";
+import { DeleteIcon, SearchIcon } from "@chakra-ui/icons";
 import moment from "moment";
-import { encryptToken } from "../../Utils/encrypToken";
+import { decryptToken, encryptToken } from "../../Utils/encrypToken";
 
 function PipelinePage() {
   const [pipelineModal, setPipelineModal] = useState(false);
@@ -49,12 +52,17 @@ function PipelinePage() {
   const [inputSearch, setInputSearch] = useState("");
 
   const [selectedFormId, setSelectedFormId] = useState(null);
+  const [dataDelete, setDataDelete] = useState("");
 
   const [formList, setFormList] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
   const navigate = useNavigate();
+
+  const deleteModal = useDisclosure();
 
   const [listPipeline, setListPipeline] = useState([]);
 
@@ -123,8 +131,6 @@ function PipelinePage() {
     dataUpdate.projectId = globalState.currentProject;
     dataUpdate.formId = [selectedFormId];
 
-    console.log(dataUpdate, "xxx");
-
     const collectionName = "pipelines";
     const data = dataPipeline;
     try {
@@ -134,6 +140,16 @@ function PipelinePage() {
         globalState?.currentCompany
       );
       console.log("ID Dokumen Baru:", docID);
+
+      if (docID) {
+        const updateForm = await updateDocumentFirebase(
+          "forms",
+          decryptToken(selectedFormId),
+          {
+            pipelineId: docID,
+          }
+        );
+      }
 
       fetchData();
       handleCloseModal();
@@ -181,12 +197,11 @@ function PipelinePage() {
 
       const formFilter = resForm.filter(
         (x) =>
-          (!x.product_used || x.product_used?.length === 0) &&
-          (!x.ticket_used || x.ticket_used?.length === 0) &&
-          (!x.membership_used || x.membership_used?.length === 0)
+          // (!x.product_used || x.product_used?.length === 0) &&
+          // (!x.ticket_used || x.ticket_used?.length === 0) &&
+          // (!x.membership_used || x.membership_used?.length === 0)
+          !x.pipelineId || x.pipelineId === ""
       );
-
-      console.log(formFilter, "ini form");
 
       setListPipeline(res);
       // setFormList(resForm);
@@ -211,7 +226,47 @@ function PipelinePage() {
     }
   };
 
-  console.log(dataSearchPipeline, "ini pipeline");
+  const handleDeleteModal = (value) => {
+    deleteModal.onOpen();
+    setDataDelete(value);
+  };
+
+  console.log(dataDelete);
+
+  const handleDeletePipeline = async () => {
+    console.log(dataDelete, "ini data delete");
+    setIsLoading(true);
+    try {
+      const result = await deleteDocumentFirebase("pipelines", dataDelete.id);
+
+      console.log(result);
+
+      if (result === "Dokumen berhasil dihapus.") {
+        const updateForm = await updateDocumentFirebase(
+          "forms",
+          decryptToken(dataDelete.formId[0]),
+          { pipelineId: "" }
+        );
+
+        console.log(updateForm);
+      }
+
+      toast({
+        status: "success",
+        title: "Deoapp CRM",
+        description: "Pipeline deleted",
+        duration: 3000,
+      });
+
+      fetchData();
+
+      deleteModal.onClose();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFormToggle = (formId) => {
     setSelectedFormId((prev) => (prev === formId ? null : formId));
@@ -275,9 +330,6 @@ function PipelinePage() {
                     shadow={"md"}
                     rounded={5}
                     cursor="pointer"
-                    onClick={() =>
-                      navigate(`/pipeline/view/${x.id}`, { state: x })
-                    }
                     _hover={{
                       bg: "gray.100",
                       transform: "scale(1.02)",
@@ -285,17 +337,28 @@ function PipelinePage() {
                       cursor: "pointer",
                     }}
                   >
-                    <Heading textTransform={"capitalize"} size="sm">
-                      {x.name}
-                    </Heading>
-                    <Text color={"gray.700"}>{x.project}</Text>
+                    <Box
+                      mb={3}
+                      onClick={() =>
+                        navigate(`/pipeline/view/${x.id}`, { state: x })
+                      }
+                    >
+                      <Heading textTransform={"capitalize"} size="sm">
+                        {x.name}
+                      </Heading>
+                      <Text color={"gray.700"}>{x.project}</Text>
+                    </Box>
                     <Spacer />
 
                     <HStack>
-                      <Spacer />
                       <Text fontSize={"xs"} color={"gray.500"}>
                         {moment(x.createdAt.seconds * 1000).fromNow()}
                       </Text>
+                      <Spacer />
+                      <DeleteIcon
+                        onClick={() => handleDeleteModal(x)}
+                        boxSize={3}
+                      />
                     </HStack>
                   </Stack>
                 );
@@ -313,9 +376,6 @@ function PipelinePage() {
                     shadow={"md"}
                     rounded={5}
                     cursor="pointer"
-                    onClick={() =>
-                      navigate(`/pipeline/view/${x.id}`, { state: x })
-                    }
                     _hover={{
                       bg: "gray.100",
                       transform: "scale(1.02)",
@@ -323,17 +383,28 @@ function PipelinePage() {
                       cursor: "pointer",
                     }}
                   >
-                    <Heading textTransform={"capitalize"} size="sm">
-                      {x.name}
-                    </Heading>
-                    <Text color={"gray.700"}>{x.project}</Text>
-                    <Spacer />
+                    <Box
+                      mb={3}
+                      onClick={() =>
+                        navigate(`/pipeline/view/${x.id}`, { state: x })
+                      }
+                    >
+                      <Heading textTransform={"capitalize"} size="sm">
+                        {x.name}
+                      </Heading>
+                      <Text color={"gray.700"}>{x.project}</Text>
+                      <Spacer />
+                    </Box>
 
                     <HStack>
-                      <Spacer />
                       <Text fontSize={"xs"} color={"gray.500"}>
                         {moment(x.createdAt.seconds * 1000).fromNow()}
                       </Text>
+                      <Spacer />
+                      <DeleteIcon
+                        onClick={() => handleDeleteModal(x)}
+                        boxSize={3}
+                      />
                     </HStack>
                   </Stack>
                 );
@@ -478,6 +549,41 @@ function PipelinePage() {
               colorScheme="twitter"
               mr={3}
               onClick={handleSubmitPipeline}
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <HStack>
+              <Text fontSize={"md"}>Delete Pipeline</Text>
+            </HStack>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure to delete {dataDelete.name} Pipeline?</Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              size={"sm"}
+              colorScheme="blackAlpha"
+              mr={3}
+              onClick={deleteModal.onClose}
+            >
+              No
+            </Button>
+            <Button
+              isLoading={isLoading}
+              size={"sm"}
+              colorScheme="twitter"
+              mr={3}
+              onClick={handleDeletePipeline}
             >
               Submit
             </Button>

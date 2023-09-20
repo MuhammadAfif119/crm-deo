@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   Badge,
   Box,
   Button,
@@ -390,14 +391,14 @@ const NewsPage = () => {
                       borderRadius={"md"}
                       p={3}
                     >
-                      <Stack>
+                      <Stack w={"30%"}>
                         <Image
                           src={item?.thumbnail}
-                          boxSize="150px"
+                          boxSize={"full"}
                           objectFit="cover"
                         />
                       </Stack>
-                      <Stack>
+                      <Stack w={"70%"}>
                         <Box>
                           <Heading size={"md"}>{item?.title}</Heading>
                           <Text size={"md"} my={1} fontSize={11}>
@@ -446,14 +447,14 @@ const NewsPage = () => {
                       borderRadius={"md"}
                       p={3}
                     >
-                      <Stack>
+                      <Stack w={"30%"}>
                         <Image
                           src={item?.thumbnail}
-                          boxSize="150px"
+                          boxSize={"full"}
                           objectFit="cover"
                         />
                       </Stack>
-                      <Stack>
+                      <Stack w={"70%"}>
                         <Box>
                           <Heading size={"md"}>{item?.title}</Heading>
                           <Text size={"md"} my={1} fontSize={11}>

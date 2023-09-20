@@ -106,7 +106,8 @@ const ProductEditSinglePage = () => {
         )}</a></p><br/> `;
       }
 
-      setContent((prevContent) => prevContent + ` ${htmlContent}`);
+      setValue((prevContent) => prevContent + ` ${htmlContent}`);
+      console.log(value, "ini content");
     }
   };
 
@@ -205,7 +206,7 @@ const ProductEditSinglePage = () => {
           onClick={() => handleSave()}
           colorScheme="blue"
         >
-          Save Content
+          Save Change
         </Button>
       </Box>
 

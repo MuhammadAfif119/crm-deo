@@ -510,7 +510,7 @@ function FormPageProduct() {
       stock: stock,
       is_active: isActive,
       is_shipping: isShipping,
-      formId: formId,
+      formId: formId || "",
       modules: modules.map((module) => module.toLowerCase()),
     };
 
@@ -541,12 +541,14 @@ function FormPageProduct() {
       );
       console.log("ID Dokumen Baru:", docID);
 
-      const getForm = await getSingleDocumentFirebase("forms", formId);
+      if (formId !== "") {
+        const getForm = await getSingleDocumentFirebase("forms", formId);
 
-      if (!getForm.product_used || getForm.product_used?.length === 0) {
-        await updateDocumentFirebase("forms", formId, {
-          product_used: [idProject],
-        });
+        if (!getForm.product_used || getForm.product_used?.length === 0) {
+          await updateDocumentFirebase("forms", formId, {
+            product_used: [idProject],
+          });
+        }
       }
 
       // if (!formId) {

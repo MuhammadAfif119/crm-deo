@@ -85,6 +85,7 @@ const ProductPage = () => {
       const q = query(
         collection(db, "listings_product"),
         where("projectId", "==", projectId),
+        where("type", "==", "product"),
         orderBy("createdAt", "asc"),
         limit(pageSize * page)
       );
@@ -99,9 +100,9 @@ const ProductPage = () => {
         console.log(data);
 
         const mappedData = {};
-        data.forEach((listing) => {
+        data?.forEach((listing) => {
           const categories = listing.category;
-          categories.forEach((category) => {
+          categories?.forEach((category) => {
             if (!mappedData[category]) {
               mappedData[category] = [];
             }
@@ -141,6 +142,7 @@ const ProductPage = () => {
   };
 
   const handleCategoryFilter = async (value) => {
+    console.log(value);
     setSelectedCategoryNiche(value);
     try {
       const q = query(
@@ -290,6 +292,8 @@ const ProductPage = () => {
     }
   };
 
+  console.log(categoryModule);
+
   return (
     <Box>
       <Stack py={2}>
@@ -312,6 +316,7 @@ const ProductPage = () => {
             </HStack>
           </Button>
         </HStack>
+
         {categoryModule?.data?.length > 0 && (
           <HStack spacing={3}>
             <Text

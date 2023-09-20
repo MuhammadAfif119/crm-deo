@@ -93,16 +93,23 @@ const ProductArticleCreatePage = () => {
   };
 
   const contentChange = (value) => {
-    setDataInput({ ...dataInput, content: value });
+    setContent(value);
   };
 
   const handleSave = async () => {
     setLoading(true);
-    setDataInput({
+    console.log({
       ...dataInput,
+      content: content,
       projectId: globalState?.currentProject,
       type: "pages",
     });
+    // setDataInput({
+    //   ...dataInput,
+    //   content: content,
+    //   projectId: globalState?.currentProject,
+    //   type: "pages",
+    // });
     //
     //
 
@@ -111,6 +118,7 @@ const ProductArticleCreatePage = () => {
       "listings_product",
       {
         ...dataInput,
+        content: content,
         projectId: globalState?.currentProject,
         type: "pages",
       },
@@ -155,6 +163,8 @@ const ProductArticleCreatePage = () => {
       const { link, type } = x;
       let htmlContent = "";
 
+      console.log(shareLink, "xxx");
+
       if (type === "image") {
         htmlContent = `<p><img src="${link}" alt="Image" width="500px" /></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
           link
@@ -174,8 +184,15 @@ const ProductArticleCreatePage = () => {
       }
 
       setContent((prevContent) => prevContent + ` ${htmlContent}`);
+      // setDataInput({ ...dataInput, content: content });
+
+      console.log(dataInput);
     }
+
+    closeModal();
   };
+
+  console.log(content, "ini content");
 
   const openModal = () => {
     setModalUploadOpen(true);
@@ -279,17 +296,21 @@ const ProductArticleCreatePage = () => {
           {/* </SimpleGrid> */}
         </Box>
         {isUploading ? <Spinner /> : null}
-        {/* <ReactQuill
-                    // theme="snow"
-                    value={contentRef.current}
-                    onChange={(e) => contentChange(e)}
-                // className='quill'
-                // style={{
-                //     marginTop: 50,
-                //     backgroundColor: 'white',
-                //     marginBottom: 20
-                // }}
-                /> */}
+        <FormControl isRequired>
+          <FormLabel>
+            Phone Number {"("}WhatsApp Active{")"}
+          </FormLabel>
+          <Input
+            w={300}
+            bg="white"
+            value={dataInput?.phone}
+            onChange={(e) =>
+              setDataInput({ ...dataInput, phone: e.target.value })
+            }
+            type="number"
+            placeholder="Whatsapp number here"
+          />
+        </FormControl>
         <Box align={"right"} my={3}>
           <Button
             onClick={openModal}
@@ -300,7 +321,8 @@ const ProductArticleCreatePage = () => {
             Add File
           </Button>
         </Box>
-        <ReactQuill onChange={(e) => contentChange(e)} />
+
+        <ReactQuill value={content} onChange={(e) => contentChange(e)} />
         {/* {idProject ? (
           <Button
             mt="5"

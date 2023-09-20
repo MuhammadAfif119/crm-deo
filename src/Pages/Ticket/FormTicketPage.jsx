@@ -810,6 +810,8 @@ const FormTicketPage = () => {
     });
   };
 
+  console.log(detailTicket);
+
   const handleCategoryChange = (categoryIndex, field, value) => {
     setCategoryDetails((prevCategoryDetails) => {
       const updatedCategoryDetails = [...prevCategoryDetails];
@@ -901,6 +903,20 @@ const FormTicketPage = () => {
           idProject,
           newData
         );
+
+        const getForm = await getSingleDocumentFirebase("forms", formId);
+
+        if (!data.formId) {
+          await updateDocumentFirebase("tickets", idProject, {
+            formId: formId,
+          });
+
+          if (!getForm.ticket_used) {
+            await updateDocumentFirebase("forms", formId, {
+              ticket_used: [idProject],
+            });
+          }
+        }
 
         if (resUpdate && data.formId) {
           const collectionName = "forms";
@@ -1203,14 +1219,14 @@ const FormTicketPage = () => {
             />
           </FormControl>
 
-          <FormControl id="gtmId" isRequired>
+          {/* <FormControl id="gtmId" isRequired>
             <FormLabel>GTM-ID</FormLabel>
             <Input
               type="text"
               value={data?.gtmId}
               onChange={(e) => setData({ ...data, gtmId: e.target.value })}
             />
-          </FormControl>
+          </FormControl> */}
 
           <HStack align={"center"} gap="5">
             <FormControl

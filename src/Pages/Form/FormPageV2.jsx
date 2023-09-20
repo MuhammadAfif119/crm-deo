@@ -21,10 +21,13 @@ import {
 } from "@chakra-ui/react";
 import {
   collection,
+  deleteField,
+  doc,
   limit,
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import moment from "moment";

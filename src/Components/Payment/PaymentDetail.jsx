@@ -93,7 +93,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     const data = {
       xenditId: "6479f64913999eb3b3fe7283",
       orderId: id,
-      amount: dataLeads?.shippingDetails?.price || fixPrice,
+      amount: fixPrice,
       bankCode: selectedPaymentMethod,
       name: updatedOrder.name,
       companyId: dataParam.companyId,
@@ -166,6 +166,11 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   ];
 
   console.log(dataLeads, "ini leads");
+  console.log(dataParam, "ini data");
+  console.log(
+    dataParam?.price * quantity + parseInt(dataLeads?.shippingDetails?.price),
+    "ini price"
+  );
 
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
@@ -173,9 +178,10 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     let fixPrice = 0;
     if (dataLeads?.shippingDetails) {
       fixPrice =
-        dataParam.price * quantity + parseInt(dataLeads.shippingDetails.price);
+        dataParam?.price * quantity +
+        parseInt(dataLeads?.shippingDetails?.price);
     } else {
-      fixPrice = dataParam.price * quantity;
+      fixPrice = dataParam?.price * quantity;
     }
 
     const dataOrder = [
@@ -184,26 +190,51 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         price: dataParam.price,
         qty: quantity,
         id: dataParam.id,
+        totalPrice: parseInt(dataParam.price) + quantity,
       },
     ];
 
-    const updatedOrder = {
-      orders: dataOrder,
-      paymentStatus: "open",
-      orderStatus: "onProcess",
-      paymentMethod: "XENDIT_VA",
-      module: "crm",
-      category: param.type === "ticket" ? "ticket" : "product",
-      companyId: dataParam.companyId,
-      projectId: dataParam.projectId,
-      outletId: dataParam.projectId,
-      name: dataLeads.name || "",
-      email: dataLeads.email || "",
-      phoneNumber: dataLeads.phoneNumber || "",
-      amount: Number(dataParam.price) * quantity,
-      quantity: quantity,
-      userId: dataLeads.id || "",
-    };
+    let updatedOrder = {};
+
+    if (param.type === "product") {
+      updatedOrder = {
+        orders: dataOrder,
+        paymentStatus: "open",
+        orderStatus: "onProcess",
+        paymentMethod: "XENDIT_VA",
+        module: "crm",
+        category: param.type === "ticket" ? "ticket" : "product",
+        companyId: dataParam.companyId,
+        projectId: dataParam.projectId,
+        outletId: dataParam.projectId,
+        name: dataLeads.name || "",
+        email: dataLeads.email || "",
+        phoneNumber: dataLeads.phoneNumber || "",
+        amount:
+          Number(dataParam.price) * quantity +
+          parseInt(dataLeads.shippingDetails.price),
+        quantity: quantity,
+        userId: dataLeads.id || "",
+      };
+    } else {
+      updatedOrder = {
+        orders: dataOrder,
+        paymentStatus: "open",
+        orderStatus: "onProcess",
+        paymentMethod: "XENDIT_VA",
+        module: "crm",
+        category: param.type === "ticket" ? "ticket" : "product",
+        companyId: dataParam.companyId,
+        projectId: dataParam.projectId,
+        outletId: dataParam.projectId,
+        name: dataLeads.name || "",
+        email: dataLeads.email || "",
+        phoneNumber: dataLeads.phoneNumber || "",
+        amount: Number(dataParam.price) * quantity,
+        quantity: quantity,
+        userId: dataLeads.id || "",
+      };
+    }
 
     addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then(
       (x) => {

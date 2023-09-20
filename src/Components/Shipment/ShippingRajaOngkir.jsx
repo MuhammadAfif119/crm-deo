@@ -21,15 +21,30 @@ import { AiOutlineClose } from "react-icons/ai";
 import axios from "axios";
 import { provinceList } from "../../Api/shippingApi";
 
+const courierList = ["jne", "anteraja", "tiki", "sicepat", "wahana", "jnt"];
+
 const ShippingRajaOngkir = ({
   setFullAddress,
   setSelectedCourier,
   selectedCourier,
   setSelectedDestination,
   selectedDestination,
+  selectedService,
+  setSelectedService,
+  selectedSubdistrict,
+  setSelectedSubdistirct,
 }) => {
   const [destinationResults, setDestinationResults] = useState([]);
+
   const [cityDestination, setCityDestination] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(null);
+
+  const [subdistricts, setSubdistricts] = useState([]);
+  //   const [selectedSubdistrict, setSelectedSubdistirct] = useState();
+
+  //   const [selectedService, setSelectedService] = useState();
+  const [shipmentService, setShipmentService] = useState([]);
+
   const [destinationSearch, setDestinationSearch] = useState("");
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [fetchingPrice, setFetchingPrice] = useState(false);
@@ -40,14 +55,12 @@ const ShippingRajaOngkir = ({
     setFetchingDestinations(true);
     try {
       const result = await axios.get("http://localhost:5000/listProvince");
-      console.log(result.data?.rajaongkir?.results);
 
       if (
         result.data?.rajaongkir?.results !== undefined &&
         result.data?.rajaongkir?.results?.length > 0
       ) {
         setDestinationResults(result.data?.rajaongkir?.results);
-        console.log(result);
       }
     } catch (error) {
       console.log(error, "error getting destination");
@@ -57,15 +70,13 @@ const ShippingRajaOngkir = ({
   };
 
   const getDataCities = async () => {
-    const config = {
-      method: "post",
-      url: "http://localhost:5000/listCities",
-      data: { province: selectedDestination.province_id },
-    };
+    const requestData = { province_id: selectedDestination.province_id }; // Use 'province_id' here
 
     try {
-      const result = await axios(config);
-      console.log(result.data?.rajaongkir?.results);
+      const result = await axios.get(
+        `http://localhost:5000/listCities?province=${requestData.province_id}`,
+        requestData
+      );
       setCityDestination(result.data?.rajaongkir?.results);
     } catch (error) {
       console.log(error, "error getting destination");
@@ -74,24 +85,16 @@ const ShippingRajaOngkir = ({
     }
   };
 
-  const getDataCost = async () => {
-    const payload = {
-      origin: 501,
-      originType: "city",
-      destination: 574,
-      destinationType: "subdistrict",
-      weight: 1700,
-      courier: "jne",
-    };
-    const config = {
-      method: "post",
-      url: "https://us-central1-intrapreneuer.cloudfunctions.net/costrajaongkir",
-      data: payload,
-    };
+  const getDataSubcities = async () => {
+    const parseDataCity = JSON.parse(selectedCity);
+    const requestData = { city_id: parseDataCity.city_id }; // Use 'province_id' here
 
     try {
-      const result = await axios(config);
-      console.log(result);
+      const result = await axios.get(
+        `http://localhost:5000/listSubdistrict?city=${requestData.city_id}`,
+        requestData
+      );
+      setSubdistricts(result.data?.rajaongkir?.results);
     } catch (error) {
       console.log(error, "error getting destination");
     } finally {
@@ -99,7 +102,36 @@ const ShippingRajaOngkir = ({
     }
   };
 
-  console.log(cityDestination, "ini city");
+  const getDataCost = async (courier) => {
+    setSelectedCourier(courier);
+
+    const parseDataSubdistrict = JSON.parse(selectedSubdistrict);
+
+    const payload = {
+      origin: 6301,
+      originType: "subdistrict",
+      destination: parseInt(parseDataSubdistrict.subdistrict_id),
+      destinationType: "subdistrict",
+      weight: 1700,
+      courier: courier,
+    };
+
+    const config = {
+      method: "post",
+      url: "https://us-central1-intrapreneuer.cloudfunctions.net/costrajaongkir",
+      data: payload,
+    };
+
+    setFetchingPrice(true);
+    try {
+      const result = await axios(config);
+      setShipmentService(result?.data?.message?.rajaongkir?.results);
+    } catch (error) {
+      console.log(error, "error getting destination");
+    } finally {
+      setFetchingPrice(false);
+    }
+  };
 
   const handleDestinationSearch = (value) => {
     setDestinationSearch(value);
@@ -141,6 +173,15 @@ const ShippingRajaOngkir = ({
   }, []);
 
   useEffect(() => {
+    if (selectedCity === null) {
+    } else {
+      getDataSubcities();
+    }
+
+    return () => {};
+  }, [selectedCity]);
+
+  useEffect(() => {
     const timeout = setTimeout(() => {
       const found = destinationResults.filter((elem) => {
         return (
@@ -165,24 +206,25 @@ const ShippingRajaOngkir = ({
     return () => {};
   }, [selectedDestination]);
 
-  useEffect(() => {
-    getDataCost();
-
-    return () => {};
-  }, []);
-
-  console.log(selectedDestination, "ini destination");
-
   return (
-    <Box w="md">
+    <Box w={"full"}>
       <Text>Dikirim dari :</Text>
-      <Text fontWeight="bold">Jakarta Selatan</Text>
+      <Text fontWeight="bold">Tangerang</Text>
 
       <Stack gap={3}>
         <Text fontWeight="bold" mt={3}>
           {" "}
           Silakan Isi Alamatmu:
         </Text>
+
+        <Stack>
+          <Text>Alamat Lengkap:</Text>
+          <Textarea
+            placeholder="Jl. Wana Kencana blok J1/10, Tangerang Selatan"
+            onChange={(e) => setFullAddress(e.target.value)}
+          />
+        </Stack>
+
         <InputGroup>
           <Input
             value={
@@ -239,78 +281,87 @@ const ShippingRajaOngkir = ({
                           } */}
       </Stack>
       <Stack my={2}>
-        <Select placeholder="Pilih Kota">
+        <Select
+          placeholder="Pilih Kota"
+          onChange={(e) => setSelectedCity(e.target.value)}
+        >
           {cityDestination?.map((x) => (
-            <option value={x}>{x.city_name}</option>
+            <option value={JSON.stringify(x)}>{x.city_name}</option>
           ))}
         </Select>
       </Stack>
-      <Stack>
-        <Text>Alamat Lengkap:</Text>
-        <Textarea
-          placeholder="Jl. Wana Kencana blok J1/10, Tangerang Selatan"
-          onChange={(e) => setFullAddress(e.target.value)}
-        />
+      <Stack my={2}>
+        <Select
+          placeholder="Pilih Kecamatan"
+          onChange={(e) => setSelectedSubdistirct(e.target.value)}
+        >
+          {subdistricts?.map((x) => (
+            <option value={JSON.stringify(x)}>{x.subdistrict_name}</option>
+          ))}
+        </Select>
+      </Stack>
+
+      <Stack my={2}>
+        <Select
+          placeholder="Pilih Kurir"
+          onChange={(e) => getDataCost(e.target.value)}
+        >
+          {courierList?.map((x) => (
+            <option value={x}>
+              <Text textTransform={"uppercase"}>{x}</Text>
+            </option>
+          ))}
+        </Select>
       </Stack>
 
       {fetchingPrice ? (
         <Center my={5}>
           <Spinner color="gray.500" />
         </Center>
-      ) : priceSuggestions?.data?.data?.length > 0 ? (
-        priceSuggestions?.data?.data
-          ?.sort((a, b) => parseInt(a.price) - parseInt(b.price))
-          .map((x, i) => (
-            <Flex
-              cursor="pointer"
-              _hover={{
-                bg: "gray.200",
-              }}
-              _active={{
-                bg: "gray.300",
-              }}
-              bg={
-                selectedCourier?.service_code === x?.service_code
-                  ? "gray.100"
-                  : "white"
-              }
-              justifyContent="space-between"
-              borderBottomWidth={1}
-              gap={2}
-              key={i}
-              p={1}
-              onClick={() => {
-                // requestOrderJne(x)
-                setSelectedCourier(x);
-              }}
-            >
-              <Stack>
-                <Text>
-                  <strong>{x?.service_display}</strong>{" "}
-                  <i style={{ color: "gray", fontSize: 12 }}>
-                    ({x?.goods_type})
-                  </i>
-                </Text>
-                <Text fontSize={12} color="gray.600">
-                  Estimasi{" "}
-                  {x?.etd_from !== x?.etd_thru
-                    ? x?.etd_from + "-" + x?.etd_thru
-                    : x?.etd_from}
-                  {x?.times === "D" && " hari"}
-                </Text>
-              </Stack>
-              <Stack alignItems="flex-end">
-                <Text fontWeight={"bold"}>
-                  {x?.currency} {formatFrice(parseInt(x?.price))}
-                </Text>
-                {selectedCourier?.service_code === x?.service_code ? (
-                  <Icon as={FcCheckmark} />
-                ) : (
-                  <></>
-                )}
-              </Stack>
-            </Flex>
-          ))
+      ) : shipmentService?.length > 0 ? (
+        shipmentService[0].costs?.map((x, i) => (
+          <Flex
+            cursor="pointer"
+            _hover={{
+              bg: "gray.200",
+            }}
+            _active={{
+              bg: "gray.300",
+            }}
+            bg={selectedService?.service === x?.service ? "gray.100" : "white"}
+            justifyContent="space-between"
+            borderBottomWidth={1}
+            gap={2}
+            key={i}
+            p={1}
+            onClick={() => {
+              // requestOrderJne(x)
+              setSelectedService(x);
+            }}
+          >
+            <Stack>
+              <Text>
+                <strong>{x?.service}</strong>{" "}
+                <i style={{ color: "gray", fontSize: 12 }}>
+                  ({x?.description})
+                </i>
+              </Text>
+              <Text fontSize={12} color="gray.600">
+                Estimasi {x?.cost[0]?.etd} hari
+              </Text>
+            </Stack>
+            <Stack alignItems="flex-end">
+              <Text fontWeight={"bold"}>
+                Rp {formatFrice(parseInt(x?.cost[0]?.value))}
+              </Text>
+              {selectedService?.service === x?.service ? (
+                <Icon as={FcCheckmark} />
+              ) : (
+                <></>
+              )}
+            </Stack>
+          </Flex>
+        ))
       ) : (
         <></>
       )}

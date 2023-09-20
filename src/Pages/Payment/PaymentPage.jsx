@@ -81,6 +81,7 @@ function PaymentPage() {
   };
 
   const getDataTicket = async (formId) => {
+    console.log(decryptToken(formId));
     const conditions = [
       { field: "formId", operator: "==", value: decryptToken(formId) },
     ];
@@ -95,12 +96,14 @@ function PaymentPage() {
         limitValue
       );
       setDataTicket(...res);
+      console.log(res);
     } catch (error) {
       console.log(error, "ini error");
     }
   };
 
   console.log(dataForm);
+  console.log(dataTicket);
 
   const getDataForm = async (formId) => {
     const conditions = [{ field: "token", operator: "==", value: formId }];

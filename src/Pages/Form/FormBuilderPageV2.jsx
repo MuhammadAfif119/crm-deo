@@ -264,6 +264,9 @@ function FormBuilderPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [selectedProductMethod, setSelectedProductMethod] = useState("");
 
+  const [selectedService, setSelectedService] = useState();
+  const [selectedSubdistrict, setSelectedSubdistirct] = useState();
+
   const [destinationResults, setDestinationResults] = useState([]);
   const [destinationSearch, setDestinationSearch] = useState("");
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
@@ -319,10 +322,13 @@ function FormBuilderPage() {
     }
   };
 
-  console.log(formValues, "ini form value");
-  console.log(selectedCourier, "ini form value");
-
   const renderFormFields = (opportunityValue) => {
+    let parseDataSubdistrict = {};
+
+    if (selectedSubdistrict !== undefined) {
+      parseDataSubdistrict = JSON.parse(selectedSubdistrict);
+    }
+
     if (formFields?.length > 0) {
       return formFields?.map((field) => {
         const { label, type, name, placeholder, isRequired, options, formId } =
@@ -341,18 +347,23 @@ function FormBuilderPage() {
           let updateData = formValues;
           updateData.formId = formId;
 
-          if (formData?.product_used) {
+          console.log(formValues);
+
+          if (formData?.product_used && formData?.product_used !== 0) {
             updateData.shippingDetails = {
-              region: selectedCourier?.origin_name,
-              destination: selectedCourier?.destination_name,
-              price: selectedCourier?.price,
-              currency: selectedCourier?.currency,
+              region: parseDataSubdistrict?.province,
+              destination: parseDataSubdistrict?.subdistrict_name,
+              price: selectedService?.cost[0]?.value,
+              courier: selectedCourier,
+              courierService: selectedService?.service,
+              // currency: selectedCourier?.currency,
               address: fullAddress,
             };
           }
 
           updateData.totalPrice =
-            parseInt(opportunityValue) + parseInt(selectedCourier.price);
+            parseInt(opportunityValue) +
+            parseInt(selectedService?.cost[0]?.value);
           updateData.opportunity_value = opportunityValue
             ? opportunityValue
             : "0";
@@ -394,8 +405,8 @@ function FormBuilderPage() {
               data
             );
 
-            // window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
-            window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
           } catch (error) {
             console.log(error, "ini error");
           } finally {
@@ -478,11 +489,15 @@ function FormBuilderPage() {
             )}
 
             {type === "request" && formData.product_used?.length > 0 ? (
-              <Shipping
+              <ShippingRajaOngkir
                 my={3}
+                selectedSubdistrict={selectedSubdistrict}
+                setSelectedSubdistirct={setSelectedSubdistirct}
                 selectedDestination={selectedDestination}
                 setSelectedDestination={setSelectedDestination}
                 selectedCourier={selectedCourier}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
                 setSelectedCourier={setSelectedCourier}
                 setFullAddress={setFullAddress}
               />
@@ -729,8 +744,6 @@ function FormBuilderPage() {
       console.log(error);
     }
   };
-
-  console.log(formData);
 
   const getDestination = async () => {
     if (productActive && productActive.is_shipping === true) {
