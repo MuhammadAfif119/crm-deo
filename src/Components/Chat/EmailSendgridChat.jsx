@@ -1,20 +1,36 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   HStack,
   Heading,
+  Icon,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   SimpleGrid,
+  Spacer,
   Stack,
   Text,
+  Textarea,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { addDocumentFirebase } from "../../Api/firebaseApi";
+import {
+  addDocumentFirebase,
+  deleteDocumentFirebase,
+} from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import DropboxUploader from "../DropBox/DropboxUploader";
 import RichTextEditor from "../Quill/RichTextEditor";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 function EmailSendgridChat({
   dataContact,
@@ -24,13 +40,26 @@ function EmailSendgridChat({
 }) {
   const toast = useToast();
   const globalState = useUserStore();
-  const [dataSend, setDataSend] = useState("");
-  const [value, setValue] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [shareLink, setShareLink] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [ccList, setCcList] = useState([]);
+  const modalTemplate = useDisclosure();
+  const modalDelete = useDisclosure();
+
   const [cc, setCc] = useState("");
+  const [value, setValue] = useState("");
+  const [ccList, setCcList] = useState([]);
+  const [dataSend, setDataSend] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingSaveTemplate, setLoadingSaveTemplate] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [contentTemplate, setContentTemplate] = useState("");
+  const [dataDeletion, setDataDeletion] = useState();
+  const [dataTemplate, setDataTemplate] = useState({
+    title: "",
+    description: "",
+    messages: "",
+    category: "email",
+    type: "contact",
+  });
 
   const emailRef = useRef(dataContact?.email);
   const nameRef = useRef(dataContact?.name);
@@ -48,6 +77,11 @@ function EmailSendgridChat({
 
   const handleContentChange = (value) => {
     setValue(value);
+  };
+
+  const handleContentTemplateChange = (value) => {
+    setContentTemplate(value);
+    setDataTemplate({ ...dataTemplate, messages: value });
   };
 
   function openModal() {
@@ -83,6 +117,11 @@ function EmailSendgridChat({
       }
 
       setValue((prevContent) => prevContent + ` ${htmlContent}`);
+      // if (contentTemplate === "") {
+      //   setValue((prevContent) => prevContent + ` ${htmlContent}`);
+      // } else {
+      //   setContentTemplate((prevContent) => prevContent + ` ${htmlContent}`);
+      // }
     }
   };
 
@@ -148,6 +187,32 @@ function EmailSendgridChat({
     }
   };
 
+  const handleSaveEmailTemplate = async () => {
+    setLoadingSaveTemplate(true);
+    try {
+      const result = await addDocumentFirebase(
+        "templates",
+        dataTemplate,
+        globalState.currentCompany
+      );
+
+      console.log(result);
+
+      // toast({
+      //   title: "Deoapp CRM",
+      //   description: "Template Saved",
+      //   duration: 3000,
+      //   status: 3000,
+      // });
+
+      modalTemplate.onClose();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingSaveTemplate(false);
+    }
+  };
+
   const handleSuccess = () => {
     setValue("");
 
@@ -178,6 +243,31 @@ function EmailSendgridChat({
     setValue(replacedTemplate);
   };
 
+  const handleModalDelete = (value) => {
+    modalDelete.onOpen();
+    setDataDeletion(value);
+  };
+
+  const handleDeleteTemplate = async () => {
+    setLoadingSaveTemplate(true);
+    try {
+      const result = await deleteDocumentFirebase("templates", dataDeletion.id);
+
+      toast({
+        title: "Deoapp CRM",
+        description: "Template Deleted",
+        status: "success",
+        duration: 3000,
+      });
+
+      modalDelete.onClose();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingSaveTemplate(false);
+    }
+  };
+
   const searchCompanyName = globalState?.companies?.find(
     (x) => x.id === globalState?.currentCompany
   );
@@ -189,8 +279,6 @@ function EmailSendgridChat({
   const companyName = searchCompanyName?.name;
   const projectName = searchProjectName?.name;
   const projectEmail = searchProjectName?.email;
-
-  console.log(projectEmail, projectName);
 
   return (
     <Stack w={"full"} spacing={3}>
@@ -308,20 +396,43 @@ function EmailSendgridChat({
           Upload
         </Button>
       </HStack>
-      <Stack>
-        <Heading size="sm">Template Message</Heading>
-        <SimpleGrid columns={3}>
+
+      <Stack py={3}>
+        <HStack pb={3}>
+          <Heading size="sm">Template Message</Heading>
+          <Spacer />
+          <Button
+            colorScheme={"green"}
+            size={"sm"}
+            onClick={modalTemplate.onOpen}
+          >
+            + Template
+          </Button>
+        </HStack>
+        <SimpleGrid columns={3} spacing={2}>
           {templateEmail?.map((template, index) => (
             <Stack
+              border={"1px"}
+              borderColor={"gray.300"}
+              _hover={{
+                transform: "scale(1.02)",
+                transition: "0.2s ease-in-out",
+              }}
               rounded={5}
               key={index}
-              boxShadow={"md"}
+              boxShadow={"sm"}
               p={5}
               cursor={"pointer"}
-              onClick={() => handleSelectTemplateEmail(template)}
             >
-              <Heading size={"sm"}>{template?.title}</Heading>
-              <Text>{template?.description}</Text>
+              <Stack onClick={() => handleSelectTemplateEmail(template)}>
+                <Heading size={"xs"}>{template?.title}</Heading>
+                <Text fontSize={12}>{template?.description}</Text>
+              </Stack>
+              <Spacer />
+              <DeleteIcon
+                onClick={() => handleModalDelete(template)}
+                boxSize={3}
+              />
             </Stack>
           ))}
         </SimpleGrid>
@@ -334,6 +445,98 @@ function EmailSendgridChat({
         shareLink={shareLink}
         setShareLink={handleShareLinkChange}
       />
+
+      <Modal
+        size={"xl"}
+        isOpen={modalTemplate.isOpen}
+        onClose={modalTemplate.onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Your Template</ModalHeader>
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Template Title</FormLabel>
+              <Input
+                onChange={(e) =>
+                  setDataTemplate({ ...dataTemplate, title: e.target.value })
+                }
+                placeholder="Enter template title ..."
+              />
+            </FormControl>
+            <FormControl my={3}>
+              <FormLabel>Template Description</FormLabel>
+              <Input
+                onChange={(e) =>
+                  setDataTemplate({
+                    ...dataTemplate,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="Enter template description ..."
+              />
+            </FormControl>
+            <FormLabel>Template Message</FormLabel>
+            <RichTextEditor
+              value={contentTemplate}
+              onChange={handleContentTemplateChange}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Button
+                isLoading={loadingSaveTemplate}
+                size={"sm"}
+                colorScheme="green"
+                // onClick={() => console.log(dataTemplate, "xxx")}
+                onClick={handleSaveEmailTemplate}
+              >
+                Save Template
+              </Button>
+              <Button
+                size={"sm"}
+                colorScheme="red"
+                onClick={modalTemplate.onClose}
+              >
+                Cancel
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        size={"xl"}
+        isOpen={modalDelete.isOpen}
+        onClose={modalDelete.onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete Template</ModalHeader>
+          <ModalBody>
+            <Text>Are you sure want to delete this template?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Button
+                isLoading={loadingSaveTemplate}
+                size={"sm"}
+                colorScheme="green"
+                onClick={handleDeleteTemplate}
+              >
+                Yes
+              </Button>
+              <Button
+                size={"sm"}
+                colorScheme="red"
+                onClick={modalDelete.onClose}
+              >
+                No
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 }
