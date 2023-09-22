@@ -4,7 +4,7 @@ import { Box, Button, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, 
 import moment from 'moment';
 import useUserStore from '../../Hooks/Zustand/Store';
 
-function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLink, accessTokenDb }) {
+function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLink, accessTokenDb, setGeneratedLink }) {
     const fileInputRef = useRef();
     const [uploadProgress, setUploadProgress] = useState(0);
     const [filePreview, setFilePreview] = useState(null);
@@ -230,14 +230,23 @@ function DropboxUploader({ isActive, onClose, parentPath, setShareLink, shareLin
                                     </Text>
                                 </Box>
                                 <HStack>
-
+                                    <Button
+                                        size={'sm'}
+                                        colorScheme='blue'
+                                        onClick={() => {
+                                            setGeneratedLink(shareLink.link)
+                                            onClose()
+                                        }} variant={'outline'}
+                                    >
+                                        Save
+                                    </Button>
                                     <Button size={'sm'} colorScheme='blue' onClick={() => handleCopy(shareLink.link)} variant={'outline'} >
                                         Copy
                                     </Button>
 
                                     <a href={shareLink} target="_blank" rel="noopener noreferrer">
                                         <Button size={'sm'} colorScheme='blue' variant={'outline'} >
-                                            Link
+                                            Open in new tab
                                         </Button>
                                     </a>
                                 </HStack>

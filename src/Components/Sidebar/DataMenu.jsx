@@ -7,27 +7,26 @@ import {
   FcLineChart,
   FcNews,
   FcSettings,
-  FcShare,
   FcSms,
   FcSurvey,
   FcParallelTasks,
   FcPackage,
   FcGlobe,
-  FcContacts,
   FcBusinessContact,
   FcAutomatic,
   FcBriefcase,
   FcShop,
   FcLibrary,
   FcCollaboration,
-  FcDisplay,
   FcCustomerSupport,
   FcFile,
   FcLike,
-  FcPodiumWithSpeaker,
   FcDeployment,
   FcInTransit,
   FcEnteringHeavenAlive,
+  FcCloseUpMode,
+  FcReading,
+  FcMoneyTransfer,
 } from "react-icons/fc";
 
 export const data = [
@@ -146,6 +145,19 @@ export const data = [
   //     { name: "Ticketing", icon: FcEditImage, link: "/ticket" },
   //   ],
   // },
+  {
+    name: "Themes",
+    icon: FcCloseUpMode,
+    link: '/themes'
+  },
+  {
+    name: "Learning",
+    icon: FcReading,
+    submenu: [
+      { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+      { name: "Courses", icon: FcReading, link: "/courses" },
+    ],
+  },
 ];
 
 export const dataApps = [
