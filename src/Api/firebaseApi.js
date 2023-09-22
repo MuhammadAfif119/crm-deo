@@ -43,7 +43,7 @@ export const getSingleDocumentFirebase = async (collectionName, docName) => {
     if (docSnapshot.exists) {
       const docData = docSnapshot.data();
       // Lakukan manipulasi data atau operasi lain jika diperlukan
-      return docData;
+      return {id : docSnapshot.id, ...docData}
     } else {
       console.log("Dokumen tidak ditemukan!");
       return null;
@@ -147,7 +147,7 @@ export const getCollectionFirebaseV2 = async (
 	  }
   
 	  if (startAfterData) {
-		  // console.log(startAfterData)
+		  // console.log(startAfterData, "ada startafterdata")
 		  collectionRef = query(collectionRef, startAfter(startAfterData));
 		}
   

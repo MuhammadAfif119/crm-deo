@@ -72,7 +72,7 @@ function SidebarComponentV2({ layout }) {
     if (!fetchProjectId) {
       try {
         globalState.setProjects(projects);
-        console.log(projects, "ini project");
+
         globalState.setCurrentProject(projects[0].id);
         localStorage.setItem("currentProject", projects[0].id);
 
@@ -90,13 +90,15 @@ function SidebarComponentV2({ layout }) {
           globalState.setRoleProject("user");
         }
       } catch (error) {
-        console.log(error, "ini error");
+
       }
     } else {
       const getProjects = await getSingleDocumentFirebase(
         "projects",
         fetchProjectId
       );
+
+
 
       globalState.setProjects(projects);
       globalState.setCurrentProject(fetchProjectId);
@@ -117,7 +119,7 @@ function SidebarComponentV2({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => {};
+    return () => { };
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -145,7 +147,7 @@ function SidebarComponentV2({ layout }) {
         store.clearAll();
       })
       .catch((error) => {
-        console.log(error, "ini error");
+
       })
       .finally(() => {
         navigate("/login");
@@ -196,6 +198,8 @@ function SidebarComponentV2({ layout }) {
       globalState.setRoleProject("user");
     }
   };
+
+
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -306,12 +310,13 @@ function SidebarComponentV2({ layout }) {
                         {data.map((x, i) => (
                           <AccordionItem
                             key={i}
-                            // isDisabled={x.name === "Social Media" ? true : false}
+                          // isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
                               <AccordionButton w={"100%"}>
                                 {x.name === "Scoreboard" ||
-                                x.name === "Contacts" ? (
+                                  x.name === "Contacts" ||
+                                  x.name === "Themes" ? (
                                   <HStack
                                     spacing={2}
                                     onClick={() => navigate(x?.link)}

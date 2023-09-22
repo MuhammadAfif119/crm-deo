@@ -17,6 +17,8 @@ import ContactsRouter from "./ContactsRouter";
 import ChatRouter from "./ChatRouter";
 import MembershipRouter from "./MembershipRouter";
 import ProductRouter from "./ProductRouter";
+import ThemesRouter from "./ThemesRouter";
+import CourseRouter from "./CourseRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -38,6 +40,8 @@ function MainRouter() {
     ...ChatRouter,
     ...MembershipRouter,
     ...ProductRouter,
+    ...ThemesRouter,
+    ...CourseRouter
   ];
   return (
     <Routes>
