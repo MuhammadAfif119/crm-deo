@@ -190,7 +190,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         price: dataParam.price,
         qty: quantity,
         id: dataParam.id,
-        totalPrice: parseInt(dataParam.price) + quantity,
+        totalPrice: parseInt(dataParam.price) + parseInt(quantity),
       },
     ];
 

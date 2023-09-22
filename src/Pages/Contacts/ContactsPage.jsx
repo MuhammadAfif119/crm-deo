@@ -6,6 +6,7 @@ import {
   Grid,
   Heading,
   HStack,
+  Icon,
   Input,
   Modal,
   ModalBody,
@@ -32,7 +33,7 @@ import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaRegCalendar } from "react-icons/fa";
+import { FaRegCalendar, FaWhatsapp } from "react-icons/fa";
 import {
   addDocumentFirebase,
   getCollectionFirebase,
@@ -322,13 +323,27 @@ const ContactsPage = () => {
                         </Td>
                         {/* <Td fontSize="sm">{x?.tags}</Td> */}
                         <Td fontSize="sm">
-                          <Button
-                            colorScheme={"yellow"}
-                            size="sm"
-                            onClick={() => handleDetail(x)}
-                          >
-                            Detail
-                          </Button>
+                          <HStack>
+                            <Box
+                              px={3}
+                              onClick={() => console.log(x)}
+                              cursor={"pointer"}
+                            >
+                              <a
+                                href={`https://api.whatsapp.com/send?phone=${x.phoneNumber}&text=Send%20Message%20To%20This%20User`}
+                                target="_blank"
+                              >
+                                <Icon as={FaWhatsapp} boxSize={6} />
+                              </a>
+                            </Box>
+                            <Button
+                              colorScheme={"yellow"}
+                              size="sm"
+                              onClick={() => handleDetail(x)}
+                            >
+                              Detail
+                            </Button>
+                          </HStack>
                         </Td>
                       </Tr>
                     ))}
@@ -351,13 +366,26 @@ const ContactsPage = () => {
                         </Td>
                         {/* <Td fontSize="sm">{x?.tags}</Td> */}
                         <Td fontSize="sm">
-                          <Button
-                            colorScheme={"yellow"}
-                            size="sm"
-                            onClick={() => handleDetail(x)}
-                          >
-                            Detail
-                          </Button>
+                          <HStack>
+                            <Box
+                              px={3}
+                              onClick={() => console.log(x)}
+                              cursor={"pointer"}
+                            >
+                              <a
+                                href={`https://api.whatsapp.com/send?phone=${x.phoneNumber}&text=Hi`}
+                              >
+                                <Icon as={FaWhatsapp} boxSize={6} />
+                              </a>
+                            </Box>
+                            <Button
+                              colorScheme={"yellow"}
+                              size="sm"
+                              onClick={() => handleDetail(x)}
+                            >
+                              Detail
+                            </Button>
+                          </HStack>
                         </Td>
                       </Tr>
                     ))}
