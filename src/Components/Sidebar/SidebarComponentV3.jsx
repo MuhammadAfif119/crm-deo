@@ -22,13 +22,6 @@ import {
   SimpleGrid,
   Drawer,
   useDisclosure,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  Collapse,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
@@ -131,22 +124,12 @@ function SidebarComponentV3({ layout }) {
     setListProject(projects);
   };
 
-  const handleSearchURLPath = () => {
-    const firstPath = location.pathname.split("/")[1];
-    console.log(firstPath);
-  };
-
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
     return () => {};
   }, [globalState.currentCompany]);
 
-  useEffect(() => {
-    handleSearchURLPath();
-
-    return () => {};
-  }, []);
 
   const navigate = useNavigate();
 
