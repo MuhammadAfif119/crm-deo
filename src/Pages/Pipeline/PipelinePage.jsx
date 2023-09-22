@@ -40,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import { DeleteIcon, SearchIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { decryptToken, encryptToken } from "../../Utils/encrypToken";
+import { FcPlus } from "react-icons/fc";
 
 function PipelinePage() {
   const [pipelineModal, setPipelineModal] = useState(false);
@@ -292,20 +293,26 @@ function PipelinePage() {
                 <SearchIcon color="gray.300" mb={2} />
               </InputLeftElement>
               <Input
+                borderRadius={"md"}
                 placeholder="Search"
-                size={"sm"}
+                // size={"sm"}
                 bg={"white"}
                 onChange={(e) => searchFilterFunction(e.target.value)}
               />
             </InputGroup>
 
             <Button
-              size={"sm"}
-              colorScheme="telegram"
               onClick={() => setPipelineModal(true)}
-              borderRadius={"sm"}
+              bgColor={"white"}
+              shadow="md"
+              variant="outline"
+              borderColor="#F05A28"
+              color="#F05A28"
             >
-              + Add
+              <HStack>
+                <FcPlus />
+                <Text>Pipeline</Text>
+              </HStack>
             </Button>
           </HStack>
         </HStack>

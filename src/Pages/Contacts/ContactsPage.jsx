@@ -33,7 +33,7 @@ import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaRegCalendar, FaWhatsapp } from "react-icons/fa";
+import { FaPlus, FaRegCalendar, FaWhatsapp } from "react-icons/fa";
 import {
   addDocumentFirebase,
   getCollectionFirebase,
@@ -41,6 +41,9 @@ import {
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import DatePicker from "../../Components/DatePicker/DatePicker";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { FcPlus } from "react-icons/fc";
 
 const ContactsPage = () => {
   const globalState = useUserStore();
@@ -253,21 +256,30 @@ const ContactsPage = () => {
           <Spacer />
           <HStack>
             <Button
-              size="sm"
               onClick={modalFilterDate.onOpen}
-              colorScheme="blue"
-              // variant={"outline"}
-              leftIcon={<FaRegCalendar />}
+              bgColor={"white"}
+              shadow="md"
+              variant="outline"
+              borderColor="#F05A28"
+              color="#F05A28"
             >
-              Filter date
+              <HStack>
+                <FaRegCalendar />
+                <Text>Filter date</Text>
+              </HStack>
             </Button>
             <Button
-              size="sm"
               onClick={handleModalOpen}
-              colorScheme="blue"
-              // variant={"outline"}
+              bgColor={"white"}
+              shadow="md"
+              variant="outline"
+              borderColor="#F05A28"
+              color="#F05A28"
             >
-              + Add Contact
+              <HStack>
+                <FcPlus />
+                <Text>Contact</Text>
+              </HStack>
             </Button>
           </HStack>
         </HStack>
@@ -324,10 +336,12 @@ const ContactsPage = () => {
                         {/* <Td fontSize="sm">{x?.tags}</Td> */}
                         <Td fontSize="sm">
                           <HStack>
-                            <Box
+                            <Button
+                              size={"sm"}
                               px={3}
                               onClick={() => console.log(x)}
                               cursor={"pointer"}
+                              colorScheme="green"
                             >
                               <a
                                 href={`https://api.whatsapp.com/send?phone=${x.phoneNumber}&text=Send%20Message%20To%20This%20User`}
@@ -335,13 +349,17 @@ const ContactsPage = () => {
                               >
                                 <Icon as={FaWhatsapp} boxSize={6} />
                               </a>
-                            </Box>
+                            </Button>
                             <Button
                               colorScheme={"yellow"}
                               size="sm"
                               onClick={() => handleDetail(x)}
                             >
-                              Detail
+                              <Icon
+                                color={"white"}
+                                as={BiDotsHorizontalRounded}
+                                boxSize={6}
+                              />
                             </Button>
                           </HStack>
                         </Td>

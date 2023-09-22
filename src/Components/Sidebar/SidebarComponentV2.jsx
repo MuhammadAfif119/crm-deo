@@ -98,7 +98,6 @@ function SidebarComponentV2({ layout }) {
         fetchProjectId
       );
 
-
       globalState.setProjects(projects);
       globalState.setCurrentProject(fetchProjectId);
       localStorage.setItem("currentProject", projects[0]?.id);
@@ -197,7 +196,6 @@ function SidebarComponentV2({ layout }) {
       globalState.setRoleProject("user");
     }
   };
-
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
     return (
@@ -311,7 +309,7 @@ function SidebarComponentV2({ layout }) {
                             // isDisabled={x.name === "Social Media" ? true : false}
                           >
                             <h2>
-                              <AccordionButton w={'100%'}>
+                              <AccordionButton w={"100%"}>
                                 {x.name === "Scoreboard" ||
                                 x.name === "Contacts" ? (
                                   <HStack
@@ -336,7 +334,7 @@ function SidebarComponentV2({ layout }) {
                                     )}
                                   </HStack>
                                 ) : (
-                                  <HStack spacing={2} w={'100%'}>
+                                  <HStack spacing={2} w={"100%"}>
                                     <Icon
                                       as={x.icon}
                                       boxSize={isDesktop ? 5 : 7}

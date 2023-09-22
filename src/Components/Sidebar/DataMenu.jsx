@@ -59,6 +59,7 @@ export const data = [
   {
     name: "Chat",
     icon: FcSms,
+    link: "/chat",
     submenu: [
       { name: "Chat", icon: FcEditImage, link: "/chat" },
       // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
@@ -70,6 +71,7 @@ export const data = [
   {
     name: "Pipeline",
     icon: FcKindle,
+    link: "/pipeline",
     submenu: [
       { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
       { name: "Orders", icon: FcInTransit, link: "/orders" },
@@ -78,6 +80,7 @@ export const data = [
   {
     name: "Products",
     icon: FcConferenceCall,
+    link: "/products",
     submenu: [
       { name: "Products", icon: FcDeployment, link: "/products" },
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
@@ -121,6 +124,7 @@ export const data = [
   {
     name: "Configuration",
     icon: FcSettings,
+    link: "/configuration/user",
     submenu: [
       { name: "Data", icon: FcFile, link: "/configuration/data" },
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },

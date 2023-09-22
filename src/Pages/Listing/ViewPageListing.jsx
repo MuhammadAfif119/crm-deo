@@ -465,7 +465,7 @@ const ViewPageListing = () => {
                         <HStack>
                           <FiEye color="gray" size={15} />
                           <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
-                            {listing.seen ? listing.seen?.length : 0}
+                            {listing.seen_amount ? listing.seen_amount : 0}
                           </Text>
                         </HStack>
                         {/* <Text>Details:</Text>

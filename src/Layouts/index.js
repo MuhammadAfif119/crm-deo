@@ -3,6 +3,7 @@ import { Fragment } from "react";
 // import FooterComponent from "../Components/Footers/FooterComponent";
 import HeaderComponent from "../Components/Header/HeaderComponents";
 import SidebarComponentV2 from "../Components/Sidebar/SidebarComponentV2";
+import SidebarComponentV3 from "../Components/Sidebar/SidebarComponentV3";
 import themeConfig from "../Config/themeConfig";
 
 function Layout({ children }) {
@@ -13,7 +14,8 @@ function Layout({ children }) {
   return (
     <Fragment>
       <Flex height="100vh" w={"full"} bgColor={"gray.50"}>
-        <SidebarComponentV2 layout={themeConfig.layout} />
+        {/* <SidebarComponentV2 layout={themeConfig.layout} /> */}
+        <SidebarComponentV3 layout={themeConfig.layout} />
 
         <Container maxW={"full"} overflowY={"scroll"} pt={"4"}>
           <HeaderComponent layout={themeConfig.layout} />

@@ -31,6 +31,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 import DropboxUploader from "../DropBox/DropboxUploader";
 import RichTextEditor from "../Quill/RichTextEditor";
 import { DeleteIcon } from "@chakra-ui/icons";
+import { MdCancel, MdOutlineCancel } from "react-icons/md";
 
 function EmailSendgridChat({
   dataContact,
@@ -412,6 +413,7 @@ function EmailSendgridChat({
         <SimpleGrid columns={3} spacing={2}>
           {templateEmail?.map((template, index) => (
             <Stack
+              position={"relative"}
               border={"1px"}
               borderColor={"gray.300"}
               _hover={{
@@ -420,19 +422,23 @@ function EmailSendgridChat({
               }}
               rounded={5}
               key={index}
-              boxShadow={"sm"}
+              boxShadow={"md"}
               p={5}
               cursor={"pointer"}
             >
+              <Box pos={"absolute"} right={3} top={2}>
+                <Icon
+                  color={"red"}
+                  as={MdOutlineCancel}
+                  onClick={() => handleModalDelete(template)}
+                  boxSize={4}
+                />
+              </Box>
               <Stack onClick={() => handleSelectTemplateEmail(template)}>
                 <Heading size={"xs"}>{template?.title}</Heading>
                 <Text fontSize={12}>{template?.description}</Text>
               </Stack>
               <Spacer />
-              <DeleteIcon
-                onClick={() => handleModalDelete(template)}
-                boxSize={3}
-              />
             </Stack>
           ))}
         </SimpleGrid>

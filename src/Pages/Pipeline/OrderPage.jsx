@@ -259,20 +259,26 @@ const OrderPage = () => {
           />
 
           <Button
-            w={"10%"}
-            size="sm"
             onClick={modalFilterDate.onOpen}
-            colorScheme="blue"
-            // variant={"outline"}
-            leftIcon={<FaRegCalendar />}
+            bgColor={"white"}
+            shadow="md"
+            variant="outline"
+            borderColor="#F05A28"
+            color="#F05A28"
           >
-            Filter date
+            <HStack>
+              <FaRegCalendar />
+              <Text>Filter date</Text>
+            </HStack>
           </Button>
           <Select
             w={"10%"}
             placeholder="Filter by Pipeline"
-            bg={"blue.500"}
-            size={"sm"}
+            bgColor={"white"}
+            shadow="md"
+            variant="outline"
+            borderColor="#F05A28"
+            color="#F05A28"
             onChange={(e) => handleFilterPipeline(e.target.value)}
           >
             {pipeline.map((x, i) => (
