@@ -28,6 +28,7 @@ import {
   FcCloseUpMode,
   FcReading,
   FcMoneyTransfer,
+  FcIdea,
 } from "react-icons/fc";
 
 export const data = [
@@ -90,6 +91,16 @@ export const data = [
       { name: "Pages", icon: FcRules, link: "/products/articles" },
     ],
   },
+
+  {
+    name: "LMS",
+    icon: FcReading,
+    link: "/themes",
+    submenu: [
+      { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+      { name: "Courses", icon: FcIdea, link: "/courses" },
+    ],
+  },
   // {
   //   name: "Form",
   //   icon: FcSurvey,
@@ -125,6 +136,11 @@ export const data = [
     icon: FcSettings,
     link: "/configuration/user",
     submenu: [
+      {
+        name: "Themes",
+        icon: FcCloseUpMode,
+        link: "/themes",
+      },
       { name: "Data", icon: FcFile, link: "/configuration/data" },
       { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
       {
@@ -150,19 +166,15 @@ export const data = [
   //     { name: "Ticketing", icon: FcEditImage, link: "/ticket" },
   //   ],
   // },
-  {
-    name: "Themes",
-    icon: FcCloseUpMode,
-    link: '/themes'
-  },
-  {
-    name: "Learning",
-    icon: FcReading,
-    submenu: [
-      { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
-      { name: "Courses", icon: FcReading, link: "/courses" },
-    ],
-  },
+
+  // {
+  //   name: "Learning",
+  //   icon: FcIdea,
+  //   submenu: [
+  //     { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+  //     { name: "Courses", icon: FcReading, link: "/courses" },
+  //   ],
+  // },
 ];
 
 export const dataApps = [

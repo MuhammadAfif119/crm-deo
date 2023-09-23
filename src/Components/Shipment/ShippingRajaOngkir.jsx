@@ -33,6 +33,7 @@ const ShippingRajaOngkir = ({
   setSelectedService,
   selectedSubdistrict,
   setSelectedSubdistirct,
+  weight,
 }) => {
   const [destinationResults, setDestinationResults] = useState([]);
 
@@ -54,7 +55,7 @@ const ShippingRajaOngkir = ({
   const getDestination = async () => {
     setFetchingDestinations(true);
     try {
-      const result = await axios.get("http://localhost:5000/listProvince");
+      const result = await axios.get("http://localhost:8080/listProvince");
 
       if (
         result.data?.rajaongkir?.results !== undefined &&
@@ -74,7 +75,7 @@ const ShippingRajaOngkir = ({
 
     try {
       const result = await axios.get(
-        `http://localhost:5000/listCities?province=${requestData.province_id}`,
+        `http://localhost:8080/listCities?province=${requestData.province_id}`,
         requestData
       );
       setCityDestination(result.data?.rajaongkir?.results);
@@ -91,7 +92,7 @@ const ShippingRajaOngkir = ({
 
     try {
       const result = await axios.get(
-        `http://localhost:5000/listSubdistrict?city=${requestData.city_id}`,
+        `http://localhost:8080/listSubdistrict?city=${requestData.city_id}`,
         requestData
       );
       setSubdistricts(result.data?.rajaongkir?.results);
@@ -112,7 +113,7 @@ const ShippingRajaOngkir = ({
       originType: "subdistrict",
       destination: parseInt(parseDataSubdistrict.subdistrict_id),
       destinationType: "subdistrict",
-      weight: 1700,
+      weight: weight,
       courier: courier,
     };
 

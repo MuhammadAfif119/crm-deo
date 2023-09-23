@@ -72,11 +72,10 @@ function FormPageProduct() {
   const [category, setCategory] = useState([]);
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [weight, setWeight] = useState("");
   const [files, setFiles] = useState([]); // Initialize with an empty array
   const [filesImage, setFilesImage] = useState([]);
   const [details, setDetails] = useState([]);
-  const [image, setImage] = useState("");
-  const [logo, setLogo] = useState();
   const [formId, setFormId] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
@@ -287,6 +286,7 @@ function FormPageProduct() {
         value: detail.value.toLowerCase(),
       })),
       stock: stock,
+      weight: weight,
       is_active: isActive,
       is_shipping: isShipping,
       formId: formId,
@@ -438,6 +438,7 @@ function FormPageProduct() {
       setFilesLogo([]);
       setDetails([]);
       setStock("");
+      setWeight(1000);
       setIsActive(true);
       setSelectedCategory([]);
       setModules([]);
@@ -508,6 +509,7 @@ function FormPageProduct() {
         value: detail.value.toLowerCase(),
       })),
       stock: stock,
+      weight: weight,
       is_active: isActive,
       is_shipping: isShipping,
       formId: formId || "",
@@ -853,6 +855,17 @@ function FormPageProduct() {
                 </FormControl>
               )}
             </HStack>
+
+            <FormControl id="weight" isRequired>
+              <FormLabel>
+                Product Weight {"("}gram{")"}
+              </FormLabel>
+              <Input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+              />
+            </FormControl>
 
             <FormControl id="stock" isRequired>
               <FormLabel>Stock Product</FormLabel>

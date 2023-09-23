@@ -500,6 +500,7 @@ function FormBuilderPage() {
                 setSelectedService={setSelectedService}
                 setSelectedCourier={setSelectedCourier}
                 setFullAddress={setFullAddress}
+                weight={parseInt(productActive?.weight) || 1000}
               />
             ) : (
               <></>

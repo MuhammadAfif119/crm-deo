@@ -130,7 +130,6 @@ function SidebarComponentV3({ layout }) {
     return () => {};
   }, [globalState.currentCompany]);
 
-
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -231,7 +230,7 @@ function SidebarComponentV3({ layout }) {
           roundedTopRight={"lg"}
           backgroundColor={themeConfig.color.colorFirst}
         >
-          <Box position="sticky" overflowY="auto" py={5}>
+          <Box position="sticky" overflowY="auto">
             <Stack
               {...getButtonProps()}
               position={"absolute"}
@@ -344,11 +343,24 @@ function SidebarComponentV3({ layout }) {
                     ))}
                   </Stack>
                 </Center>
-                {/* <Spacer /> */}
-                <Box py={2} align={"center"}>
-                  <Button size={"xs"} colorScheme="red">
-                    Logout
-                  </Button>
+                <Spacer />
+
+                <Box py={3}>
+                  <Center py={2}>
+                    <UserProfile
+                      image={
+                        globalState.email === null
+                          ? "https://tinyurl.com/yhkm2ek8"
+                          : globalState.email
+                      }
+                    />
+                  </Center>
+
+                  <Box align={"center"}>
+                    <Button size={"xs"} colorScheme="red" onClick={logout}>
+                      Logout
+                    </Button>
+                  </Box>
                 </Box>
               </Stack>
             </Flex>
