@@ -55,7 +55,9 @@ const ShippingRajaOngkir = ({
   const getDestination = async () => {
     setFetchingDestinations(true);
     try {
-      const result = await axios.get("http://localhost:8080/listProvince");
+      const result = await axios.get(
+        "https://us-central1-intrapreneuer.cloudfunctions.net/listprovince"
+      );
 
       if (
         result.data?.rajaongkir?.results !== undefined &&
@@ -75,7 +77,7 @@ const ShippingRajaOngkir = ({
 
     try {
       const result = await axios.get(
-        `http://localhost:8080/listCities?province=${requestData.province_id}`,
+        `https://us-central1-intrapreneuer.cloudfunctions.net/listcities?province=${requestData.province_id}`,
         requestData
       );
       setCityDestination(result.data?.rajaongkir?.results);
@@ -92,7 +94,7 @@ const ShippingRajaOngkir = ({
 
     try {
       const result = await axios.get(
-        `http://localhost:8080/listSubdistrict?city=${requestData.city_id}`,
+        `https://us-central1-intrapreneuer.cloudfunctions.net/listsubdistrict?city=${requestData.city_id}`,
         requestData
       );
       setSubdistricts(result.data?.rajaongkir?.results);
