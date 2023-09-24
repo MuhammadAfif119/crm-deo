@@ -19,7 +19,6 @@ import { formatFrice } from "../../Utils/numberUtil";
 import { FcCheckmark } from "react-icons/fc";
 import { AiOutlineClose } from "react-icons/ai";
 import axios from "axios";
-import { provinceList } from "../../Api/shippingApi";
 
 const courierList = ["jne", "anteraja", "tiki", "sicepat", "wahana", "jnt"];
 
@@ -277,11 +276,6 @@ const ShippingRajaOngkir = ({
               ))}
             </List>
           )}
-        {/* {destinationSuggestions?.length === 0 && destinationSearch?.length !== 0 && 
-                              <Text color="gray.800">
-                                  <i>Kota / kecamatan tidak ditemukan.</i>
-                              </Text>
-                          } */}
       </Stack>
       <Stack my={2}>
         <Select
@@ -309,8 +303,8 @@ const ShippingRajaOngkir = ({
           placeholder="Pilih Kurir"
           onChange={(e) => getDataCost(e.target.value)}
         >
-          {courierList?.map((x) => (
-            <option value={x}>
+          {courierList?.map((x, i) => (
+            <option key={i} value={x}>
               <Text textTransform={"uppercase"}>{x}</Text>
             </option>
           ))}

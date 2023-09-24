@@ -367,24 +367,13 @@ function SidebarComponentV3({ layout }) {
           </Box>
         </Box>
 
-        {/* {showSubmenu ? (
-          <Collapse
-            in={detailSubMenu.isOpen}
-            transition={{ exit: { duration: 0.5 }, enter: { duration: 0.5 } }}
-          >
-            <Box h={"full"} bg={"gray.300"} w={200}>
-              <Text>SSSSSS</Text>
-            </Box>
-          </Collapse>
-        ) : null} */}
-
         <motion.div
           {...getDisclosureProps()}
           hidden={hidden}
           initial={false}
-          onAnimationStart={() => setHidden(false)}
-          onAnimationComplete={() => setHidden(!isOpen)}
-          animate={{ width: isOpen ? 200 : 0 }}
+          onAnimationStart={menu?.submenu ? () => setHidden(false) : null}
+          onAnimationComplete={menu?.submenu ? () => setHidden(!isOpen) : null}
+          animate={menu?.submenu ? { width: isOpen ? 200 : 0 } : 0}
           style={{
             borderStartEndRadius: 20,
             borderEndEndRadius: 20,

@@ -94,6 +94,7 @@ function FormPageProduct() {
   const [priceEnd, setPriceEnd] = useState("");
   const [detailProduct, setDetailProduct] = useState(false);
   const [stock, setStock] = useState();
+  const [volume, setVolume] = useState();
   const [dataForm, setDataForm] = useState();
   const globalState = useUserStore();
   const toast = useToast();
@@ -117,6 +118,7 @@ function FormPageProduct() {
     const res = await getSingleDocumentFirebase("listings_product", idProject);
     setTitle(res.title);
     setStock(res.stock);
+    setWeight(res.weight);
     setDescription(res.description);
     setPrice(res.price);
     setFiles(res?.image || []);
@@ -716,11 +718,17 @@ function FormPageProduct() {
           mb={2}
         >
           <VStack spacing={4} align={"left"} w="100%">
-            <Flex justify={"space-between"} w="full" gap={5}>
+            <Flex
+              justify={"space-between"}
+              w="full"
+              gap={5}
+              justifyItems={"center"}
+              alignContent={"center"}
+            >
               <FormControl id="image" isRequired>
                 <HStack>
-                  {files?.length > 0 && (
-                    <Stack>
+                  {files?.length > 0 ? (
+                    <Stack alignItems={"center"}>
                       <Image
                         src={idProject ? files : files[0].file}
                         boxSize="100%"
@@ -729,35 +737,71 @@ function FormPageProduct() {
                         alt={idProject ? title : files[0].name}
                         shadow="sm"
                       />
+                      <Flex>
+                        <Input
+                          type="file"
+                          onChange={handleFileInputChange}
+                          display="none"
+                          id="fileInput"
+                        />
+
+                        <label htmlFor="fileInput">
+                          <HStack cursor="pointer">
+                            <Stack>
+                              <MdOutlinePermMedia />
+                            </Stack>
+                            <Text
+                              fontSize="sm"
+                              color="blue.600"
+                              fontStyle="italic"
+                            >
+                              Add Image thumbnail
+                            </Text>
+                          </HStack>
+                        </label>
+                      </Flex>
                     </Stack>
+                  ) : (
+                    <Flex
+                      border={"2px"}
+                      borderRadius={"md"}
+                      borderStyle={"dashed"}
+                      borderColor={"gray.300"}
+                      h={250}
+                      w={300}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                    >
+                      <Input
+                        type="file"
+                        onChange={handleFileInputChange}
+                        display="none"
+                        id="fileInput"
+                      />
+
+                      <label htmlFor="fileInput">
+                        <HStack cursor="pointer">
+                          <Stack>
+                            <MdOutlinePermMedia />
+                          </Stack>
+                          <Text
+                            fontSize="sm"
+                            color="blue.600"
+                            fontStyle="italic"
+                          >
+                            Add Image thumbnail
+                          </Text>
+                        </HStack>
+                      </label>
+                    </Flex>
                   )}
                 </HStack>
-
-                <Stack>
-                  <Input
-                    type="file"
-                    onChange={handleFileInputChange}
-                    display="none"
-                    id="fileInput"
-                  />
-
-                  <label htmlFor="fileInput">
-                    <HStack cursor="pointer">
-                      <Stack>
-                        <MdOutlinePermMedia />
-                      </Stack>
-                      <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                        Add Image thumbnail
-                      </Text>
-                    </HStack>
-                  </label>
-                </Stack>
               </FormControl>
 
               <FormControl id="logo" isRequired>
                 <HStack>
-                  {filesLogo?.length > 0 && (
-                    <Stack>
+                  {filesLogo?.length > 0 ? (
+                    <Stack alignItems={"center"}>
                       <Image
                         src={idProject ? filesLogo : filesLogo[0].file}
                         boxSize="100%"
@@ -766,29 +810,63 @@ function FormPageProduct() {
                         alt={idProject ? `${title}-logo` : filesLogo[0].name}
                         shadow="sm"
                       />
+                      <Input
+                        type="file"
+                        onChange={handleFileLogoInputChange}
+                        display="none"
+                        id="fileInputLogo"
+                      />
+
+                      <label htmlFor="fileInputLogo">
+                        <HStack cursor="pointer">
+                          <Stack>
+                            <MdOutlinePermMedia />
+                          </Stack>
+                          <Text
+                            fontSize="sm"
+                            color="blue.600"
+                            fontStyle="italic"
+                          >
+                            Add Image logo
+                          </Text>
+                        </HStack>
+                      </label>
                     </Stack>
+                  ) : (
+                    <Flex
+                      border={"2px"}
+                      borderRadius={"md"}
+                      borderStyle={"dashed"}
+                      borderColor={"gray.300"}
+                      h={250}
+                      w={300}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                    >
+                      <Input
+                        type="file"
+                        onChange={handleFileLogoInputChange}
+                        display="none"
+                        id="fileInputLogo"
+                      />
+
+                      <label htmlFor="fileInputLogo">
+                        <HStack cursor="pointer">
+                          <Stack>
+                            <MdOutlinePermMedia />
+                          </Stack>
+                          <Text
+                            fontSize="sm"
+                            color="blue.600"
+                            fontStyle="italic"
+                          >
+                            Add Image logo
+                          </Text>
+                        </HStack>
+                      </label>
+                    </Flex>
                   )}
                 </HStack>
-
-                <Stack>
-                  <Input
-                    type="file"
-                    onChange={handleFileLogoInputChange}
-                    display="none"
-                    id="fileInputLogo"
-                  />
-
-                  <label htmlFor="fileInputLogo">
-                    <HStack cursor="pointer">
-                      <Stack>
-                        <MdOutlinePermMedia />
-                      </Stack>
-                      <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                        Add Image logo
-                      </Text>
-                    </HStack>
-                  </label>
-                </Stack>
               </FormControl>
             </Flex>
 
@@ -856,16 +934,26 @@ function FormPageProduct() {
               )}
             </HStack>
 
-            <FormControl id="weight" isRequired>
-              <FormLabel>
-                Product Weight {"("}gram{")"}
-              </FormLabel>
-              <Input
-                type="number"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </FormControl>
+            <HStack>
+              <FormControl id="weight" isRequired>
+                <FormLabel>
+                  Product Weight {"("}gram{")"}
+                </FormLabel>
+                <Input
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                />
+              </FormControl>
+              <FormControl id="weight" isRequired>
+                <FormLabel>Product Volume</FormLabel>
+                <Input
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setVolume(e.target.value)}
+                />
+              </FormControl>
+            </HStack>
 
             <FormControl id="stock" isRequired>
               <FormLabel>Stock Product</FormLabel>
@@ -1044,7 +1132,21 @@ function FormPageProduct() {
                 </SimpleGrid>
               ) : (
                 <Center>
-                  <Text>No Form Data</Text>
+                  <Stack spacing={1} align={"center"} py={2}>
+                    <Text>No Form Data</Text>
+                    <Text fontSize={"xs"}>
+                      Either you have used all your form or you have not build
+                      any form
+                    </Text>
+                    <Button
+                      size={"xs"}
+                      variant={"outline"}
+                      colorScheme="blue"
+                      onClick={() => navigate("/form-builder")}
+                    >
+                      Create Form
+                    </Button>
+                  </Stack>
                 </Center>
               )}
             </Stack>
