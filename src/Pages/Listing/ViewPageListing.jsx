@@ -71,7 +71,6 @@ const ViewPageListing = () => {
   // const companyId = userDisplay.currentProject;
 
   const getData = async () => {
-    console.log(categoryData, "ini category data");
     try {
       const q = query(
         collection(db, "listings"),
@@ -112,6 +111,8 @@ const ViewPageListing = () => {
       console.log(error, "ini error");
     }
   };
+
+  console.log(categoryData, "xxx");
 
   const handleLoadMore = () => {
     setPage(page + 1); // Increment the page number to fetch the next page of data
@@ -178,6 +179,13 @@ const ViewPageListing = () => {
       console.log(error, "ini error");
     }
   };
+
+  const totalItems = Object.values(categoryData).reduce(
+    (acc, arr) => acc + arr.length,
+    0
+  );
+
+  console.log(totalItems, "xxx");
 
   const getDataCategory = async () => {
     try {
@@ -486,29 +494,33 @@ const ViewPageListing = () => {
       })}
       {selectedCategory === "All" ? (
         <Box align={"center"}>
-          <Button
-            onClick={() => handleLoadMore()}
-            // variant="outline"
-            colorScheme="blue"
-            size="md"
-            alignSelf="center"
-            mt={4}
-          >
-            Load More
-          </Button>
+          {totalItems >= 10 ? (
+            <Button
+              onClick={() => handleLoadMore()}
+              // variant="outline"
+              colorScheme="blue"
+              size="md"
+              alignSelf="center"
+              mt={4}
+            >
+              Load More
+            </Button>
+          ) : null}
         </Box>
       ) : (
         <Box align={"center"}>
-          <Button
-            onClick={() => handleLoadMoreFilter()}
-            // variant="outline"
-            colorScheme="blue"
-            size="md"
-            alignSelf="center"
-            mt={4}
-          >
-            Load More
-          </Button>
+          {totalItems >= 10 ? (
+            <Button
+              onClick={() => handleLoadMoreFilter()}
+              // variant="outline"
+              colorScheme="blue"
+              size="md"
+              alignSelf="center"
+              mt={4}
+            >
+              Load More
+            </Button>
+          ) : null}
         </Box>
       )}
 

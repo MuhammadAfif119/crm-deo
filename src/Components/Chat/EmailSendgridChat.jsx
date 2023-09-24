@@ -390,6 +390,11 @@ function EmailSendgridChat({
           colorScheme="green"
           isLoading={loading}
           onClick={() => handleSave()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSave();
+            }
+          }}
         >
           Send
         </Button>
@@ -496,6 +501,11 @@ function EmailSendgridChat({
                 colorScheme="green"
                 // onClick={() => console.log(dataTemplate, "xxx")}
                 onClick={handleSaveEmailTemplate}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSaveEmailTemplate();
+                  }
+                }}
               >
                 Save Template
               </Button>
