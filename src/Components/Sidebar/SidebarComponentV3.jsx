@@ -61,6 +61,8 @@ function SidebarComponentV3({ layout }) {
 
   const globalState = useUserStore();
 
+  console.log(globalState, "xxx");
+
   const fetchProjects = async (id) => {
     const fetchProjectId = localStorage.getItem("currentProject");
 
@@ -253,7 +255,7 @@ function SidebarComponentV3({ layout }) {
             </Stack>
             <Flex as="section" minH="100vh">
               <Stack>
-                <Box>
+                <Box onClick={() => navigate("/")} cursor={"pointer"}>
                   <Image
                     src={themeConfig.logokotak}
                     borderRadius="full"
@@ -345,6 +347,23 @@ function SidebarComponentV3({ layout }) {
                 </Center>
                 <Spacer />
 
+                {/* <Button
+                  as={Link}
+                  to={"/settings"}
+                  variant="ghost"
+                  justifyContent="start"
+                > */}
+                <Stack
+                  spacing="3"
+                  align={"center"}
+                  onClick={() => navigate("/settings")}
+                  cursor={"pointer"}
+                >
+                  <Icon as={FiSettings} boxSize={6} color="subtle" />
+                  <Text fontSize={10}>Account Setting</Text>
+                </Stack>
+                {/* </Button> */}
+
                 <Box py={3}>
                   <Center py={2}>
                     <UserProfile
@@ -417,6 +436,10 @@ function SidebarComponentV3({ layout }) {
               ))}
             </Stack>
             <Spacer />
+            <Stack spacing={0} align={"center"} color={"gray.500"}>
+              <Text fontSize={"xs"}>{globalState.name}</Text>
+              <Text fontSize={"xs"}>{globalState.email}</Text>
+            </Stack>
             <Divider />
             <Text
               color={"gray.500"}

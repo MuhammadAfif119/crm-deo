@@ -11,8 +11,14 @@ import UserPage from "../Pages/Configurations/UserPage";
 import OauthPage from "../Pages/Configurations/OauthPage";
 import IndexDataPage from "../Pages/Configurations/DataPage";
 import BackupPage from "../Pages/Configurations/BackupPage";
+import ConfigurationHome from "../Pages/Configurations/ConfigurationHome";
+import TeamPage from "../Pages/Configurations/TeamPage";
 
 const PipelineRouter = [
+  {
+    path: "/configuration",
+    element: <ConfigurationHome />,
+  },
   {
     path: "/configuration/domain",
     element: <IndexDomainPage />,
@@ -52,6 +58,10 @@ const PipelineRouter = [
   {
     path: "/configuration/user",
     element: <UserPage />,
+  },
+  {
+    path: "/configuration/team",
+    element: <TeamPage />,
   },
   {
     path: "/configuration/backup",

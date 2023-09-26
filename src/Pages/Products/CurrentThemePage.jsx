@@ -76,7 +76,7 @@ const CurrentThemes = () => {
             justifyContent="space-between"
             bg="white"
             shadow="sm"
-            p={2}
+            p={3}
             borderRadius="md"
           >
             <Stack>
@@ -89,10 +89,16 @@ const CurrentThemes = () => {
               </Text>
             </Stack>
             <Button
-              colorScheme="green"
               onClick={() => navigate("/themes/edit")}
+              bgColor={"white"}
+              shadow="sm"
+              variant="outline"
+              borderColor="#F05A28"
+              color="#F05A28"
             >
-              Edit
+              <HStack>
+                <Text>Edit</Text>
+              </HStack>
             </Button>
           </Flex>
 
@@ -102,36 +108,55 @@ const CurrentThemes = () => {
               Add a custom logo and/or favicon, and adjust your school thumbnail
             </Text>
             <Box my={10}>
-              <SimpleGrid columns={3} spacing={3} maxW="5xl">
-                <Box shadow="md" bg="white" padding={2}>
+              <SimpleGrid columns={3} spacing={4} maxW="5xl">
+                <Box shadow="md" bg="white" p={3}>
                   <Text fontWeight="bold">Logo Light</Text>
                   <VStack>
                     <Text>Preview:</Text>
                   </VStack>
-                  <Image src={data?.logoLight ? data?.logoLight : ""} />
+                  <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                    <Image
+                      w={200}
+                      src={data?.logoLight ? data?.logoLight : ""}
+                    />
+                  </Flex>
                 </Box>
 
-                <Box shadow="md" bg="white" padding={2}>
+                <Box shadow="md" bg="white" padding={3}>
                   <Text fontWeight="bold">Logo Dark</Text>
                   <VStack>
                     <Text>Preview:</Text>
                   </VStack>
-                  <Image src={data?.logoDark ? data?.logoDark : ""} />
+                  <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                    <Image w={200} src={data?.logoDark ? data?.logoDark : ""} />
+                  </Flex>
                 </Box>
-                <Box shadow="md" bg="white" padding={2}>
+
+                <Box shadow="md" bg="white" padding={3}>
                   <Text fontWeight="bold">Favicon</Text>
                   <VStack>
                     <Text>Preview:</Text>
                   </VStack>
-                  <Image src={data?.favicon ? data?.favicon : ""} />
+                  <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                    <Image w={200} src={data?.favicon ? data?.favicon : ""} />
+                  </Flex>
                 </Box>
-                <Box shadow="md" bg="white" padding={2}>
+
+                <Box shadow="md" bg="white" padding={3}>
                   <Text fontWeight="bold">Website Name</Text>
-                  <Text>{data?.webName}</Text>
+                  <Flex justifyContent={"center"} alignItems={"center"}>
+                    <Text>{data?.webName}</Text>
+                  </Flex>
                 </Box>
-                <Box shadow="md" bg="white" padding={2}>
+
+                <Box shadow="md" bg="white" padding={3}>
                   <Text fontWeight="bold">Features</Text>
-                  <HStack spacing={3} my={2}>
+                  <HStack
+                    spacing={3}
+                    my={2}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
                     {data.features?.length > 0 ? (
                       <>
                         {data.features?.map((x, i) => (
@@ -175,9 +200,17 @@ const CurrentThemes = () => {
             </Box>
           </Stack>
 
-          <Stack my={10}>
+          <Stack
+            my={10}
+            border={"1px"}
+            borderRadius={"sm"}
+            borderColor={"gray.200"}
+            shadow={"md"}
+            bg={"white"}
+            p={3}
+          >
             <Heading size="sm">Color Presets</Heading>
-            <Text size="sm">Choose Color palette for your brand</Text>
+            <Text fontSize="sm">Choose Color palette for your brand</Text>
             <Box my={10}>
               <SimpleGrid columns={3} spacing={3} maxW="5xl">
                 <Flex gap={10} shadow="md" bg="white" padding={2}>
@@ -211,7 +244,7 @@ const CurrentThemes = () => {
               </SimpleGrid>
               <Box my={5} maxW="md">
                 <Heading size="sm">ColorScheme : </Heading>
-                <Flex alignItems="center" gap={10}>
+                <Flex alignItems="center" gap={10} py={3}>
                   <Button
                     p={5}
                     colorScheme={data?.colorScheme ? data?.colorScheme : ""}

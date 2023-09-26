@@ -55,6 +55,7 @@ const OrderPage = () => {
   const [filteredData, setFilteredData] = useState([]);
 
   const [originData, setOriginData] = useState([]);
+  const [dataLeads, setDataLeads] = useState([]);
 
   const [pipeline, setPipeline] = useState([]);
   const [pipelineId, setPipelineId] = useState("");
@@ -112,7 +113,10 @@ const OrderPage = () => {
     ];
 
     const result = await getCollectionFirebase("pipelines", conditions);
+    const resultLeads = await getCollectionFirebase("leads", conditions);
+
     setPipeline(result);
+    setDataLeads(resultLeads);
   };
 
   const handleFilterPipeline = async (value) => {
@@ -124,9 +128,15 @@ const OrderPage = () => {
           operator: "==",
           value: globalState.currentProject,
         },
+        // {
+        //   field: "module",
+        //   operator: "==",
+        //   value: "crm",
+        // },
       ];
 
-      const dataLeads = await getCollectionFirebase("leads", conditions);
+      // const dataLeads = await getCollectionFirebase("orders", conditions);
+      // const dataLeads = await getCollectionFirebase("leads", conditions);
       const result = await getSingleDocumentFirebase("pipelines", value);
 
       setPipelineId(decryptToken(result.formId[0]));
@@ -134,12 +144,14 @@ const OrderPage = () => {
       const newFilter = dataLeads.filter((item) => {
         const itemData = item.id;
         const textData = decryptToken(result.formId[0]);
+
         return itemData.indexOf(textData) > -1;
-
-        // const resultFilter = itemData.indexOf(textData) > -1;
-
-        // console.log(resultFilter, "ini result");
       });
+
+      // console.log(pipelineId, "ini pipelien id");
+      // console.log(dataOrders, "xx");
+      // console.log(newFilter, "ini new filter");
+
       setDataOrders(newFilter);
     } else {
       setPipelineId("");
@@ -318,7 +330,9 @@ const OrderPage = () => {
                       <Td textTransform={"capitalize"}>
                         {pipelineId !== "" ? order.name : order.orders[0]?.name}
                       </Td>
-                      <Td textTransform={"capitalize"}>{order.category}</Td>
+                      <Td textTransform={"capitalize"}>
+                        {pipelineId !== "" ? "-" : order.category}
+                      </Td>
                       <Td textTransform={"capitalize"}>
                         Rp.{" "}
                         {pipelineId !== ""

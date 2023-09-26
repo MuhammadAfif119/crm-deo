@@ -119,6 +119,7 @@ function FormPageProduct() {
     setTitle(res.title);
     setStock(res.stock);
     setWeight(res.weight);
+    setVolume(res.volume);
     setDescription(res.description);
     setPrice(res.price);
     setFiles(res?.image || []);
@@ -289,6 +290,7 @@ function FormPageProduct() {
       })),
       stock: stock,
       weight: weight,
+      volume: volume,
       is_active: isActive,
       is_shipping: isShipping,
       formId: formId,
@@ -441,6 +443,7 @@ function FormPageProduct() {
       setDetails([]);
       setStock("");
       setWeight(1000);
+      setVolume(10);
       setIsActive(true);
       setSelectedCategory([]);
       setModules([]);
@@ -946,7 +949,9 @@ function FormPageProduct() {
                 />
               </FormControl>
               <FormControl id="weight" isRequired>
-                <FormLabel>Product Volume</FormLabel>
+                <FormLabel>
+                  Product Volume {"("}in meter{")"}
+                </FormLabel>
                 <Input
                   type="number"
                   value={weight}

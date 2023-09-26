@@ -43,7 +43,14 @@ import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { addDoc, collection } from "firebase/firestore";
 import moment from "moment";
 import { FaCoins } from "react-icons/fa";
-import { addDocumentFirebase, deleteFileFirebase, getCollectionFirebase, getSingleDocumentFirebase, updateProfileFirebase, UploadBlob } from "../../Api/firebaseApi";
+import {
+  addDocumentFirebase,
+  deleteFileFirebase,
+  getCollectionFirebase,
+  getSingleDocumentFirebase,
+  updateProfileFirebase,
+  UploadBlob,
+} from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 
 export const SettingAccountPage = () => {
@@ -299,16 +306,15 @@ export const SettingAccountPage = () => {
         px={2}
         borderRadius="md"
         shadow="md"
-        bgColor={'white'}
+        bgColor={"white"}
       >
         <Tabs variant="enclosed">
           <TabList>
             <Tab>Edit Profile</Tab>
             <Tab>Change Password</Tab>
-            <Tab>Team</Tab>
+            {/* <Tab>Team</Tab> */}
           </TabList>
           <TabPanels>
-            
             <TabPanel>
               <Box
                 as="section"
@@ -552,9 +558,9 @@ export const SettingAccountPage = () => {
               </Box>
             </TabPanel>
 
-            <TabPanel>
+            {/* <TabPanel>
               <SettingTeamPage />
-            </TabPanel>
+            </TabPanel> */}
           </TabPanels>
         </Tabs>
       </Box>
@@ -568,7 +574,7 @@ export const SettingAccountPage = () => {
         px={2}
         borderRadius="md"
         shadow="md"
-        bgColor={'white'}
+        bgColor={"white"}
       >
         <Heading mt={2} mb={4} align={"center"}>
           Profile
@@ -622,7 +628,7 @@ export const SettingAccountPage = () => {
                 </Text>
               </HStack>
               <HStack>
-                <Icon  />
+                <Icon />
                 <Text>
                   {new Date(userData?.lastUpdated?.toDate()).toLocaleString()}
                 </Text>

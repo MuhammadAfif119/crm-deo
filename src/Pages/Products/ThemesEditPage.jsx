@@ -47,10 +47,6 @@ const ThemesEditPage = () => {
   const [activeBrand, setActiveBrand] = useState(0);
   const [bannerList, setBannerList] = useState([]);
   const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
-
-  const [featureSelection, setFeatureSelection] = useState();
-  // data?.features || []
-  const [selectedFeature, setSelectedFeature] = useState([]);
   const [newFeature, setNewFeature] = useState();
 
   const globalState = useUserStore();
@@ -239,7 +235,7 @@ const ThemesEditPage = () => {
         </Text>
         <Box my={10}>
           <SimpleGrid columns={3} spacing={3} maxW="5xl">
-            <Box shadow="md" bg="white" padding={2}>
+            <Box shadow="md" bg="white" padding={3}>
               <Text fontWeight="bold">Logo Light</Text>
               <Input
                 type="file"
@@ -251,10 +247,12 @@ const ThemesEditPage = () => {
                   <UploadingComponent />
                 ) : null}
               </VStack>
-              <Image src={data.logoLight} />
+              <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                <Image w={200} src={data.logoLight} />
+              </Flex>
             </Box>
 
-            <Box shadow="md" bg="white" padding={2}>
+            <Box shadow="md" bg="white" padding={3}>
               <Text fontWeight="bold">Logo Dark</Text>
               <Input
                 type="file"
@@ -267,9 +265,11 @@ const ThemesEditPage = () => {
                   <UploadingComponent />
                 ) : null}
               </VStack>
-              <Image src={data.logoDark} />
+              <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                <Image w={200} src={data.logoDark} />
+              </Flex>
             </Box>
-            <Box shadow="md" bg="white" padding={2}>
+            <Box shadow="md" bg="white" padding={3}>
               <Text fontWeight="bold">Favicon</Text>
               <Input
                 type="file"
@@ -279,18 +279,32 @@ const ThemesEditPage = () => {
                 <Text>Preview:</Text>
                 {uploadingActive === "favicon" ? <UploadingComponent /> : null}
               </VStack>
-              <Image src={data.favicon} />
+              <Flex h={200} alignItems={"center"} justifyContent={"center"}>
+                <Image w={200} src={data.favicon} />
+              </Flex>
             </Box>
-            <Box shadow="md" bg="white" padding={2}>
+
+            <Box shadow="md" bg="white" padding={3}>
               <Text fontWeight="bold">Website Name</Text>
-              <Input
-                type="text"
-                onChange={(e) => setData({ ...data, webName: e.target.value })}
-              />
+              <Flex h={100} alignItems={"center"} justifyContent={"center"}>
+                <Input
+                  placeholder="Enter your website name ..."
+                  type="text"
+                  onChange={(e) =>
+                    setData({ ...data, webName: e.target.value })
+                  }
+                />
+              </Flex>
             </Box>
-            <Box shadow="md" bg="white" padding={2}>
+
+            <Box shadow="md" bg="white" padding={3}>
               <Text fontWeight="bold">Features</Text>
-              <HStack spacing={3} my={2}>
+              <HStack
+                spacing={3}
+                my={2}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
                 {data.features?.length > 0 ? (
                   <>
                     {data.features?.map((x, i) => (
@@ -324,10 +338,15 @@ const ThemesEditPage = () => {
                 )}
               </HStack>
 
-              <Button colorScheme="green" onClick={modalAddFeatures.onOpen}>
-                Add New Feature
-              </Button>
-
+              <Box align={"center"} py={3}>
+                <Button
+                  size={"sm"}
+                  colorScheme="green"
+                  onClick={modalAddFeatures.onOpen}
+                >
+                  Add New Feature
+                </Button>
+              </Box>
               {/* <Stack>
                 <HStack>
                   {featureSelection.map((x, i) => (
@@ -347,9 +366,17 @@ const ThemesEditPage = () => {
         </Box>
       </Stack>
 
-      <Stack my={10}>
+      <Stack
+        my={10}
+        border={"1px"}
+        borderRadius={"sm"}
+        borderColor={"gray.200"}
+        shadow={"md"}
+        bg={"white"}
+        p={3}
+      >
         <Heading size="sm">Color Presets</Heading>
-        <Text size="sm">Choose Color palette for your brand</Text>
+        <Text fontSize="sm">Choose Color palette for your brand</Text>
         <Box my={10}>
           <SimpleGrid columns={3} spacing={3} maxW="5xl">
             <Flex gap={10} shadow="md" bg="white" padding={2}>
@@ -390,9 +417,10 @@ const ThemesEditPage = () => {
               </Button>
             </Flex>
           </SimpleGrid>
+
           <Box my={5} maxW="md">
             <Heading size="sm">ColorScheme : </Heading>
-            <Flex alignItems="center" gap={10}>
+            <Flex alignItems="center" gap={10} mt={3}>
               <Select
                 bg="white"
                 onChange={(e) =>
@@ -479,6 +507,7 @@ const ThemesEditPage = () => {
             ))}
             {/* <Flex justifyContent='space-between' shadow='md' bg='white' padding={2}> */}
             <Button
+              colorScheme="green"
               size="sm"
               onClick={() => setBannerList([...bannerList, {}])}
             >
@@ -489,7 +518,7 @@ const ThemesEditPage = () => {
         </Box>
       </Stack>
 
-      <Flex justifyContent="flex-end">
+      <Flex justifyContent="flex-end" p={3}>
         <Button colorScheme="green" onClick={handleSave}>
           Save
         </Button>

@@ -29,6 +29,7 @@ import {
   FcReading,
   FcMoneyTransfer,
   FcIdea,
+  FcOrganization,
 } from "react-icons/fc";
 
 export const data = [
@@ -42,6 +43,8 @@ export const data = [
     name: "Contacts",
     icon: FcBusinessContact,
     link: "/contacts",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
   },
 
   // {
@@ -60,6 +63,7 @@ export const data = [
     name: "Chat",
     icon: FcSms,
     link: "/chat",
+    description: "Real-time communication, engage with your clients seamlessly",
     submenu: [
       { name: "Chat", icon: FcEditImage, link: "/chat" },
       // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
@@ -71,7 +75,8 @@ export const data = [
   {
     name: "Pipeline",
     icon: FcKindle,
-    link: "/pipeline",
+    link: "/pipelineHome",
+    description: "Effortless Progress Tracking with our Pipeline Feature",
     submenu: [
       { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
       { name: "Orders", icon: FcInTransit, link: "/orders" },
@@ -80,7 +85,9 @@ export const data = [
   {
     name: "Products",
     icon: FcConferenceCall,
-    link: "/products",
+    link: "/productHome",
+    description:
+      "Discover and Manage Your Offerings with Ease: The Product Menu",
     submenu: [
       { name: "Products", icon: FcDeployment, link: "/products" },
       { name: "Tickets", icon: FcPackage, link: "/ticket" },
@@ -95,7 +102,8 @@ export const data = [
   {
     name: "LMS",
     icon: FcReading,
-    link: "/themes",
+    link: "/lmsHome",
+    description: "Organize your own pageview webapp with ease",
     submenu: [
       { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
       { name: "Courses", icon: FcIdea, link: "/courses" },
@@ -134,7 +142,9 @@ export const data = [
   {
     name: "Configuration",
     icon: FcSettings,
-    link: "/configuration/user",
+    link: "/configuration",
+    description:
+      "Fine-tune your CRM system to match your unique needs. Personalize workflows, data fields, and user permissions effortlessly.",
     submenu: [
       {
         name: "Themes",
@@ -153,7 +163,8 @@ export const data = [
         icon: FcEnteringHeavenAlive,
         link: "/configuration/backup",
       },
-      { name: "User", icon: FcConferenceCall, link: "/configuration/user" },
+      { name: "Company", icon: FcOrganization, link: "/configuration/user" },
+      { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
       { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],

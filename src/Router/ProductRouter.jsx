@@ -9,13 +9,17 @@ import ProductSinglePage from "../Pages/Products/ProductSinglePage";
 import ShippingPaymentPage from "../Pages/Shipping/ShippingPaymentPage";
 import ProductEditSinglePage from "../Pages/Products/ProductEditSinglePage";
 import ProductArticleCreatePage from "../Pages/Products/ProductArticleCreatePage";
+import ProductHome from "../Pages/Products/ProductHome";
 
 const ListingRouter = [
   {
     path: "/products",
     element: <ProductPage />,
   },
-
+  {
+    path: "/productHome",
+    element: <ProductHome />,
+  },
   {
     path: "/products/:type",
     element: <FormPageProduct />,
