@@ -165,13 +165,6 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     },
   ];
 
-  console.log(dataLeads, "ini leads");
-  console.log(dataParam, "ini data");
-  console.log(
-    dataParam?.price * quantity + parseInt(dataLeads?.shippingDetails?.price),
-    "ini price"
-  );
-
   const handleOrderPayConfirm = async () => {
     setPaymentVA("");
 
@@ -458,6 +451,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
           <></>
         )}
       </Stack>
+
       <Stack>
         {paymentVA !== "" ? (
           <Stack>

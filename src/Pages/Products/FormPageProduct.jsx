@@ -105,7 +105,6 @@ function FormPageProduct() {
 
   const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
 
-  console.log(isShipping, "ini shipping");
   const getProject = () => {
     const res = globalState?.projects?.find(
       (e) => e.id === globalState?.currentProject
@@ -954,7 +953,7 @@ function FormPageProduct() {
                 </FormLabel>
                 <Input
                   type="number"
-                  value={weight}
+                  value={volume}
                   onChange={(e) => setVolume(e.target.value)}
                 />
               </FormControl>
@@ -1179,15 +1178,7 @@ function FormPageProduct() {
                   </Button>
                 </Flex>
               )
-            ) : // <Button
-            //   rightIcon={<FiChevronRight />}
-            //   variant={"outline"}
-            //   colorScheme="blue"
-            //   onClick={() => handleNext()}
-            // >
-            //   Next
-            // </Button>
-            !loading ? (
+            ) : !loading ? (
               <Button
                 variant={"outline"}
                 colorScheme="blue"

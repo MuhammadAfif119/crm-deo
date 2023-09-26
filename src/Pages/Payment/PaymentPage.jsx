@@ -52,11 +52,20 @@ function PaymentPage() {
 
   console.log(dataLeads, "ini leads");
 
+  console.log(param);
+  console.log(param.formId);
+  console.log(decryptToken(param.formId));
+
   const getDataLeads = async () => {
     const conditions = [
       { field: "projectId", operator: "==", value: param.id },
       { field: "phoneNumber", operator: "==", value: param.phone },
       { field: "name", operator: "==", value: param.name },
+      {
+        field: "formId",
+        operator: "==",
+        value: decodeURIComponent(param.formId),
+      },
     ];
     const sortBy = { field: "createdAt", direction: "asc" };
     const limitValue = 10;

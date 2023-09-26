@@ -194,7 +194,7 @@ function generateJS(
             const phoneRoute = dataForm.phoneNumber;
             const nameRoute = dataForm.name;
 
-            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+'/'+ "${projectId}" +'/'+ phoneRoute + '/'+ nameRoute;
+            window.location.href = "https://crm.deoapp.com/payment/ticket/"+ "${selectedPaymentMethod}"+'/'+ "${projectId}" +'/'+ phoneRoute + '/'+ nameRoute + '/'+ encodeURIComponent(formRoute);
 
           } catch (error) {
             console.log(error, 'ini error');
@@ -377,8 +377,10 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
-            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+              updateData.phoneNumber
+            }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
           } finally {
@@ -405,8 +407,10 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
-            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}`;
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+              updateData.phoneNumber
+            }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
           } finally {

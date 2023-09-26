@@ -5,7 +5,8 @@ import ShippingPaymentPage from "../Pages/Shipping/ShippingPaymentPage";
 
 const PaymentRouter = [
   {
-    path: "/payment/:type/:method/:id/:phone/:name",
+    path: "/payment/:type/:method/:id/:phone/:name/:formId",
+    // path: "/payment/:type/:method/:id/:phone/:name/:formId",
     element: <PaymentPage />,
   },
   {

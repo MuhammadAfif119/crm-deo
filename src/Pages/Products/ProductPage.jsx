@@ -182,8 +182,6 @@ const ProductPage = () => {
     }
   };
 
-  console.log(categoryData, "xxx");
-
   const getDataCategory = async () => {
     try {
       const unsubscribe = onSnapshot(

@@ -282,8 +282,10 @@ const ShippingRajaOngkir = ({
           placeholder="Pilih Kota"
           onChange={(e) => setSelectedCity(e.target.value)}
         >
-          {cityDestination?.map((x) => (
-            <option value={JSON.stringify(x)}>{x.city_name}</option>
+          {cityDestination?.map((x, i) => (
+            <option key={i} value={JSON.stringify(x)}>
+              {x.city_name}
+            </option>
           ))}
         </Select>
       </Stack>
@@ -292,8 +294,10 @@ const ShippingRajaOngkir = ({
           placeholder="Pilih Kecamatan"
           onChange={(e) => setSelectedSubdistirct(e.target.value)}
         >
-          {subdistricts?.map((x) => (
-            <option value={JSON.stringify(x)}>{x.subdistrict_name}</option>
+          {subdistricts?.map((x, i) => (
+            <option key={i} value={JSON.stringify(x)}>
+              {x.subdistrict_name}
+            </option>
           ))}
         </Select>
       </Stack>
@@ -305,7 +309,7 @@ const ShippingRajaOngkir = ({
         >
           {courierList?.map((x, i) => (
             <option key={i} value={x}>
-              <Text textTransform={"uppercase"}>{x}</Text>
+              <Text>{x.toUpperCase()}</Text>
             </option>
           ))}
         </Select>
