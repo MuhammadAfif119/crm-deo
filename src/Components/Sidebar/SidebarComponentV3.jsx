@@ -360,7 +360,7 @@ function SidebarComponentV3({ layout }) {
                   cursor={"pointer"}
                 >
                   <Icon as={FiSettings} boxSize={6} color="subtle" />
-                  <Text fontSize={10}>Account Setting</Text>
+                  <Text fontSize={10}>Setting</Text>
                 </Stack>
                 {/* </Button> */}
 

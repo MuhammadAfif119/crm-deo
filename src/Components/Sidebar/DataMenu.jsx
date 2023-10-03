@@ -30,14 +30,17 @@ import {
   FcMoneyTransfer,
   FcIdea,
   FcOrganization,
+  FcHome,
 } from "react-icons/fc";
 
 export const data = [
-  // {
-  //   name: "Scoreboard",
-  //   icon: FcDisplay,
-  //   link: "/",
-  // },
+  {
+    name: "Home",
+    icon: FcHome,
+    link: "/home",
+    description:
+    "Access your profile pageview.",
+  },
 
   {
     name: "Contacts",
