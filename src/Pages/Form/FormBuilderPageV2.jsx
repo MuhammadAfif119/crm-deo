@@ -377,7 +377,7 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
               updateData.phoneNumber
             }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
@@ -407,7 +407,7 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
               updateData.phoneNumber
             }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;

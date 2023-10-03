@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
+  UploadBlob,
   getSingleDocumentFirebase,
   setDocumentFirebase,
 } from "../../Api/firebaseApi";
@@ -40,7 +41,7 @@ import { MdCancel, MdOutlineCancel } from "react-icons/md";
 const ThemesEditPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const modalAddFeatures = useDisclosure();
-  const [data, setData] = useState({});
+  const [data, setData] = useState({ features: [] });
   const [progress, setProgress] = useState(0);
   const [color, setColor] = useState("");
   const [uploadingActive, setUploadingActive] = useState("");
@@ -88,15 +89,26 @@ const ThemesEditPage = () => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        const updateData =
-          bannerList.length === 0
-            ? { companiesId: globalState.currentCompany?.id, ...data }
-            : {
-                ...data,
-                banner: bannerList,
-                companiesId: globalState.currentCompany?.id,
-              };
+        let updateData;
+        if (bannerList.length === 0) {
+          updateData = { companiesId: globalState.currentCompany?.id, ...data };
+        } else {
+          if (data.banner.length > 0) {
+            updateData = {
+              ...data,
+              banner: [...data.banner, ...bannerList],
+            };
+          } else {
+            updateData = {
+              ...data,
+              banner: bannerList,
+              companiesId: globalState.currentCompany,
+            };
+          }
+        }
+
         console.log(auth.currentUser.uid);
+        console.log(updateData, "ini update");
 
         setDocumentFirebase(
           "pages",
@@ -121,46 +133,64 @@ const ThemesEditPage = () => {
   };
 
   const handleUpload = async (file, title, index) => {
-    // if (index === undefined) {
-    // 	// console.log("uploading for logo", index)
-    // 	setUploadingActive(title)
-    // 	const result = await UploadBlob(file, "pages", globalState.uid || "xx", file.name, setProgress)
-    // 	if (title === "logo_light") {
-    // 		setData({
-    // 			...data,
-    // 			logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, '_800x800$1')
-    // 		});
-    // 		setUploadingActive("")
-    // 	} else if (title === 'favicon') {
-    // 		setData({
-    // 			...data,
-    // 			favicon: result.url.replace(/(\.[^.\/\\]+)$/i, '_800x800$1')
-    // 		});
-    // 		setUploadingActive("")
-    // 	}
-    // 	else {
-    // 		setData({
-    // 			...data,
-    // 			logoDark: result.url.replace(/(\.[^.\/\\]+)$/i, '_800x800$1')
-    // 		});
-    // 		setUploadingActive("")
-    // 	};
-    // } else {
-    // 	console.log('uploading for banner', index)
-    // 	setUploadingOnIndex(index)
-    // 	const result = await UploadBlob(file, "pages", globalState.uid || "xx", `banner_${file.name}`, setProgress)
-    // 	const newBannerList = [...bannerList];
-    // 	newBannerList[index].image = result.url.replace(/(\.[^.\/\\]+)$/i, '_800x800$1');
-    // 	if (result) setUploadingOnIndex(null);
-    // }
+    if (index === undefined) {
+      // console.log("uploading for logo", index)
+      setUploadingActive(title);
+      const result = await UploadBlob(
+        file,
+        "pages",
+        globalState.uid || "xx",
+        file.name,
+        setProgress
+      );
+      if (title === "logo_light") {
+        setData({
+          ...data,
+          logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+        });
+        setUploadingActive("");
+      } else if (title === "favicon") {
+        setData({
+          ...data,
+          favicon: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+        });
+        setUploadingActive("");
+      } else {
+        setData({
+          ...data,
+          logoDark: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+        });
+        setUploadingActive("");
+      }
+    } else {
+      console.log("uploading for banner", index);
+      setUploadingOnIndex(index);
+      const result = await UploadBlob(
+        file,
+        "pages",
+        globalState.uid || "xx",
+        `banner_${file.name}`,
+        setProgress
+      );
+      const newBannerList = [...bannerList];
+      newBannerList[index].image = result.url.replace(
+        /(\.[^.\/\\]+)$/i,
+        "_800x800$1"
+      );
+      if (result) setUploadingOnIndex(null);
+    }
   };
 
   const handleAddFeature = async () => {
-    const newFeatureList = [...data.features, newFeature];
+    const existingFeatures = Array.isArray(data.features) ? data.features : [];
+
+    const newFeatureList = [...existingFeatures, newFeature];
     setData({ ...data, features: newFeatureList });
 
     modalAddFeatures.onClose();
   };
+
+  console.log(data);
 
   const handleRemoveFeature = (index) => {
     const updatedFeatures = [...data.features];
@@ -187,8 +217,8 @@ const ThemesEditPage = () => {
   const handleDeleteBanner = (i) => {
     let arr = [];
     arr = bannerList;
-    if (arr.length > 1) {
-      arr.splice(i, 1);
+    if (arr?.length > 1) {
+      arr?.splice(i, 1);
       setBannerList([...arr]);
     } else {
       arr = [];
@@ -473,6 +503,25 @@ const ThemesEditPage = () => {
         <Text size="sm">Setup banner for your pages</Text>
         <Box my={10}>
           <SimpleGrid columns={3} spacing={3} maxW="5xl">
+            {data.banner?.length > 0 ? (
+              <>
+                {data?.banner?.map((item, i) => (
+                  <Stack key={i} shadow="md" bg="white" p={4}>
+                    {/* <Image alt={i} src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/201211130529126a0.jpg/480px-201211130529126a0.jpg" /> */}
+                    <Flex justifyContent="space-between" padding={2}>
+                      <Stack>
+                        <Heading size="sm">Link :</Heading>
+                        <Text>{item.link}</Text>
+                        <Heading size="sm">Image :</Heading>
+                        {item?.image ? (
+                          <Image src={item.image} alt="No Preview" />
+                        ) : null}
+                      </Stack>
+                    </Flex>
+                  </Stack>
+                ))}
+              </>
+            ) : null}
             {bannerList.map((item, i) => (
               <Stack key={i} shadow="md" bg="white" p={4}>
                 {/* <Image alt={i} src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/201211130529126a0.jpg/480px-201211130529126a0.jpg" /> */}

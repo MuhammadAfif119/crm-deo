@@ -264,7 +264,6 @@ const CurrentThemes = () => {
               <SimpleGrid columns={3} spacing={3} maxW="5xl">
                 {data?.banner?.map((item, i) => (
                   <Stack key={i} shadow="md" bg="white" p={4}>
-                    {/* <Image alt={i} src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/201211130529126a0.jpg/480px-201211130529126a0.jpg" /> */}
                     <Flex justifyContent="space-between" padding={2}>
                       <Stack>
                         <Heading size="sm">Link :</Heading>

@@ -83,6 +83,8 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     });
   };
 
+  console.log(dataParam, "ini data");
+
   const handlePaymentTransfer = async (id, updatedOrder, fixPrice) => {
     setOrderId(id);
     setLoadingPay(true);
@@ -292,6 +294,8 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
       console.log(error);
     }
   };
+
+  console.log(dataLeads, "ini dataleads");
 
   if (thanksPage === true) {
     return (
