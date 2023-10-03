@@ -244,7 +244,6 @@ const ContactsPage = () => {
     },
   };
 
-  console.log(contactList);
 
   return (
     <Stack p={[1, 1, 5]}>
