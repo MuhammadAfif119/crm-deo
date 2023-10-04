@@ -124,7 +124,7 @@ function App() {
       await signOut(auth);
       toast({
         status: "success",
-        description: "Logged out success",
+        description: "Loggedout success",
         duration: 2000,
       });
     } catch (error) {
