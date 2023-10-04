@@ -43,6 +43,9 @@ function App() {
         getCollectionFirebase("projects", conditions),
       ]);
 
+      console.log(projects[0])
+      console.log(companies[0])
+
       if (!fetchCompanyId) {
         const userRoleInCompany = getUserRole(companies, uid);
         localStorage.setItem("currentCompany", companies[0]?.id);

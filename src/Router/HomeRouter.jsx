@@ -1,7 +1,7 @@
 import React from "react";
 import HomePage from "../Pages/Home/HomePage";
 import HomePageV2 from "../Pages/Home/HomePageV2";
-
+import HomePageWelcome from "../Pages/Home/HomePageWelcome";
 
 const HomeRouter = [
   {
@@ -10,8 +10,12 @@ const HomeRouter = [
   },
 
   {
-    path: "/home",
+    path: "/home/dashboard",
     element: <HomePageV2 />,
+  },
+  {
+    path: "/home",
+    element: <HomePageWelcome />,
   },
 ];
 

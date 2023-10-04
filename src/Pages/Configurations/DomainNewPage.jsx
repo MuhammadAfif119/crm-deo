@@ -2,10 +2,12 @@ import {
   Box,
   Button,
   Container,
+  FormLabel,
   Heading,
   HStack,
   Input,
   Select,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -31,66 +33,73 @@ function NewPage() {
   const [isComplete, setIsComplete] = useState(false);
 
   const handleSave = async () => {
-    if (!data.name) {
+    if (!data.name || /[A-Z]/.test(data.name)) {
       Swal.fire({
         icon: "warning",
         title: "Oops...",
-        text: "Please fill the name of domain!",
+        text: "Please fill the name of domain with a lowercase!",
       });
-      return;
-    }
-    if (!data.projectId) {
-      Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Please fill the project!",
-      });
-      return;
-    }
-    setIsLoading(true);
-    // Rules domain di comment di firestorate rule
-    const response = await createDomainCustom(data);
-    setIsLoading(false);
-    if (response.status) {
-      let domainData = response.data;
-      let domain = await getSingleDocumentFirebase("domains", data.projectId);
-      if (domain === undefined) {
-        domain = { domain: [data.name] };
+    } else {
+      if (!data.projectId) {
+        Swal.fire({
+          icon: "warning",
+          title: "Oops...",
+          text: "Please fill the project!",
+        });
       } else {
-        domain.domain.push(data.name);
-      }
-      await setDocumentFirebase("domains", data.projectId, domain);
-
-      domainData.domain = data.name;
-      domainData.companyId = globalState.currentCompany;
-      domainData.projectId = data.projectId;
-      domainData.projectVercel = data.projectVercel;
-      addDocumentFirebase("domain_lists", domainData, domainData.companyId);
-      if (domainData.verification !== undefined) {
-        setTextVerif(domainData.verification[0]);
-      } else {
-        if (domainData.name !== domainData.apexName) {
-          const subdomain = domainData.name.replaceAll(
-            "." + domainData.apexName,
-            ""
+        setIsLoading(true);
+        // Rules domain di comment di firestorate rule
+        const response = await createDomainCustom(data);
+        setIsLoading(false);
+        if (response.status) {
+          let domainData = response.data;
+          let domain = await getSingleDocumentFirebase(
+            "domains",
+            data.projectId
           );
-          setData({ ...data, verif: subdomain, isSubdomain: true });
+          if (domain === undefined || !domain?.domain) {
+            domain = { domain: [data.name] };
+          } else {
+            domain.domain?.push(data.name);
+          }
+          await setDocumentFirebase("domains", data.projectId, domain);
+
+          domainData.domain = data.name;
+          domainData.companyId = globalState.currentCompany;
+          domainData.projectId = data.projectId;
+          domainData.projectVercel = data.projectVercel;
+          addDocumentFirebase(
+            "domain_lists",
+            domainData,
+            globalState.currentCompany
+          );
+          if (domainData.verification !== undefined) {
+            setTextVerif(domainData.verification[0]);
+          } else {
+            if (domainData.name !== domainData.apexName) {
+              const subdomain = domainData.name.replaceAll(
+                "." + domainData.apexName,
+                ""
+              );
+              setData({ ...data, verif: subdomain, isSubdomain: true });
+            } else {
+              setData({ ...data, verif: domainData.name, isSubdomain: false });
+            }
+          }
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Successfully to save",
+          });
+          setIsComplete(true);
         } else {
-          setData({ ...data, verif: domainData.name, isSubdomain: false });
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: response.message,
+          });
         }
       }
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Successfully to save",
-      });
-      setIsComplete(true);
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: response.message,
-      });
     }
   };
 
@@ -103,30 +112,45 @@ function NewPage() {
       .catch((err) => console.log(err.message));
   };
 
+  const handleGetDomain = async () => {
+    const domains = await getSingleDocumentFirebase(
+      "domains",
+      globalState.currentProject
+    );
+
+    console.log(domains, "ini domain");
+  };
+
   useEffect(() => {
     getProjects();
+    handleGetDomain();
 
     return () => {
       setProjects();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalState?.currentCompany]);
+  }, [globalState?.currentCompany, globalState.currentProject]);
 
   return (
     <>
-      <HStack mb="2">
+      <Stack mb="2">
         <BackButtonComponent />
         <Heading>Domain Name</Heading>
         {/* <Button onClick={() => console.log(data)}>check console</Button> */}
-      </HStack>
-      <Container shadow="base" p="2">
-        <Heading fontSize="md">Add new domain name</Heading>
+      </Stack>
+      <Container shadow="base" p={5} bg={"white"} borderRadius={"md"}>
+        <Heading fontSize="md" mb={4}>
+          Add new domain name
+        </Heading>
         <Input
           m="1"
           type="text"
           placeholder="domain name ex: mydomain.com"
           onChange={(e) => setData({ ...data, name: e.target.value })}
         />
+        <FormLabel mt={3} mb={2}>
+          Select your project
+        </FormLabel>
         <Select
           m="1"
           placeholder="Project"
@@ -138,6 +162,10 @@ function NewPage() {
             </option>
           ))}
         </Select>
+
+        <FormLabel mt={3} mb={2}>
+          Select project vercel
+        </FormLabel>
         <Select
           m="1"
           placeholder="Project Vercel"
