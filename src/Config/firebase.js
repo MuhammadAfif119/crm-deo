@@ -6,7 +6,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging, onMessage, getToken } from "firebase/messaging";
 
-import song from "../assets/CoinDrop-Notification.mp3"
+import song from "../assets/CoinDrop-Notification.mp3";
 import { getDatabase } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -15,17 +15,36 @@ import { getDatabase } from "firebase/database";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDHwfzgKXqfknEy3bctrbrlu37_hKeJevo",
-  authDomain: "deoapp-indonesia.firebaseapp.com",
-  databaseURL: "https://deoapp-indonesia-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "deoapp-indonesia",
-  storageBucket: "deoapp-indonesia.appspot.com",
-  messagingSenderId: "814589130399",
-  appId: "1:814589130399:web:a0bb255936eefd57e554aa",
-  measurementId: "G-B9FPJL2RD0",
-  token_option: "BHcgLCKeUP3IkJIIMaGoVhFzbnjWx6-sSJ6JWQNKAU9nXMN3xK2TOmVEHVsqSJ1V9M_JGKW2rs0SbHZw1CDE3dA", // your vapid key
-};
+let firebaseConfig = {};
+
+if (process.env.REACT_APP_DATABASE === "production") {
+  firebaseConfig = {
+    apiKey: "AIzaSyDHwfzgKXqfknEy3bctrbrlu37_hKeJevo",
+    authDomain: "deoapp-indonesia.firebaseapp.com",
+    databaseURL:
+      "https://deoapp-indonesia-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "deoapp-indonesia",
+    storageBucket: "deoapp-indonesia.appspot.com",
+    messagingSenderId: "814589130399",
+    appId: "1:814589130399:web:a0bb255936eefd57e554aa",
+    measurementId: "G-B9FPJL2RD0",
+    token_option:
+      "BHcgLCKeUP3IkJIIMaGoVhFzbnjWx6-sSJ6JWQNKAU9nXMN3xK2TOmVEHVsqSJ1V9M_JGKW2rs0SbHZw1CDE3dA", // your vapid key
+  };
+} else {
+  firebaseConfig = {
+    apiKey: "AIzaSyASn7-_uwbRKTXNXk4EzJ9WaNVzjJul-oI",
+    authDomain: "deoapp-indonesia-staging.firebaseapp.com",
+    databaseURL:
+      "https://deoapp-indonesia-staging-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "deoapp-indonesia-staging",
+    storageBucket: "deoapp-indonesia-staging.appspot.com",
+    messagingSenderId: "668514366913",
+    appId: "1:668514366913:web:9e763ec42c426ade386b40",
+    measurementId: "G-GTT63FV9SF",
+    token_option:"BFo4A9fw9tA09X8_U7T8BjAFUfEcQpOHHohrwP0vXKHjZf92Hkvlu7F-5yPyr-qMS3cYNw-SA--SSMM63Ji6AZs"
+  };
+}
 
 // const firebaseConfig = {
 //   apiKey: "AIzaSyA-p2OkCT9rjeta1lQM4krUfllcSWl_E1s",
@@ -42,18 +61,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const db = getFirestore(app)
-const database = getDatabase(app)
+const db = getFirestore(app);
+const database = getDatabase(app);
 const storage = getStorage(app);
 const configMessage = getMessaging(app);
-auth.languageCode = 'id';
+auth.languageCode = "id";
 
-export {app,analytics,auth,db, storage, database}
+export { app, analytics, auth, db, storage, database };
 export const fetchToken = async () => {
   try {
-    const token = await getToken(configMessage, { vapidKey: firebaseConfig.token_option });
+    const token = await getToken(configMessage, {
+      vapidKey: firebaseConfig.token_option,
+    });
     if (token) {
-      return token
+      return token;
     } else {
       console.log("no push notif token for now");
     }
@@ -61,16 +82,16 @@ export const fetchToken = async () => {
 };
 
 export const onMessageListener = (toast) => {
-	onMessage(configMessage, (payload) => {
-		const notif = new Audio(song)
-		notif.play();
-		const { data } = payload
-		const { title, description } = data
-		toast({
-			title: title,
-			description: description,
-			position: 'top-right',
-			isClosable: true,
-		})
-	});
+  onMessage(configMessage, (payload) => {
+    const notif = new Audio(song);
+    notif.play();
+    const { data } = payload;
+    const { title, description } = data;
+    toast({
+      title: title,
+      description: description,
+      position: "top-right",
+      isClosable: true,
+    });
+  });
 };
