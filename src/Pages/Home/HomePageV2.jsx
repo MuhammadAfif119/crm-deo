@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Center,
+  Checkbox,
   Flex,
   Heading,
   HStack,
@@ -50,23 +51,25 @@ import { DeviceFrameset } from "react-device-frameset";
 import "react-device-frameset/styles/marvel-devices.min.css";
 
 function HomePageV2() {
-  const navigate = useNavigate();
   const globalState = useUserStore();
-  const { onClose, onOpen, isOpen } = useDisclosure();
   const [projectData, setProjectData] = useState();
   const user = auth?.currentUser;
+
+  const [linkList, setLinkList] = useState([]);
 
   const [pageData, setPageData] = useState();
   const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
   const [newFeature, setNewFeature] = useState();
-  const [themeData, setThemeData] = useState({
-    features: [],
-  });
   const [bannerList, setBannerList] = useState([]);
   const [progress, setProgress] = useState(0);
 
-  const [contactForm, setContactForm] = useState({});
+  const [contactForm, setContactForm] = useState({
+    whatsappContact: "",
+    email: "",
+    businessAddress: "",
+  });
   const [domainPage, setDomainPage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [emailCheck, setEmailCheck] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -80,22 +83,17 @@ function HomePageV2() {
     displayName: "",
     bio: "",
     image: "",
-    whatsappContact: "",
-    email: "",
   });
 
-  const [productUsed, setProductUsed] = useState(
-    pageData?.features?.find((x) => x === "product") === undefined
-      ? false
-      : true
-  );
-  const [ticketUsed, setTicketUsed] = useState(
-    pageData?.features?.find((x) => x === "ticket") === undefined ? false : true
-  );
-  const [courseUsed, setCourseUsed] = useState(
-    pageData?.features?.find((x) => x === "course") === undefined ? false : true
-  );
+  const [listingUsed, setListingUsed] = useState();
+  const [productUsed, setProductUsed] = useState();
+  // pageData?.features?.includes("product")
+  const [ticketUsed, setTicketUsed] = useState();
+  // pageData?.features?.includes("ticket")
+  const [courseUsed, setCourseUsed] = useState();
+  // pageData?.features?.includes("course")
 
+  console.log(globalState.currentProject);
 
   const getDataProject = () => {
     const searchProject = globalState?.projects?.find(
@@ -111,8 +109,11 @@ function HomePageV2() {
       globalState.currentProject
     );
     setPageData(docData);
-    console.log(pageData, "ini page data");
   };
+
+  // console.log(ticketUsed);
+  // console.log(productUsed);
+  // console.log(courseUsed);
 
   const getDataDomain = async () => {
     const res = await getSingleDocumentFirebase(
@@ -124,14 +125,6 @@ function HomePageV2() {
   };
 
   const handleSave = () => {
-    // let updateData = {
-    //   ...formData,
-    //   contactDetails: {
-    //     isWhatsapp: whatsappCheck,
-    //     whatsappContact: contactForm.whatsappContact
-    //   }
-    // };
-
     Swal.fire({
       title: "Do you want to save the changes?",
       showDenyButton: false,
@@ -141,13 +134,22 @@ function HomePageV2() {
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
+        setIsLoading(true);
         const updateProjectData = await updateDocumentFirebase(
           "projects",
           globalState.currentProject,
-          formData
+          {
+            ...formData,
+            links: linkList,
+            contactDetails: {
+              ...contactForm,
+              whatsappActive: whatsappCheck,
+              emailActive: emailCheck,
+              businessAddressActive: businessCheck,
+            },
+          }
         );
         console.log(updateProjectData, "updated");
-
 
         let updateData;
         if (bannerList.length === 0) {
@@ -167,7 +169,7 @@ function HomePageV2() {
               banner: bannerList,
               companiesId: globalState.currentCompany,
               projectsId: globalState.currentProject,
-              projectId: globalState.currentProject
+              projectId: globalState.currentProject,
             };
           }
         }
@@ -181,6 +183,7 @@ function HomePageV2() {
           )
             .then((response) => {
               if (response) {
+                setIsLoading(false);
                 Swal.fire("Saved!", "", "success");
               }
             })
@@ -188,6 +191,7 @@ function HomePageV2() {
               console.log(error.message);
             });
         }
+        setIsLoading(false);
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }
@@ -206,13 +210,12 @@ function HomePageV2() {
     const res = (await uploadImage(e.target.files[0])).data;
     alert(res.message);
     if (res.status) {
-      // setInput({ ...input, image: res.data });
       setFormData({ ...formData, image: res.data });
     }
   };
 
-  console.log(pageData, "xxxx");
-  console.log(bannerList, "ini baner list");
+  // console.log(pageData, "xxxx");
+  // console.log(bannerList, "ini baner list");
 
   const handleSaveModal = (active) => {
     setPageData({
@@ -231,9 +234,30 @@ function HomePageV2() {
 
     const newFeatureList = [...existingFeatures, newFeature];
     setPageData({ ...pageData, features: newFeatureList });
-    // setThemeData({ ...themeData, features: newFeatureList });
+  };
 
-    // modalAddFeatures.onClose();
+  const handleInputLinkButton = (value, index) => {
+    const newLinkList = [...linkList];
+    newLinkList[index].buttonText = value;
+    setLinkList([...newLinkList]);
+  };
+
+  const handleInputLinkUrl = (value, index) => {
+    const newLinkList = [...linkList];
+    newLinkList[index].url = value;
+    setLinkList([...newLinkList]);
+  };
+
+  const handleDeleteLink = (i) => {
+    let arr = [];
+    arr = linkList;
+    if (arr?.length > 1) {
+      arr?.splice(i, 1);
+      setLinkList([...arr]);
+    } else {
+      arr = [];
+      setLinkList([...arr]);
+    }
   };
 
   const handleDeletePhoto = async () => {
@@ -275,10 +299,6 @@ function HomePageV2() {
       ...pageData,
       logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
     });
-    // setThemeData({
-    //   ...themeData,
-    //   logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
-    // });
   };
 
   const handleUploadLogoDark = async (e) => {
@@ -363,9 +383,22 @@ function HomePageV2() {
   };
 
   useEffect(() => {
+    getDataPage()
+      .then((data) => setPageData(data))
+      .catch((error) => console.error(error));
+  }, [globalState.currentProject]);
+
+  useEffect(() => {
     getDataPage();
     getDataDomain();
     getDataProject();
+
+    if (pageData) {
+      setTicketUsed(pageData?.features?.includes("ticket"));
+      setCourseUsed(pageData?.features?.includes("course"));
+      setProductUsed(pageData?.features?.includes("product"));
+      setListingUsed(pageData?.features?.includes("listing"));
+    }
 
     return () => {};
   }, [globalState.currentProject]);
@@ -428,7 +461,7 @@ function HomePageV2() {
                           />
                         ) : submenu.name === "Contacts" ? (
                           <Stack>
-                            <Stack
+                            {/* <Stack
                               border={"1px"}
                               borderRadius={"md"}
                               borderColor={"gray.200"}
@@ -440,7 +473,7 @@ function HomePageV2() {
                                 size={"sm"}
                                 bg={"gray.50"}
                               />
-                            </Stack>
+                            </Stack> */}
 
                             <Stack
                               border={"1px"}
@@ -450,7 +483,14 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
-                                  isChecked={whatsappCheck}
+                                  defaultChecked={
+                                    projectData?.contactDetails &&
+                                    projectData?.contactDetails
+                                      ?.whatsappActive === true
+                                      ? true
+                                      : false
+                                  }
+                                  // isChecked={whatsappCheck}
                                   onChange={() =>
                                     setWhatsappCheck((prev) => !prev)
                                   }
@@ -465,8 +505,12 @@ function HomePageV2() {
                                     size={"sm"}
                                     borderRadius={"md"}
                                     placeholder={"Whatsapp Button Text"}
+                                    defaultValue={
+                                      projectData?.contactDetails
+                                        ?.whatsappButtonText
+                                    }
                                     onChange={(e) =>
-                                      setFormData({
+                                      setContactForm({
                                         ...contactForm,
                                         whatsappButtonText: e.target.value,
                                       })
@@ -476,9 +520,13 @@ function HomePageV2() {
                                     size={"sm"}
                                     borderRadius={"md"}
                                     placeholder={"628xxxxxxx"}
+                                    defaultValue={
+                                      projectData?.contactDetails
+                                        ?.whatsappContact
+                                    }
                                     onChange={(e) =>
-                                      setFormData({
-                                        ...formData,
+                                      setContactForm({
+                                        ...contactForm,
                                         whatsappContact: e.target.value,
                                       })
                                     }
@@ -498,10 +546,16 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
-                                  isChecked={emailCheck}
-                                  onChange={() =>
-                                    setEmailCheck((prev) => !prev)
+                                  defaultChecked={
+                                    projectData?.contactDetails?.emailActive ===
+                                    true
+                                      ? true
+                                      : false
                                   }
+                                  isChecked={emailCheck}
+                                  onChange={() => {
+                                    setEmailCheck((prev) => !prev);
+                                  }}
                                   size={"sm"}
                                 />
                                 <Text fontSize={"sm"}>Contact Email</Text>
@@ -526,15 +580,12 @@ function HomePageV2() {
                                     placeholder={"Enter your email"}
                                     defaultValue={projectData?.email}
                                     onChange={(e) =>
-                                      setFormData({
-                                        ...formData,
+                                      setContactForm({
+                                        ...contactForm,
                                         email: e.target.value,
                                       })
                                     }
                                   />
-                                  <Text fontSize={10}>
-                                    Use country code for phone
-                                  </Text>
                                 </Stack>
                               ) : null}
                             </Stack>
@@ -547,65 +598,90 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
+                                  defaultChecked={
+                                    projectData?.contactDetails
+                                      ?.businessAddressActive === true
+                                      ? true
+                                      : false
+                                  }
                                   isChecked={businessCheck}
                                   onChange={() =>
                                     setBusinessCheck((prev) => !prev)
                                   }
                                   size={"sm"}
                                 />
-                                <Text
-                                  fontSize={"sm"}
-                                  onChange={(e) =>
-                                    setFormData({
-                                      ...formData,
-                                      businessAddress: e.target.value,
-                                    })
-                                  }
-                                >
-                                  Business Address
-                                </Text>
+                                <Text fontSize={"sm"}>Business Address</Text>
                               </HStack>
 
                               {businessCheck === true && (
-                                <Textarea placeholder="Business Address" />
+                                <Textarea
+                                  onChange={(e) =>
+                                    setContactForm({
+                                      ...contactForm,
+                                      businessAddress: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Business Address"
+                                />
                               )}
                             </Stack>
                           </Stack>
                         ) : submenu.name === "Links" ? (
                           <Stack>
-                            <Stack
-                              border={"1px"}
-                              borderRadius={"md"}
-                              borderColor={"gray.200"}
-                              p={2}
-                            >
-                              <HStack>
+                            {linkList?.map((x, i) => (
+                              <Stack
+                                border={"1px"}
+                                borderRadius={"md"}
+                                borderColor={"gray.200"}
+                                p={2}
+                              >
+                                <HStack>
+                                  <Input
+                                    borderRadius={"md"}
+                                    size={"sm"}
+                                    w={"fit-content"}
+                                    bg={"gray.50"}
+                                    placeholder={"Input Button Text"}
+                                    value={linkList[i].buttonText}
+                                    onChange={(e) =>
+                                      handleInputLinkButton(e.target.value, i)
+                                    }
+                                  />
+                                  <Spacer />
+                                  <DeleteIcon
+                                    cursor={"pointer"}
+                                    onClick={() => handleDeleteLink(i)}
+                                    boxSize={4}
+                                    color={"gray.500"}
+                                  />
+                                </HStack>
                                 <Input
                                   borderRadius={"md"}
                                   size={"sm"}
-                                  w={"fit-content"}
                                   bg={"gray.50"}
-                                  defaultValue={"Input Button Text"}
+                                  value={linkList[i].url}
+                                  defaultValue={
+                                    "Input Link (ex: instagram.com/username)"
+                                  }
+                                  onChange={(e) =>
+                                    handleInputLinkUrl(e.target.value, i)
+                                  }
                                 />
-                                <Spacer />
-                                <DeleteIcon boxSize={4} color={"gray.500"} />
-                              </HStack>
-                              <Input
-                                borderRadius={"md"}
-                                size={"sm"}
-                                bg={"gray.50"}
-                                defaultValue={
-                                  "Input Link (ex: instagram.com/username)"
-                                }
-                              />
-                            </Stack>
-                            <Button colorScheme="blue">+ New Link</Button>
+                              </Stack>
+                            ))}
+                            <Button
+                              colorScheme="blue"
+                              onClick={() => setLinkList([...linkList, {}])}
+                            >
+                              + New Link
+                            </Button>
                           </Stack>
                         ) : submenu.name === "Feed" ? (
                           <Box>
                             <HStack spacing={4} justify={"center"} mb={3}>
                               <Switch
                                 size={"sm"}
+                                // defaultChecked={productUsed}
                                 isChecked={productUsed}
                                 onChange={() => setProductUsed((prev) => !prev)}
                               >
@@ -613,6 +689,7 @@ function HomePageV2() {
                               </Switch>
                               <Switch
                                 size={"sm"}
+                                // defaultChecked={courseUsed}
                                 isChecked={courseUsed}
                                 onChange={() => setCourseUsed((prev) => !prev)}
                               >
@@ -620,13 +697,22 @@ function HomePageV2() {
                               </Switch>
                               <Switch
                                 size={"sm"}
+                                // defaultChecked={ticketUsed}
                                 isChecked={ticketUsed}
                                 onChange={() => setTicketUsed((prev) => !prev)}
                               >
                                 Ticket
                               </Switch>
+                              <Switch
+                                size={"sm"}
+                                // defaultChecked={listingUsed}
+                                isChecked={listingUsed}
+                                onChange={() => setTicketUsed((prev) => !prev)}
+                              >
+                                Listing
+                              </Switch>
                             </HStack>
-                            <Center shadow={"md"} py={5}>
+                            {/* <Center shadow={"md"} py={5}>
                               <Stack align={"center"}>
                                 <Text>Sell your product</Text>
                                 <Button
@@ -644,7 +730,7 @@ function HomePageV2() {
                                   Create Ticket
                                 </Button>
                               </Stack>
-                            </Center>
+                            </Center> */}
                           </Box>
                         ) : submenu.name === "Theme Layout" ? (
                           <ThemeSettingForm
@@ -675,7 +761,12 @@ function HomePageV2() {
                   );
                 })}
               </Accordion>
-              <Button colorScheme="blue" w={"full"} onClick={handleSave}>
+              <Button
+                isLoading={isLoading}
+                colorScheme="blue"
+                w={"full"}
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </Box>
@@ -686,7 +777,11 @@ function HomePageV2() {
                   <iframe
                     width={375}
                     height={815}
-                    src={`https://${domainPage?.domain[0]}`}
+                    src={
+                      domainPage?.domain
+                        ? `https://${domainPage?.domain[0]}`
+                        : ""
+                    }
                   />
                 </Box>
               </DeviceFrameset>

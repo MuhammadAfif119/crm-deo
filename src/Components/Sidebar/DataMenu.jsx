@@ -31,6 +31,8 @@ import {
   FcIdea,
   FcOrganization,
   FcHome,
+  FcSelfie,
+  FcSelfServiceKiosk,
 } from "react-icons/fc";
 
 export const data = [
@@ -38,8 +40,18 @@ export const data = [
     name: "Home",
     icon: FcHome,
     link: "/home",
-    description:
-    "Access your profile pageview.",
+    description: "Access your profile pageview.",
+    // submenu: [
+    //   {
+    //     name: "Dashboard Preview",
+    //     icon: FcSelfServiceKiosk,
+    //     link: "/home/dashboard",
+    //   },
+    //   { name: "Profile Preview", icon: FcSelfie, link: "/home/profile" },
+    // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+    // { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+    // { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+    // ],
   },
 
   {
