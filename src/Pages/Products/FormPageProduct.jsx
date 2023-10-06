@@ -1217,7 +1217,6 @@ function FormPageProduct() {
               !loading ? (
                 <Flex align={"right"} justify={"right"}>
                   <Button
-                    variant={"outline"}
                     colorScheme="blue"
                     onClick={handleSubmit}
                   >
@@ -1228,7 +1227,6 @@ function FormPageProduct() {
                 <Flex align={"right"} justify={"right"}>
                   <Button
                     isLoading
-                    variant={"outline"}
                     colorScheme="blue"
                     isDisabled
                   >
@@ -1238,7 +1236,6 @@ function FormPageProduct() {
               )
             ) : !loading ? (
               <Button
-                variant={"outline"}
                 colorScheme="blue"
                 onClick={handleEditSubmit}
               >
@@ -1247,7 +1244,6 @@ function FormPageProduct() {
             ) : (
               <Button
                 isLoading
-                variant={"outline"}
                 colorScheme="blue"
                 isDisabled
               >
