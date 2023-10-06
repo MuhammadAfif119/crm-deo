@@ -19,7 +19,8 @@ import {
   Image,
   useToast,
   Container,
-  Flex, // Tambahkan import untuk Checkbox
+  Flex,
+  InputLeftElement, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import ViewPageListing from "./ViewPageListing";
@@ -51,6 +52,8 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import moment from "moment";
+import { formatFrice, formatPrice } from "../../Utils/numberUtil";
+import { NumericFormat } from "react-number-format";
 
 function FormPageListing() {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -78,6 +81,7 @@ function FormPageListing() {
   const [categoryData, setCategoryData] = useState([]);
   const [checkPrice, setCheckPrice] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [validationPrice, setValidationPrice] = useState("");
   const [categoryList, setCategoryList] = useState([]);
   const [queries, setQueries] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
@@ -87,7 +91,13 @@ function FormPageListing() {
 
   const companyId = globalState.currentCompany;
 
-  const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
+  // const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
+
+  const handleParseIntNumber = (stringWithComma) => {
+    const integerValue = parseInt(stringWithComma.replace(/,/g, ""), 10);
+
+    return integerValue;
+  };
 
   const getProject = () => {
     const res = globalState?.projects?.find(
@@ -210,8 +220,8 @@ function FormPageListing() {
       category: selectedCategory.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: price.toLowerCase(),
-      priceEnd: priceEnd.toLowerCase(),
+      price: handleParseIntNumber(price),
+      priceEnd: handleParseIntNumber(priceEnd),
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -387,8 +397,8 @@ function FormPageListing() {
       category: selectedCategory.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: price.toLowerCase(),
-      priceEnd: priceEnd.toLowerCase(),
+      price: handleParseIntNumber(price),
+      priceEnd: handleParseIntNumber(priceEnd),
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -499,6 +509,19 @@ function FormPageListing() {
     }
   };
 
+  const handlePriceEnd = (value) => {
+    setPriceEnd(value);
+
+    const parsedEndPriceValue = handleParseIntNumber(value);
+    const parsedStartPriceValue = handleParseIntNumber(price);
+
+    if (parsedEndPriceValue <= parsedStartPriceValue) {
+      setValidationPrice("End price should be higher than start price");
+    } else {
+      setValidationPrice("");
+    }
+  };
+
   const handleAddDetail = () => {
     setDetails([...details, { key: "", value: "" }]);
   };
@@ -537,6 +560,8 @@ function FormPageListing() {
   useEffect(() => {
     loadOptionsDB(categoryList);
   }, [categoryList.length, selectedCategory.length]);
+
+  // console.log(handleParseIntNumber(price), "ini price");
 
   return (
     <>
@@ -653,6 +678,7 @@ function FormPageListing() {
             <FormLabel>Category</FormLabel>
             <Box width={"full"}>
               <CreatableSelece
+                placeholder={"Select or Create New"}
                 isClearable={false}
                 value={selectedCategory.filter((option) => option.value)}
                 isMulti
@@ -670,11 +696,12 @@ function FormPageListing() {
             <FormLabel>Project</FormLabel>
             <Input value={projectName} variant={"unstyled"} disabled />
           </FormControl>
-          <HStack w="100%" gap="5">
+          <Flex w="100%" gap="5">
             <FormControl w="40%" id="price" isRequired>
               <FormLabel>Price Start</FormLabel>
               <Input
-                type="number"
+                as={NumericFormat}
+                thousandSeparator={","}
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
@@ -689,18 +716,26 @@ function FormPageListing() {
               <FormControl w="40%" id="price" isRequired>
                 <FormLabel>Price End</FormLabel>
                 <Input
-                  type="number"
+                  borderColor={validationPrice ? "red" : null}
+                  as={NumericFormat}
+                  thousandSeparator={","}
                   value={priceEnd}
-                  onChange={(e) => setPriceEnd(e.target.value)}
+                  onChange={(e) => handlePriceEnd(e.target.value)}
                 />
+                {validationPrice && (
+                  <Text py={2} color={"red"} fontSize={"12"}>
+                    {validationPrice}
+                  </Text>
+                )}
               </FormControl>
             )}
-          </HStack>
+          </Flex>
 
           <FormControl id="contactPerson" isRequired>
             <FormLabel>Contact Person:</FormLabel>
             <Input
               type="text"
+              placeholder="Your email or phone number"
               value={contactPerson}
               onChange={(e) => setContactPerson(e.target.value)}
             />
@@ -711,6 +746,7 @@ function FormPageListing() {
                 <FormLabel>Key:</FormLabel>
                 <Input
                   type="text"
+                  placeholder={"Enter detail name (ex: Author)"}
                   value={detail.key}
                   onChange={(e) =>
                     handleDetailChange(index, e.target.value, detail.value)
@@ -721,6 +757,7 @@ function FormPageListing() {
                 <FormLabel>Value:</FormLabel>
                 <Input
                   type="text"
+                  placeholder={"Enter detail name value (ex: John Doe)"}
                   value={detail.value}
                   onChange={(e) =>
                     handleDetailChange(index, detail.key, e.target.value)
@@ -744,6 +781,7 @@ function FormPageListing() {
           >
             Add Detail
           </Button>
+
           <FormControl id="isActive">
             <FormLabel>Is Active:</FormLabel>
             <Select

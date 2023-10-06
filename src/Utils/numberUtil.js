@@ -19,9 +19,6 @@ export function formatFrice(value) {
     }
   }
 
-
-
-
   
 
 //format IDR

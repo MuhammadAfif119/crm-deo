@@ -21,10 +21,12 @@ import {
   Container,
   Flex,
   Heading,
+  Switch,
   Spacer,
   Center, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
+import { NumericFormat } from "react-number-format";
 import CreatableSelece from "react-select/creatable";
 import {
   collection,
@@ -82,6 +84,7 @@ function FormPageProduct() {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [filesImageLogo, setFilesImageLogo] = useState([]);
   const [filesLogo, setFilesLogo] = useState([]);
+  const [validationPrice, setValidationPrice] = useState("");
 
   const [categoryData, setCategoryData] = useState([]);
   const [checkPrice, setCheckPrice] = useState(false);
@@ -104,6 +107,15 @@ function FormPageProduct() {
   const companyId = globalState.currentCompany;
 
   const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
+
+  const handleParseIntNumber = (stringWithComma) => {
+    const integerValue = parseInt(stringWithComma.replace(/,/g, ""), 10);
+
+    return integerValue;
+  };
+
+  console.log(handleParseIntNumber(price), "ini price");
+  console.log(typeof handleParseIntNumber(price), "ini price");
 
   const getProject = () => {
     const res = globalState?.projects?.find(
@@ -279,8 +291,8 @@ function FormPageProduct() {
       category: selectedCategory?.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: price.toLowerCase(),
-      priceEnd: priceEnd.toLowerCase(),
+      price: handleParseIntNumber(price),
+      priceEnd: handleParseIntNumber(priceEnd),
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -504,8 +516,8 @@ function FormPageProduct() {
       category: selectedCategory.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: price.toLowerCase(),
-      priceEnd: priceEnd.toLowerCase(),
+      price: handleParseIntNumber(price),
+      priceEnd: handleParseIntNumber(priceEnd),
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -687,6 +699,19 @@ function FormPageProduct() {
     }
   };
 
+  const handlePriceEnd = (value) => {
+    setPriceEnd(value);
+
+    const parsedEndPriceValue = handleParseIntNumber(value);
+    const parsedStartPriceValue = handleParseIntNumber(price);
+
+    if (parsedEndPriceValue <= parsedStartPriceValue) {
+      setValidationPrice("End price should be higher than start price");
+    } else {
+      setValidationPrice("");
+    }
+  };
+
   const loadOptionsDB = (category) => {
     let arr = [];
     category.map((item) => {
@@ -699,6 +724,7 @@ function FormPageProduct() {
     loadOptionsDB(categoryList);
   }, [categoryList.length, selectedCategory.length]);
 
+  console.log(isActive);
   return (
     <>
       <Stack>
@@ -892,6 +918,7 @@ function FormPageProduct() {
               <FormLabel>Category</FormLabel>
               <Box width={"full"}>
                 <CreatableSelece
+                  placeholder={"Select or Create New"}
                   isClearable={false}
                   value={selectedCategory.filter((option) => option.value)}
                   isMulti
@@ -909,11 +936,12 @@ function FormPageProduct() {
               <FormLabel>Project</FormLabel>
               <Input value={projectName} variant={"unstyled"} disabled />
             </FormControl>
-            <HStack w="100%" gap="5">
+            <Flex w="100%" gap="5">
               <FormControl w="40%" id="price" isRequired>
                 <FormLabel>Price Start</FormLabel>
                 <Input
-                  type="number"
+                  as={NumericFormat}
+                  thousandSeparator={","}
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -928,18 +956,25 @@ function FormPageProduct() {
                 <FormControl w="40%" id="price" isRequired>
                   <FormLabel>Price End</FormLabel>
                   <Input
-                    type="number"
+                    borderColor={validationPrice ? "red" : null}
+                    as={NumericFormat}
+                    thousandSeparator={","}
                     value={priceEnd}
-                    onChange={(e) => setPriceEnd(e.target.value)}
+                    onChange={(e) => handlePriceEnd(e.target.value)}
                   />
+                  {validationPrice && (
+                    <Text py={2} color={"red"} fontSize={"12"}>
+                      {validationPrice}
+                    </Text>
+                  )}
                 </FormControl>
               )}
-            </HStack>
+            </Flex>
 
             <HStack>
               <FormControl id="weight" isRequired>
                 <FormLabel>
-                  Product Weight {"("}gram{")"}
+                  Product weight / pcs {"("}gram{")"}
                 </FormLabel>
                 <Input
                   type="number"
@@ -973,6 +1008,7 @@ function FormPageProduct() {
                   <FormLabel>Key:</FormLabel>
                   <Input
                     type="text"
+                    placeholder={"Enter detail name (ex: Author)"}
                     value={detail.key}
                     onChange={(e) =>
                       handleDetailChange(index, e.target.value, detail.value)
@@ -983,6 +1019,7 @@ function FormPageProduct() {
                   <FormLabel>Value:</FormLabel>
                   <Input
                     type="text"
+                    placeholder={"Enter detail name value (ex: John Doe)"}
                     value={detail.value}
                     onChange={(e) =>
                       handleDetailChange(index, detail.key, e.target.value)
@@ -1006,27 +1043,48 @@ function FormPageProduct() {
             >
               Add Detail
             </Button>
-            <FormControl id="isActive">
-              <FormLabel>Is Active:</FormLabel>
-              <Select
+            <Flex my>
+              <FormControl id="isActive">
+                <Switch
+                  isChecked={isActive}
+                  onChange={() => setIsActive((prev) => !prev)}
+                >
+                  Activate Product
+                </Switch>
+                <Text color={"gray.400"} fontSize={13} py={3}>
+                  The Product will active and appear to your pageview
+                </Text>
+
+                {/* <Select
                 value={isActive}
                 onChange={(e) => setIsActive(e.target.value === "true")}
               >
                 <option value="true">True</option>
                 <option value="false">False</option>
-              </Select>
-            </FormControl>
+              </Select> */}
+              </FormControl>
 
-            <FormControl id="isShipping">
-              <FormLabel>Use Shipping:</FormLabel>
-              <Select
+              <FormControl id="isShipping">
+                <Switch
+                  isChecked={isShipping}
+                  onChange={() => setIsShipping((prev) => !prev)}
+                >
+                  Use Shipping:
+                </Switch>
+                <Text color={"gray.400"} fontSize={13} py={3}>
+                  The Product will use shipping for delivery, and user/costumer
+                  will be required to fill the shipping form{" "}
+                </Text>
+
+                {/* <Select
                 value={isShipping}
                 onChange={(e) => setIsShipping(e.target.value === "true")}
               >
                 <option value="true">True</option>
                 <option value="false">False</option>
-              </Select>
-            </FormControl>
+              </Select> */}
+              </FormControl>
+            </Flex>
 
             <FormControl id="modules">
               <FormLabel>Modules:</FormLabel>
