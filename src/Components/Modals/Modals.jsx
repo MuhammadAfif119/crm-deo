@@ -28,6 +28,7 @@ import {
   updateDocumentFirebase,
   arrayUnionFirebase,
   getSingleDocumentFirebase,
+  uploadFile,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import moment from "moment";
@@ -43,6 +44,8 @@ const Modals = (props) => {
   const [isUploading, setIsUploading] = useState(false);
   const [accessTokenDb, setAccessTokenDb] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [files, setFiles] = useState([]);
+  const [filesImage, setFilesImage] = useState();
   const toast = useToast();
   const params = useParams();
   const globalState = useUserStore();
@@ -50,20 +53,34 @@ const Modals = (props) => {
 
   const handleSave = async () => {
     setLoading(true);
+    let inputData = {
+      ...input,
+      price: price,
+      projectsId: currentProject || null,
+      projectId: currentProject || null,
+      createdAt: new Date(),
+      courseType: datas?.course_type,
+    };
+
     if (datas?.type === "addCourse") {
       try {
+        if (filesImage[0]) {
+          const resImage = await uploadFile(
+            `${input?.title}-${moment(new Date()).valueOf()}`,
+            "course",
+            filesImage[0]
+          );
+          inputData.thumbnail = resImage;
+        }
+
+        console.log(inputData);
+
         const id = await addDocumentFirebase(
           "courses",
-          {
-            ...input,
-            price: price,
-            projectsId: currentProject || null,
-            projectId: currentProject || null,
-            createdAt: new Date(),
-            courseType: datas?.course_type,
-          },
+          inputData,
           currentCompany
         );
+
         navigate(`/courses/${id}`);
       } catch (error) {
         console.log(error.message, "error while adding course");
@@ -178,6 +195,12 @@ const Modals = (props) => {
   };
 
   const uploadFileToDropbox = async (file) => {
+    const result = await getSingleDocumentFirebase("token", "dropbox");
+    const resultData = decryptToken(result?.access_token);
+    globalState.setAccessToken(resultData);
+
+    console.log(result, "ini token");
+
     const currentMillis = moment(new Date()).valueOf();
     const fileType = file.type.split("/")[0]; // Mengambil bagian depan sebelum tanda "/"
     const fileTypeFix =
@@ -189,7 +212,7 @@ const Modals = (props) => {
         ? "audio"
         : "file";
 
-    const accessToken = globalState?.accessToken || accessTokenDb;
+    const accessToken = resultData;
     const url = "https://content.dropboxapi.com/2/files/upload";
 
     const headers = {
@@ -202,6 +225,8 @@ const Modals = (props) => {
         mute: false,
       }),
     };
+
+    console.log(headers, "ini header");
 
     try {
       const response = await axios.post(url, file, {
@@ -267,6 +292,30 @@ const Modals = (props) => {
         status: "error",
       });
     }
+  };
+
+  const handleFileInputChange = (event) => {
+    console.log(event);
+    const { files: newFiles } = event.target;
+
+    if (newFiles.length) {
+      const newFileArray = [...files];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          setFiles(newFileArray);
+        };
+      }
+      setFilesImage(newFiles);
+    }
+
+    console.log(filesImage, "ini file image");
   };
 
   // const handleUpload = async (file) => {
@@ -395,7 +444,7 @@ const Modals = (props) => {
                   bg="white"
                   type="file"
                   variant="ghost"
-                  onChange={(e) => uploadFileToDropbox(e.target.files[0])}
+                  onChange={handleFileInputChange}
                 />
               </FormControl>
               {isUploading ? <UploadingComponent /> : null}
