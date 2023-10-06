@@ -23,8 +23,7 @@ import {
 import React, { useEffect, useState } from "react";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import { MdOutlinePermMedia } from "react-icons/md";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { formatFrice } from "../../Utils/numberUtil";
 import {
   addDocumentFirebase,
   arrayRemoveFirebase,
@@ -555,7 +554,6 @@ const FormTicketPage = () => {
   const [logo, setLogo] = useState([]);
   const [filesLogo, setFilesLogo] = useState("");
   const [checkboxDate, setCheckboxDate] = useState(false);
-  const [checkboxPrice, setCheckboxPrice] = useState(false);
   const [data, setData] = useState({
     isActive: true,
     title: "",
@@ -584,7 +582,6 @@ const FormTicketPage = () => {
     ],
   });
 
-  console.log(categoryDetails);
 
   const [eventType, setEventType] = useState([]);
   const [formPage, setFormPage] = useState(false);
@@ -662,11 +659,6 @@ const FormTicketPage = () => {
     console.log(ticketForm, "ini current form");
     setCurrentForm(ticketForm);
   };
-
-  console.log(lastFormId, "ini last form");
-  console.log(data.formId, "ini new form");
-  console.log(categoryDetails, "ini category");
-  console.log(data, "ini data");
 
   // const handleNext = () => {
   //   if (!detailTicket) {
@@ -810,7 +802,6 @@ const FormTicketPage = () => {
     });
   };
 
-  console.log(detailTicket);
 
   const handleCategoryChange = (categoryIndex, field, value) => {
     setCategoryDetails((prevCategoryDetails) => {
@@ -821,6 +812,19 @@ const FormTicketPage = () => {
   };
 
   const handleSubmit = async (type) => {
+
+
+    if (checkboxDate && data.dateStart >= data.dateEnd) {
+      // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
+      return toast({
+        title: "Deoapp.com",
+        description: "Date End must be greater than Date Start.",
+        status: "warning",
+        position: "top-right",
+        isClosable: true,
+      });
+    }
+
     try {
       if (type === "create") {
         const newDatas = {
@@ -1088,7 +1092,7 @@ const FormTicketPage = () => {
       setFilesLogo(newFiles);
     }
   };
-  useEffect(() => {}, [categoryDetails.length !== 0]);
+  useEffect(() => { }, [categoryDetails.length !== 0]);
   return (
     <>
       <Stack>
@@ -1108,7 +1112,7 @@ const FormTicketPage = () => {
         spacing={5}
         borderRadius="md"
         shadow={"md"}
-        my={5}
+        my={[1, 1, 5]}
       >
         <Stack>
           <Heading size="md">Event</Heading>
@@ -1116,6 +1120,7 @@ const FormTicketPage = () => {
           <FormControl isRequired isInvalid={isError.includes("title")}>
             <FormLabel>Event Name</FormLabel>
             <Input
+              placeholder="Event name ex: [Event] Seminar Entreprenerus 24/10/2023"
               onChange={(e) => {
                 setData({ ...data, title: e.target.value });
               }}
@@ -1125,6 +1130,7 @@ const FormTicketPage = () => {
           <FormControl isRequired isInvalid={isError.includes("description")}>
             <FormLabel>Description of Event</FormLabel>
             <Textarea
+              placeholder="Describe your event"
               onChange={(e) =>
                 setData({ ...data, description: e.target.value })
               }
@@ -1210,13 +1216,20 @@ const FormTicketPage = () => {
             isInvalid={isError.includes("price")}
           >
             <FormLabel>Price</FormLabel>
-            <Input
-              type="number"
-              value={data?.price}
-              onChange={(e) => {
-                setData({ ...data, price: e.target.value });
-              }}
-            />
+            <HStack>
+              <Text>Rp.</Text>
+              <Input
+                w={'auto'}
+                type="number"
+                value={data?.price}
+                onChange={(e) => {
+                  setData({ ...data, price: e.target.value });
+                }}
+              />
+              <Spacer />
+              <Text fontWeight={500}>Rp.{formatFrice(parseFloat(data.price || 0))}</Text>
+
+            </HStack>
           </FormControl>
 
           {/* <FormControl id="gtmId" isRequired>
@@ -1228,10 +1241,19 @@ const FormTicketPage = () => {
             />
           </FormControl> */}
 
-          <HStack align={"center"} gap="5">
+          <Stack>
+            <Text fontWeight={500}>Date List</Text>
+            <Checkbox
+              isChecked={checkboxDate}
+              onChange={(e) => setCheckboxDate(e.target.checked)}
+            >
+              Add Range Date
+            </Checkbox>
+          </Stack>
+
+          <SimpleGrid columns={[1, 1, 2]} align={"center"} spacing="5">
             <FormControl
               isRequired
-              w="50%"
               isInvalid={isError.includes("dateStart")}
             >
               <FormLabel>Date Start</FormLabel>
@@ -1243,14 +1265,9 @@ const FormTicketPage = () => {
                 value={data?.dateStart}
               />
             </FormControl>
-            <Checkbox
-              isChecked={checkboxDate}
-              onChange={(e) => setCheckboxDate(e.target.checked)}
-            >
-              Date End
-            </Checkbox>
+
             {checkboxDate && (
-              <FormControl isRequired w="50%">
+              <FormControl isRequired >
                 <FormLabel>Date End</FormLabel>
                 <Input
                   type="date"
@@ -1261,11 +1278,11 @@ const FormTicketPage = () => {
                 />
               </FormControl>
             )}
-          </HStack>
-          <HStack>
+
+          </SimpleGrid>
+          <SimpleGrid columns={[1, 1, 2]} spacing={5}>
             <FormControl
               isRequired
-              w="50%"
               isInvalid={isError.includes("time")}
             >
               <FormLabel>Time Start</FormLabel>
@@ -1277,7 +1294,6 @@ const FormTicketPage = () => {
             </FormControl>
             <FormControl
               isRequired
-              w="50%"
               isInvalid={isError.includes("timeEnd")}
             >
               <FormLabel>Time End</FormLabel>
@@ -1289,7 +1305,7 @@ const FormTicketPage = () => {
                 value={data?.timeEnd}
               />
             </FormControl>
-          </HStack>
+          </SimpleGrid>
           <FormControl id="Project" isRequired>
             <FormLabel>Project</FormLabel>
             <Input value={projectName} variant={"unstyled"} disabled />
@@ -1407,10 +1423,10 @@ const FormTicketPage = () => {
               Choose Form
             </Text>
             {dataForm?.length > 0 ? (
-              <SimpleGrid columns={3} spacing={3}>
+              <SimpleGrid columns={[1, 1, 3]} spacing={3}>
                 {dataForm?.map((form, i) => (
                   <Stack
-                    _hover={{ transform: "scale(1.02)", transition: "0.3s" }}
+                    _hover={{ transform: "scale(1.02)", transition: "0.3s", bgColor: 'blue.200' }}
                     shadow={"sm"}
                     key={i}
                     borderWidth="1px"
@@ -1418,7 +1434,7 @@ const FormTicketPage = () => {
                     cursor="pointer"
                     onClick={() => setData({ ...data, formId: form.id })}
                     rounded={5}
-                    borderColor={data.formId === form.id && "black"}
+                    borderColor={data.formId === form.id && "blue.500"}
                   >
                     <Text>{form.title}</Text>
                     {form.category.length > 0 &&
@@ -1446,8 +1462,8 @@ const FormTicketPage = () => {
 
           <Divider />
 
-          <Flex gap={5} py={5}>
-            <Box w={"50%"}>
+          <SimpleGrid columns={[1, 1, 2]} py={[1, 1, 5]} spacing={5}>
+            <Box >
               <Text fontWeight={"semibold"}>
                 Data Details To Be Displayed in PageView
               </Text>
@@ -1467,16 +1483,22 @@ const FormTicketPage = () => {
 
               <FormControl my={2} isRequired>
                 <FormLabel>Ticket Price</FormLabel>
-                <Input
-                  placeholder="Enter price..."
-                  value={categoryDetails[0]?.price}
-                  onChange={(e) =>
-                    setCategoryDetails({
-                      ...categoryDetails,
-                      price: e.target.value,
-                    })
-                  }
-                />
+                <HStack>
+                  <Text>Rp.</Text>
+                  <Input
+                    placeholder="Enter price..."
+                    value={categoryDetails[0]?.price}
+                    onChange={(e) =>
+                      setCategoryDetails({
+                        ...categoryDetails,
+                        price: e.target.value,
+                      })
+                    }
+                  />
+                  {/* <Spacer />
+                  <Text fontWeight={500}
+                  >Rp.{formatFrice(parseFloat(categoryDetails?.price || 0))}</Text> */}
+                </HStack>
               </FormControl>
 
               <FormControl isRequired>
@@ -1494,7 +1516,7 @@ const FormTicketPage = () => {
               </FormControl>
             </Box>
 
-            <Box w={"50%"}>
+            <Box>
               <Text fontWeight={"semibold"}>
                 Ticket Information Based On The Event Ticket
               </Text>
@@ -1517,19 +1539,23 @@ const FormTicketPage = () => {
 
               <FormControl my={2} isRequired>
                 <FormLabel>Price</FormLabel>
-                <Input
-                  placeholder="Enter price..."
-                  value={categoryDetails[0]?.tickets[0]?.price}
-                  onChange={(e) =>
-                    setCategoryDetails((prevCategory) => ({
-                      ...prevCategory,
-                      tickets: prevCategory.tickets.map((ticket) => ({
-                        ...ticket,
-                        price: e.target.value,
-                      })),
-                    }))
-                  }
-                />
+                <HStack>
+                  <Text>Rp.</Text>
+
+                  <Input
+                    placeholder="Enter price..."
+                    value={categoryDetails[0]?.tickets[0]?.price}
+                    onChange={(e) =>
+                      setCategoryDetails((prevCategory) => ({
+                        ...prevCategory,
+                        tickets: prevCategory.tickets.map((ticket) => ({
+                          ...ticket,
+                          price: e.target.value,
+                        })),
+                      }))
+                    }
+                  />
+                </HStack>
               </FormControl>
 
               <FormControl isRequired>
@@ -1567,16 +1593,14 @@ const FormTicketPage = () => {
                 />
               </FormControl>
             </Box>
-          </Flex>
+          </SimpleGrid>
 
           {params.type === "create" ? (
             <Flex align="end" justify={"end"}>
               <Button
-                // rightIcon={<FiChevronRight />}
-                variant={"outline"}
                 colorScheme="blue"
                 onClick={() => handleSubmit("create")}
-                // onClick={() => console.log("clicked")}
+              // onClick={() => console.log("clicked")}
               >
                 Create
               </Button>
@@ -1588,7 +1612,7 @@ const FormTicketPage = () => {
                 variant={"outline"}
                 colorScheme="blue"
                 onClick={() => handleSubmit("edit")}
-                // onClick={() => console.log("clicked")}
+              // onClick={() => console.log("clicked")}
               >
                 Save Changes
               </Button>

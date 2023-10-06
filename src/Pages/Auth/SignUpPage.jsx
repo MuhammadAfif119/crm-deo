@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  InputRightElement,
   Spacer,
   Spinner,
   Stack,
@@ -18,6 +19,8 @@ import {
   MdAccountCircle,
   MdOutlinePhoneIphone,
   MdLock,
+  MdVisibilityOff,
+  MdVisibility,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
@@ -36,9 +39,15 @@ function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const navigate = useNavigate();
   const toast = useToast();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSignup = () => {
     const displayName = name;
@@ -178,6 +187,7 @@ function SignUpPage() {
                   color={"blackAlpha.700"}
                   onChange={(e) => setName(e.target.value)}
                 />
+
               </InputGroup>
             </Stack>
 
@@ -196,13 +206,14 @@ function SignUpPage() {
                     base: "100%",
                     md: "100%",
                   }}
-                  placeholder="Number phone"
+                  placeholder="Phone number"
                   fontSize={"sm"}
                   type="number"
                   bgColor={"white"}
                   color={"blackAlpha.700"}
                   onChange={(e) => setNohp(e.target.value)}
                 />
+
               </InputGroup>
             </Stack>
 
@@ -233,8 +244,8 @@ function SignUpPage() {
             <Stack alignItems="center">
               <InputGroup
                 w={{
-                  base: "100%",
-                  md: "285",
+                  base: "90%",
+                  md: "275",
                 }}
               >
                 <InputLeftAddon children={<MdLock size={24} color="black" />} />
@@ -245,19 +256,36 @@ function SignUpPage() {
                   }}
                   placeholder="Password"
                   fontSize={"sm"}
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   bgColor={"white"}
                   color={"blackAlpha.700"}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <InputRightElement>
+                  {showPassword ? (
+                    <MdVisibilityOff
+                      size={20}
+                      color="black"
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <MdVisibility
+                      size={20}
+                      color="black"
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </InputRightElement>
               </InputGroup>
             </Stack>
 
             <Stack alignItems="center">
               <InputGroup
                 w={{
-                  base: "100%",
-                  md: "285",
+                  base: "90%",
+                  md: "275",
                 }}
               >
                 <InputLeftAddon children={<MdLock size={24} color="black" />} />
@@ -269,11 +297,28 @@ function SignUpPage() {
                   placeholder="Confirm password"
                   fontSize={"sm"}
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   bgColor={"white"}
                   color={"blackAlpha.700"}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
+                <InputRightElement>
+                  {showPassword ? (
+                    <MdVisibilityOff
+                      size={20}
+                      color="black"
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <MdVisibility
+                      size={20}
+                      color="black"
+                      onClick={togglePasswordVisibility}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </InputRightElement>
               </InputGroup>
             </Stack>
 

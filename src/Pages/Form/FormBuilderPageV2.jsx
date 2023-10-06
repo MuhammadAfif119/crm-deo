@@ -66,21 +66,18 @@ function generateHTML(formFields) {
       case "file":
         html += `
             <div style="margin-bottom: 10px;">
-              <label style="display: block; font-weight: bold;" for="${name}">${label}${
-          isRequired ? " *" : ""
-        }</label>
-              <input type="${type}" name="${name}" placeholder="${placeholder}" style="width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"   ${
-          isRequired ? "required" : ""
-        }/>
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? " *" : ""
+          }</label>
+              <input type="${type}" name="${name}" placeholder="${placeholder}" style="width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"   ${isRequired ? "required" : ""
+          }/>
             </div>`;
         break;
 
       case "textarea":
         html += `
             <div style="margin-bottom: 10px;">
-              <label style="display: block; font-weight: bold;" for="${name}">${label}${
-          isRequired ? " *" : ""
-        }</label>
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? " *" : ""
+          }</label>
               <textarea name="${name}" placeholder="${placeholder}" style="width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
             </div>`;
         break;
@@ -88,9 +85,8 @@ function generateHTML(formFields) {
       case "select":
         html += `
             <div style="margin-bottom: 10px;">
-              <label style="display: block; font-weight: bold;" for="${name}">${label}${
-          isRequired ? " *" : ""
-        }</label>
+              <label style="display: block; font-weight: bold;" for="${name}">${label}${isRequired ? " *" : ""
+          }</label>
               <select name="${name}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                 <option value="" disabled selected>Pilih opsi</option>`;
         options.forEach((option) => {
@@ -306,7 +302,7 @@ function FormBuilderPage() {
   useEffect(() => {
     getDataMembership();
 
-    return () => {};
+    return () => { };
   }, []);
 
   const handleInputChange = (event) => {
@@ -377,9 +373,8 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
-              updateData.phoneNumber
-            }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber
+              }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
@@ -407,9 +402,8 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
-              updateData.phoneNumber
-            }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber
+              }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
@@ -785,7 +779,7 @@ function FormBuilderPage() {
   useEffect(() => {
     getDataForm();
 
-    return () => {};
+    return () => { };
   }, []);
 
   const handlePaymentMethodChange = (option) => {
@@ -801,6 +795,7 @@ function FormBuilderPage() {
             <Checkbox
               key={option}
               value={option}
+              isDisabled={option === "midtrans" && true}
               isChecked={selectedPaymentMethod === option}
               onChange={() => handlePaymentMethodChange(option)}
               textTransform="capitalize"
@@ -924,7 +919,10 @@ function FormBuilderPage() {
             borderRadius="md"
             shadow={"md"}
           >
+            <Text fontWeight={500} color='red.500' textTransform={'uppercase'}>* option</Text>
+
             <HStack>
+
               <Heading size={"md"}>Form Costumize</Heading>
               <Spacer />
               <Switch
@@ -1059,6 +1057,7 @@ function FormBuilderPage() {
           shadow={"md"}
         >
           <Stack>
+            <Text fontWeight={500} color='red.500' textTransform={'uppercase'}>* preview</Text>
             <Heading size={"md"}>Data penerima: </Heading>
           </Stack>
           <Stack spacing={3} p={[1, 1, 5]}>

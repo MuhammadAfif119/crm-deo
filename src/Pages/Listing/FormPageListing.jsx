@@ -19,7 +19,9 @@ import {
   Image,
   useToast,
   Container,
-  Flex, // Tambahkan import untuk Checkbox
+  Flex,
+  Spacer,
+  Center, // Tambahkan import untuk Checkbox
 } from "@chakra-ui/react";
 import { MdDelete, MdOutlinePermMedia } from "react-icons/md";
 import ViewPageListing from "./ViewPageListing";
@@ -51,6 +53,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import moment from "moment";
+import { formatFrice } from "../../Utils/numberUtil";
 
 function FormPageListing() {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -87,7 +90,6 @@ function FormPageListing() {
 
   const companyId = globalState.currentCompany;
 
-  const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
 
   const getProject = () => {
     const res = globalState?.projects?.find(
@@ -204,6 +206,19 @@ function FormPageListing() {
     e.preventDefault();
     setLoading(true);
 
+    if (checkPrice && priceEnd <= price) {
+      // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
+      return toast({
+        title: "Deoapp.com",
+        description: "Price Start must be lower than Price End.",
+        status: "warning",
+        position: "top-right",
+        isClosable: true,
+      });
+
+
+    }
+
     const newListing = {
       title: title,
       description: description,
@@ -239,6 +254,7 @@ function FormPageListing() {
       );
       newListing.logo = resImage;
     }
+
     const collectionName = "listings";
     const data = newListing;
 
@@ -380,6 +396,19 @@ function FormPageListing() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (checkPrice && priceEnd <= price) {
+      // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
+      return toast({
+        title: "Deoapp.com",
+        description: "Price Start must be lower than Price End.",
+        status: "warning",
+        position: "top-right",
+        isClosable: true,
+      });
+
+
+    }
 
     const newListing = {
       title: title,
@@ -556,7 +585,8 @@ function FormPageListing() {
         shadow={"md"}
         mb={2}
       >
-        <VStack spacing={4} align={"left"} w="100%">
+        <Stack spacing={6} align={"left"} w="100%">
+
           <Flex justify={"space-between"} w="full" gap={5}>
             <FormControl id="image" isRequired>
               <HStack>
@@ -638,17 +668,21 @@ function FormPageListing() {
             <Input
               type="text"
               w="100%"
+              placeholder="Your title listing"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </FormControl>
+
           <FormControl id="description" isRequired>
             <FormLabel>Description:</FormLabel>
             <Textarea
+              placeholder="Describe your listing"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </FormControl>
+
           <FormControl id="category" isRequired>
             <FormLabel>Category</FormLabel>
             <Box width={"full"}>
@@ -656,6 +690,7 @@ function FormPageListing() {
                 isClearable={false}
                 value={selectedCategory.filter((option) => option.value)}
                 isMulti
+                placeholder='Select or Create new ...'
                 name="db-react-select"
                 options={categoryData}
                 className="react-select"
@@ -670,29 +705,54 @@ function FormPageListing() {
             <FormLabel>Project</FormLabel>
             <Input value={projectName} variant={"unstyled"} disabled />
           </FormControl>
-          <HStack w="100%" gap="5">
-            <FormControl w="40%" id="price" isRequired>
-              <FormLabel>Price Start</FormLabel>
-              <Input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </FormControl>
+
+          <Stack>
+            <Text fontWeight={500}>Price List</Text>
             <Checkbox
               isChecked={checkPrice}
               onChange={(e) => setCheckPrice(e.target.checked)}
             >
               Add Range Price
             </Checkbox>
-            {checkPrice && (
-              <FormControl w="40%" id="price" isRequired>
-                <FormLabel>Price End</FormLabel>
+          </Stack>
+
+          <HStack w="100%" gap="2">
+            <FormControl id="price" isRequired>
+              <FormLabel>Price Start</FormLabel>
+              <HStack alignItems={'center'} justifyContent='center' >
+                <Text>Rp.</Text>
                 <Input
+                  w={'auto'}
                   type="number"
-                  value={priceEnd}
-                  onChange={(e) => setPriceEnd(e.target.value)}
+                  size={'sm'}
+                  value={(price)}
+                  onChange={(e) => setPrice(e.target.value)}
                 />
+                <Spacer />
+                <Text fontWeight={500}>Rp.{formatFrice(parseFloat(price || 0))}</Text>
+              </HStack>
+            </FormControl>
+
+            <Center height='50px'>
+              <Divider orientation='vertical' fontWeight={'bold'} color='black' />
+            </Center>
+
+
+            {checkPrice && (
+              <FormControl id="price" isRequired>
+                <FormLabel>Price End</FormLabel>
+                <HStack>
+                  <Text>Rp.</Text>
+                  <Input
+                    size={'sm'}
+                    w={'auto'}
+                    type="number"
+                    value={priceEnd}
+                    onChange={(e) => setPriceEnd(e.target.value)}
+                  />
+                  <Spacer />
+                  <Text fontWeight={500} >Rp.{formatFrice(parseFloat(priceEnd || 0))}</Text>
+                </HStack>
               </FormControl>
             )}
           </HStack>
@@ -701,41 +761,53 @@ function FormPageListing() {
             <FormLabel>Contact Person:</FormLabel>
             <Input
               type="text"
+              placeholder="Phone number that the customer will contact, ex: 6287887123456"
               value={contactPerson}
               onChange={(e) => setContactPerson(e.target.value)}
             />
           </FormControl>
-          {details.map((detail, index) => (
-            <HStack key={index} align={"center"} justify={"center"}>
-              <FormControl id={`detail-key-${index}`}>
-                <FormLabel>Key:</FormLabel>
-                <Input
-                  type="text"
-                  value={detail.key}
-                  onChange={(e) =>
-                    handleDetailChange(index, e.target.value, detail.value)
-                  }
-                />
-              </FormControl>
-              <FormControl id={`detail-value-${index}`}>
-                <FormLabel>Value:</FormLabel>
-                <Input
-                  type="text"
-                  value={detail.value}
-                  onChange={(e) =>
-                    handleDetailChange(index, detail.key, e.target.value)
-                  }
-                />
-              </FormControl>
-              <Box pt="7">
-                <IconButton
-                  icon={<MdDelete />}
-                  aria-label="Remove Detail"
-                  onClick={() => handleRemoveDetail(index)}
-                />
-              </Box>
-            </HStack>
-          ))}
+
+          <Grid gap={3} templateColumns={{ base: "1fr", md: "1fr 4fr" }}>
+            <Stack w={'100%'} >
+              <Text fontWeight={500} >Decribe your Detail Product :</Text>
+            </Stack>
+            <Stack>
+              {details.map((detail, index) => (
+                <HStack key={index} align={"center"} justify={"center"}>
+
+                  <FormControl id={`detail-key-${index}`}>
+                    <FormLabel>Key:</FormLabel>
+                    <Input
+                      type="text"
+                      placeholder="Title detail, ex: location"
+                      value={detail.key}
+                      onChange={(e) =>
+                        handleDetailChange(index, e.target.value, detail.value)
+                      }
+                    />
+                  </FormControl>
+                  <FormControl id={`detail-value-${index}`}>
+                    <FormLabel>Value:</FormLabel>
+                    <Input
+                      placeholder="Value detail, ex: Jakarta selatan"
+                      type="text"
+                      value={detail.value}
+                      onChange={(e) =>
+                        handleDetailChange(index, detail.key, e.target.value)
+                      }
+                    />
+                  </FormControl>
+                  <Box pt="7">
+                    <IconButton
+                      icon={<MdDelete />}
+                      aria-label="Remove Detail"
+                      onClick={() => handleRemoveDetail(index)}
+                    />
+                  </Box>
+                </HStack>
+              ))}
+            </Stack>
+          </Grid>
 
           <Button
             variant={"outline"}
@@ -744,6 +816,7 @@ function FormPageListing() {
           >
             Add Detail
           </Button>
+
           <FormControl id="isActive">
             <FormLabel>Is Active:</FormLabel>
             <Select
@@ -754,6 +827,7 @@ function FormPageListing() {
               <option value="false">False</option>
             </Select>
           </FormControl>
+
           <FormControl id="modules">
             <FormLabel>Modules:</FormLabel>
             <Checkbox
@@ -784,7 +858,6 @@ function FormPageListing() {
             !loading ? (
               <Flex align={"right"} justify={"right"}>
                 <Button
-                  variant={"outline"}
                   colorScheme="blue"
                   onClick={handleSubmit}
                 >
@@ -795,7 +868,6 @@ function FormPageListing() {
               <Flex align={"right"} justify={"right"}>
                 <Button
                   isLoading
-                  variant={"outline"}
                   colorScheme="blue"
                   isDisabled
                 >
@@ -805,18 +877,18 @@ function FormPageListing() {
             )
           ) : !loading ? (
             <Button
-              variant={"outline"}
               colorScheme="blue"
               onClick={handleEditSubmit}
             >
               Edit Listing
             </Button>
           ) : (
-            <Button isLoading variant={"outline"} colorScheme="blue" isDisabled>
+            <Button isLoading colorScheme="blue" isDisabled>
               Edit Listing
             </Button>
           )}
-        </VStack>
+
+        </Stack>
       </Container>
     </>
   );
