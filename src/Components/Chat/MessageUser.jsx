@@ -134,41 +134,50 @@ function MessageUser({ id, companyId, companyName, notif }) {
       media: value,
     };
 
-    try {
-      const docID = await addDocumentFirebase(collectionName, data, companyId);
-      console.log("ID Dokumen Baru:", docID);
-      if (docID) {
-        const collectionNameFront = "messages";
-        const docName = id;
-        const data = {
-          lastConversation: new Date(),
-          lastChat: chat,
-          adminNotification: increment(1),
-          userNotification: 0,
-        };
+    console.log(value, "ini value");
+    console.log(chat, "ini chat");
 
-        try {
-          const result = await setDocumentFirebase(
-            collectionNameFront,
-            docName,
-            data
-          );
-          setChat("");
-          setValue("");
-        } catch (error) {
-          console.log("Terjadi kesalahan:", error);
-        }
-      }
+    // try {
+    //   const docID = await addDocumentFirebase(collectionName, data, companyId);
+    //   console.log("ID Dokumen Baru:", docID);
+    //   if (docID) {
+    //     const collectionNameFront = "messages";
+    //     const docName = id;
+    //     const data = {
+    //       lastConversation: new Date(),
+    //       lastChat: chat,
+    //       adminNotification: increment(1),
+    //       userNotification: 0,
+    //     };
 
-      //   console.log(result);
+    //     try {
+    //       const result = await setDocumentFirebase(
+    //         collectionNameFront,
+    //         docName,
+    //         data
+    //       );
 
-      // setUserNotif(0);
-    } catch (error) {
-      console.log("Terjadi kesalahan:", error);
-      setValue("");
-    }
+    //       setTimeout(() => {
+    //         setChat("");
+    //         setValue("");
+    //       }, 100);
+    //       // setChat("");
+    //       // setValue("");
+    //     } catch (error) {
+    //       console.log("Terjadi kesalahan:", error);
+    //     }
+    //   }
+    //   setValue("");
 
-    setValue("");
+    //   //   console.log(result);
+
+    //   // setUserNotif(0);
+    // } catch (error) {
+    //   console.log("Terjadi kesalahan:", error);
+    //   setValue("");
+    // }
+
+    // setValue("");
   };
 
   const renderItemMessage = (item) => {

@@ -22,6 +22,7 @@ import {
   InputRightAddon,
   useClipboard,
   Tooltip,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -153,10 +154,9 @@ const HomePageWelcome = () => {
 
   const handleCreateDomain = async () => {
     const data = {
-      domain: [dataDomain.domain, (dataDomain.domain).slice(0, -5)],
+      domain: [dataDomain.domain, dataDomain.domain.slice(0, -5)],
       companyId: globalState?.currentCompany,
     };
-
 
     try {
       setIsLoading(true);
@@ -180,7 +180,7 @@ const HomePageWelcome = () => {
           "domains",
           globalState.currentProject,
           "domain",
-          [dataDomain.domain,  (dataDomain.domain).slice(0, -5)]
+          [dataDomain.domain, dataDomain.domain.slice(0, -5)]
         );
 
         toast({
@@ -232,6 +232,20 @@ const HomePageWelcome = () => {
     });
   };
 
+  const handleSpacebarPress = (e) => {
+    if (e.key === " ") {
+      e.preventDefault(); // Prevents the space character from being entered
+
+      toast({
+        position: "top",
+        title: "Deoapp CRM",
+        description: "Domain name should not contain space character",
+        status: "warning",
+        duration: 800,
+      });
+    }
+  };
+
   useEffect(() => {
     getDataProject();
     getDataDomain();
@@ -242,7 +256,7 @@ const HomePageWelcome = () => {
 
   return (
     <Box>
-      <Heading>Welcome to Deoapp</Heading>
+      <Heading align={"center"}>Welcome to Deoapp</Heading>
 
       {globalState.companies?.length === 0 || globalState.projects === 0 ? (
         <Stack my={5} py={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
@@ -256,16 +270,30 @@ const HomePageWelcome = () => {
           </Box>
         </Stack>
       ) : (
-        <Stack my={5} py={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
-          <Text align={"center"} fontSize={"sm"}>
+        <Stack my={5} p={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
+          <Text fontWeight={500} align={"center"} fontSize={"sm"}>
             You have {globalState.companies.length} Company and{" "}
             {globalState?.projects?.length} Project
           </Text>
-          {/* <Box fontSize={"sm"} align={"center"}>
-            <Button size={"sm"} onClick={modalCreateCompany.onOpen}>
-              Tambah Company disini
-            </Button>
-          </Box> */}
+
+          <SimpleGrid columns={3} spacing={3} py={4}>
+            {globalState.companies?.map((company, i) => (
+              <Stack
+                align={"center"}
+                border={"1px"}
+                borderColor={"gray.50"}
+                shadow={"md"}
+                key={company.id}
+                p={2}
+                borderRadius={"md"}
+              >
+                <Text fontWeight={500} textTransform={"capitalize"}>
+                  {company.name}
+                </Text>
+                <Text fontSize={13}>Total User: {company.users?.length}</Text>
+              </Stack>
+            ))}
+          </SimpleGrid>
         </Stack>
       )}
 
@@ -529,6 +557,7 @@ const HomePageWelcome = () => {
               </FormLabel>
               <InputGroup>
                 <Input
+                  onKeyDown={handleSpacebarPress}
                   onChange={(e) =>
                     setDataDomain({
                       ...dataDomain,

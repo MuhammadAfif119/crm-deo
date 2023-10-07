@@ -15,6 +15,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Radio,
+  RadioGroup,
   Select,
   SimpleGrid,
   Spacer,
@@ -44,6 +46,7 @@ import DatePicker from "../../Components/DatePicker/DatePicker";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FcPlus } from "react-icons/fc";
+import { clientTypessense } from "../../Api/Typesense";
 
 const ContactsPage = () => {
   const globalState = useUserStore();
@@ -153,6 +156,23 @@ const ContactsPage = () => {
     }
   };
 
+  // const handleTypesenseSearch = (q) => {
+  // 	const searchParameters = {
+  // 		q: q,
+  // 		query_by: "name",
+  // 		filter_by: `formId: ${formId} && column:${column} `,
+  // 		sort_by: "_text_match:desc"
+  // 	};
+  // 	clientTypessense
+  // 		.collections("contacts")
+  // 		.documents()
+  // 		.search(searchParameters)
+  // 		.then((x) => {
+  // 			const newData = x.hits.map((y) => { return { ...y.document } })
+  // 			setColumnsData(newData)
+  // 		});
+  // }
+
   const handleLoadMore = () => {
     setCurrentPage((prev) => prev + 1); // Pindahkan ke halaman berikutnya saat tombol "Load More" diklik
   };
@@ -186,6 +206,13 @@ const ContactsPage = () => {
     const { name, value } = e.target;
     setDataNew((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleChangeRadioButton = (value) => {
+    console.log(value);
+    setDataNew({ ...dataNew, contactType: value });
+  };
+
+  console.log(dataNew, "ini data new");
 
   const handleDateRangeChange = (dateRange) => {
     setSelectedDateRange(dateRange);
@@ -243,7 +270,6 @@ const ContactsPage = () => {
       color: "gray.500",
     },
   };
-
 
   return (
     <Stack p={[1, 1, 5]}>
@@ -457,6 +483,7 @@ const ContactsPage = () => {
                     <Text>Phone</Text>
                     <Input
                       name="phoneNumber"
+                      type="number"
                       onChange={handleChange}
                       placeholder="Phone Number"
                     />
@@ -464,16 +491,27 @@ const ContactsPage = () => {
 
                   <Stack>
                     <Text>Contact Type</Text>
-                    <Select
+                    <HStack>
+                      <RadioGroup
+                        name="contactType"
+                        onChange={handleChangeRadioButton}
+                      >
+                        <Stack direction="row" spacing={5}>
+                          <Radio value={"leads"}>Lead</Radio>
+                          <Radio value={"costumer"}>Costumer</Radio>
+                        </Stack>
+                      </RadioGroup>
+                      {/* <Select
                       onChange={handleChange}
                       name="contactType"
                       variant="outline"
                       placeholder="Content type"
                       fontWeight="normal"
-                    >
+                      >
                       <option value={"leads"}>Lead</option>
                       <option value={"costumer"}>Costumer</option>
-                    </Select>
+                    </Select> */}
+                    </HStack>
                   </Stack>
 
                   {/* <Stack>

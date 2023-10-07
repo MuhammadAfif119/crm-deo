@@ -77,7 +77,6 @@ function ChatPage() {
           ...doc.data(),
         }));
         setChatList(queryData);
-        console.log(queryData, "ini data chat");
       });
     } catch (error) {
       console.log(error.message);
@@ -165,8 +164,12 @@ function ChatPage() {
           userNotification: increment(1),
         });
       }
+
+      setInputChat("");
     } catch (error) {
       console.log(error);
+    } finally {
+      setInputChat("");
     }
   };
 
@@ -404,6 +407,7 @@ function ChatPage() {
                       size={"sm"}
                       placeholder="text..."
                       pos={"relative"}
+                      value={inputChat}
                       onChange={(e) => setInputChat(e.target.value)}
                       onKeyDown={(event) => {
                         event.key === "Enter" ? handleEnter() : <></>;

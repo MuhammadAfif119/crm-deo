@@ -41,6 +41,7 @@ import {
   updateDocumentFirebase,
   updateProfileFirebase,
   UploadBlob,
+  uploadFile,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { auth } from "../../Config/firebase";
@@ -57,11 +58,17 @@ function HomePageV2() {
 
   const [linkList, setLinkList] = useState([]);
 
+  const { onOpen, onClose, isOpen } = useDisclosure();
+
   const [pageData, setPageData] = useState();
-  const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
   const [newFeature, setNewFeature] = useState();
   const [bannerList, setBannerList] = useState([]);
   const [progress, setProgress] = useState(0);
+
+  const [bannerInput, setBannerInput] = useState();
+  const [imageLogoDark, setImageLogoDark] = useState();
+  const [imageLogoLight, setImageLogoLight] = useState();
+  const [imageFavicon, setImageFavicon] = useState();
 
   const [contactForm, setContactForm] = useState({
     whatsappContact: "",
@@ -76,6 +83,8 @@ function HomePageV2() {
 
   const [whatsappCheck, setWhatsappCheck] = useState(false);
   const [businessCheck, setBusinessCheck] = useState(false);
+  const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
+
   const modalAddFeatures = useDisclosure();
   const [color, setColor] = useState("");
 
@@ -92,8 +101,6 @@ function HomePageV2() {
   // pageData?.features?.includes("ticket")
   const [courseUsed, setCourseUsed] = useState();
   // pageData?.features?.includes("course")
-
-  console.log(globalState.currentProject);
 
   const getDataProject = () => {
     const searchProject = globalState?.projects?.find(
@@ -120,7 +127,6 @@ function HomePageV2() {
       "domains",
       globalState.currentProject
     );
-    console.log(res, "ini domain");
     setDomainPage(res);
   };
 
@@ -214,9 +220,6 @@ function HomePageV2() {
     }
   };
 
-  // console.log(pageData, "xxxx");
-  // console.log(bannerList, "ini baner list");
-
   const handleSaveModal = (active) => {
     setPageData({
       ...pageData,
@@ -225,7 +228,11 @@ function HomePageV2() {
         [active]: color,
       },
     });
+
+    onClose();
   };
+
+  console.log(pageData, "ini pageData");
 
   const handleAddFeature = async () => {
     const existingFeatures = Array.isArray(pageData.features)
@@ -282,73 +289,158 @@ function HomePageV2() {
     console.log(resultUpdate, "logs updated");
   };
 
-  // console.log(formData, "xx");
-  console.log(contactForm, "xxx");
+  const handleUploadLogoLight = async (event) => {
+    const { files: newFiles } = event.target;
 
-  const handleUploadLogoLight = async (e) => {
-    console.log(e.target.files[0]);
-    const result = await UploadBlob(
-      e.target.files[0],
-      "pages",
-      globalState.uid || "xx",
-      e.target.files[0].name,
-      setProgress
-    );
+    if (event.target.files[0]) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          // setFiles(newFileArray);
+          setImageLogoLight(newFileArray);
+          console.log(reader.result, "ini reader result");
+          console.log(newFileArray, "ini new files");
+        };
+      }
 
-    setPageData({
-      ...pageData,
-      logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
-    });
+      const result = await UploadBlob(
+        event.target.files[0],
+        "pages",
+        globalState.uid || "xx",
+        event.target.files[0].name,
+        setProgress
+      );
+
+      const updatePageData = {
+        ...pageData,
+        logoLight: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+      };
+
+      setPageData(updatePageData);
+    }
   };
 
-  const handleUploadLogoDark = async (e) => {
-    console.log(e.target.files[0]);
-    const result = await UploadBlob(
-      e.target.files[0],
-      "pages",
-      globalState.uid || "xx",
-      e.target.files[0].name,
-      setProgress
-    );
+  const handleUploadLogoDark = async (event) => {
+    const { files: newFiles } = event.target;
 
-    setPageData({
-      ...pageData,
-      logoDark: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
-    });
+    if (event.target.files[0]) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          // setFiles(newFileArray);
+          setImageLogoDark(newFileArray);
+          console.log(reader.result, "ini reader result");
+          console.log(newFileArray, "ini new files");
+        };
+      }
+
+      const result = await UploadBlob(
+        event.target.files[0],
+        "pages",
+        globalState.uid || "xx",
+        event.target.files[0].name,
+        setProgress
+      );
+
+      const updatePageData = {
+        ...pageData,
+        logoDark: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+      };
+
+      setPageData(updatePageData);
+    }
   };
 
-  const handleUploadFavicon = async (e) => {
-    console.log(e.target.files[0]);
-    const result = await UploadBlob(
-      e.target.files[0],
-      "pages",
-      globalState.uid || "xx",
-      e.target.files[0].name,
-      setProgress
-    );
+  const handleUploadFavicon = async (event) => {
+    const { files: newFiles } = event.target;
 
-    setPageData({
-      ...pageData,
-      favicon: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
-    });
+    if (event.target.files[0]) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          // setFiles(newFileArray);
+          setImageFavicon(newFileArray);
+          console.log(reader.result, "ini reader result");
+          console.log(newFileArray, "ini new files");
+        };
+      }
+
+      const result = await UploadBlob(
+        event.target.files[0],
+        "pages",
+        globalState.uid || "xx",
+        event.target.files[0].name,
+        setProgress
+      );
+
+      const updatePageData = {
+        ...pageData,
+        favicon: result.url.replace(/(\.[^.\/\\]+)$/i, "_800x800$1"),
+      };
+
+      setPageData(updatePageData);
+    }
   };
 
   const handleUploadBanner = async (file, index) => {
     console.log("uploading for banner", index);
+    const { files: newFiles } = file;
     setUploadingOnIndex(index);
-    const result = await UploadBlob(
-      file,
-      "pages",
-      globalState.uid || "xx",
-      `banner_${file.name}`,
-      setProgress
-    );
-    const newBannerList = [...bannerList];
-    newBannerList[index].image = result.url.replace(
-      /(\.[^.\/\\]+)$/i,
-      "_800x800$1"
-    );
-    if (result) setUploadingOnIndex(null);
+
+    if (file) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          // setFiles(newFileArray);
+          setBannerInput(newFileArray);
+          console.log(reader.result, "ini reader result");
+          console.log(newFileArray, "ini new files");
+        };
+      }
+
+      const result = await UploadBlob(
+        file.files[0],
+        "pages",
+        globalState.uid || "xx",
+        `banner_${file.files[0].name}`,
+        setProgress
+      );
+      const newBannerList = [...bannerList];
+      newBannerList[index].image = result.url.replace(
+        /(\.[^.\/\\]+)$/i,
+        "_800x800$1"
+      );
+      console.log(newBannerList);
+      if (result) setUploadingOnIndex(null);
+    }
   };
 
   // const handleInputBanner = (value, index) => {
@@ -379,6 +471,17 @@ function HomePageV2() {
     } else {
       arr = [];
       setBannerList([...arr]);
+    }
+  };
+
+  const handleDeleteCurrentBanner = async (i) => {
+    let newArr = pageData.banner;
+
+    if (newArr.length > 0) {
+      newArr.splice(i, 1);
+
+      console.log(newArr);
+      setPageData({ ...pageData, banner: newArr });
     }
   };
 
@@ -734,6 +837,9 @@ function HomePageV2() {
                           </Box>
                         ) : submenu.name === "Theme Layout" ? (
                           <ThemeSettingForm
+                            onOpen={onOpen}
+                            onClose={onClose}
+                            isOpen={isOpen}
                             data={pageData}
                             setData={setPageData}
                             color={color}
@@ -753,6 +859,13 @@ function HomePageV2() {
                             handleInputBanner={handleInputBanner}
                             handleUploadBanner={handleUploadBanner}
                             bannerList={bannerList}
+                            logoInputDark={imageLogoDark}
+                            logoInputLight={imageLogoLight}
+                            logoInputFavicon={imageFavicon}
+                            bannerInput={bannerInput}
+                            handleDeleteCurrentBanner={
+                              handleDeleteCurrentBanner
+                            }
                             // handleChangeBrandColor={handleOpenModal}
                           />
                         ) : null}

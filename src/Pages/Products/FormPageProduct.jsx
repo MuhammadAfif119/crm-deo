@@ -48,6 +48,7 @@ import {
   uploadFile,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
+import { formatFrice } from "../../Utils/numberUtil";
 import BackButtons from "../../Components/Buttons/BackButtons";
 import {
   useLocation,
@@ -74,7 +75,7 @@ function FormPageProduct() {
   const [category, setCategory] = useState([]);
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [weight, setWeight] = useState("");
+  const [weight, setWeight] = useState(1000);
   const [files, setFiles] = useState([]); // Initialize with an empty array
   const [filesImage, setFilesImage] = useState([]);
   const [details, setDetails] = useState([]);
@@ -96,8 +97,8 @@ function FormPageProduct() {
   const [lastFormId, setLastFormId] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
   const [detailProduct, setDetailProduct] = useState(false);
-  const [stock, setStock] = useState();
-  const [volume, setVolume] = useState();
+  const [stock, setStock] = useState(0);
+  const [volume, setVolume] = useState(0);
   const [dataForm, setDataForm] = useState();
   const globalState = useUserStore();
   const toast = useToast();
@@ -308,7 +309,7 @@ function FormPageProduct() {
       modules: modules.map((module) => module.toLowerCase()),
     };
 
-    console.log(formId);
+    console.log(newListing, "ini data");
 
     if (filesImage[0]) {
       const resImage = await uploadFile(
@@ -724,7 +725,6 @@ function FormPageProduct() {
     loadOptionsDB(categoryList);
   }, [categoryList.length, selectedCategory.length]);
 
-  console.log(isActive);
   return (
     <>
       <Stack>
@@ -918,10 +918,10 @@ function FormPageProduct() {
               <FormLabel>Category</FormLabel>
               <Box width={"full"}>
                 <CreatableSelece
-                  placeholder={"Select or Create New"}
                   isClearable={false}
                   value={selectedCategory.filter((option) => option.value)}
                   isMulti
+                  placeholder="Select or Create new ..."
                   name="db-react-select"
                   options={categoryData}
                   className="react-select"
@@ -936,40 +936,53 @@ function FormPageProduct() {
               <FormLabel>Project</FormLabel>
               <Input value={projectName} variant={"unstyled"} disabled />
             </FormControl>
-            <Flex w="100%" gap="5">
-              <FormControl w="40%" id="price" isRequired>
+            <HStack w="100%" gap="2">
+              <FormControl id="price" isRequired>
                 <FormLabel>Price Start</FormLabel>
-                <Input
-                  as={NumericFormat}
-                  thousandSeparator={","}
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                />
-              </FormControl>
-              <Checkbox
-                isChecked={checkPrice}
-                onChange={(e) => setCheckPrice(e.target.checked)}
-              >
-                Add Range Price
-              </Checkbox>
-              {checkPrice && (
-                <FormControl w="40%" id="price" isRequired>
-                  <FormLabel>Price End</FormLabel>
+                <HStack alignItems={"center"} justifyContent="center">
+                  <Text>Rp.</Text>
                   <Input
-                    borderColor={validationPrice ? "red" : null}
-                    as={NumericFormat}
-                    thousandSeparator={","}
-                    value={priceEnd}
-                    onChange={(e) => handlePriceEnd(e.target.value)}
+                    w={"auto"}
+                    type="number"
+                    size={"sm"}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                   />
-                  {validationPrice && (
-                    <Text py={2} color={"red"} fontSize={"12"}>
-                      {validationPrice}
+                  <Spacer />
+                  <Text fontWeight={500}>
+                    Rp.{formatFrice(parseFloat(price || 0))}
+                  </Text>
+                </HStack>
+              </FormControl>
+
+              <Center height="50px">
+                <Divider
+                  orientation="vertical"
+                  fontWeight={"bold"}
+                  color="black"
+                />
+              </Center>
+
+              {checkPrice && (
+                <FormControl id="price" isRequired>
+                  <FormLabel>Price End</FormLabel>
+                  <HStack>
+                    <Text>Rp.</Text>
+                    <Input
+                      size={"sm"}
+                      w={"auto"}
+                      type="number"
+                      value={priceEnd}
+                      onChange={(e) => setPriceEnd(e.target.value)}
+                    />
+                    <Spacer />
+                    <Text fontWeight={500}>
+                      Rp.{formatFrice(parseFloat(priceEnd || 0))}
                     </Text>
-                  )}
+                  </HStack>
                 </FormControl>
               )}
-            </Flex>
+            </HStack>
 
             <HStack>
               <FormControl id="weight" isRequired>
@@ -1216,37 +1229,23 @@ function FormPageProduct() {
             {!idProject ? (
               !loading ? (
                 <Flex align={"right"} justify={"right"}>
-                  <Button
-                    colorScheme="blue"
-                    onClick={handleSubmit}
-                  >
+                  <Button colorScheme="blue" onClick={handleSubmit}>
                     Add Product
                   </Button>
                 </Flex>
               ) : (
                 <Flex align={"right"} justify={"right"}>
-                  <Button
-                    isLoading
-                    colorScheme="blue"
-                    isDisabled
-                  >
+                  <Button isLoading colorScheme="blue" isDisabled>
                     Add Product
                   </Button>
                 </Flex>
               )
             ) : !loading ? (
-              <Button
-                colorScheme="blue"
-                onClick={handleEditSubmit}
-              >
+              <Button colorScheme="blue" onClick={handleEditSubmit}>
                 Edit Listing Product
               </Button>
             ) : (
-              <Button
-                isLoading
-                colorScheme="blue"
-                isDisabled
-              >
+              <Button isLoading colorScheme="blue" isDisabled>
                 Edit Listing Product
               </Button>
             )}

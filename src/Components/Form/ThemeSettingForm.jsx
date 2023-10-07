@@ -45,6 +45,14 @@ const ThemeSettingForm = ({
   setBannerList,
   handleRemoveFeature,
   handleDeleteBanner,
+  onOpen,
+  isOpen,
+  onClose,
+  logoInputDark,
+  logoInputLight,
+  logoInputFavicon,
+  bannerInput,
+  handleDeleteCurrentBanner,
 }) => {
   const user = auth.currentUser;
 
@@ -52,7 +60,7 @@ const ThemeSettingForm = ({
   //   const [bannerList, setBannerList] = useState([]);
   const [activeBrand, setActiveBrand] = useState();
   const [isUploading, setIsUploading] = useState();
-  const { onOpen, onClose, isOpen } = useDisclosure();
+  // const { onOpen, onClose, isOpen } = useDisclosure();
   const [uploadingActive, setUploadingActive] = useState("");
   const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
   //   const [color, setColor] = useState();
@@ -116,7 +124,10 @@ const ThemeSettingForm = ({
               {uploadingActive === "logo_light" ? <UploadingComponent /> : null}
             </VStack>
             <Flex h={150} alignItems={"center"} justifyContent={"center"}>
-              <Image w={100} src={data?.logoLight} />
+              <Image
+                w={100}
+                src={logoInputLight ? logoInputLight[0]?.file : data?.logoLight}
+              />
             </Flex>
           </Box>
 
@@ -143,7 +154,10 @@ const ThemeSettingForm = ({
               {uploadingActive === "logo_dark" ? <UploadingComponent /> : null}
             </VStack>
             <Flex h={150} alignItems={"center"} justifyContent={"center"}>
-              <Image w={100} src={data?.logoDark} />
+              <Image
+                w={100}
+                src={logoInputDark ? logoInputDark[0]?.file : data?.logoDark}
+              />
             </Flex>
           </Box>
           <Box
@@ -168,7 +182,12 @@ const ThemeSettingForm = ({
               {uploadingActive === "favicon" ? <UploadingComponent /> : null}
             </VStack>
             <Flex h={150} alignItems={"center"} justifyContent={"center"}>
-              <Image w={100} src={data?.favicon} />
+              <Image
+                w={100}
+                src={
+                  logoInputFavicon ? logoInputFavicon[0]?.file : data?.favicon
+                }
+              />
             </Flex>
           </Box>
         </Flex>
@@ -264,41 +283,53 @@ const ThemeSettingForm = ({
         <Text fontSize="sm">Choose Color palette for your brand</Text>
         <Box>
           <SimpleGrid columns={3} spacing={3}>
-            <Stack shadow="md" bg="white" padding={2}>
+            <Stack align={"center"} shadow="md" bg="white" padding={2}>
+              <Text align={"center"} fontWeight={500}>
+                Brand 1
+              </Text>
               <Box
                 borderWidth={1}
                 aspectRatio={1}
-                w="10"
+                w={10}
+                h={10}
                 bg={data?.brand ? data?.brand[1] : ""}
               ></Box>
 
-              <Text>Brand 1 : {data?.brand ? data?.brand[1] : ""}</Text>
+              <Text align={"center"}>{data?.brand ? data?.brand[1] : ""}</Text>
               <Button size="xs" id={1} onClick={() => handleModal(1)}>
                 Change
               </Button>
             </Stack>
 
-            <Stack shadow="md" bg="white" padding={2}>
+            <Stack align={"center"} shadow="md" bg="white" padding={2}>
+              <Text align={"center"} fontWeight={500}>
+                Brand 2{" "}
+              </Text>
               <Box
                 borderWidth={1}
                 aspectRatio={1}
-                w="10"
+                w={10}
+                h={10}
                 bg={data?.brand ? data?.brand[2] : ""}
               ></Box>
-              <Text>Brand 2 : {data?.brand ? data?.brand[2] : ""}</Text>
+              <Text align={"center"}>{data?.brand ? data?.brand[2] : ""}</Text>
               <Button size="xs" id={2} onClick={() => handleModal(2)}>
                 Change
               </Button>
             </Stack>
 
-            <Stack shadow="md" bg="white" padding={2}>
+            <Stack align={"center"} shadow="md" bg="white" padding={2}>
+              <Text align={"center"} fontWeight={500}>
+                Brand 3
+              </Text>
               <Box
                 borderWidth={1}
                 aspectRatio={1}
-                w="10"
+                w={10}
+                h={10}
                 bg={data?.brand ? data?.brand[3] : ""}
               ></Box>
-              <Text>Brand 3 : {data?.brand ? data?.brand[3] : ""}</Text>
+              <Text align={"center"}>{data?.brand ? data?.brand[3] : ""}</Text>
               <Button size="xs" id={3} onClick={() => handleModal(3)}>
                 Change
               </Button>
@@ -361,6 +392,14 @@ const ThemeSettingForm = ({
                           <Image src={item.image} alt="No Preview" />
                         ) : null}
                       </Stack>
+                      <Button
+                        size={"xs"}
+                        color={"red"}
+                        variant="ghost"
+                        onClick={() => handleDeleteCurrentBanner(i)}
+                      >
+                        <RxCross2 />
+                      </Button>
                     </Flex>
                   </Stack>
                 ))}
@@ -385,11 +424,18 @@ const ThemeSettingForm = ({
                       //   onChange={(e) =>
                       // handleUpload(e.target.files[0], "banner", i)
                       //   }
-                      onChange={(e) => handleUploadBanner(e.target.files[0], i)}
+                      onChange={(e) => handleUploadBanner(e.target, i)}
                     />
                     {i === uploadingOnIndex ? <UploadingComponent /> : null}
                     {bannerList[i]?.image ? (
-                      <Image src={bannerList[i]?.image} alt="No Preview" />
+                      <Image
+                        src={
+                          bannerInput
+                            ? bannerInput[i]?.file
+                            : bannerList[i]?.image
+                        }
+                        alt="No Preview"
+                      />
                     ) : null}
                   </Stack>
                   <Button
@@ -439,25 +485,30 @@ const ThemeSettingForm = ({
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={"sm"}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Brand {activeBrand}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex justifyContent="space-between">
-              <HexColorPicker color={color} onChange={setColor} />
+            <Stack align={"center"}>
+              <Box>
+                <HexColorPicker color={color} onChange={setColor} />
+              </Box>
               <Box>
                 <Box aspectRatio={1} w="10" bg={color}></Box>
                 <Text>{color}</Text>
               </Box>
-            </Flex>
+            </Stack>
           </ModalBody>
 
           <ModalFooter>
             <Button
               colorScheme="green"
-              onClick={() => handleSaveColor(activeBrand)}
+              onClick={() => {
+                handleSaveColor(activeBrand);
+                onClose();
+              }}
             >
               Save
             </Button>

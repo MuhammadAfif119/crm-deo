@@ -22,6 +22,7 @@ import {
   SimpleGrid,
   Drawer,
   useDisclosure,
+  Avatar,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
@@ -49,6 +50,7 @@ import { BiAlignLeft } from "react-icons/bi";
 
 function SidebarComponentV3({ layout }) {
   const [menu, setMenu] = useState("");
+  const [userInfo, setUserInfo] = useState("");
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [showSubmenu, setShowSubmenu] = useState(false);
   const [desktopShow, setDesktopShow] = useState(true);
@@ -125,6 +127,22 @@ function SidebarComponentV3({ layout }) {
 
     setListProject(projects);
   };
+
+  console.log(userInfo);
+
+  const getUserData = async () => {
+    const res = await getSingleDocumentFirebase("users", globalState.uid);
+    console.log(res);
+  };
+
+  const user = auth.currentUser;
+
+  // useEffect(() => {
+  //   const getUserInfo = auth.currentUser;
+  //   setUserInfo(getUserInfo);
+
+  //   return () => {};
+  // }, []);
 
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
@@ -366,12 +384,18 @@ function SidebarComponentV3({ layout }) {
 
                 <Box py={3}>
                   <Center py={2}>
-                    <UserProfile
+                    {/* <UserProfile
                       image={
                         globalState.email === null
-                          ? "https://tinyurl.com/yhkm2ek8"
+                          ? userInfo.photoURL
                           : globalState.email
+                        
                       }
+                    /> */}
+                    <Avatar
+                      boxSize={10}
+                      name={user?.displayName}
+                      src={user?.photoURL}
                     />
                   </Center>
 
