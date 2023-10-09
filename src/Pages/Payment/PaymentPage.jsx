@@ -111,9 +111,6 @@ function PaymentPage() {
     }
   };
 
-  console.log(dataForm);
-  console.log(dataTicket);
-
   const getDataForm = async (formId) => {
     const conditions = [{ field: "token", operator: "==", value: formId }];
     const sortBy = { field: "createdAt", direction: "asc" };
@@ -150,7 +147,6 @@ function PaymentPage() {
   };
 
   const getDataProduct = async (formId) => {
-    console.log(formId);
     const conditions = [
       { field: "formId", operator: "==", value: decryptToken(formId) },
     ];
@@ -165,12 +161,10 @@ function PaymentPage() {
         // limitValue
       );
 
-      console.log(res[0]);
       setDataProduct(res[0]);
     } catch (error) {
       console.log(error, "ini error");
     }
-    console.log(formId, "xxx");
   };
 
   const getDataMembership = async (data) => {
@@ -277,7 +271,7 @@ function PaymentPage() {
                           <Text textTransform={"capitalize"} fontWeight={500}>
                             {x.package_name}
                           </Text>
-                          <Heading size={"lg"}>
+                          <Heading size={"md"}>
                             Rp.{formatFrice(x.package_amount)}
                           </Heading>
                           <Text textTransform={"capitalize"}>
