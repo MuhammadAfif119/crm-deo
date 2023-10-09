@@ -214,9 +214,11 @@ const ProductPage = () => {
     const docName = product.id;
 
     try {
-      await arrayRemoveFirebase("forms", product.formId, "product_used", [
-        docName,
-      ]);
+      if (product.formId) {
+        await arrayRemoveFirebase("forms", product.formId, "product_used", [
+          docName,
+        ]);
+      }
 
       deleteFileFirebase(`${product.title}_800x800`, "listings_product").then(
         () => {

@@ -42,6 +42,7 @@ import { useNavigate } from "react-router-dom";
 import AddButtons from "../../Components/Buttons/AddButtons";
 import { FcPlus } from "react-icons/fc";
 import { DeleteIcon } from "@chakra-ui/icons";
+import { FiEdit, FiEye } from "react-icons/fi";
 
 const ProductArticlePage = () => {
   const modalDelete = useDisclosure();
@@ -181,13 +182,14 @@ const ProductArticlePage = () => {
             </HStack>
           </Button>
         </HStack>
-        <Stack>
+        <Stack bg={"white"} p={5} borderRadius={"md"} shadow={"md"}>
           {searchInput !== "" ? (
             <>
               {searchedDataProduct?.length > 0 ? (
-                <SimpleGrid columns={[1, null, 2]} spacing={3}>
+                <SimpleGrid columns={[1, null, 4]} spacing={3}>
                   {searchedDataProduct.map((product, i) => (
-                    <Flex
+                    <Stack
+                      shadow={"base"}
                       gap={3}
                       key={i}
                       bg={"white"}
@@ -197,48 +199,83 @@ const ProductArticlePage = () => {
                       <Stack>
                         <Image
                           src={product?.thumbnailURL}
-                          boxSize="150px"
+                          boxSize={"fit-content"}
+                          // w={"fit-content"}
                           objectFit="cover"
                         />
                       </Stack>
-                      <Stack>
-                        <Box>
-                          <Heading size={"md"}>{product?.title}</Heading>
+                      <Spacer />
+                      <Stack align={"center"}>
+                        <Box alignSelf={"center"}>
+                          <HStack justifyContent={"center"}>
+                            <Heading size={"md"}>{product?.title}</Heading>
+                          </HStack>
                           <Text size={"md"} my={1} fontSize={11}>
                             {moment(product?.createdAt.seconds * 1000).format(
                               "LLL"
                             )}
                           </Text>
                         </Box>
-                        <Box>
-                          <Text
-                            fontSize={12}
-                            cursor={"pointer"}
-                            onClick={() =>
-                              navigate(`/products/article/view/${product.id}`)
-                            }
-                          >
-                            View product article
-                          </Text>
-                          <Text
-                            fontSize={12}
-                            cursor={"pointer"}
-                            onClick={() =>
-                              navigate(`/products/article/edit/${product.id}`)
-                            }
-                          >
-                            Edit product article
-                          </Text>
-                        </Box>
-                        <Spacer />
-                        <Button
-                          variant={"unstyled"}
-                          onClick={() => handleModal(product)}
+                        <HStack
+                          alignItems={"center"}
+                          justify={"space-evenly"}
+                          spacing={3}
                         >
-                          <DeleteIcon />
-                        </Button>
+                          <HStack spacing={1}>
+                            <FiEye />
+                            {/* <Text fontSize={12}>{product?.description}</Text> */}
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() =>
+                                navigate(`/products/article/view/${product.id}`)
+                              }
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              View
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={1}>
+                            <FiEdit />
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() =>
+                                navigate(`/products/article/edit/${product.id}`)
+                              }
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              Edit
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+
+                          <HStack spacing={1}>
+                            <DeleteIcon boxSize={3} />
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() => handleModal(product)}
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              Delete
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+
+                          {/* <Button
+                            variant={"ghost"}
+                            size={"xs"}
+                            w={"fit-content"}
+                            onClick={() => handleModal(product)}
+                          >
+                            <DeleteIcon boxSize={3} />
+                          </Button> */}
+                        </HStack>
+                        <Spacer />
                       </Stack>
-                    </Flex>
+                    </Stack>
                   ))}
                 </SimpleGrid>
               ) : (
@@ -252,9 +289,10 @@ const ProductArticlePage = () => {
           ) : (
             <>
               {dataProducts?.length > 0 ? (
-                <SimpleGrid columns={[1, null, 2]} spacing={3}>
+                <SimpleGrid columns={[1, null, 4]} spacing={3}>
                   {dataProducts.map((product, i) => (
-                    <Flex
+                    <Stack
+                      shadow={"base"}
                       gap={3}
                       key={i}
                       bg={"white"}
@@ -264,53 +302,83 @@ const ProductArticlePage = () => {
                       <Stack>
                         <Image
                           src={product?.thumbnailURL}
-                          boxSize="150px"
+                          boxSize={"fit-content"}
+                          // w={"fit-content"}
                           objectFit="cover"
                         />
                       </Stack>
-                      <Stack>
-                        <Box>
-                          <Heading size={"md"}>{product?.title}</Heading>
+                      <Spacer />
+                      <Stack align={"center"}>
+                        <Box alignSelf={"center"}>
+                          <HStack justifyContent={"center"}>
+                            <Heading size={"md"}>{product?.title}</Heading>
+                          </HStack>
                           <Text size={"md"} my={1} fontSize={11}>
                             {moment(product?.createdAt.seconds * 1000).format(
                               "LLL"
                             )}
                           </Text>
                         </Box>
-                        <Box>
-                          {/* <Text fontSize={12}>{product?.description}</Text> */}
-                          <Text
-                            fontSize={12}
-                            cursor={"pointer"}
-                            onClick={() =>
-                              navigate(`/products/article/view/${product.id}`)
-                            }
-                          >
-                            {/* <a href={`/products/article/${product.id}`}> */}
-                            View product article
-                            {/* </a> */}
-                          </Text>
-                          <Text
-                            fontSize={12}
-                            cursor={"pointer"}
-                            onClick={() =>
-                              navigate(`/products/article/edit/${product.id}`)
-                            }
-                          >
-                            {/* <a href={`/products/article/${product.id}`}> */}
-                            Edit product article
-                            {/* </a> */}
-                          </Text>
-                        </Box>
-                        <Spacer />
-                        <Button
-                          w={"fit-content"}
-                          onClick={() => handleModal(product)}
+                        <HStack
+                          alignItems={"center"}
+                          justify={"space-evenly"}
+                          spacing={3}
                         >
-                          <DeleteIcon boxSize={4} />
-                        </Button>
+                          <HStack spacing={1}>
+                            <FiEye />
+                            {/* <Text fontSize={12}>{product?.description}</Text> */}
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() =>
+                                navigate(`/products/article/view/${product.id}`)
+                              }
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              View
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={1}>
+                            <FiEdit />
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() =>
+                                navigate(`/products/article/edit/${product.id}`)
+                              }
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              Edit
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+
+                          <HStack spacing={1}>
+                            <DeleteIcon boxSize={3} />
+                            <Text
+                              fontSize={12}
+                              cursor={"pointer"}
+                              onClick={() => handleModal(product)}
+                            >
+                              {/* <a href={`/products/article/${product.id}`}> */}
+                              Delete
+                              {/* </a> */}
+                            </Text>
+                          </HStack>
+
+                          {/* <Button
+                              variant={"ghost"}
+                              size={"xs"}
+                              w={"fit-content"}
+                              onClick={() => handleModal(product)}
+                            >
+                              <DeleteIcon boxSize={3} />
+                            </Button> */}
+                        </HStack>
+                        <Spacer />
                       </Stack>
-                    </Flex>
+                    </Stack>
                   ))}
                 </SimpleGrid>
               ) : (
