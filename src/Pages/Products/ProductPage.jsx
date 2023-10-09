@@ -59,7 +59,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [categoryData, setCategoryData] = useState({});
-  const [categoryModule, setCategoryModules] = useState();
+  const [categoryModule, setCategoryModule] = useState();
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
@@ -187,7 +187,8 @@ const ProductPage = () => {
       const unsubscribe = onSnapshot(
         doc(db, "categories", projectId),
         (docCat) => {
-          setCategoryModules({ id: docCat.id, ...docCat.data() });
+          console.log({ id: docCat.id, ...docCat.data() }, 'tulul');
+          setCategoryModule({ id: docCat.id, ...docCat.data() });
         }
       );
 
@@ -335,7 +336,7 @@ const ProductPage = () => {
                 fontWeight={selectedCategory === x ? 500 : "normal"}
                 color={selectedCategory === x ? "blue.500" : "gray.600"}
               >
-                {x === "product" ? x : "product"}
+                {x === "product" && x}
               </Text>
             ))}
           </HStack>
@@ -455,13 +456,7 @@ const ProductPage = () => {
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
                           Stock: {product.stock}
                         </Text>
-                        {/* <Text>Details:</Text>
-                  {listing?.details?.map((detail, index) => (
-                    <HStack key={index} spacing={2} alignItems="center">
-                      <Text fontWeight="bold">{detail.key}:</Text>
-                      <Text>{detail.value}</Text>
-                    </HStack>
-                  ))} */}
+
                       </Stack>
                     </Stack>
                   );
@@ -504,7 +499,7 @@ const ProductPage = () => {
         size={"xl"}
         isOpen={modalDetail}
         onClose={() => handleCloseDetail()}
-        // isCentered
+      // isCentered
       >
         <ModalOverlay />
         <ModalContent>
