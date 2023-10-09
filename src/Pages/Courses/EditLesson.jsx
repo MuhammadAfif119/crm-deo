@@ -28,6 +28,7 @@ import parse from 'html-react-parser';
 import {
 	FiDelete,
 	FiDownload,
+	FiFile,
 	FiVideo,
 	FiVolume2,
 } from "react-icons/fi";
@@ -74,7 +75,7 @@ function EditLesson() {
 	const [generatedLink, setGeneratedLink] = useState("");
 	const toast = useToast();
 	const inputRef = useRef();
-	const videoRef = useRef();
+	const fileRef = useRef();
 
 	const searchCompanyName = globalState?.companies?.find((x) => x.id === globalState?.currentCompany)
 	const companyName = searchCompanyName?.name
@@ -301,10 +302,8 @@ function EditLesson() {
 	};
 
 	const getSingleLesson = async () => {
-		console.log("params", params)
 		try {
 			const result = await getSingleDocumentFirebase(`courses/${params.id_course}/lessons`, params?.id_lesson);
-			console.log("single lesson", result);
 			setLesson(result);
 		} catch (error) {
 			console.log('error getting lesson data', error?.message);
@@ -461,111 +460,121 @@ function EditLesson() {
 	};
 
 	const MediaType = () => (
-		<Tabs isFitted variant="soft-rounded" defaultIndex={defaultIndex} onChange={index => setDefaultIndex(index)}>
-			<TabList>
-				<Tab>
-					<HStack>
-						<FiVideo />
-						<Text>Video</Text>
-					</HStack>
-				</Tab>
-				<Tab>
-					<HStack>
-						<FiVolume2 />
-						<Text>Audio</Text>
-					</HStack>
-				</Tab>
-			</TabList>
+		<Stack spacing={5}>
+			<HStack >
+				<Text fontWeight={500}>File</Text>
+				<Spacer />
+				<Button onClick={openModal} colorScheme={'green'} variant='outline'>Upload File Here</Button>
+			</HStack>
+			<Stack>
+				<Text fontWeight="bold" fontSize={12}>Please Note! Accepted file types are : </Text>
+				<Text color="red" fontWeight="bold" fontSize={12}>'.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov', '.mkv', '.audio'</Text>
+			</Stack>
+			<Tabs isFitted variant="soft-rounded" defaultIndex={defaultIndex} onChange={index => setDefaultIndex(index)}>
+				<TabList>
+					<Tab>
+						<HStack>
+							<FiVideo />
+							<Text>Video</Text>
+						</HStack>
+					</Tab>
+					<Tab>
+						<HStack>
+							<FiVolume2 />
+							<Text>Audio</Text>
+						</HStack>
 
-			<TabPanels>
-				<TabPanel>
-					<Container
-						borderRadius="md"
-						p="5"
-					>
-						{/* <RadioGroup onChange={(e) => setType(e)}> */}
-						<Text color="gray"> Please Choose Media Source (Youtube link or directly upload video from your computer) :</Text>
-						<Flex my={5} gap={5} flexDirection='row' w='full' justifyContent='center' alignItems='center'>
-							<Box
-								bg='rgba(174,182,183, 0.1)'
-								p={3}
-								borderRadius={5}
-								cursor='pointer'
-								fontWeight={type === "youtube" ? "bold" : ""}
-								color={type === "youtube" ? "blue" : "#2d2d2d"}
-								onClick={() => setType("youtube")}>
-								Youtube
-							</Box>
-							<Box
-								bg='rgba(174,182,183, 0.1)'
-								p={3}
-								borderRadius={5}
-								cursor='pointer'
-								fontWeight={type === "upload" ? "bold" : ""}
-								color={type === "upload" ? "blue" : "#2d2d2d"}
-								onClick={() => setType("upload")}>
-								Upload
-							</Box>
-						</Flex>
-						{/* </RadioGroup> */}
-						{type === "upload" ? (
-							<>
-								{/* <MyDropzone /> */}
-								<Text fontWeight="bold" fontSize={12}>Please Note! Accepted file types are : </Text>
-								<Text color="red" fontWeight="bold" fontSize={12}>'.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov', '.mkv'</Text>
-								<Center my={3}>
-									<Button onClick={openModal} colorScheme={'green'} variant='outline'>Upload Lesson Video Here</Button>
-								</Center>
+					</Tab>
+					<Tab>
+						<HStack>
+							<FiFile />
+							<Text>File</Text>
+						</HStack>
 
-							</>
-						) : type === "youtube" ? (
-							<>
-								<InputGroup size="md">
-									<Input
-										shadow='sm'
-										bg='white' placeholder="Input link (e.g. youtube, dropbox, etc.)"
-										onChange={e => {
-											videoRef.current = e.target.value
-										}} />
-									<InputRightElement w="fit-content">
-										<Button onClick={() => setLesson({
-											...lesson,
-											media: videoRef.current
-										})}>Submit</Button>
-									</InputRightElement>
-								</InputGroup>
-							</>
-						) : null}
-						{progress === 0 || progress === 100 || isNaN(progress) ?
-							null
-							:
-							<>
-								<Progress value={uploadProgress} />
-								<Text>
-									{progress?.toFixed(2)} %
-								</Text>
-							</>
-						}
-					</Container>
-				</TabPanel>
-				<TabPanel>
-					<Container
-						borderRadius="md"
-						p="5"
-						border="1px"
-						borderColor="gray"
-						borderStyle="dotted"
-					>
-						<Center>
-							<FiVolume2 width="25px" />
-						</Center>
-						<Center>
-							<Button>Upload Audio</Button>
-						</Center>
-					</Container>
-				</TabPanel>
-			</TabPanels>
-		</Tabs>
+					</Tab>
+				</TabList>
+
+				<TabPanels>
+					<TabPanel>
+						<Container
+							borderRadius="md"
+							p="5"
+						>
+
+							<InputGroup size="md">
+								<Input
+									shadow='sm'
+									bg='white' placeholder="Input link (e.g. youtube, dropbox, etc.)"
+									onChange={e => {
+										fileRef.current = e.target.value
+									}} />
+								<InputRightElement w="fit-content">
+									<Button onClick={() => setLesson({
+										...lesson,
+										media: fileRef.current,
+										sourceType: 'video',
+									})}>Submit</Button>
+								</InputRightElement>
+							</InputGroup>
+
+						</Container>
+					</TabPanel>
+					<TabPanel>
+						<Container
+							borderRadius="md"
+							p="5"
+							border="1px"
+							borderColor="gray"
+							borderStyle="dotted"
+						>
+							<InputGroup size="md">
+								<Input
+									shadow='sm'
+									bg='white' placeholder="Input link (e.g. youtube, dropbox, etc.)"
+									onChange={e => {
+										fileRef.current = e.target.value
+									}} />
+								<InputRightElement w="fit-content">
+									<Button onClick={() => setLesson({
+										...lesson,
+										media: fileRef.current,
+										sourceType: 'audio',
+									})}>Submit</Button>
+								</InputRightElement>
+							</InputGroup>
+
+						</Container>
+					</TabPanel>
+
+					<TabPanel>
+						<Container
+							borderRadius="md"
+							p="5"
+							border="1px"
+							borderColor="gray"
+							borderStyle="dotted"
+						>
+							<InputGroup size="md">
+								<Input
+									shadow='sm'
+									bg='white' placeholder="Input link (e.g. youtube, dropbox, etc.)"
+									onChange={e => {
+										fileRef.current = e.target.value
+									}} />
+								<InputRightElement w="fit-content">
+									<Button onClick={() => setLesson({
+										...lesson,
+										media: fileRef.current,
+										sourceType: 'file',
+									})}>Submit</Button>
+								</InputRightElement>
+							</InputGroup>
+
+						</Container>
+					</TabPanel>
+				</TabPanels>
+			</Tabs>
+		</Stack>
 	);
 
 	useEffect(() => {
@@ -643,14 +652,22 @@ function EditLesson() {
 								borderColor="gray"
 								borderStyle="dotted">
 								{lesson?.media ? (
-									<>
-										<ReactPlayer
-											width="full"
-											controls={true}
-											url={lesson?.media}
-										/>
-										<Button my={5} colorScheme='red' onClick={handleDeleteMedia}>Delete Media</Button>
-									</>
+									lesson?.sourceType === "file" ? (
+										<Stack>
+											<iframe src={lesson.media} title="File Preview" width="auto" height="200"></iframe>
+											<Button my={5} colorScheme='red' onClick={handleDeleteMedia}>Delete Media</Button>
+										</Stack>
+									) : (
+										<Stack>
+											<ReactPlayer
+												width="full"
+												controls={true}
+												url={lesson?.media}
+											/>
+											<Button my={5} colorScheme='red' onClick={handleDeleteMedia}>Delete Media</Button>
+										</Stack>
+									)
+
 
 								) : (
 									<MediaType />

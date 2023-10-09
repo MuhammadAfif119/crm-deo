@@ -47,6 +47,7 @@ import React, {
 import {
   FiBookOpen,
   FiEdit2,
+  FiFile,
   FiFolder,
   FiPlus,
   FiVideo,
@@ -72,16 +73,15 @@ import {
 } from "../../Constants/constants";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
-  addDocumentFirebase,
-  arrayRemoveFirebase,
   arrayUnionFirebase,
-  getCollectionFirebase,
   getSingleDocumentFirebase,
   setDocumentFirebase,
   updateDocumentFirebase,
   uploadFileFirebase,
 } from "../../Api/firebaseApi";
 import { addDoc, arrayUnion } from "firebase/firestore";
+import DropboxUploader from "../../Components/DropBox/DropboxUploader";
+import moment from "moment";
 
 const SingleCourse = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -103,17 +103,41 @@ const SingleCourse = () => {
   const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [categoryEdit, setCategoryEdit] = useState("");
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const [shareLink, setShareLink] = useState("");
+  const [generatedLink, setGeneratedLink] = useState("");
+  const [value, setValue] = useState("");
+
+
+
+
+
   const globalState = useUserStore();
-  const { currentProject } = globalState;
+
+  const { currentProject, currentCompany } = globalState;
+
+
   const toast = useToast();
 
-  const videoRef = useRef();
+  const fileRef = useRef();
 
   const onEditPrice = () => {
     setEditPriceActive(true);
     setDataEdit({ ...dataEdit, price: courseDetail.price });
     setCourseDetail({ ...courseDetail, price: parseInt(dataEdit.price) });
   };
+
+
+  function openModal() {
+    setModalOpen(true);
+  }
+
+  function closeModal() {
+    setModalOpen(false);
+  }
+
+
 
   const uid = auth?.currentUser?.uid;
   const params = useParams();
@@ -135,28 +159,6 @@ const SingleCourse = () => {
       setUpdate(false);
     } else return;
   };
-
-  // const getLesson = async () => {
-  // 	if (uid) {
-  // 		// const conditions = [
-  // 		// 	{ field: "createdBy", operator: "==", value: uid },
-  // 		// ];
-
-  // 		const conditions = [];
-  // 		const sortBy = null;
-  // 		const limitValue = null;
-  // 		// const res = await getCollectionFirebase(
-  // 		// 	`courses/${params.id_course}/lessons`,
-  // 		// 	{ conditions },
-  // 		// 	{ sortBy },
-  // 		// 	{ limitValue: null }
-  // 		// );
-  // 		const res = await getCollectionFirebase(`courses/${params?.id_course}/lessons`, { conditions }, { sortBy }, { limitValue })
-  // 		setLesson(res);
-  // 	} else return;
-  // };
-
-  console.log(priceType, "ini pricetype");
 
   const handleSaveEditPrice = async () => {
     if (priceType === "paid") {
@@ -248,6 +250,28 @@ const SingleCourse = () => {
     }
   };
 
+  const handleShareLinkChange = (x) => {
+    if (x !== "") {
+      setShareLink({ link: x?.link, type: x?.type });
+      const { link, type } = x;
+      let htmlContent = '';
+
+      if (type === 'image') {
+        htmlContent = `<p><img src="${link}" alt="Image" width="500px" /></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(link)}</a></p>`;
+      } else if (type === 'audio') {
+        htmlContent = `<p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(link)}</a></p>`;
+      } else if (type === 'video') {
+        htmlContent = `<p><iframe class="ql-audio" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(link)}</a></p>`;
+      } else {
+        htmlContent = `<p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(link)}</a></p><br/> `;
+      }
+
+
+      setValue((prevContent) => prevContent + ` ${htmlContent}`);
+    }
+
+  };
+
   const handleModal = (type, course, lesson) => {
     onOpen();
     const obj = {
@@ -275,10 +299,10 @@ const SingleCourse = () => {
     setEditActive(false);
   };
 
-  const submitYoutubeUrl = async () => {
+  const submitUrl = async (type) => {
     await updateDocumentFirebase("courses", params.id_course, {
-      media: videoRef.current,
-      sourceType: "youtube",
+      media: fileRef.current,
+      sourceType: type,
     });
     getCourseDetail();
   };
@@ -298,15 +322,15 @@ const SingleCourse = () => {
     });
 
     if (courseDetail?.courseType === "full_course") {
-      const videoRef = ref(storage, courseDetail?.mediaPath);
+      const fileRef = ref(storage, courseDetail?.mediaPath);
 
       // // Delete the file
-      deleteObject(videoRef)
+      deleteObject(fileRef)
         .then(() => {
           // File deleted successfully
           console.log("success deleting from storage");
         })
-        .then(() => {})
+        .then(() => { })
         .catch((error) => {
           toast({
             title: "Gagal menghapus video",
@@ -436,125 +460,136 @@ const SingleCourse = () => {
   };
 
   const MediaType = () => (
-    <Tabs
-      isFitted
-      variant="soft-rounded"
-      defaultIndex={defaultIndex}
-      onChange={(index) => setDefaultIndex(index)}
-    >
-      <TabList>
-        <Tab>
-          <HStack>
-            <FiVideo />
-            <Text>Video</Text>
-          </HStack>
-        </Tab>
-        <Tab>
-          <HStack>
-            <FiVolume2 />
-            <Text>Audio</Text>
-          </HStack>
-        </Tab>
-      </TabList>
+    <Stack p={5}>
+      <HStack >
+        <Text fontWeight={500}>File</Text>
+        <Spacer />
+        <Button onClick={openModal} colorScheme={'green'} variant='outline'>Upload File Here</Button>
+      </HStack>
+      <Tabs
+        isFitted
+        variant="soft-rounded"
+        defaultIndex={defaultIndex}
+        onChange={(index) => setDefaultIndex(index)}
+      >
+        <TabList>
+          <Tab>
+            <HStack>
+              <FiVideo />
+              <Text>Video</Text>
+            </HStack>
+          </Tab>
+          <Tab>
+            <HStack>
+              <FiVolume2 />
+              <Text>Audio</Text>
+            </HStack>
+          </Tab>
 
-      <TabPanels>
-        <TabPanel>
-          <Box borderRadius="md" p="5">
-            <Flex
-              my={5}
-              gap={5}
-              flexDirection="row"
-              w="full"
-              justifyContent="center"
-              alignItems="center"
+          <Tab>
+            <HStack>
+              <FiFile />
+              <Text>File</Text>
+            </HStack>
+          </Tab>
+
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
             >
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "youtube" ? "bold" : ""}
-                color={type === "youtube" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("youtube")}
-              >
-                Youtube
-              </Box>
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "upload" ? "bold" : ""}
-                color={type === "upload" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("upload")}
-              >
-                Upload
-              </Box>
-            </Flex>
+              <Box borderRadius="md" p="5">
 
-            {type === "upload" ? (
-              <>
-                <MyDropzone />
-                <Text fontWeight="bold" fontSize={12}>
-                  Please Note! Accepted file types are :{" "}
-                </Text>
-                <Text color="red" fontWeight="bold" fontSize={12}>
-                  '.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov',
-                  '.mkv'
-                </Text>
-              </>
-            ) : type === "youtube" ? (
-              <>
                 <InputGroup>
                   <Input
                     shadow="sm"
                     bg="white"
                     placeholder="Input link (e.g. youtube, dropbox, etc.)"
                     onChange={(e) => {
-                      videoRef.current = e.target.value;
+                      fileRef.current = e.target.value;
                     }}
                   />
                   <InputRightElement w="fit-content">
-                    <Button onClick={submitYoutubeUrl}>Submit</Button>
+                    <Button onClick={() => submitUrl('video')}>Submit</Button>
                   </InputRightElement>
                 </InputGroup>
-              </>
-            ) : null}
-            {progress === 0 || progress === 100 || isNaN(progress) ? null : (
-              <>
-                <Progress value={progress} />
-                <Text>{progress?.toFixed(2)} %</Text>
-              </>
-            )}
-          </Box>
-        </TabPanel>
-        <TabPanel>
-          <Container
-            borderRadius="md"
-            p="5"
-            border="1px"
-            borderColor="gray"
-            borderStyle="dotted"
-          >
-            <Center>
-              <FiVolume2 size={15} />
-            </Center>
-            <Center>
-              {/* <Button type={"file"} size={"sm"}>
-                Upload Audio
-              </Button> */}
 
-              <MyDropzone />
-            </Center>
-          </Container>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+              </Box>
+            </Container>
+          </TabPanel>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <Box borderRadius="md" p="5">
+
+                <InputGroup>
+                  <Input
+                    shadow="sm"
+                    bg="white"
+                    placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                    onChange={(e) => {
+                      fileRef.current = e.target.value;
+                    }}
+                  />
+                  <InputRightElement w="fit-content">
+                    <Button onClick={() => submitUrl('audio')}>Submit</Button>
+                  </InputRightElement>
+                </InputGroup>
+
+              </Box>
+            </Container>
+          </TabPanel>
+
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <Box borderRadius="md" p="5">
+
+                <InputGroup>
+                  <Input
+                    shadow="sm"
+                    bg="white"
+                    placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                    onChange={(e) => {
+                      fileRef.current = e.target.value;
+                    }}
+                  />
+                  <InputRightElement w="fit-content">
+                    <Button onClick={() => submitUrl('file')}>Submit</Button>
+                  </InputRightElement>
+                </InputGroup>
+
+              </Box>
+            </Container>
+
+
+          </TabPanel>
+
+        </TabPanels>
+      </Tabs>
+    </Stack>
   );
 
   //================================================================================================
   //=====================================  USEEFFECTS  =============================================
   //================================================================================================
+
 
   useEffect(() => {
     getCourseDetail();
@@ -598,46 +633,7 @@ const SingleCourse = () => {
                 </Button>
               </Stack>
               <Box w="full">
-                {/* <Grid
-									bg='red'
-									templateRows='repeat(2, 1fr)'
-									templateColumns='repeat(9, 1fr)'
-									gap={2}
-								>
-									<GridItem colSpan={1}>
-										<Text>Title: </Text>
-									</GridItem>
-									<GridItem colSpan={8}>
-										{editTitle ?
-											<HStack flexDirection="row">
-												<Heading size="md">
-													{newTitle}
-												</Heading>
-												<Input placeholder="Digital Marketing Facebook Ads" onChange={e => (setNewTitle(e.target.value))} />
-												<Button mx={2} onClick={saveNewTitle}>Save</Button>
-											</HStack>
-											:
-											<HStack>
-												<Heading size="md">
-													{courseDetail?.title}
-												</Heading>
-												<Button
-													onClick={() => setEditTitle(!editTitle)}
-													color="rgba(0,0,0,0.3)" variant='link'
-													fontWeight={400} fontSize={12} mt={-5}
-												>
-													Edit
-												</Button>
-											</HStack>
-										}
-									</GridItem>
-									<GridItem colSpan={1}>
-										<Text>ID: </Text>
-									</GridItem>
-									<GridItem colSpan={8}>
-										<Text fontSize={10} color="rgba(0,0,0,0.3">{courseDetail?.id}</Text>
-									</GridItem>
-								</Grid> */}
+
 
                 <HStack>
                   <Text>Title: </Text>
@@ -763,7 +759,7 @@ const SingleCourse = () => {
                   <option value="free">Free</option>
                 </Select>
                 {priceType === "free" &&
-                courseDetail?.priceType !== priceType ? (
+                  courseDetail?.priceType !== priceType ? (
                   <Button
                     colorScheme="green"
                     onClick={() => handleSaveEditPrice()}
@@ -996,21 +992,29 @@ const SingleCourse = () => {
             </Card>
           ) : courseDetail?.courseType === "mini_course" &&
             courseDetail?.media ? (
-            <Card bg="white" p={5} my={2}>
-              <ReactPlayer
-                width="full"
-                controls={true}
-                url={courseDetail?.media}
-              />
-              <Button
-                my={5}
-                w="md"
-                colorScheme="red"
-                onClick={deleteMediaMiniCourse}
-              >
-                Delete Video
-              </Button>
-            </Card>
+            courseDetail?.sourceType === "file" ? (
+              <Stack>
+                <iframe src={courseDetail.media} title="File Preview" width="auto" height="200"></iframe>
+                <Button my={5} colorScheme='red' onClick={handleDeleteMedia}>Delete Media</Button>
+              </Stack>
+            ) : (
+              <Card bg="white" p={5} my={2}>
+                <ReactPlayer
+                  width="full"
+                  controls={true}
+                  url={courseDetail?.media}
+                />
+                <Button
+                  my={5}
+                  w="md"
+                  colorScheme="red"
+                  onClick={deleteMediaMiniCourse}
+                >
+                  Delete Video
+                </Button>
+              </Card>
+            )
+
           ) : (
             <Card bg="white" p={5} my={2}>
               <MediaType />
@@ -1027,6 +1031,15 @@ const SingleCourse = () => {
         setUpdate={setUpdate}
         update={update}
       />
+
+      <DropboxUploader
+        isActive={isModalOpen}
+        onClose={closeModal}
+        parentPath={`/${currentCompany}/lesson/${params.id_course}/${moment().format()}`}
+        shareLink={shareLink} setShareLink={handleShareLinkChange}
+        setGeneratedLink={setGeneratedLink}
+      />
+
     </>
   );
 };
