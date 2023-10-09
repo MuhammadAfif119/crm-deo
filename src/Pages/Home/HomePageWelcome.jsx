@@ -252,8 +252,6 @@ const HomePageWelcome = () => {
     return () => {};
   }, [globalState?.currentProject]);
 
-  console.log(globalState);
-
   return (
     <Box>
       <Heading align={"center"}>Welcome to Deoapp</Heading>
