@@ -120,7 +120,7 @@ export const data = [
     link: "/lmsHome",
     description: "Organize your own pageview webapp with ease",
     submenu: [
-      { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+      // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
       { name: "Courses", icon: FcIdea, link: "/courses" },
     ],
   },

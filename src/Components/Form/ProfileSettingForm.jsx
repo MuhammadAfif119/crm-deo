@@ -26,8 +26,6 @@ const ProfileSettingForm = ({
     (x) => x.id === globalState?.currentProject
   );
 
-  console.log(searchProject);
-
   return (
     <>
       <Stack justifyContent={"center"} alignItems={"center"} my={2}>

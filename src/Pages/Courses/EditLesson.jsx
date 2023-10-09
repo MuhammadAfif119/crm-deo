@@ -31,7 +31,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import parse from "html-react-parser";
-import { FiDelete, FiDownload, FiVideo, FiVolume2 } from "react-icons/fi";
+import {
+  FiDelete,
+  FiDownload,
+  FiFile,
+  FiVideo,
+  FiVolume2,
+} from "react-icons/fi";
 import ReactQuill from "react-quill";
 import ReactPlayer from "react-player";
 import "react-quill/dist/quill.snow.css";
@@ -80,7 +86,7 @@ function EditLesson() {
   const [generatedLink, setGeneratedLink] = useState("");
   const toast = useToast();
   const inputRef = useRef();
-  const videoRef = useRef();
+  const fileRef = useRef();
 
   const searchCompanyName = globalState?.companies?.find(
     (x) => x.id === globalState?.currentCompany
@@ -324,13 +330,11 @@ function EditLesson() {
   };
 
   const getSingleLesson = async () => {
-    console.log("params", params);
     try {
       const result = await getSingleDocumentFirebase(
         `courses/${params.id_course}/lessons`,
         params?.id_lesson
       );
-      console.log("single lesson", result);
       setLesson(result);
     } catch (error) {
       console.log("error getting lesson data", error?.message);
@@ -452,6 +456,8 @@ function EditLesson() {
     }
   };
 
+  // console.log(lesson.status, "ini lessons");
+
   const handleSetDropboxLink = () => {
     setLesson({
       ...lesson,
@@ -459,197 +465,155 @@ function EditLesson() {
     });
   };
 
+  console.log(lesson, "ini lesson");
+
   //================================================================================================
   //=======================================COMPONENTS===============================================
   //================================================================================================
-  function MyDropzone() {
-    const onDrop = useCallback(async (acceptedFiles) => {
-      // Do something with the files
-      await uploadFileToDropbox(acceptedFiles[0]);
-    }, []);
-
-    const {
-      getRootProps,
-      getInputProps,
-      isFocused,
-      isDragAccept,
-      isDragReject,
-    } = useDropzone({
-      accept: {
-        "video/*": [
-          ".avi",
-          ".mp4",
-          ".mpeg",
-          ".ogv",
-          ".webm",
-          ".3gp",
-          ".mov",
-          ".mkv",
-        ],
-      },
-      onDrop,
-    });
-
-    const style = useMemo(
-      () => ({
-        ...baseStyle,
-        ...(isFocused ? focusedStyle : {}),
-        ...(isDragAccept ? acceptStyle : {}),
-        ...(isDragReject ? rejectStyle : {}),
-      }),
-      [isFocused, isDragAccept, isDragReject]
-    );
-
-    return (
-      <div className="container">
-        <div {...getRootProps({ style })}>
-          <input {...getInputProps()} />
-          <p>Drag drop you video course here, or click to select files</p>
-          {progress !== 0 && progress !== 100 ? (
-            <p>progress is {progress?.toFixed(2)}%</p>
-          ) : (
-            <></>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   const MediaType = () => (
-    <Tabs
-      isFitted
-      variant="soft-rounded"
-      defaultIndex={defaultIndex}
-      onChange={(index) => setDefaultIndex(index)}
-    >
-      <TabList>
-        <Tab>
-          <HStack>
-            <FiVideo />
-            <Text>Video</Text>
-          </HStack>
-        </Tab>
-        <Tab>
-          <HStack>
-            <FiVolume2 />
-            <Text>Audio</Text>
-          </HStack>
-        </Tab>
-      </TabList>
+    <Stack spacing={5}>
+      <HStack>
+        <Text fontWeight={500}>File</Text>
+        <Spacer />
+        <Button onClick={openModal} colorScheme={"green"} variant="outline">
+          Upload File Here
+        </Button>
+      </HStack>
+      <Stack>
+        <Text fontWeight="bold" fontSize={12}>
+          Please Note! Accepted file types are :{" "}
+        </Text>
+        <Text color="red" fontWeight="bold" fontSize={12}>
+          '.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov', '.mkv',
+          '.audio'
+        </Text>
+      </Stack>
+      <Tabs
+        isFitted
+        variant="soft-rounded"
+        defaultIndex={defaultIndex}
+        onChange={(index) => setDefaultIndex(index)}
+      >
+        <TabList>
+          <Tab>
+            <HStack>
+              <FiVideo />
+              <Text>Video</Text>
+            </HStack>
+          </Tab>
+          <Tab>
+            <HStack>
+              <FiVolume2 />
+              <Text>Audio</Text>
+            </HStack>
+          </Tab>
+          <Tab>
+            <HStack>
+              <FiFile />
+              <Text>File</Text>
+            </HStack>
+          </Tab>
+        </TabList>
 
-      <TabPanels>
-        <TabPanel>
-          <Container borderRadius="md" p="5">
-            {/* <RadioGroup onChange={(e) => setType(e)}> */}
-            <Text color="gray">
-              {" "}
-              Please Choose Media Source (Youtube link or directly upload video
-              from your computer) :
-            </Text>
-            <Flex
-              my={5}
-              gap={5}
-              flexDirection="row"
-              w="full"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "youtube" ? "bold" : ""}
-                color={type === "youtube" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("youtube")}
-              >
-                Youtube
-              </Box>
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "upload" ? "bold" : ""}
-                color={type === "upload" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("upload")}
-              >
-                Upload
-              </Box>
-            </Flex>
-            {/* </RadioGroup> */}
-            {type === "upload" ? (
-              <>
-                {/* <MyDropzone /> */}
-                <Text fontWeight="bold" fontSize={12}>
-                  Please Note! Accepted file types are :{" "}
-                </Text>
-                <Text color="red" fontWeight="bold" fontSize={12}>
-                  '.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov',
-                  '.mkv'
-                </Text>
-                <Center my={3}>
+        <TabPanels>
+          <TabPanel>
+            <Container borderRadius="md" p="5">
+              <InputGroup size="md">
+                <Input
+                  shadow="sm"
+                  bg="white"
+                  placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                  onChange={(e) => {
+                    fileRef.current = e.target.value;
+                  }}
+                />
+                <InputRightElement w="fit-content">
                   <Button
-                    onClick={openModal}
-                    colorScheme={"green"}
-                    variant="outline"
+                    onClick={() =>
+                      setLesson({
+                        ...lesson,
+                        media: fileRef.current,
+                        sourceType: "video",
+                      })
+                    }
                   >
-                    Upload Lesson Video Here
+                    Submit
                   </Button>
-                </Center>
-              </>
-            ) : type === "youtube" ? (
-              <>
-                <InputGroup size="md">
-                  <Input
-                    shadow="sm"
-                    bg="white"
-                    placeholder="Input link (e.g. youtube, dropbox, etc.)"
-                    onChange={(e) => {
-                      videoRef.current = e.target.value;
-                    }}
-                  />
-                  <InputRightElement w="fit-content">
-                    <Button
-                      onClick={() =>
-                        setLesson({
-                          ...lesson,
-                          media: videoRef.current,
-                        })
-                      }
-                    >
-                      Submit
-                    </Button>
-                  </InputRightElement>
-                </InputGroup>
-              </>
-            ) : null}
-            {progress === 0 || progress === 100 || isNaN(progress) ? null : (
-              <>
-                <Progress value={uploadProgress} />
-                <Text>{progress?.toFixed(2)} %</Text>
-              </>
-            )}
-          </Container>
-        </TabPanel>
-        <TabPanel>
-          <Container
-            borderRadius="md"
-            p="5"
-            border="1px"
-            borderColor="gray"
-            borderStyle="dotted"
-          >
-            <Center>
-              <FiVolume2 width="25px" />
-            </Center>
-            <Center>
-              <Button>Upload Audio</Button>
-            </Center>
-          </Container>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+                </InputRightElement>
+              </InputGroup>
+            </Container>
+          </TabPanel>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <InputGroup size="md">
+                <Input
+                  shadow="sm"
+                  bg="white"
+                  placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                  onChange={(e) => {
+                    fileRef.current = e.target.value;
+                  }}
+                />
+                <InputRightElement w="fit-content">
+                  <Button
+                    onClick={() =>
+                      setLesson({
+                        ...lesson,
+                        media: fileRef.current,
+                        sourceType: "audio",
+                      })
+                    }
+                  >
+                    Submit
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+            </Container>
+          </TabPanel>
+
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <InputGroup size="md">
+                <Input
+                  shadow="sm"
+                  bg="white"
+                  placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                  onChange={(e) => {
+                    fileRef.current = e.target.value;
+                  }}
+                />
+                <InputRightElement w="fit-content">
+                  <Button
+                    onClick={() =>
+                      setLesson({
+                        ...lesson,
+                        media: fileRef.current,
+                        sourceType: "file",
+                      })
+                    }
+                  >
+                    Submit
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+            </Container>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Stack>
   );
 
   useEffect(() => {
@@ -665,7 +629,7 @@ function EditLesson() {
   return (
     <>
       <Box>
-        <HStack>
+        <Stack>
           <HStack
             color="#2c698d"
             fontSize="14px"
@@ -675,34 +639,39 @@ function EditLesson() {
             <ChevronLeftIcon />
             <Text>Back</Text>
           </HStack>
-          <Heading>{lesson?.title ? lesson.title : <></>}</Heading>
-          <Spacer />
-          <Button colorScheme="red" onClick={() => handleDelete("lesson")}>
-            Delete
-          </Button>
-          <Button colorScheme="green" onClick={handleSave}>
-            Save
-          </Button>
-        </HStack>
-        <Flex mt={10}>
-          <Box width="70%" bg="white" p={5}>
-            <Box borderRadius="md" shadow="base" p="2" m="1">
-              <Text fontWeight="bold" m="1">
-                Lesson Title :
-              </Text>
-              <Input
-                shadow="sm"
-                bg="white"
-                type="text"
-                onChange={(e) =>
-                  setLesson({
-                    ...lesson,
-                    title: e.target.value,
-                  })
-                }
-                value={lesson?.title}
-              />
+          <HStack>
+            <Heading>{lesson?.title ? lesson.title : <></>}</Heading>
+            <Spacer />
+            <HStack>
+              <Button colorScheme="red" onClick={() => handleDelete("lesson")}>
+                Delete
+              </Button>
+              <Button colorScheme="green" onClick={handleSave}>
+                Save
+              </Button>
+            </HStack>
+          </HStack>
+        </Stack>
 
+        <Flex mt={10} gap={4}>
+          <Box width="70%" bg="white" p={5} borderRadius={"md"}>
+            <Text fontWeight="bold" m="1">
+              Lesson Title :
+            </Text>
+            <Input
+              shadow="sm"
+              bg="white"
+              type="text"
+              onChange={(e) =>
+                setLesson({
+                  ...lesson,
+                  title: e.target.value,
+                })
+              }
+              value={lesson?.title}
+            />
+
+            <Box my={3}>
               <Text fontWeight="bold" m="1">
                 Section :
               </Text>
@@ -719,13 +688,31 @@ function EditLesson() {
                 <option value="2">2</option>
                 <option value="3">3</option>
               </Select>
+            </Box>
 
-              <Text fontWeight="bold" m="1">
-                Media :
-              </Text>
-              <Box p="5" border="1px" borderColor="gray" borderStyle="dotted">
-                {lesson?.media ? (
-                  <>
+            <Text fontWeight="bold" m="1">
+              Media :
+            </Text>
+            <Box p="5" border="1px" borderStyle="dotted">
+              {lesson?.media ? (
+                lesson?.sourceType === "file" ? (
+                  <Stack>
+                    <iframe
+                      src={lesson.media}
+                      title="File Preview"
+                      width="auto"
+                      height="200"
+                    ></iframe>
+                    <Button
+                      my={5}
+                      colorScheme="red"
+                      onClick={handleDeleteMedia}
+                    >
+                      Delete Media
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Stack>
                     <ReactPlayer
                       width="full"
                       controls={true}
@@ -738,91 +725,109 @@ function EditLesson() {
                     >
                       Delete Media
                     </Button>
-                  </>
-                ) : (
-                  <MediaType />
-                )}
-              </Box>
-              <Progress value={progress} />
+                  </Stack>
+                )
+              ) : (
+                <MediaType />
+              )}
+            </Box>
+            <Progress value={progress} />
 
-              <Stack
-                borderRadius="md"
-                p="2"
-                // mr="2"
-                // ml="2"
+            <Box borderRadius="md" my={4}>
+              <Heading size="sm">Description :</Heading>
+
+              <Box
+                my={3}
+                border={"1px"}
+                h={100}
+                borderColor={"gray.200"}
+                borderStyle={"dashed"}
               >
-                <Heading size="sm">Description :</Heading>
-
                 {lesson?.description ? (
                   <>{parse(lesson?.description ? lesson?.description : null)}</>
-                ) : null}
+                ) : (
+                  <Center py={5}>
+                    <Text fontSize={12} color={"gray.300"} fontWeight={500}>
+                      Description Preview will be displayed here
+                    </Text>
+                  </Center>
+                )}
+              </Box>
 
-                <ReactQuill
-                  ref={inputRef}
-                  theme="snow"
-                  style={{
-                    backgroundColor: "white",
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.11), 0 3px 10px 0 rgba(0, 0, 0, 0.1)",
-                  }}
-                  onChange={(e) =>
-                    setLesson({
-                      ...lesson,
-                      description: e,
-                    })
-                  }
-                />
-              </Stack>
+              <ReactQuill
+                ref={inputRef}
+                theme="snow"
+                style={{
+                  backgroundColor: "white",
+                  boxShadow:
+                    "0 2px 4px 0 rgba(0, 0, 0, 0.11), 0 3px 10px 0 rgba(0, 0, 0, 0.1)",
+                }}
+                onChange={(e) =>
+                  setLesson({
+                    ...lesson,
+                    description: e,
+                  })
+                }
+              />
+            </Box>
 
-              {/* <HStack m="2">
+            {/* <HStack m="2">
 								<Text>Files</Text>
 								<Spacer />
 								<Button size="xs" colorScheme="green">
 									Add Files
 								</Button>
 							</HStack> */}
-              <Box
-                borderRadius="md"
-                border="1px"
-                borderColor="gray.50"
-                pl="2"
-                pr="2"
-                mr="2"
-                ml="2"
-              >
-                {lesson?.download ? (
-                  <Box borderBottom="1px" borderColor="gray.50">
-                    <HStack>
-                      <Text>
-                        {/* {getFileName(
+            <Box
+              borderRadius="md"
+              border="1px"
+              borderColor="gray.50"
+              px={2}
+              mx={2}
+            >
+              {lesson?.download ? (
+                <Box borderBottom="1px" borderColor="gray.50">
+                  <HStack>
+                    <Text>
+                      {/* {getFileName(
 													data.download
 												)} */}
-                      </Text>
-                      <Spacer />
-                      <a
-                        href={lesson.download}
-                        download
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <FiDownload />
-                      </a>
-                      <FiDelete />
-                    </HStack>
-                  </Box>
-                ) : (
-                  <Box borderBottom="1px" borderColor="gray.50"></Box>
-                )}
-              </Box>
+                    </Text>
+                    <Spacer />
+                    <a
+                      href={lesson.download}
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <FiDownload />
+                    </a>
+                    <FiDelete />
+                  </HStack>
+                </Box>
+              ) : (
+                <Box borderBottom="1px" borderColor="gray.50"></Box>
+              )}
             </Box>
           </Box>
 
-          <Box width="30%">
-            <Box borderRadius="md" shadow="base" p="2" m="1" bg="white">
-              <Heading fontSize="md">Status</Heading>
+          <Box
+            m="1"
+            width="30%"
+            h={"fit-content"}
+            bg={"white"}
+            shadow="base"
+            p={5}
+            borderRadius="md"
+          >
+            <Box>
+              <Heading mb={2} fontSize="md">
+                Status
+              </Heading>
               <RadioGroup>
                 <Stack direction="column">
                   <RadioGroup
+                    value={lesson?.status}
                     onChange={(e) =>
                       setLesson({
                         ...lesson,
@@ -832,7 +837,10 @@ function EditLesson() {
                   >
                     <Stack>
                       <Radio
-                        checked={lesson?.status === "draft"}
+                        // checked={lesson?.status === "draft"}
+                        // defaultChecked={
+                        //   lesson?.status === "draft" ? true : false
+                        // }
                         value="draft"
                         onChange={(e) =>
                           handleRadioButton(e.target.checked, e.target.value)
@@ -841,7 +849,11 @@ function EditLesson() {
                         Draft
                       </Radio>
                       <Radio
-                        checked={lesson?.status === "published"}
+                        // checked={lesson?.status === "published"}
+                        // defaultChecked={
+                        //   // lesson?.status === "published" ? true : false
+                        //   true
+                        // }
                         value="published"
                         onChange={(e) =>
                           handleRadioButton(e.target.checked, e.target.value)

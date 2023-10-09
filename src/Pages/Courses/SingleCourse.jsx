@@ -47,6 +47,7 @@ import React, {
 import {
   FiBookOpen,
   FiEdit2,
+  FiFile,
   FiFolder,
   FiPlus,
   FiVideo,
@@ -72,16 +73,15 @@ import {
 } from "../../Constants/constants";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
-  addDocumentFirebase,
-  arrayRemoveFirebase,
   arrayUnionFirebase,
-  getCollectionFirebase,
   getSingleDocumentFirebase,
   setDocumentFirebase,
   updateDocumentFirebase,
   uploadFileFirebase,
 } from "../../Api/firebaseApi";
 import { addDoc, arrayUnion } from "firebase/firestore";
+import DropboxUploader from "../../Components/DropBox/DropboxUploader";
+import moment from "moment";
 
 const SingleCourse = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -92,9 +92,12 @@ const SingleCourse = () => {
   const [update, setUpdate] = useState(false);
   const [lesson, setLesson] = useState(null);
   const [editActive, setEditActive] = useState(false);
+  const [videoThumbnail, setVideoThumbnail] = useState("");
   const [dataEdit, setDataEdit] = useState({
     description: courseDetail?.description || "",
   });
+
+  const [saveThumbnail, setSaveThumbnail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [editTitle, setEditTitle] = useState(false);
   const [defaultIndex, setDefaultIndex] = useState(0);
@@ -103,17 +106,33 @@ const SingleCourse = () => {
   const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [categoryEdit, setCategoryEdit] = useState("");
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const [shareLink, setShareLink] = useState("");
+  const [generatedLink, setGeneratedLink] = useState("");
+  const [value, setValue] = useState("");
+
   const globalState = useUserStore();
-  const { currentProject } = globalState;
+
+  const { currentProject, currentCompany } = globalState;
+
   const toast = useToast();
 
-  const videoRef = useRef();
+  const fileRef = useRef();
 
   const onEditPrice = () => {
     setEditPriceActive(true);
     setDataEdit({ ...dataEdit, price: courseDetail.price });
     setCourseDetail({ ...courseDetail, price: parseInt(dataEdit.price) });
   };
+
+  function openModal() {
+    setModalOpen(true);
+  }
+
+  function closeModal() {
+    setModalOpen(false);
+  }
 
   const uid = auth?.currentUser?.uid;
   const params = useParams();
@@ -135,28 +154,6 @@ const SingleCourse = () => {
       setUpdate(false);
     } else return;
   };
-
-  // const getLesson = async () => {
-  // 	if (uid) {
-  // 		// const conditions = [
-  // 		// 	{ field: "createdBy", operator: "==", value: uid },
-  // 		// ];
-
-  // 		const conditions = [];
-  // 		const sortBy = null;
-  // 		const limitValue = null;
-  // 		// const res = await getCollectionFirebase(
-  // 		// 	`courses/${params.id_course}/lessons`,
-  // 		// 	{ conditions },
-  // 		// 	{ sortBy },
-  // 		// 	{ limitValue: null }
-  // 		// );
-  // 		const res = await getCollectionFirebase(`courses/${params?.id_course}/lessons`, { conditions }, { sortBy }, { limitValue })
-  // 		setLesson(res);
-  // 	} else return;
-  // };
-
-  console.log(priceType, "ini pricetype");
 
   const handleSaveEditPrice = async () => {
     if (priceType === "paid") {
@@ -248,6 +245,53 @@ const SingleCourse = () => {
     }
   };
 
+  const handleShareLinkChange = (x) => {
+    if (x !== "") {
+      setShareLink({ link: x?.link, type: x?.type });
+      const { link, type } = x;
+      let htmlContent = "";
+
+      if (type === "image") {
+        htmlContent = `<p><img src="${link}" alt="Image" width="500px" /></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else if (type === "audio") {
+        htmlContent = `<p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else if (type === "video") {
+        htmlContent = `<p><iframe class="ql-audio" frameborder="0" allowfullscreen="true" src=${link}></iframe></p><br/> <p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p>`;
+      } else {
+        htmlContent = `<p>file: <a href=${link} rel="noopener noreferrer" target="_blank">${JSON.stringify(
+          link
+        )}</a></p><br/> `;
+      }
+
+      setValue((prevContent) => prevContent + ` ${htmlContent}`);
+    }
+  };
+
+  const handleSaveThumbnail = async () => {
+    setSaveThumbnail(true);
+    try {
+      const updateRes = await updateDocumentFirebase(
+        "courses",
+        params.id_course,
+        courseDetail
+      );
+
+      console.log(updateRes);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSaveThumbnail(false);
+    }
+  };
+
+  console.log(courseDetail);
+
   const handleModal = (type, course, lesson) => {
     onOpen();
     const obj = {
@@ -275,10 +319,10 @@ const SingleCourse = () => {
     setEditActive(false);
   };
 
-  const submitYoutubeUrl = async () => {
+  const submitUrl = async (type) => {
     await updateDocumentFirebase("courses", params.id_course, {
-      media: videoRef.current,
-      sourceType: "youtube",
+      media: fileRef.current,
+      sourceType: type,
     });
     getCourseDetail();
   };
@@ -298,10 +342,10 @@ const SingleCourse = () => {
     });
 
     if (courseDetail?.courseType === "full_course") {
-      const videoRef = ref(storage, courseDetail?.mediaPath);
+      const fileRef = ref(storage, courseDetail?.mediaPath);
 
       // // Delete the file
-      deleteObject(videoRef)
+      deleteObject(fileRef)
         .then(() => {
           // File deleted successfully
           console.log("success deleting from storage");
@@ -436,120 +480,122 @@ const SingleCourse = () => {
   };
 
   const MediaType = () => (
-    <Tabs
-      isFitted
-      variant="soft-rounded"
-      defaultIndex={defaultIndex}
-      onChange={(index) => setDefaultIndex(index)}
-    >
-      <TabList>
-        <Tab>
-          <HStack>
-            <FiVideo />
-            <Text>Video</Text>
-          </HStack>
-        </Tab>
-        <Tab>
-          <HStack>
-            <FiVolume2 />
-            <Text>Audio</Text>
-          </HStack>
-        </Tab>
-      </TabList>
+    <Stack p={5}>
+      <HStack>
+        <Text fontWeight={500}>File</Text>
+        <Spacer />
+        <Button onClick={openModal} colorScheme={"green"} variant="outline">
+          Upload File Here
+        </Button>
+      </HStack>
+      <Tabs
+        isFitted
+        variant="soft-rounded"
+        defaultIndex={defaultIndex}
+        onChange={(index) => setDefaultIndex(index)}
+      >
+        <TabList>
+          <Tab>
+            <HStack>
+              <FiVideo />
+              <Text>Video</Text>
+            </HStack>
+          </Tab>
+          <Tab>
+            <HStack>
+              <FiVolume2 />
+              <Text>Audio</Text>
+            </HStack>
+          </Tab>
 
-      <TabPanels>
-        <TabPanel>
-          <Box borderRadius="md" p="5">
-            <Flex
-              my={5}
-              gap={5}
-              flexDirection="row"
-              w="full"
-              justifyContent="center"
-              alignItems="center"
+          <Tab>
+            <HStack>
+              <FiFile />
+              <Text>File</Text>
+            </HStack>
+          </Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
             >
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "youtube" ? "bold" : ""}
-                color={type === "youtube" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("youtube")}
-              >
-                Youtube
-              </Box>
-              <Box
-                bg="rgba(174,182,183, 0.1)"
-                p={3}
-                borderRadius={5}
-                cursor="pointer"
-                fontWeight={type === "upload" ? "bold" : ""}
-                color={type === "upload" ? "blue" : "#2d2d2d"}
-                onClick={() => setType("upload")}
-              >
-                Upload
-              </Box>
-            </Flex>
-
-            {type === "upload" ? (
-              <>
-                <MyDropzone />
-                <Text fontWeight="bold" fontSize={12}>
-                  Please Note! Accepted file types are :{" "}
-                </Text>
-                <Text color="red" fontWeight="bold" fontSize={12}>
-                  '.avi', '.mp4', '.mpeg', '.ogv', '.webm', '.3gp', '.mov',
-                  '.mkv'
-                </Text>
-              </>
-            ) : type === "youtube" ? (
-              <>
+              <Box borderRadius="md" p="5">
                 <InputGroup>
                   <Input
                     shadow="sm"
                     bg="white"
                     placeholder="Input link (e.g. youtube, dropbox, etc.)"
                     onChange={(e) => {
-                      videoRef.current = e.target.value;
+                      fileRef.current = e.target.value;
                     }}
                   />
                   <InputRightElement w="fit-content">
-                    <Button onClick={submitYoutubeUrl}>Submit</Button>
+                    <Button onClick={() => submitUrl("video")}>Submit</Button>
                   </InputRightElement>
                 </InputGroup>
-              </>
-            ) : null}
-            {progress === 0 || progress === 100 || isNaN(progress) ? null : (
-              <>
-                <Progress value={progress} />
-                <Text>{progress?.toFixed(2)} %</Text>
-              </>
-            )}
-          </Box>
-        </TabPanel>
-        <TabPanel>
-          <Container
-            borderRadius="md"
-            p="5"
-            border="1px"
-            borderColor="gray"
-            borderStyle="dotted"
-          >
-            <Center>
-              <FiVolume2 size={15} />
-            </Center>
-            <Center>
-              {/* <Button type={"file"} size={"sm"}>
-                Upload Audio
-              </Button> */}
+              </Box>
+            </Container>
+          </TabPanel>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <Box borderRadius="md" p="5">
+                <InputGroup>
+                  <Input
+                    shadow="sm"
+                    bg="white"
+                    placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                    onChange={(e) => {
+                      fileRef.current = e.target.value;
+                    }}
+                  />
+                  <InputRightElement w="fit-content">
+                    <Button onClick={() => submitUrl("audio")}>Submit</Button>
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
+            </Container>
+          </TabPanel>
 
-              <MyDropzone />
-            </Center>
-          </Container>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+          <TabPanel>
+            <Container
+              borderRadius="md"
+              p="5"
+              border="1px"
+              borderColor="gray"
+              borderStyle="dotted"
+            >
+              <Box borderRadius="md" p="5">
+                <InputGroup>
+                  <Input
+                    shadow="sm"
+                    bg="white"
+                    placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                    onChange={(e) => {
+                      fileRef.current = e.target.value;
+                    }}
+                  />
+                  <InputRightElement w="fit-content">
+                    <Button onClick={() => submitUrl("file")}>Submit</Button>
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
+            </Container>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Stack>
   );
 
   //================================================================================================
@@ -566,15 +612,17 @@ const SingleCourse = () => {
       <BreadCrumbComponent data={data} />
       <Flex flexDir="row" justifyContent="center">
         <Box alignSelf="center" w="90%">
-          <Card my={2}>
-            <HStack
+          <Card align={"center"} my={2} p={2} bg={"white"}>
+            <Box
+              align={"center"}
+              gap={3}
               // maxH="32"
               borderRadius="md"
               p="1"
               m="1"
-              width="full"
+              // width="full"
             >
-              <Stack>
+              <Stack align={"center"}>
                 <Image
                   width="200px"
                   objectFit="cover"
@@ -582,7 +630,8 @@ const SingleCourse = () => {
                   alt={courseDetail?.title}
                 />
                 <Button
-                  fontSize={8}
+                  colorScheme="green"
+                  fontSize={10}
                   size="xs"
                   onClick={() => {
                     setDatas({
@@ -593,83 +642,47 @@ const SingleCourse = () => {
                     onOpen();
                   }}
                 >
-                  Change <br />
-                  thumbnail
+                  Change thumbnail
                 </Button>
               </Stack>
-              <Box w="full">
-                {/* <Grid
-									bg='red'
-									templateRows='repeat(2, 1fr)'
-									templateColumns='repeat(9, 1fr)'
-									gap={2}
-								>
-									<GridItem colSpan={1}>
-										<Text>Title: </Text>
-									</GridItem>
-									<GridItem colSpan={8}>
-										{editTitle ?
-											<HStack flexDirection="row">
-												<Heading size="md">
-													{newTitle}
-												</Heading>
-												<Input placeholder="Digital Marketing Facebook Ads" onChange={e => (setNewTitle(e.target.value))} />
-												<Button mx={2} onClick={saveNewTitle}>Save</Button>
-											</HStack>
-											:
-											<HStack>
-												<Heading size="md">
-													{courseDetail?.title}
-												</Heading>
-												<Button
-													onClick={() => setEditTitle(!editTitle)}
-													color="rgba(0,0,0,0.3)" variant='link'
-													fontWeight={400} fontSize={12} mt={-5}
-												>
-													Edit
-												</Button>
-											</HStack>
-										}
-									</GridItem>
-									<GridItem colSpan={1}>
-										<Text>ID: </Text>
-									</GridItem>
-									<GridItem colSpan={8}>
-										<Text fontSize={10} color="rgba(0,0,0,0.3">{courseDetail?.id}</Text>
-									</GridItem>
-								</Grid> */}
 
-                <HStack>
-                  <Text>Title: </Text>
+              <Box align={"center"}>
+                <HStack justify={"center"} my={3}>
+                  {/* <Text>Title: </Text> */}
                   {editTitle ? (
-                    <HStack flexDirection="row">
+                    <Stack>
                       <Heading size="md">{newTitle}</Heading>
                       <Input
-                        placeholder="Digital Marketing Facebook Ads"
+                        size={"sm"}
+                        placeholder={courseDetail?.title}
                         onChange={(e) => setNewTitle(e.target.value)}
                       />
-                      <Button mx={2} onClick={saveNewTitle}>
+                      <Button size={"xs"} mx={2} onClick={saveNewTitle}>
                         Save
                       </Button>
-                    </HStack>
+                    </Stack>
                   ) : (
-                    <HStack>
+                    <Stack align={"center"}>
                       <Heading size="md">{courseDetail?.title}</Heading>
-                      <Button
+                      <Text
                         onClick={() => setEditTitle(!editTitle)}
-                        color="rgba(0,0,0,0.3)"
+                        // color=""
                         variant="link"
-                        fontWeight={400}
+                        fontWeight={500}
                         fontSize={12}
-                        mt={-5}
                       >
-                        Edit
-                      </Button>
-                    </HStack>
+                        Edit Title
+                      </Text>
+                    </Stack>
                   )}
                 </HStack>
 
-                <HStack fontSize={10} fontWeight={500} my={1}>
+                <HStack
+                  justify={"center"}
+                  fontSize={10}
+                  fontWeight={500}
+                  my={1}
+                >
                   <Text>ID : </Text>
                   <Text color="rgba(0,0,0,0.3">{courseDetail?.id}</Text>
                 </HStack>
@@ -682,30 +695,40 @@ const SingleCourse = () => {
 									</HStack> */}
               </Box>
               <Spacer />
-            </HStack>
+            </Box>
           </Card>
 
           <SimpleGrid
             columns={courseDetail?.courseType === "full_course" ? 2 : 1}
-            my={5}
-            gap={3}
+            spacing={3}
+            mt={5}
+            // gap={3}
           >
-            <Card bg="#CDF0EA" p={5} borderRadius="xl">
-              <Heading size="md" color="blackAlpha.800">
-                Description :{" "}
-              </Heading>
+            <Card bg="white" p={5} borderRadius="md">
+              <HStack>
+                <Heading size="sm" color="blackAlpha.800">
+                  Description :{" "}
+                </Heading>
+                <Spacer />
+
+                <Button
+                  fontSize={"12"}
+                  size={"sm"}
+                  variant="ghost"
+                  onClick={() => activateEdit()}
+                >
+                  Edit
+                </Button>
+              </HStack>
               {!editActive ? (
                 <HStack>
                   <Text fontSize={12} color="blackAlpha.800">
                     {courseDetail?.description?.length !== 0 &&
                       courseDetail?.description}
                   </Text>
-                  <Button variant="ghost" onClick={() => activateEdit()}>
-                    Edit
-                  </Button>
                 </HStack>
               ) : (
-                <HStack>
+                <Stack my={2}>
                   <Textarea
                     defaultValue={courseDetail.description}
                     value={dataEdit?.description}
@@ -713,16 +736,32 @@ const SingleCourse = () => {
                       setDataEdit({ description: e.target.value })
                     }
                   />
-                  <Button onClick={() => handleSaveDescription()}>Save</Button>
-                </HStack>
+                  <Button
+                    colorScheme="green"
+                    onClick={() => handleSaveDescription()}
+                  >
+                    Save
+                  </Button>
+                </Stack>
               )}
             </Card>
 
             {courseDetail?.courseType === "full_course" ? (
-              <Card bg="#F8E8EE" p={5} borderRadius="xl">
-                <Heading size="sm" color="blackAlpha.800">
-                  Video thumbnail :{" "}
-                </Heading>
+              <Card bg={"white"} p={5} borderRadius="md" shadow={"md"}>
+                <HStack>
+                  <Heading mb={3} size="sm" color="blackAlpha.800">
+                    Video thumbnail :{" "}
+                  </Heading>
+                  <Spacer />
+                  <Button
+                    size={"xs"}
+                    onClick={openModal}
+                    colorScheme={"green"}
+                    variant="outline"
+                  >
+                    Upload File Here
+                  </Button>
+                </HStack>
                 {courseDetail?.videoThumbnail ? (
                   <>
                     <ReactPlayer
@@ -731,28 +770,68 @@ const SingleCourse = () => {
                       url={courseDetail?.videoThumbnail}
                       autoPlay
                     />
-                    <Button
-                      my={2}
-                      colorScheme="red"
-                      onClick={handleDeleteMedia}
-                    >
-                      Delete Media
-                    </Button>
+                    <HStack justifyContent={"center"}>
+                      <Button
+                        size={"sm"}
+                        isLoading={saveThumbnail}
+                        my={2}
+                        colorScheme="green"
+                        onClick={handleSaveThumbnail}
+                      >
+                        Save Media
+                      </Button>
+                      <Button
+                        size={"sm"}
+                        my={2}
+                        colorScheme="red"
+                        onClick={handleDeleteMedia}
+                      >
+                        Delete Media
+                      </Button>
+                    </HStack>
                   </>
                 ) : (
-                  <MyDropzone />
+                  <InputGroup size="sm" my={3}>
+                    <Input
+                      shadow="sm"
+                      bg="white"
+                      placeholder="Input link (e.g. youtube, dropbox, etc.)"
+                      onChange={(e) => {
+                        setVideoThumbnail(e.target.value);
+                      }}
+                    />
+                    <InputRightElement w="fit-content">
+                      <Button
+                        size={"sm"}
+                        onClick={() =>
+                          setCourseDetail({
+                            ...courseDetail,
+                            videoThumbnail: videoThumbnail,
+                          })
+                        }
+                      >
+                        Submit
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
                 )}
                 {progress !== 0 && progress !== 100 ? (
                   <Progress value={progress} />
                 ) : null}
               </Card>
             ) : null}
-            <Card my={5} p={5} bg="#FFFEC4">
+
+            <Card my={3} p={5} bg="white" borderRadius={"md"}>
               <Heading my={2} size="sm" color="blackAlpha.800">
                 Price Type:{" "}
               </Heading>
-              <Flex gap="2" justifyContent="space-between">
+              <Flex
+                gap="2"
+                justifyContent="space-between"
+                alignItems={"center"}
+              >
                 <Select
+                  size={"sm"}
                   w="30%"
                   value={priceType ?? courseDetail?.priceType}
                   defaultValue={courseDetail?.priceType}
@@ -810,7 +889,7 @@ const SingleCourse = () => {
                 )}
               </Flex>
             </Card>
-            <Card my={5} p={5} bg="#CBFFA9">
+            <Card my={3} p={5} bg="white">
               <Stack>
                 <Heading y={2} size="sm" color="blackAlpha.800">
                   Category
@@ -826,16 +905,32 @@ const SingleCourse = () => {
                       bg="white"
                       onChange={(e) => setCategoryEdit(e.target.value)}
                     />
-                    <Button onClick={handleSaveEditCategory}>Save</Button>
+                    <Button size={"sm"} onClick={handleSaveEditCategory}>
+                      Save
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <UnorderedList mx={5}>
+                    <Flex flexWrap={"wrap"} mx={5} gap={3} py={3}>
                       {courseDetail?.category?.map((x, i) => (
-                        <ListItem key={i}>{x}</ListItem>
+                        <Box
+                          border={"1px"}
+                          borderColor={"gray.100"}
+                          borderRadius={"sm"}
+                          shadow={"sm"}
+                          px={2}
+                          py={1}
+                          textTransform={"capitalize"}
+                          key={i}
+                        >
+                          {x}
+                        </Box>
                       ))}
-                    </UnorderedList>
-                    <Button onClick={() => setIsEditingCategory(true)}>
+                    </Flex>
+                    <Button
+                      size={"sm"}
+                      onClick={() => setIsEditingCategory(true)}
+                    >
                       Edit
                     </Button>
                   </>
@@ -996,21 +1091,35 @@ const SingleCourse = () => {
             </Card>
           ) : courseDetail?.courseType === "mini_course" &&
             courseDetail?.media ? (
-            <Card bg="white" p={5} my={2}>
-              <ReactPlayer
-                width="full"
-                controls={true}
-                url={courseDetail?.media}
-              />
-              <Button
-                my={5}
-                w="md"
-                colorScheme="red"
-                onClick={deleteMediaMiniCourse}
-              >
-                Delete Video
-              </Button>
-            </Card>
+            courseDetail?.sourceType === "file" ? (
+              <Stack>
+                <iframe
+                  src={courseDetail.media}
+                  title="File Preview"
+                  width="auto"
+                  height="200"
+                ></iframe>
+                <Button my={5} colorScheme="red" onClick={handleDeleteMedia}>
+                  Delete Media
+                </Button>
+              </Stack>
+            ) : (
+              <Card bg="white" p={5} my={2}>
+                <ReactPlayer
+                  width="full"
+                  controls={true}
+                  url={courseDetail?.media}
+                />
+                <Button
+                  my={5}
+                  w="md"
+                  colorScheme="red"
+                  onClick={deleteMediaMiniCourse}
+                >
+                  Delete Video
+                </Button>
+              </Card>
+            )
           ) : (
             <Card bg="white" p={5} my={2}>
               <MediaType />
@@ -1026,6 +1135,17 @@ const SingleCourse = () => {
         datas={datas}
         setUpdate={setUpdate}
         update={update}
+      />
+
+      <DropboxUploader
+        isActive={isModalOpen}
+        onClose={closeModal}
+        parentPath={`/${currentCompany}/lesson/${
+          params.id_course
+        }/${moment().format()}`}
+        shareLink={shareLink}
+        setShareLink={handleShareLinkChange}
+        setGeneratedLink={setGeneratedLink}
       />
     </>
   );

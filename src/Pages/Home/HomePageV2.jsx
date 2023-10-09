@@ -472,6 +472,27 @@ function HomePageV2() {
     }
   };
 
+  console.log(pageData?.features, "ini features");
+
+  const handleCheckSwitch = (value) => {
+    if (!pageData.features) {
+      // If pageData.features is undefined or null, initialize it as an empty array
+      setPageData({ ...pageData, features: [] });
+    }
+
+    if (pageData.features.includes(value)) {
+      setPageData({
+        ...pageData,
+        features: pageData.features.filter((item) => item !== value),
+      });
+    } else {
+      setPageData({
+        ...pageData,
+        features: [...pageData.features, value],
+      });
+    }
+  };
+
   const handleDeleteCurrentBanner = async (i) => {
     let newArr = pageData.banner;
 
@@ -481,6 +502,10 @@ function HomePageV2() {
       console.log(newArr);
       setPageData({ ...pageData, banner: newArr });
     }
+  };
+
+  const handleChange = (value) => {
+    console.log(value);
   };
 
   useEffect(() => {
@@ -493,13 +518,6 @@ function HomePageV2() {
     getDataPage();
     getDataDomain();
     getDataProject();
-
-    if (pageData) {
-      setTicketUsed(pageData?.features?.includes("ticket"));
-      setCourseUsed(pageData?.features?.includes("course"));
-      setProductUsed(pageData?.features?.includes("product"));
-      setListingUsed(pageData?.features?.includes("listing"));
-    }
 
     return () => {};
   }, [globalState.currentProject]);
@@ -776,59 +794,94 @@ function HomePageV2() {
                           </Stack>
                         ) : submenu.name === "Feed" ? (
                           <Box>
+                            {/* <Stack spacing={5} direction="row">
+                              <Checkbox
+                                isChecked={pageData?.features?.includes(
+                                  "product"
+                                )}
+                              >
+                                Product
+                              </Checkbox>
+                              <Checkbox
+                                isChecked={pageData?.features?.includes(
+                                  "course"
+                                )}
+                              >
+                                Course
+                              </Checkbox>
+                              <Checkbox
+                                isChecked={pageData?.features?.includes(
+                                  "ticket"
+                                )}
+                              >
+                                Ticket
+                              </Checkbox>
+                              <Checkbox
+                                isChecked={pageData?.features?.includes(
+                                  "listing"
+                                )}
+                              >
+                                Listing
+                              </Checkbox>
+                            </Stack> */}
+
                             <HStack spacing={4} justify={"center"} mb={3}>
                               <Switch
                                 size={"sm"}
-                                // defaultChecked={productUsed}
-                                isChecked={productUsed}
-                                onChange={() => setProductUsed((prev) => !prev)}
+                                value={"product"}
+                                isChecked={pageData?.features?.includes(
+                                  "product"
+                                )}
+                                onChange={(e) =>
+                                  handleCheckSwitch(e.target.value)
+                                }
                               >
                                 Product
                               </Switch>
                               <Switch
                                 size={"sm"}
-                                // defaultChecked={courseUsed}
-                                isChecked={courseUsed}
-                                onChange={() => setCourseUsed((prev) => !prev)}
+                                value={"course"}
+                                isChecked={pageData?.features?.includes(
+                                  "course"
+                                )}
+                                onChange={(e) =>
+                                  handleCheckSwitch(e.target.value)
+                                }
                               >
                                 Course
                               </Switch>
                               <Switch
                                 size={"sm"}
+                                value={"ticket"}
                                 // defaultChecked={ticketUsed}
-                                isChecked={ticketUsed}
-                                onChange={() => setTicketUsed((prev) => !prev)}
+                                isChecked={pageData?.features?.includes(
+                                  "ticket"
+                                )}
+                                onChange={(e) =>
+                                  handleCheckSwitch(e.target.value)
+                                }
                               >
                                 Ticket
                               </Switch>
                               <Switch
                                 size={"sm"}
-                                // defaultChecked={listingUsed}
-                                isChecked={listingUsed}
-                                onChange={() => setTicketUsed((prev) => !prev)}
+                                value={"listing"}
+                                isChecked={pageData?.features?.includes(
+                                  "listing"
+                                )}
+                                onChange={(e) =>
+                                  handleCheckSwitch(e.target.value)
+                                }
                               >
                                 Listing
                               </Switch>
                             </HStack>
-                            {/* <Center shadow={"md"} py={5}>
-                              <Stack align={"center"}>
-                                <Text>Sell your product</Text>
-                                <Button
-                                  size={"xs"}
-                                  colorScheme="blue"
-                                  onClick={() => navigate("/products")}
-                                >
-                                  Create product
-                                </Button>
-                                <Button
-                                  size={"xs"}
-                                  colorScheme="blue"
-                                  onClick={() => navigate("/ticket")}
-                                >
-                                  Create Ticket
-                                </Button>
-                              </Stack>
-                            </Center> */}
+                            <Center py={5}>
+                              <Text color={"gray.300"}>
+                                Deactivate it in theme, edit the features and
+                                delete one or some
+                              </Text>
+                            </Center>
                           </Box>
                         ) : submenu.name === "Theme Layout" ? (
                           <ThemeSettingForm
