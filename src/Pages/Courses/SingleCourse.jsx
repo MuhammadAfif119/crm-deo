@@ -537,10 +537,14 @@ const SingleCourse = () => {
             borderStyle="dotted"
           >
             <Center>
-              <FiVolume2 width="25px" />
+              <FiVolume2 size={15} />
             </Center>
             <Center>
-              <Button>Upload Audio</Button>
+              {/* <Button type={"file"} size={"sm"}>
+                Upload Audio
+              </Button> */}
+
+              <MyDropzone />
             </Center>
           </Container>
         </TabPanel>

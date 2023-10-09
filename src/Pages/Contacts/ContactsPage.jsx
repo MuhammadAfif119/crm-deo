@@ -156,22 +156,31 @@ const ContactsPage = () => {
     }
   };
 
-  // const handleTypesenseSearch = (q) => {
-  // 	const searchParameters = {
-  // 		q: q,
-  // 		query_by: "name",
-  // 		filter_by: `formId: ${formId} && column:${column} `,
-  // 		sort_by: "_text_match:desc"
-  // 	};
-  // 	clientTypessense
-  // 		.collections("contacts")
-  // 		.documents()
-  // 		.search(searchParameters)
-  // 		.then((x) => {
-  // 			const newData = x.hits.map((y) => { return { ...y.document } })
-  // 			setColumnsData(newData)
-  // 		});
-  // }
+  const handleTypesenseSearch = (q) => {
+    const searchParameters = {
+      q: q,
+      query_by: "name, email, phoneNumber",
+      filter_by: `projectId: ${globalState.currentProject}`,
+      sort_by: "_text_match:desc",
+    };
+
+    if (q) {
+      clientTypessense
+        .collections("contacts")
+        .documents()
+        .search(searchParameters)
+        .then((x) => {
+          const newData = x.hits.map((y) => {
+            return { ...y.document };
+          });
+          setDataSearchContact(newData, "ini data");
+          setInputSearch(q);
+        });
+    } else {
+      setDataSearchContact(contactList);
+      setInputSearch(q);
+    }
+  };
 
   const handleLoadMore = () => {
     setCurrentPage((prev) => prev + 1); // Pindahkan ke halaman berikutnya saat tombol "Load More" diklik
@@ -250,21 +259,6 @@ const ContactsPage = () => {
     }
   };
 
-  const searchFilterFunction = (text) => {
-    if (text) {
-      const newData = contactList.filter((item) => {
-        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setDataSearchContact(newData);
-      setInputSearch(text);
-    } else {
-      setDataSearchContact(contactList);
-      setInputSearch(text);
-    }
-  };
-
   const inputStyles = {
     "&::placeholder": {
       color: "gray.500",
@@ -318,7 +312,8 @@ const ContactsPage = () => {
           color="black"
           sx={inputStyles}
           fontSize="sm"
-          onChange={(e) => searchFilterFunction(e.target.value)}
+          // onChange={(e) => searchFilterFunction(e.target.value)}
+          onChange={(e) => handleTypesenseSearch(e.target.value)}
         />
 
         <Stack
@@ -559,6 +554,7 @@ const ContactsPage = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Filter Date</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <Center>
               <DatePicker onDateChange={handleDateRangeChange} />

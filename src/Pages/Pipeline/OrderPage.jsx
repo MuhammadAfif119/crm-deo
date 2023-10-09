@@ -27,6 +27,7 @@ import {
   ModalFooter,
   Input,
   Select,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -586,6 +587,7 @@ const OrderPage = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Filter Date</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <Center>
               <DatePicker onDateChange={handleDateRangeChange} />
