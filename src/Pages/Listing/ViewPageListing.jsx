@@ -50,7 +50,7 @@ const ViewPageListing = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [categoryData, setCategoryData] = useState({});
-  const [categoryModule, setCategoryModules] = useState();
+  const [categoryModule, setCategoryModule] = useState();
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCategoryNiche, setSelectedCategoryNiche] = useState(null);
@@ -185,14 +185,13 @@ const ViewPageListing = () => {
     0
   );
 
-  console.log(totalItems, "xxx");
 
   const getDataCategory = async () => {
     try {
       const unsubscribe = onSnapshot(
         doc(db, "categories", projectId),
         (docCat) => {
-          setCategoryModules({ id: docCat.id, ...docCat.data() });
+          setCategoryModule({ id: docCat.id, ...docCat.data() });
         }
       );
 
@@ -337,7 +336,7 @@ const ViewPageListing = () => {
                 fontWeight={selectedCategory === x ? 500 : "normal"}
                 color={selectedCategory === x ? "blue.500" : "gray.600"}
               >
-                {x === "listing" ? x : "listing"}
+                {x === "listing" && x}
               </Text>
             ))}
           </HStack>
