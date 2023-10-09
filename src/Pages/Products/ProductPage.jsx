@@ -187,7 +187,6 @@ const ProductPage = () => {
       const unsubscribe = onSnapshot(
         doc(db, "categories", projectId),
         (docCat) => {
-          console.log({ id: docCat.id, ...docCat.data() }, 'tulul');
           setCategoryModule({ id: docCat.id, ...docCat.data() });
         }
       );
