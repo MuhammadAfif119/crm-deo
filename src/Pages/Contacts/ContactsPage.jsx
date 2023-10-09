@@ -265,6 +265,10 @@ const ContactsPage = () => {
     },
   };
 
+  const searchProject = globalState.projects.find(
+    (x) => x.id === globalState.currentProject
+  );
+
   return (
     <Stack p={[1, 1, 5]}>
       <Stack spacing={4}>
@@ -340,93 +344,108 @@ const ContactsPage = () => {
               {inputSearch === "" ? (
                 <>
                   {contactList?.length > 0 &&
-                    contactList?.map((x, index) => (
-                      <Tr key={index}>
-                        <Td fontSize="sm" textTransform={"capitalize"}>
-                          {x?.name}
-                        </Td>
-                        <Td fontSize="sm">{x?.phoneNumber}</Td>
-                        <Td fontSize="sm">{x?.email}</Td>
-                        <Td fontSize="sm">
-                          {moment(x?.createdAt.seconds * 1000).format("LLL")}
-                        </Td>
-                        <Td fontSize="sm">
-                          {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
-                        </Td>
-                        {/* <Td fontSize="sm">{x?.tags}</Td> */}
-                        <Td fontSize="sm">
-                          <HStack>
-                            <Button
-                              size={"sm"}
-                              px={3}
-                              onClick={() => console.log(x)}
-                              cursor={"pointer"}
-                              colorScheme="green"
-                            >
-                              <a
-                                href={`https://api.whatsapp.com/send?phone=${x.phoneNumber}&text=Send%20Message%20To%20This%20User`}
-                                target="_blank"
+                    contactList?.map((x, index) => {
+                      const modifiedPhoneNumber = x.phoneNumber.startsWith("08")
+                        ? "628" + x.phoneNumber.slice(2) // Replace "08" with "628"
+                        : x.phoneNumber; // Keep the phone number unchanged
+                      return (
+                        <Tr key={index}>
+                          <Td fontSize="sm" textTransform={"capitalize"}>
+                            {x?.name}
+                          </Td>
+                          <Td fontSize="sm">{modifiedPhoneNumber}</Td>
+                          <Td fontSize="sm">{x?.email}</Td>
+                          <Td fontSize="sm">
+                            {moment(x?.createdAt.seconds * 1000).format("LLL")}
+                          </Td>
+                          <Td fontSize="sm">
+                            {moment(x?.lastUpdated.seconds * 1000).format(
+                              "LLL"
+                            )}
+                          </Td>
+                          {/* <Td fontSize="sm">{x?.tags}</Td> */}
+                          <Td fontSize="sm">
+                            <HStack>
+                              <Button
+                                size={"sm"}
+                                px={3}
+                                onClick={() => console.log(x)}
+                                cursor={"pointer"}
+                                colorScheme="green"
                               >
-                                <Icon as={FaWhatsapp} boxSize={6} />
-                              </a>
-                            </Button>
-                            <Button
-                              colorScheme={"yellow"}
-                              size="sm"
-                              onClick={() => handleDetail(x)}
-                            >
-                              <Icon
-                                color={"white"}
-                                as={BiDotsHorizontalRounded}
-                                boxSize={6}
-                              />
-                            </Button>
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    ))}
+                                <a
+                                  href={`https://wa.me/${modifiedPhoneNumber}?text=Halo,%20Saya%20dari%20tim%20${searchProject.name}`}
+                                  target="_blank"
+                                >
+                                  <Icon as={FaWhatsapp} boxSize={6} />
+                                </a>
+                              </Button>
+                              <Button
+                                colorScheme={"yellow"}
+                                size="sm"
+                                onClick={() => handleDetail(x)}
+                              >
+                                <Icon
+                                  color={"white"}
+                                  as={BiDotsHorizontalRounded}
+                                  boxSize={6}
+                                />
+                              </Button>
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
                 </>
               ) : (
                 <>
                   {dataSearchContact?.length > 0 &&
-                    dataSearchContact?.map((x, index) => (
-                      <Tr key={index}>
-                        <Td fontSize="sm" textTransform={"capitalize"}>
-                          {x?.name}
-                        </Td>
-                        <Td fontSize="sm">{x?.phoneNumber}</Td>
-                        <Td fontSize="sm">{x?.email}</Td>
-                        <Td fontSize="sm">
-                          {moment(x?.createdAt.seconds * 1000).format("LLL")}
-                        </Td>
-                        <Td fontSize="sm">
-                          {moment(x?.lastUpdated.seconds * 1000).format("LLL")}
-                        </Td>
-                        {/* <Td fontSize="sm">{x?.tags}</Td> */}
-                        <Td fontSize="sm">
-                          <HStack>
-                            <Box
-                              px={3}
-                              onClick={() => console.log(x)}
-                              cursor={"pointer"}
-                            >
-                              <a
-                                href={`https://api.whatsapp.com/send?phone=${x.phoneNumber}&text=Hi`}
+                    dataSearchContact?.map((x, index) => {
+                      const modifiedPhoneNumber = x.phoneNumber.startsWith("08")
+                        ? "628" + x.phoneNumber.slice(2) // Replace "08" with "628"
+                        : x.phoneNumber; // Keep the phone number unchanged
+
+                      return (
+                        <Tr key={index}>
+                          <Td fontSize="sm" textTransform={"capitalize"}>
+                            {x?.name}
+                          </Td>
+                          <Td fontSize="sm">{modifiedPhoneNumber}</Td>
+                          <Td fontSize="sm">{x?.email}</Td>
+                          <Td fontSize="sm">
+                            {moment(x?.createdAt.seconds * 1000).format("LLL")}
+                          </Td>
+                          <Td fontSize="sm">
+                            {moment(x?.lastUpdated.seconds * 1000).format(
+                              "LLL"
+                            )}
+                          </Td>
+                          {/* <Td fontSize="sm">{x?.tags}</Td> */}
+                          <Td fontSize="sm">
+                            <HStack>
+                              <Box
+                                px={3}
+                                onClick={() => console.log(x)}
+                                cursor={"pointer"}
                               >
-                                <Icon as={FaWhatsapp} boxSize={6} />
-                              </a>
-                            </Box>
-                            <Button
-                              colorScheme={"yellow"}
-                              size="sm"
-                              onClick={() => handleDetail(x)}
-                            >
-                              Detail
-                            </Button>
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    ))}
+                                <a
+                                  href={`https://wa.me/${modifiedPhoneNumber}?text=Halo,%20Saya%20dari%20tim%20${searchProject.name}`}
+                                >
+                                  <Icon as={FaWhatsapp} boxSize={6} />
+                                </a>
+                              </Box>
+                              <Button
+                                colorScheme={"yellow"}
+                                size="sm"
+                                onClick={() => handleDetail(x)}
+                              >
+                                Detail
+                              </Button>
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
                 </>
               )}
             </Tbody>

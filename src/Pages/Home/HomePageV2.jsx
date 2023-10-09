@@ -232,8 +232,6 @@ function HomePageV2() {
     onClose();
   };
 
-  console.log(pageData, "ini pageData");
-
   const handleAddFeature = async () => {
     const existingFeatures = Array.isArray(pageData.features)
       ? pageData.features
@@ -622,7 +620,7 @@ function HomePageV2() {
                                   <Input
                                     size={"sm"}
                                     borderRadius={"md"}
-                                    placeholder={"628xxxxxxx"}
+                                    placeholder={"08xxxxxx"}
                                     defaultValue={
                                       projectData?.contactDetails
                                         ?.whatsappContact
@@ -634,9 +632,6 @@ function HomePageV2() {
                                       })
                                     }
                                   />
-                                  <Text fontSize={10}>
-                                    Use country code for phone
-                                  </Text>
                                 </Stack>
                               ) : null}
                             </Stack>
