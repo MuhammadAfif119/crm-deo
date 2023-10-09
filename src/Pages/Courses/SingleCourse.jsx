@@ -386,6 +386,8 @@ const SingleCourse = () => {
     }
   };
 
+  console.log(shareLink, "ini shareLink");
+
   const handleDeleteMedia = async () => {
     // Create a reference to the file to delete
     Swal.fire({
