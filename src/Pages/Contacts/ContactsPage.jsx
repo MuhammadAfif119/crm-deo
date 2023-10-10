@@ -221,8 +221,6 @@ const ContactsPage = () => {
     setDataNew({ ...dataNew, contactType: value });
   };
 
-  console.log(dataNew, "ini data new");
-
   const handleDateRangeChange = (dateRange) => {
     setSelectedDateRange(dateRange);
   };
@@ -353,7 +351,7 @@ const ContactsPage = () => {
                           <Td fontSize="sm" textTransform={"capitalize"}>
                             {x?.name}
                           </Td>
-                          <Td fontSize="sm">{modifiedPhoneNumber}</Td>
+                          <Td fontSize="sm">+{modifiedPhoneNumber}</Td>
                           <Td fontSize="sm">{x?.email}</Td>
                           <Td fontSize="sm">
                             {moment(x?.createdAt.seconds * 1000).format("LLL")}
@@ -410,7 +408,7 @@ const ContactsPage = () => {
                           <Td fontSize="sm" textTransform={"capitalize"}>
                             {x?.name}
                           </Td>
-                          <Td fontSize="sm">{modifiedPhoneNumber}</Td>
+                          <Td fontSize="sm">+{modifiedPhoneNumber}</Td>
                           <Td fontSize="sm">{x?.email}</Td>
                           <Td fontSize="sm">
                             {moment(x?.createdAt.seconds * 1000).format("LLL")}

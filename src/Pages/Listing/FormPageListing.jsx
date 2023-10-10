@@ -85,11 +85,11 @@ function FormPageListing() {
   const [queries, setQueries] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
   const globalState = useUserStore();
+  const [priceWarning, setPriceWarning] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
 
   const companyId = globalState.currentCompany;
-
 
   const getProject = () => {
     const res = globalState?.projects?.find(
@@ -207,6 +207,7 @@ function FormPageListing() {
     setLoading(true);
 
     if (checkPrice && priceEnd <= price) {
+      setLoading(false);
       // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
       return toast({
         title: "Deoapp.com",
@@ -215,8 +216,6 @@ function FormPageListing() {
         position: "top-right",
         isClosable: true,
       });
-
-
     }
 
     const newListing = {
@@ -398,6 +397,7 @@ function FormPageListing() {
     setLoading(true);
 
     if (checkPrice && priceEnd <= price) {
+      setLoading(false);
       // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
       return toast({
         title: "Deoapp.com",
@@ -406,8 +406,6 @@ function FormPageListing() {
         position: "top-right",
         isClosable: true,
       });
-
-
     }
 
     const newListing = {
@@ -528,6 +526,18 @@ function FormPageListing() {
     }
   };
 
+  const handlePriceInput = (value) => {
+    console.log(price, priceEnd);
+
+    if (parseInt(value) < parseInt(price)) {
+      setPriceWarning(true);
+    } else {
+      setPriceWarning(false);
+    }
+
+    setPriceEnd(value);
+  };
+
   const handleAddDetail = () => {
     setDetails([...details, { key: "", value: "" }]);
   };
@@ -586,7 +596,6 @@ function FormPageListing() {
         mb={2}
       >
         <Stack spacing={6} align={"left"} w="100%">
-
           <Flex justify={"space-between"} w="full" gap={5}>
             <FormControl id="image" isRequired>
               <HStack>
@@ -690,7 +699,7 @@ function FormPageListing() {
                 isClearable={false}
                 value={selectedCategory.filter((option) => option.value)}
                 isMulti
-                placeholder='Select or Create new ...'
+                placeholder="Select or Create new ..."
                 name="db-react-select"
                 options={categoryData}
                 className="react-select"
@@ -719,39 +728,54 @@ function FormPageListing() {
           <HStack w="100%" gap="2">
             <FormControl id="price" isRequired>
               <FormLabel>Price Start</FormLabel>
-              <HStack alignItems={'center'} justifyContent='center' >
+              <HStack alignItems={"center"} justifyContent="center">
                 <Text>Rp.</Text>
                 <Input
-                  w={'auto'}
+                  w={"auto"}
                   type="number"
-                  size={'sm'}
-                  value={(price)}
+                  size={"sm"}
+                  value={price}
                   onChange={(e) => setPrice(e.target.value)}
                 />
                 <Spacer />
-                <Text fontWeight={500}>Rp.{formatFrice(parseFloat(price || 0))}</Text>
+                <Text fontWeight={500}>
+                  Rp.{formatFrice(parseFloat(price || 0))}
+                </Text>
               </HStack>
             </FormControl>
 
-            <Center height='50px'>
-              <Divider orientation='vertical' fontWeight={'bold'} color='black' />
+            <Center height="50px">
+              <Divider
+                orientation="vertical"
+                fontWeight={"bold"}
+                color="black"
+              />
             </Center>
-
 
             {checkPrice && (
               <FormControl id="price" isRequired>
                 <FormLabel>Price End</FormLabel>
                 <HStack>
                   <Text>Rp.</Text>
-                  <Input
-                    size={'sm'}
-                    w={'auto'}
-                    type="number"
-                    value={priceEnd}
-                    onChange={(e) => setPriceEnd(e.target.value)}
-                  />
+                  <Stack>
+                    <Input
+                      borderColor={priceWarning ? "red" : null}
+                      size={"sm"}
+                      w={"auto"}
+                      type="number"
+                      value={priceEnd}
+                      onChange={(e) => handlePriceInput(e.target.value)}
+                    />
+                    {priceWarning ? (
+                      <Text color={"red"} fontSize={10}>
+                        Price end should be greater that price start
+                      </Text>
+                    ) : null}
+                  </Stack>
                   <Spacer />
-                  <Text fontWeight={500} >Rp.{formatFrice(parseFloat(priceEnd || 0))}</Text>
+                  <Text fontWeight={500}>
+                    Rp.{formatFrice(parseFloat(priceEnd || 0))}
+                  </Text>
                 </HStack>
               </FormControl>
             )}
@@ -760,7 +784,7 @@ function FormPageListing() {
           <FormControl id="contactPerson" isRequired>
             <FormLabel>Contact Person:</FormLabel>
             <Input
-              type="text"
+              type="number"
               placeholder="Phone number that the customer will contact, ex: 6287887123456"
               value={contactPerson}
               onChange={(e) => setContactPerson(e.target.value)}
@@ -768,13 +792,12 @@ function FormPageListing() {
           </FormControl>
 
           <Grid gap={3} templateColumns={{ base: "1fr", md: "1fr 4fr" }}>
-            <Stack w={'100%'} >
-              <Text fontWeight={500} >Decribe your Detail Product :</Text>
+            <Stack w={"100%"}>
+              <Text fontWeight={500}>Decribe your Detail Product :</Text>
             </Stack>
             <Stack>
               {details.map((detail, index) => (
                 <HStack key={index} align={"center"} justify={"center"}>
-
                   <FormControl id={`detail-key-${index}`}>
                     <FormLabel>Key:</FormLabel>
                     <Input
@@ -857,29 +880,19 @@ function FormPageListing() {
           {!idProject ? (
             !loading ? (
               <Flex align={"right"} justify={"right"}>
-                <Button
-                  colorScheme="blue"
-                  onClick={handleSubmit}
-                >
+                <Button colorScheme="blue" onClick={handleSubmit}>
                   Add Listing
                 </Button>
               </Flex>
             ) : (
               <Flex align={"right"} justify={"right"}>
-                <Button
-                  isLoading
-                  colorScheme="blue"
-                  isDisabled
-                >
+                <Button isLoading colorScheme="blue" isDisabled>
                   Add Listing
                 </Button>
               </Flex>
             )
           ) : !loading ? (
-            <Button
-              colorScheme="blue"
-              onClick={handleEditSubmit}
-            >
+            <Button colorScheme="blue" onClick={handleEditSubmit}>
               Edit Listing
             </Button>
           ) : (
@@ -887,7 +900,6 @@ function FormPageListing() {
               Edit Listing
             </Button>
           )}
-
         </Stack>
       </Container>
     </>

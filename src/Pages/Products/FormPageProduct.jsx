@@ -109,14 +109,13 @@ function FormPageProduct() {
 
   const projectIdDummy = "LWqxaSw9jytN9MPWi1m8";
 
-  const handleParseIntNumber = (stringWithComma) => {
-    const integerValue = parseInt(stringWithComma.replace(/,/g, ""), 10);
+  // const handleParseIntNumber = (stringWithComma) => {
+  //   if (stringWithComma !== "") {
+  //     const integerValue = parseInt(stringWithComma?.replace(/,/g, ""), 10);
 
-    return integerValue;
-  };
-
-  console.log(handleParseIntNumber(price), "ini price");
-  console.log(typeof handleParseIntNumber(price), "ini price");
+  //     return integerValue;
+  //   }
+  // };
 
   const getProject = () => {
     const res = globalState?.projects?.find(
@@ -292,8 +291,8 @@ function FormPageProduct() {
       category: selectedCategory?.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: handleParseIntNumber(price),
-      priceEnd: handleParseIntNumber(priceEnd),
+      price: parseInt(price),
+      priceEnd: priceEnd,
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -517,8 +516,8 @@ function FormPageProduct() {
       category: selectedCategory.map((categories) =>
         categories?.value.toLowerCase()
       ),
-      price: handleParseIntNumber(price),
-      priceEnd: handleParseIntNumber(priceEnd),
+      price: parseInt(price),
+      priceEnd: priceEnd,
       projectId: projectId,
       projectName: projectName.toLowerCase(),
       details: details.map((detail) => ({
@@ -700,18 +699,18 @@ function FormPageProduct() {
     }
   };
 
-  const handlePriceEnd = (value) => {
-    setPriceEnd(value);
+  // const handlePriceEnd = (value) => {
+  //   setPriceEnd(value);
 
-    const parsedEndPriceValue = handleParseIntNumber(value);
-    const parsedStartPriceValue = handleParseIntNumber(price);
+  //   const parsedEndPriceValue = handleParseIntNumber(value);
+  //   const parsedStartPriceValue = handleParseIntNumber(price);
 
-    if (parsedEndPriceValue <= parsedStartPriceValue) {
-      setValidationPrice("End price should be higher than start price");
-    } else {
-      setValidationPrice("");
-    }
-  };
+  //   if (parsedEndPriceValue <= parsedStartPriceValue) {
+  //     setValidationPrice("End price should be higher than start price");
+  //   } else {
+  //     setValidationPrice("");
+  //   }
+  // };
 
   const loadOptionsDB = (category) => {
     let arr = [];

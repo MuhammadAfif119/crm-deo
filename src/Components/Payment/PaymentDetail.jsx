@@ -36,6 +36,8 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     dataParam = dataProduct;
   }
 
+  console.log(dataParam, "ini data param");
+
   if (param.type === "ticket") {
     dataParam = dataTicket;
   }
@@ -57,11 +59,15 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
   const handleQuantityChange = (e) => {
     const newQuantity = e.target.value;
+    console.log(newQuantity);
 
     if (newQuantity === "" || (newQuantity >= 1 && newQuantity <= 3)) {
       setQuantity(newQuantity);
     }
   };
+
+  console.log(quantity, "ini qty");
+  console.log(dataParam.price * quantity, "ini qty");
 
   const toast = useToast({
     position: "top",
@@ -171,7 +177,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     setPaymentVA("");
 
     let fixPrice = 0;
-    if (dataLeads?.shippingDetails) {
+    if (dataLeads?.shippingDetails?.price) {
       fixPrice =
         dataParam?.price * quantity +
         parseInt(dataLeads?.shippingDetails?.price);
@@ -208,6 +214,24 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         amount:
           Number(dataParam.price) * quantity +
           parseInt(dataLeads.shippingDetails.price),
+        quantity: quantity,
+        userId: dataLeads.id || "",
+      };
+    } else if (param.type === "product" && dataParam.isShipping === false) {
+      updatedOrder = {
+        orders: dataOrder,
+        paymentStatus: "open",
+        orderStatus: "onProcess",
+        paymentMethod: "XENDIT_VA",
+        module: "crm",
+        category: param.type === "ticket" ? "ticket" : "product",
+        companyId: dataParam.companyId,
+        projectId: dataParam.projectId,
+        outletId: dataParam.projectId,
+        name: dataLeads.name || "",
+        email: dataLeads.email || "",
+        phoneNumber: dataLeads.phoneNumber || "",
+        amount: Number(dataParam.price) * quantity,
         quantity: quantity,
         userId: dataLeads.id || "",
       };
@@ -296,6 +320,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   };
 
   console.log(dataLeads, "ini dataleads");
+  console.log(dataParam.price, "ini price");
 
   if (thanksPage === true) {
     return (
@@ -571,12 +596,12 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
             <Stack>
               <Text>Amount :</Text>
-              {dataLeads.shippingDetails ? (
+              {dataLeads?.shippingDetails?.price ? (
                 <Text fontWeight={500}>
                   Rp.{" "}
                   {formatFrice(
                     Number(dataParam?.price) * quantity +
-                      parseInt(dataLeads.shippingDetails.price)
+                      parseInt(dataLeads?.shippingDetails?.price)
                   )}
                 </Text>
               ) : (

@@ -185,7 +185,6 @@ const ViewPageListing = () => {
     0
   );
 
-
   const getDataCategory = async () => {
     try {
       const unsubscribe = onSnapshot(
@@ -203,9 +202,26 @@ const ViewPageListing = () => {
     }
   };
 
+  // useEffect(() => {
+  //   getData();
+  //   getDataCategory();
+
+  //   return () => {
+  //     setCategoryList([]);
+  //     setSelectedCategory(null);
+  //     setSelectedCategoryNiche(null);
+  //   };
+  // }, [globalState.currentProject, page]);
+
   useEffect(() => {
-    getData();
-    getDataCategory();
+    const fetchDataWithDelay = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      getData();
+      getDataCategory();
+    };
+
+    fetchDataWithDelay();
 
     return () => {
       setCategoryList([]);

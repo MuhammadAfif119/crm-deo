@@ -2,6 +2,7 @@ import { ArrowRightIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
+  Center,
   Flex,
   Heading,
   HStack,
@@ -88,6 +89,7 @@ function BasicCardComponent(props) {
       <Box onClick={() => handleDelete()} cursor="pointer">
         <DeleteIcon />
       </Box>
+
       <Modals
         datas={data}
         isOpen={isOpen}

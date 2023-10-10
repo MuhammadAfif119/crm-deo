@@ -237,13 +237,27 @@ function SidebarComponentV3({ layout }) {
     return (
       <HStack spacing={"-1"}>
         <Box
+          sx={{
+            "&::-webkit-scrollbar": {
+              w: "2",
+              h: "3",
+            },
+            "&::-webkit-scrollbar-track": {
+              w: "6",
+              h: "5",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              borderRadius: "10",
+              bg: `gray.300`,
+            },
+          }}
           // py={5}
           height="100vh"
           // width={isDesktop ? "auto" : "150px"}
           width={"100px"}
           transition={"0.2s ease-in-out"}
           // display={"initial"}
-          // overflowY="auto"
+          overflowY="scroll"
           shadow={"xl"}
           // overflow="wrap"
           roundedBottomRight={"lg"}

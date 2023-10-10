@@ -65,7 +65,7 @@ function HomePageV2() {
   const [bannerList, setBannerList] = useState([]);
   const [progress, setProgress] = useState(0);
 
-  const [bannerInput, setBannerInput] = useState();
+  const [bannerInput, setBannerInput] = useState([]);
   const [imageLogoDark, setImageLogoDark] = useState();
   const [imageLogoLight, setImageLogoLight] = useState();
   const [imageFavicon, setImageFavicon] = useState();
@@ -418,9 +418,13 @@ function HomePageV2() {
             description: newFiles[i].type,
           });
           // setFiles(newFileArray);
-          setBannerInput(newFileArray);
-          console.log(reader.result, "ini reader result");
-          console.log(newFileArray, "ini new files");
+          if (bannerInput.length === 0) {
+            setBannerInput(newFileArray);
+          } else {
+            setBannerInput([...bannerInput, ...newFileArray]);
+          }
+          // console.log(reader.result, "ini reader result");
+          // console.log(newFileArray, "ini new files");
         };
       }
 
@@ -441,6 +445,8 @@ function HomePageV2() {
     }
   };
 
+  console.log(bannerInput);
+
   // const handleInputBanner = (value, index) => {
   //   const newBannerList = [...bannerList];
   //   newBannerList[index].link = value;
@@ -449,6 +455,8 @@ function HomePageV2() {
   // };
 
   const handleInputBanner = (value, index) => {
+    console.log(value, "ini value");
+    console.log(index, "ini index");
     const newBannerList = [...bannerList];
     newBannerList[index].link = value;
     setBannerList([...newBannerList]);
