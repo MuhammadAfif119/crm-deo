@@ -149,9 +149,11 @@ function HomePageV2() {
             links: linkList,
             contactDetails: {
               ...contactForm,
-              whatsappActive: whatsappCheck,
-              emailActive: emailCheck,
-              businessAddressActive: businessCheck,
+              whatsappActive:
+                projectData?.contactDetails?.whatsappActive || false,
+              emailActive: projectData?.contactDetails?.emailActive || false,
+              businessAddressActive:
+                projectData?.contactDetails?.businessAddressActive || false,
             },
           }
         );
@@ -445,8 +447,6 @@ function HomePageV2() {
     }
   };
 
-  console.log(bannerInput);
-
   // const handleInputBanner = (value, index) => {
   //   const newBannerList = [...bannerList];
   //   newBannerList[index].link = value;
@@ -512,9 +512,42 @@ function HomePageV2() {
     }
   };
 
-  const handleChange = (value) => {
-    console.log(value);
+  const handleFormChange = (value, name) => {
+    if (name === "whatsapp") {
+      setWhatsappCheck((prev) => !prev);
+      setProjectData({
+        ...projectData,
+        contactDetails: {
+          ...projectData.contactDetails,
+          whatsappActive: value,
+        },
+      });
+    }
+
+    if (name === "email") {
+      setEmailCheck((prev) => !prev);
+      setProjectData({
+        ...projectData,
+        contactDetails: {
+          ...projectData.contactDetails,
+          emailActive: value,
+        },
+      });
+    }
+
+    if (name === "businessAddress") {
+      setBusinessCheck((prev) => !prev);
+      setProjectData({
+        ...projectData,
+        contactDetails: {
+          ...projectData.contactDetails,
+          businessAddressActive: value,
+        },
+      });
+    }
   };
+
+  console.log(projectData, "ini project data");
 
   useEffect(() => {
     getDataPage()
@@ -610,23 +643,23 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
-                                  defaultChecked={
-                                    projectData?.contactDetails &&
-                                    projectData?.contactDetails
-                                      ?.whatsappActive === true
-                                      ? true
-                                      : false
+                                  name="whatsapp"
+                                  isChecked={
+                                    projectData?.contactDetails?.whatsappActive
                                   }
-                                  // isChecked={whatsappCheck}
-                                  onChange={() =>
-                                    setWhatsappCheck((prev) => !prev)
+                                  onChange={(e) =>
+                                    handleFormChange(
+                                      e.target.checked,
+                                      e.target.name
+                                    )
                                   }
                                   size={"sm"}
                                 />
                                 <Text fontSize={"sm"}>Contact WhatsApp</Text>
                               </HStack>
 
-                              {whatsappCheck === true ? (
+                              {projectData?.contactDetails?.whatsappActive ===
+                              true ? (
                                 <Stack>
                                   <Input
                                     size={"sm"}
@@ -670,22 +703,23 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
-                                  defaultChecked={
-                                    projectData?.contactDetails?.emailActive ===
-                                    true
-                                      ? true
-                                      : false
+                                  name={"email"}
+                                  isChecked={
+                                    projectData?.contactDetails?.emailActive
                                   }
-                                  isChecked={emailCheck}
-                                  onChange={() => {
-                                    setEmailCheck((prev) => !prev);
+                                  onChange={(e) => {
+                                    handleFormChange(
+                                      e.target.checked,
+                                      e.target.name
+                                    );
                                   }}
                                   size={"sm"}
                                 />
                                 <Text fontSize={"sm"}>Contact Email</Text>
                               </HStack>
 
-                              {emailCheck === true ? (
+                              {projectData?.contactDetails?.emailActive ===
+                              true ? (
                                 <Stack>
                                   <Input
                                     size={"sm"}
@@ -722,22 +756,24 @@ function HomePageV2() {
                             >
                               <HStack>
                                 <Switch
-                                  defaultChecked={
+                                  name="businessAddress"
+                                  isChecked={
                                     projectData?.contactDetails
-                                      ?.businessAddressActive === true
-                                      ? true
-                                      : false
+                                      ?.businessAddressActive
                                   }
-                                  isChecked={businessCheck}
-                                  onChange={() =>
-                                    setBusinessCheck((prev) => !prev)
+                                  onChange={(e) =>
+                                    handleFormChange(
+                                      e.target.checked,
+                                      e.target.name
+                                    )
                                   }
                                   size={"sm"}
                                 />
                                 <Text fontSize={"sm"}>Business Address</Text>
                               </HStack>
 
-                              {businessCheck === true && (
+                              {projectData?.contactDetails
+                                ?.businessAddressActive === true && (
                                 <Textarea
                                   onChange={(e) =>
                                     setContactForm({
@@ -802,37 +838,6 @@ function HomePageV2() {
                           </Stack>
                         ) : submenu.name === "Feed" ? (
                           <Box>
-                            {/* <Stack spacing={5} direction="row">
-                              <Checkbox
-                                isChecked={pageData?.features?.includes(
-                                  "product"
-                                )}
-                              >
-                                Product
-                              </Checkbox>
-                              <Checkbox
-                                isChecked={pageData?.features?.includes(
-                                  "course"
-                                )}
-                              >
-                                Course
-                              </Checkbox>
-                              <Checkbox
-                                isChecked={pageData?.features?.includes(
-                                  "ticket"
-                                )}
-                              >
-                                Ticket
-                              </Checkbox>
-                              <Checkbox
-                                isChecked={pageData?.features?.includes(
-                                  "listing"
-                                )}
-                              >
-                                Listing
-                              </Checkbox>
-                            </Stack> */}
-
                             <HStack spacing={4} justify={"center"} mb={3}>
                               <Switch
                                 size={"sm"}
