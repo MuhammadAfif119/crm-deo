@@ -40,13 +40,17 @@ function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
   const toast = useToast();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const handleSignup = () => {
@@ -187,7 +191,6 @@ function SignUpPage() {
                   color={"blackAlpha.700"}
                   onChange={(e) => setName(e.target.value)}
                 />
-
               </InputGroup>
             </Stack>
 
@@ -213,7 +216,6 @@ function SignUpPage() {
                   color={"blackAlpha.700"}
                   onChange={(e) => setNohp(e.target.value)}
                 />
-
               </InputGroup>
             </Stack>
 
@@ -297,24 +299,24 @@ function SignUpPage() {
                   placeholder="Confirm password"
                   fontSize={"sm"}
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "text" : "password"}
                   bgColor={"white"}
                   color={"blackAlpha.700"}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <InputRightElement>
-                  {showPassword ? (
+                  {showConfirmPassword ? (
                     <MdVisibilityOff
                       size={20}
                       color="black"
-                      onClick={togglePasswordVisibility}
+                      onClick={toggleConfirmPasswordVisibility}
                       style={{ cursor: "pointer" }}
                     />
                   ) : (
                     <MdVisibility
                       size={20}
                       color="black"
-                      onClick={togglePasswordVisibility}
+                      onClick={toggleConfirmPasswordVisibility}
                       style={{ cursor: "pointer" }}
                     />
                   )}

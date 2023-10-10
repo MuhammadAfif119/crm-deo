@@ -119,6 +119,10 @@ function generateHTML(formFields) {
                 </button>
               </div>
 
+              <div id="redirectLink" style="text-align: center; margin-top: 20px; display: none;">
+              <p>If it doesn't directing to a new page, <a id="clickHereLink" href="" target="_blank">Click here</a></p>
+            </div>
+
             `;
 
         break;
@@ -194,6 +198,12 @@ function generateJS(
             const formRoute = dataForm.formId;
             const phoneRoute = dataForm.phoneNumber;
             const nameRoute = dataForm.name;
+
+            const redirectLink = document.getElementById('redirectLink');
+            redirectLink.style.display = 'block';
+
+            const clickHereLink = document.getElementById('clickHereLink');
+            clickHereLink.href = "https://crm.deoapp.com/payment/${selectedProductMethod}/"+ "${selectedPaymentMethod}"+'/'+ "${projectId}" +'/'+ phoneRoute + '/'+ nameRoute + '/'+ encodeURIComponent(formRoute);
 
             window.location.href = "https://crm.deoapp.com/payment/${selectedProductMethod}/"+ "${selectedPaymentMethod}"+'/'+ "${projectId}" +'/'+ phoneRoute + '/'+ nameRoute + '/'+ encodeURIComponent(formRoute);
 
@@ -277,6 +287,7 @@ function FormBuilderPage() {
   const [selectedDestination, setSelectedDestination] = useState({});
   const [fullAddress, setFullAddress] = useState();
   const [selectedCourier, setSelectedCourier] = useState();
+  const [directLink, setDirectLink] = useState("");
 
   const [ticketActive, setTicketActive] = useState("");
 
@@ -284,6 +295,8 @@ function FormBuilderPage() {
 
   const [membershipList, setMembershipList] = useState([]);
   const [selectedMemberships, setSelectedMemberships] = useState([]);
+
+  const [redirectUrl, setRedirectUrl] = useState(false);
 
   const handleMembershipSelect = (membership) => {
     if (selectedMemberships.includes(membership)) {
@@ -346,13 +359,14 @@ function FormBuilderPage() {
 
         const handleSubmitProduct = async () => {
           setLoading(true);
+          setRedirectUrl(true);
 
           let updateData = formValues;
           updateData.formId = formId;
 
           console.log(formValues);
 
-          if (formData?.product_used && formData?.product_used !== 0) {
+          if (formData?.product_used && formData?.product_used?.length !== 0) {
             updateData.shippingDetails = {
               region: parseDataSubdistrict?.province,
               destination: parseDataSubdistrict?.subdistrict_name,
@@ -380,9 +394,16 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
               updateData.phoneNumber
             }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+
+            setDirectLink(
+              `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+                updateData.phoneNumber
+              }/${updateData.name}/${encodeURIComponent(updateData.formId)}`
+            );
+
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
@@ -394,6 +415,7 @@ function FormBuilderPage() {
 
         const handleSubmit = async () => {
           setLoading(true);
+          setRedirectUrl(true);
 
           let updateData = formValues;
           updateData.formId = formId;
@@ -410,9 +432,16 @@ function FormBuilderPage() {
               data
             );
 
-            window.location.href = `http://localhost:3001/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
               updateData.phoneNumber
             }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+
+            setDirectLink(
+              `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+                updateData.phoneNumber
+              }/${updateData.name}/${encodeURIComponent(updateData.formId)}`
+            );
+
             // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
           } catch (error) {
             console.log(error, "ini error");
@@ -531,6 +560,8 @@ function FormBuilderPage() {
       });
     }
   };
+
+  console.log(directLink, "ini directLinknya");
 
   const handleEmbedCode = () => {
     setModalEmbedCode(true);
@@ -1076,6 +1107,15 @@ function FormBuilderPage() {
           </Stack>
           <Stack spacing={3} p={[1, 1, 5]}>
             {renderFormFields(opportunityValue)}
+
+            {redirectUrl === true ? (
+              <HStack justify={"center"} spacing={1}>
+                <Text>If the page is not redirect,</Text>
+                <Text as={"span"} color="blue.400" textDecoration={"underline"}>
+                  <a href={directLink}>Click here</a>
+                </Text>
+              </HStack>
+            ) : null}
           </Stack>
         </Stack>
       </Flex>

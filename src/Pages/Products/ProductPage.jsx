@@ -200,8 +200,14 @@ const ProductPage = () => {
   };
 
   useEffect(() => {
-    getData();
-    getDataCategory();
+    const fetchDataWithDelay = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      getData();
+      getDataCategory();
+    };
+
+    fetchDataWithDelay();
 
     return () => {
       setCategoryList([]);
@@ -209,6 +215,17 @@ const ProductPage = () => {
       setSelectedCategoryNiche(null);
     };
   }, [globalState.currentProject, page]);
+
+  // useEffect(() => {
+  //   getData();
+  //   getDataCategory();
+
+  //   return () => {
+  //     setCategoryList([]);
+  //     setSelectedCategory(null);
+  //     setSelectedCategoryNiche(null);
+  //   };
+  // }, [globalState.currentProject, page]);
 
   const handleDelete = async (product) => {
     const docName = product.id;
@@ -457,7 +474,6 @@ const ProductPage = () => {
                         <Text color="gray.500" fontSize={"xs"} noOfLines={1}>
                           Stock: {product.stock}
                         </Text>
-
                       </Stack>
                     </Stack>
                   );
@@ -500,7 +516,7 @@ const ProductPage = () => {
         size={"xl"}
         isOpen={modalDetail}
         onClose={() => handleCloseDetail()}
-      // isCentered
+        // isCentered
       >
         <ModalOverlay />
         <ModalContent>
