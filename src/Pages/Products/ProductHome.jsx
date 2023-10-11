@@ -1,6 +1,6 @@
 import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-import { data } from "../../Components/Sidebar/DataMenu";
+import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
 
 const ProductHome = () => {
@@ -23,7 +23,7 @@ const ProductHome = () => {
           Product Menu
         </Text>
         <SimpleGrid columns={4} spacing={5}>
-          {data
+          {dataMenuCRM
             .find((menu) => menu.name === "Products")
             ?.submenu?.map((x, i) => (
               <Stack

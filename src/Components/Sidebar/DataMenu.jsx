@@ -33,34 +33,104 @@ import {
   FcHome,
   FcSelfie,
   FcSelfServiceKiosk,
+  FcCurrencyExchange,
+  FcSportsMode,
+  FcOnlineSupport,
+  FcMindMap,
+  FcShipped,
 } from "react-icons/fc";
 
 export const data = [
   {
-    name: "Home",
-    icon: FcHome,
-    link: "/home",
+    name: "HRIS",
+    icon: FcCollaboration,
+    link: "https://recruitment-deoapp.web.app/",
     description: "Access your profile pageview.",
-    // submenu: [
-    //   {
-    //     name: "Dashboard Preview",
-    //     icon: FcSelfServiceKiosk,
-    //     link: "/home/dashboard",
-    //   },
-    //   { name: "Profile Preview", icon: FcSelfie, link: "/home/profile" },
-    // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
-    // { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-    // { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-    // ],
+  },
+  {
+    name: "Accounting",
+    icon: FcCurrencyExchange,
+    link: "https://rms.deoapp.com/",
+    description: "Access your profile pageview.",
+  },
+  {
+    name: "Finance",
+    icon: FcMoneyTransfer,
+    link: "https://rms.deoapp.com/",
+    description: "Access your profile pageview.",
   },
 
   {
-    name: "Contacts",
-    icon: FcBusinessContact,
-    link: "/contacts",
+    name: "Productivity",
+    icon: FcSportsMode,
+    link: "https://productivity.deoapp.com/",
     description:
       "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
   },
+
+  {
+    name: "RMS",
+    icon: FcShop,
+    link: "https://rms.deoapp.com/",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  },
+
+  {
+    name: "CRM",
+    icon: FcOnlineSupport,
+    link: "/crm",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  },
+  {
+    name: "AI",
+    icon: FcMindMap,
+    link: "https://ai.deoapp.com/",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  },
+  // {
+  //   name: "Importir",
+  //   icon: FcShipped,
+  //   link: "https://www.importir.com/",
+  //   description:
+  //     "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  // },
+
+  {
+    name: "Chat",
+    icon: FcSms,
+    link: "/chat",
+    description: "Real-time communication, engage with your clients seamlessly",
+    // submenu: [
+    //   { name: "Chat", icon: FcEditImage, link: "/chat" },
+    //   { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+    //   { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+    //   { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+    // ],
+  },
+
+  // {
+  //   name: "Calendly",
+  //   icon: FcCalendar,
+  //   link: "/",
+  //   description: "Real-time communication, engage with your clients seamlessly",
+  //   // submenu: [
+  //   //   { name: "Chat", icon: FcEditImage, link: "/chat" },
+  //   //   { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+  //   //   { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+  //   //   { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+  //   // ],
+  // },
+
+  // {
+  //   name: "WMS",
+  //   icon: FcPackage,
+  //   link: "/",
+  //   description:
+  //     "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  // },
 
   // {
   //   name: "Social Media",
@@ -74,56 +144,56 @@ export const data = [
   //   ],
   // },
 
-  {
-    name: "Chat",
-    icon: FcSms,
-    link: "/chat",
-    description: "Real-time communication, engage with your clients seamlessly",
-    submenu: [
-      { name: "Chat", icon: FcEditImage, link: "/chat" },
-      // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
-      // { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-      // { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-    ],
-  },
+  // {
+  //   name: "Chat",
+  //   icon: FcSms,
+  //   link: "/chat",
+  //   description: "Real-time communication, engage with your clients seamlessly",
+  //   submenu: [
+  //     { name: "Chat", icon: FcEditImage, link: "/chat" },
+  // { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+  // { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+  // { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+  //   ],
+  // },
 
-  {
-    name: "Pipeline",
-    icon: FcKindle,
-    link: "/pipelineHome",
-    description: "Effortless Progress Tracking with our Pipeline Feature",
-    submenu: [
-      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-      { name: "Orders", icon: FcInTransit, link: "/orders" },
-    ],
-  },
-  {
-    name: "Products",
-    icon: FcConferenceCall,
-    link: "/productHome",
-    description:
-      "Discover and Manage Your Offerings with Ease: The Product Menu",
-    submenu: [
-      { name: "Products", icon: FcDeployment, link: "/products" },
-      { name: "Tickets", icon: FcPackage, link: "/ticket" },
-      { name: "Membership", icon: FcLike, link: "/membership" },
-      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
-      { name: "Listings", icon: FcParallelTasks, link: "/listing" },
-      { name: "News", icon: FcNews, link: "/news" },
-      { name: "Pages", icon: FcRules, link: "/products/articles" },
-    ],
-  },
+  // {
+  //   name: "Pipeline",
+  //   icon: FcKindle,
+  //   link: "/pipelineHome",
+  //   description: "Effortless Progress Tracking with our Pipeline Feature",
+  //   submenu: [
+  //     { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+  //     { name: "Orders", icon: FcInTransit, link: "/orders" },
+  //   ],
+  // },
+  // {
+  //   name: "Products",
+  //   icon: FcConferenceCall,
+  //   link: "/productHome",
+  //   description:
+  //     "Discover and Manage Your Offerings with Ease: The Product Menu",
+  //   submenu: [
+  //     { name: "Products", icon: FcDeployment, link: "/products" },
+  //     { name: "Tickets", icon: FcPackage, link: "/ticket" },
+  //     { name: "Membership", icon: FcLike, link: "/membership" },
+  //     { name: "Forms", icon: FcSurvey, link: "/form-builder" },
+  //     { name: "Listings", icon: FcParallelTasks, link: "/listing" },
+  //     { name: "News", icon: FcNews, link: "/news" },
+  //     { name: "Pages", icon: FcRules, link: "/products/articles" },
+  //   ],
+  // },
 
-  {
-    name: "LMS",
-    icon: FcReading,
-    link: "/lmsHome",
-    description: "Organize your own pageview webapp with ease",
-    submenu: [
-      // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
-      { name: "Courses", icon: FcIdea, link: "/courses" },
-    ],
-  },
+  // {
+  //   name: "LMS",
+  //   icon: FcReading,
+  //   link: "/lmsHome",
+  //   description: "Organize your own pageview webapp with ease",
+  //   submenu: [
+  //     // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+  //     { name: "Courses", icon: FcIdea, link: "/courses" },
+  //   ],
+  // },
   // {
   //   name: "Form",
   //   icon: FcSurvey,
@@ -154,36 +224,36 @@ export const data = [
   //     { name: "Membership", icon: FcSettings, link: "/chat" },
   //   ],
   // },
-  {
-    name: "Configuration",
-    icon: FcSettings,
-    link: "/configuration",
-    description:
-      "Fine-tune your CRM system to match your unique needs. Personalize workflows, data fields, and user permissions effortlessly.",
-    submenu: [
-      {
-        name: "Themes",
-        icon: FcCloseUpMode,
-        link: "/themes",
-      },
-      { name: "Data", icon: FcFile, link: "/configuration/data" },
-      { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
-      {
-        name: "Integration",
-        icon: FcAutomatic,
-        link: "/configuration/integration",
-      },
-      {
-        name: "Backup",
-        icon: FcEnteringHeavenAlive,
-        link: "/configuration/backup",
-      },
-      { name: "Company", icon: FcOrganization, link: "/configuration/user" },
-      { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
-      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
-      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
-    ],
-  },
+  // {
+  //   name: "Configuration",
+  //   icon: FcSettings,
+  //   link: "/configuration",
+  //   description:
+  //     "Fine-tune your CRM system to match your unique needs. Personalize workflows, data fields, and user permissions effortlessly.",
+  //   submenu: [
+  //     {
+  //       name: "Themes",
+  //       icon: FcCloseUpMode,
+  //       link: "/themes",
+  //     },
+  //     { name: "Data", icon: FcFile, link: "/configuration/data" },
+  //     { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
+  //     {
+  //       name: "Integration",
+  //       icon: FcAutomatic,
+  //       link: "/configuration/integration",
+  //     },
+  //     {
+  //       name: "Backup",
+  //       icon: FcEnteringHeavenAlive,
+  //       link: "/configuration/backup",
+  //     },
+  //     { name: "Company", icon: FcOrganization, link: "/configuration/user" },
+  //     { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
+  //     { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+  //     { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
+  //   ],
+  // },
 
   // {
   //   name: "Event",
@@ -223,5 +293,99 @@ export const dataApps = [
     name: "RMS",
     icon: FcShop,
     link: "https://rms.deoapp.com/",
+  },
+];
+
+export const dataMenuCRM = [
+  {
+    name: "Pipeline",
+    icon: FcKindle,
+    link: "/pipelineHome",
+    description: "Effortless Progress Tracking with our Pipeline Feature",
+    submenu: [
+      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+      { name: "Orders", icon: FcInTransit, link: "/orders" },
+    ],
+  },
+  {
+    name: "Products",
+    icon: FcConferenceCall,
+    link: "/productHome",
+    description:
+      "Discover and Manage Your Offerings with Ease: The Product Menu",
+    submenu: [
+      { name: "Products", icon: FcDeployment, link: "/products" },
+      { name: "Tickets", icon: FcPackage, link: "/ticket" },
+      { name: "Membership", icon: FcLike, link: "/membership" },
+      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
+      { name: "Listings", icon: FcParallelTasks, link: "/listing" },
+      { name: "News", icon: FcNews, link: "/news" },
+      { name: "Pages", icon: FcRules, link: "/products/articles" },
+    ],
+  },
+
+  {
+    name: "LMS",
+    icon: FcReading,
+    link: "/lmsHome",
+    description: "Organize your own pageview webapp with ease",
+    submenu: [
+      // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+      { name: "Courses", icon: FcIdea, link: "/courses" },
+    ],
+  },
+  {
+    name: "Form",
+    icon: FcSurvey,
+    submenu: [{ name: "Form", icon: FcCalendar, link: "/form-builder" }],
+  },
+
+  {
+    name: "Listing",
+    icon: FcConferenceCall,
+    submenu: [{ name: "Listing", icon: FcEditImage, link: "/listing" }],
+  },
+  {
+    name: "News",
+    icon: FcNews,
+    submenu: [{ name: "News", icon: FcEditImage, link: "/news" }],
+  },
+  {
+    name: "Pipeline",
+    icon: FcKindle,
+    submenu: [
+      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+      { name: "Membership", icon: FcSettings, link: "/chat" },
+    ],
+  },
+  {
+    name: "Configuration",
+    icon: FcSettings,
+    link: "/configuration",
+    description:
+      "Fine-tune your CRM system to match your unique needs. Personalize workflows, data fields, and user permissions effortlessly.",
+    submenu: [
+      {
+        name: "Themes",
+        icon: FcCloseUpMode,
+        link: "/themes",
+      },
+      { name: "Data", icon: FcFile, link: "/configuration/data" },
+      { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
+      {
+        name: "Integration",
+        icon: FcAutomatic,
+        link: "/configuration/integration",
+      },
+      {
+        name: "Backup",
+        icon: FcEnteringHeavenAlive,
+        link: "/configuration/backup",
+      },
+      { name: "Company", icon: FcOrganization, link: "/configuration/user" },
+      { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
+      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
+    ],
   },
 ];
