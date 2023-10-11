@@ -2,11 +2,13 @@ import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
 import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const ProductHome = () => {
   const navigate = useNavigate();
   return (
     <Box p={5}>
+      <BackButtons />
       <Stack align={"center"} spacing={3}>
         <Heading>Products</Heading>
         <Text w={"80%"} align={"center"} color={"gray.500"}>

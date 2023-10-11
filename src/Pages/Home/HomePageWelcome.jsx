@@ -41,6 +41,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import { useNavigate } from "react-router-dom";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const HomePageWelcome = () => {
   const globalState = useUserStore();
@@ -75,7 +76,6 @@ const HomePageWelcome = () => {
       "domains",
       globalState.currentProject
     );
-    console.log(res, "ini domain");
     setDomainPage(res);
   };
 
@@ -254,7 +254,8 @@ const HomePageWelcome = () => {
 
   return (
     <Box>
-      <Heading align={"center"}>Welcome to Deoapp</Heading>
+      {/* <Heading align={"center"}>Welcome to Deoapp</Heading> */}
+      <BackButtons />
 
       {globalState.companies?.length === 0 || globalState.projects === 0 ? (
         <Stack my={5} py={10} borderRadius={"md"} shadow={"md"} bg={"white"}>

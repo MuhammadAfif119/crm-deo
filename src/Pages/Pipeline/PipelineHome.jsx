@@ -1,12 +1,14 @@
 import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-import { data } from "../../Components/Sidebar/DataMenu";
+import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const PipelineHome = () => {
   const navigate = useNavigate();
   return (
     <Box p={5}>
+      <BackButtons />
       <Stack align={"center"} spacing={3}>
         <Heading>Pipelines</Heading>
         <Text w={"80%"} align={"center"} color={"gray.500"}>
@@ -24,10 +26,11 @@ const PipelineHome = () => {
           Pipeline Menu
         </Text>
         <SimpleGrid columns={5} spacing={5}>
-          {data
-            .find((menu) => menu.name === "Pipeline")
+          {dataMenuCRM
+            .find((menu, i) => menu.name === "Pipeline")
             ?.submenu?.map((x, i) => (
               <Stack
+                key={i}
                 p={3}
                 border={"1px"}
                 shadow={"base"}

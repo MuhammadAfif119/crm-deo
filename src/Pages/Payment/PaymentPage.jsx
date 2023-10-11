@@ -79,7 +79,7 @@ function PaymentPage() {
       );
 
       setDataLeads(...res);
-      getDataForm(res[0].formId);
+      getDataForm(res[0]?.formId);
 
       if (res[0].orderId !== undefined) {
         checkOrderSummary(res[0].orderId);

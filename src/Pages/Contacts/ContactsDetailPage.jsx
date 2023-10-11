@@ -41,17 +41,41 @@ function ContactsDetailPage() {
   };
 
   const getdataMessageEmail = async () => {
-    const link = `contacts/${params?.id}/messages`;
-    const conditions = [
-      { field: "type", operator: "==", value: "email" },
-      { field: "companyId", operator: "==", value: globalState.currentCompany },
-      { field: "projectId", operator: "==", value: globalState.currentProject },
-    ];
-    const sortBy = { field: "createdAt", direction: "desc" };
-    try {
-      const res = await getCollectionFirebase(link, conditions, sortBy);
+    // const link = `contacts/${params?.id}/messages`;
+    // const conditions = [
+    //   { field: "type", operator: "==", value: "email" },
+    //   { field: "companyId", operator: "==", value: globalState.currentCompany },
+    //   { field: "projectId", operator: "==", value: globalState.currentProject },
+    // ];
+    // const sortBy = { field: "createdAt", direction: "desc" };
+    // try {
+    //   const res = await getCollectionFirebase(link, conditions, sortBy);
 
-      setEmailHistory(res);
+    //   setEmailHistory(res);
+    // } catch (error) {
+    //   console.log(error, "ini error");
+    // }
+
+    try {
+      const q = query(
+        collection(db, `contacts/${params?.id}/messages`),
+        where("type", "==", "email"),
+        where("companyId", "==", globalState.currentCompany),
+        where("projectId", "==", globalState.currentProject)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const data = [];
+        snapshot.forEach((doc) => {
+          const docData = doc.data();
+          data.push({ id: doc.id, ...docData });
+        });
+        setEmailHistory(data);
+      });
+
+      return () => {
+        unsubscribe();
+      };
     } catch (error) {
       console.log(error, "ini error");
     }

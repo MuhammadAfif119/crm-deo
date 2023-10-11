@@ -63,7 +63,7 @@ function SidebarComponentV3({ layout }) {
 
   const globalState = useUserStore();
 
-  console.log(globalState, "xxx");
+  // console.log(globalState, "xxx");
 
   const fetchProjects = async (id) => {
     const fetchProjectId = localStorage.getItem("currentProject");
@@ -86,7 +86,7 @@ function SidebarComponentV3({ layout }) {
     if (!fetchProjectId) {
       try {
         globalState.setProjects(projects);
-        console.log(projects, "ini project");
+        // console.log(projects, "ini project");
         globalState.setCurrentProject(projects[0].id);
         localStorage.setItem("currentProject", projects[0].id);
 
@@ -128,11 +128,11 @@ function SidebarComponentV3({ layout }) {
     setListProject(projects);
   };
 
-  console.log(userInfo);
+  // console.log(userInfo);
 
   const getUserData = async () => {
     const res = await getSingleDocumentFirebase("users", globalState.uid);
-    console.log(res);
+    // console.log(res);
   };
 
   const user = auth.currentUser;
@@ -156,7 +156,16 @@ function SidebarComponentV3({ layout }) {
 
   const handleSelectMenu = (value) => {
     setMenu(value);
-    navigate(value.link);
+
+    if (value.status) {
+      null;
+    } else {
+      if (value?.link?.includes("https")) {
+        window.open(value?.link, "_blank");
+      } else {
+        navigate(value.link);
+      }
+    }
   };
 
   const logout = async () => {
@@ -373,6 +382,11 @@ function SidebarComponentV3({ layout }) {
                       >
                         <Icon as={menu.icon} boxSize={6} />
                         <Text fontSize={10}>{menu.name}</Text>
+                        {menu.status ? (
+                          <Text fontSize={10} fontWeight={500} color={"red"}>
+                            {"("}Coming Soon{")"}
+                          </Text>
+                        ) : null}
                       </Stack>
                     ))}
                   </Stack>

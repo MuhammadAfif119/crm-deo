@@ -2,29 +2,29 @@ import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
 import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
-import BackButtons from "../../Components/Buttons/BackButtons";
 
-const LmsHome = () => {
+const HomePage = () => {
   const navigate = useNavigate();
   return (
     <Box p={5}>
-      <BackButtons />
       <Stack align={"center"} spacing={3}>
-        <Heading>LMS</Heading>
+        <Heading>HRIS</Heading>
         <Text w={"80%"} align={"center"} color={"gray.500"}>
-          Customize your view, filter data, and gain clarity on every aspect of
-          your business with intuitive Pageview Menu, you're in control of your
-          data-driven journey, ensuring smarter choices and strategic growth.
+          Elevate your HR operations with a powerful HRIS solution that
+          streamlines data management, recruitment, performance, and compliance,
+          ensuring efficient, error-free processes while empowering your
+          employees. Stay ahead of the competition, make informed decisions, and
+          enhance the employee experience.
         </Text>
       </Stack>
 
       <Box bg={"white"} my={7} p={4} shadow={"md"}>
         <Text color={"gray.500"} fontWeight={500} mb={5}>
-          LMS Menu
+          HRIS Menu
         </Text>
         <SimpleGrid columns={4} spacing={5}>
-          {dataMenuCRM
-            .find((menu) => menu.name === "LMS")
+          {data
+            .find((menu) => menu.name === "HRIS")
             ?.submenu?.map((x, i) => (
               <Stack
                 p={3}
@@ -35,7 +35,7 @@ const LmsHome = () => {
                 cursor={"pointer"}
                 borderRadius={"md"}
                 borderColor={"gray.300"}
-                onClick={() => navigate(`${x.link}`)}
+                onClick={() => window.open(`${x.link}`, "_blank")}
                 _hover={{ transform: "scale(1.03)", transition: "0.3s" }}
               >
                 <Icon as={x.icon} boxSize={12} />
@@ -48,4 +48,4 @@ const LmsHome = () => {
   );
 };
 
-export default LmsHome;
+export default HomePage;

@@ -19,10 +19,12 @@ import MembershipRouter from "./MembershipRouter";
 import ProductRouter from "./ProductRouter";
 import ThemesRouter from "./ThemesRouter";
 import CourseRouter from "./CourseRouter";
+import HRISRouter from "./HRISRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
   const allRouter = [
+    ...HRISRouter,
     ...HomeRouter,
     ...CalendarRouter,
     ...SocialBuildRouter,
@@ -41,7 +43,7 @@ function MainRouter() {
     ...MembershipRouter,
     ...ProductRouter,
     ...ThemesRouter,
-    ...CourseRouter
+    ...CourseRouter,
   ];
   return (
     <Routes>

@@ -47,6 +47,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FcPlus } from "react-icons/fc";
 import { clientTypessense } from "../../Api/Typesense";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const ContactsPage = () => {
   const globalState = useUserStore();
@@ -269,6 +270,7 @@ const ContactsPage = () => {
 
   return (
     <Stack p={[1, 1, 5]}>
+      <BackButtons />
       <Stack spacing={4}>
         <HStack>
           <Heading size={"md"} fontWeight="bold">

@@ -38,25 +38,40 @@ import {
   FcOnlineSupport,
   FcMindMap,
   FcShipped,
+  FcContacts,
+  FcManager,
 } from "react-icons/fc";
 
 export const data = [
   {
     name: "HRIS",
     icon: FcCollaboration,
-    link: "https://recruitment-deoapp.web.app/",
-    description: "Access your profile pageview.",
+    link: "/hris",
+    description:
+      "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
+    submenu: [
+      {
+        name: "HRIS",
+        icon: FcManager,
+        link: "https://recruitment.deoapp.com/",
+      },
+      {
+        name: "Recruitment",
+        icon: FcConferenceCall,
+        link: "https://recruitment.deoapp.com/",
+      },
+    ],
   },
   {
     name: "Accounting",
     icon: FcCurrencyExchange,
-    link: "https://rms.deoapp.com/",
+    link: " https://anggaran-v2.web.app/",
     description: "Access your profile pageview.",
   },
   {
     name: "Finance",
     icon: FcMoneyTransfer,
-    link: "https://rms.deoapp.com/",
+    link: " https://anggaran-v2.web.app/",
     description: "Access your profile pageview.",
   },
 
@@ -90,13 +105,15 @@ export const data = [
     description:
       "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
   },
-  // {
-  //   name: "Importir",
-  //   icon: FcShipped,
-  //   link: "https://www.importir.com/",
-  //   description:
-  //     "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
-  // },
+
+  {
+    name: "Importir",
+    status: "Soon",
+    icon: FcShipped,
+    link: "https://www.importir.com/",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  },
 
   {
     name: "Chat",
@@ -111,26 +128,28 @@ export const data = [
     // ],
   },
 
-  // {
-  //   name: "Calendly",
-  //   icon: FcCalendar,
-  //   link: "/",
-  //   description: "Real-time communication, engage with your clients seamlessly",
-  //   // submenu: [
-  //   //   { name: "Chat", icon: FcEditImage, link: "/chat" },
-  //   //   { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
-  //   //   { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
-  //   //   { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
-  //   // ],
-  // },
+  {
+    name: "Calendly",
+    status: "Soon",
+    icon: FcCalendar,
+    link: "/",
+    description: "Real-time communication, engage with your clients seamlessly",
+    // submenu: [
+    //   { name: "Chat", icon: FcEditImage, link: "/chat" },
+    //   { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
+    //   { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
+    //   { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
+    // ],
+  },
 
-  // {
-  //   name: "WMS",
-  //   icon: FcPackage,
-  //   link: "/",
-  //   description:
-  //     "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
-  // },
+  {
+    name: "WMS",
+    status: "Soon",
+    icon: FcPackage,
+    link: "/",
+    description:
+      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+  },
 
   // {
   //   name: "Social Media",
@@ -298,6 +317,22 @@ export const dataApps = [
 
 export const dataMenuCRM = [
   {
+    name: "Pageview",
+    icon: FcHome,
+    link: "/crm/pageview",
+    description: "Adjust and costumize your pageview",
+    // submenu: [
+    //   { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
+    //   { name: "Orders", icon: FcInTransit, link: "/orders" },
+    // ],
+  },
+  {
+    name: "Contacts",
+    icon: FcContacts,
+    link: "/contacts",
+    description: "Effortless Get In Touch with your costumers",
+  },
+  {
     name: "Pipeline",
     icon: FcKindle,
     link: "/pipelineHome",
@@ -334,30 +369,7 @@ export const dataMenuCRM = [
       { name: "Courses", icon: FcIdea, link: "/courses" },
     ],
   },
-  {
-    name: "Form",
-    icon: FcSurvey,
-    submenu: [{ name: "Form", icon: FcCalendar, link: "/form-builder" }],
-  },
 
-  {
-    name: "Listing",
-    icon: FcConferenceCall,
-    submenu: [{ name: "Listing", icon: FcEditImage, link: "/listing" }],
-  },
-  {
-    name: "News",
-    icon: FcNews,
-    submenu: [{ name: "News", icon: FcEditImage, link: "/news" }],
-  },
-  {
-    name: "Pipeline",
-    icon: FcKindle,
-    submenu: [
-      { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-      { name: "Membership", icon: FcSettings, link: "/chat" },
-    ],
-  },
   {
     name: "Configuration",
     icon: FcSettings,

@@ -26,6 +26,7 @@ import {
   updateDocumentFirebase,
 } from "../../Api/firebaseApi";
 import { formatFrice } from "../../Utils/Helper";
+import { decryptToken } from "../../Utils/encrypToken";
 
 function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
   const param = useParams();
@@ -191,13 +192,17 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         price: dataParam.price,
         qty: quantity,
         id: dataParam.id,
-        totalPrice: parseInt(dataParam.price) + parseInt(quantity),
+        totalPrice: parseInt(dataParam.price) * parseInt(quantity),
       },
     ];
 
     let updatedOrder = {};
 
-    if (param.type === "product") {
+    if (
+      param.type === "product" &&
+      dataParam?.is_shipping === true &&
+      Object.keys(dataLeads.shippingDetails).length > 0
+    ) {
       updatedOrder = {
         orders: dataOrder,
         paymentStatus: "open",
@@ -211,49 +216,58 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         name: dataLeads.name || "",
         email: dataLeads.email || "",
         phoneNumber: dataLeads.phoneNumber || "",
-        amount:
-          Number(dataParam.price) * quantity +
-          parseInt(dataLeads.shippingDetails.price),
-        quantity: quantity,
-        userId: dataLeads.id || "",
-      };
-    } else if (param.type === "product" && dataParam.isShipping === false) {
-      updatedOrder = {
-        orders: dataOrder,
-        paymentStatus: "open",
-        orderStatus: "onProcess",
-        paymentMethod: "XENDIT_VA",
-        module: "crm",
-        category: param.type === "ticket" ? "ticket" : "product",
-        companyId: dataParam.companyId,
-        projectId: dataParam.projectId,
-        outletId: dataParam.projectId,
-        name: dataLeads.name || "",
-        email: dataLeads.email || "",
-        phoneNumber: dataLeads.phoneNumber || "",
-        amount: Number(dataParam.price) * quantity,
-        quantity: quantity,
-        userId: dataLeads.id || "",
-      };
-    } else {
-      updatedOrder = {
-        orders: dataOrder,
-        paymentStatus: "open",
-        orderStatus: "onProcess",
-        paymentMethod: "XENDIT_VA",
-        module: "crm",
-        category: param.type === "ticket" ? "ticket" : "product",
-        companyId: dataParam.companyId,
-        projectId: dataParam.projectId,
-        outletId: dataParam.projectId,
-        name: dataLeads.name || "",
-        email: dataLeads.email || "",
-        phoneNumber: dataLeads.phoneNumber || "",
-        amount: Number(dataParam.price) * quantity,
+        amount: fixPrice,
+        // Number(dataParam.price) * quantity +
+        // parseInt(dataLeads.shippingDetails?.price),
         quantity: quantity,
         userId: dataLeads.id || "",
       };
     }
+    // else if (param.type === "product" && (dataParam.isShipping === false || Object.keys(dataLeads.shippingDetails).length === 0) ) {
+    //   updatedOrder = {
+    //     orders: dataOrder,
+    //     paymentStatus: "open",
+    //     orderStatus: "onProcess",
+    //     paymentMethod: "XENDIT_VA",
+    //     module: "crm",
+    //     category: param.type === "ticket" ? "ticket" : "product",
+    //     companyId: dataParam.companyId,
+    //     projectId: dataParam.projectId,
+    //     outletId: dataParam.projectId,
+    //     name: dataLeads.name || "",
+    //     email: dataLeads.email || "",
+    //     phoneNumber: dataLeads.phoneNumber || "",
+    //     amount: Number(dataParam.price) * quantity,
+    //     quantity: quantity,
+    //     userId: dataLeads.id || "",
+    //   };
+    // }
+    else {
+      updatedOrder = {
+        orders: dataOrder,
+        paymentStatus: "open",
+        orderStatus: "onProcess",
+        paymentMethod: "XENDIT_VA",
+        module: "crm",
+        category: param.type === "ticket" ? "ticket" : "product",
+        companyId: dataParam.companyId,
+        projectId: dataParam.projectId,
+        outletId: dataParam.projectId,
+        name: dataLeads.name || "",
+        email: dataLeads.email || "",
+        phoneNumber: dataLeads.phoneNumber || "",
+        // amount: Number(dataParam.price) * quantity,
+        amount: fixPrice,
+        quantity: quantity,
+        userId: dataLeads.id || "",
+      };
+    }
+
+    updateDocumentFirebase(
+      "leads",
+      `${dataLeads.phoneNumber}-${decryptToken(dataLeads.formId)}`,
+      { opportunity_value: updatedOrder.amount }
+    );
 
     addDocumentFirebase("orders", updatedOrder, dataParam.companyId).then(
       (x) => {
