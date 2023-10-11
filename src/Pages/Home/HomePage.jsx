@@ -6,6 +6,8 @@ import {
   SimpleGrid,
   Spacer,
   Stack,
+  Tag,
+  TagLabel,
   Text,
 } from "@chakra-ui/react";
 import React from "react";
@@ -14,13 +16,23 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 function HomePage() {
   const navigate = useNavigate();
+
+  const handleNavigate = (menu) => {
+    if (menu.status) {
+    } else {
+      if (menu?.link?.includes("https")) {
+        window.open(menu?.link, "_blank");
+      } else {
+        navigate(menu.link);
+      }
+    }
+  };
   return (
     <Box p={5}>
       <Stack align={"center"}>
-        <Heading>Welcome to Deoapp CRM</Heading>
+        <Heading>Welcome to Deoapp Business</Heading>
         <Text fontSize={"sm"}>
-          Unlock the Power of Seamless Customer Relationship Management and
-          Transform Your Business
+          Unlock the Power of Business Management and Transform Your Business
         </Text>
       </Stack>
 
@@ -30,7 +42,7 @@ function HomePage() {
             <Flex
               cursor={"pointer"}
               _hover={{ transform: "scale(1.03)", transition: "0.3s" }}
-              onClick={() => navigate(`${menu.link}`)}
+              onClick={() => handleNavigate(menu)}
               flexDir={"column"}
               p={4}
               key={i}
@@ -39,6 +51,7 @@ function HomePage() {
               shadow={"base"}
               borderRadius={"md"}
               align={"center"}
+              pos={"relative"}
               // alignItems={"center"}
               // justifyContent={"center"}
             >
@@ -61,11 +74,19 @@ function HomePage() {
                   {menu.description}
                 </Text>
               </Stack>
+
+              {menu.status ? (
+                <Box pos={"absolute"} top={3} right={3}>
+                  <Tag size={"sm"} colorScheme="red">
+                    <TagLabel>{menu?.status}</TagLabel>
+                  </Tag>
+                </Box>
+              ) : null}
             </Flex>
           ))}
         </SimpleGrid>
       </Box>
-
+      {/* 
       <Box align={"center"}>
         <Heading size={"lg"} mb={5}>
           Discover Our App
@@ -91,7 +112,7 @@ function HomePage() {
             </Stack>
           ))}
         </SimpleGrid>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

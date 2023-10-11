@@ -81,8 +81,8 @@ function PaymentPage() {
       setDataLeads(...res);
       getDataForm(res[0]?.formId);
 
-      if (res[0].orderId !== undefined) {
-        checkOrderSummary(res[0].orderId);
+      if (res[0]?.orderId !== undefined) {
+        checkOrderSummary(res[0]?.orderId);
       }
     } catch (error) {
       console.log(error, "ini error");
@@ -126,8 +126,8 @@ function PaymentPage() {
 
       setDataForm(...res);
 
-      if (param.type === "membership" && res[0].membership_used?.length > 0) {
-        getDataMembership(res[0].membership_used);
+      if (param.type === "membership" && res[0]?.membership_used?.length > 0) {
+        getDataMembership(res[0]?.membership_used);
         console.log("masuk");
       }
 
@@ -135,10 +135,10 @@ function PaymentPage() {
         getLeadsGTM(res[0]?.facebookPixelId);
       }
 
-      if (param.type === "ticket" && res[0].ticket_used?.length > 0) {
+      if (param.type === "ticket" && res[0]?.ticket_used?.length > 0) {
         getDataTicket(res[0].token);
       }
-      if (param.type === "product" && res[0].product_used?.length > 0) {
+      if (param.type === "product" && res[0]?.product_used?.length > 0) {
         getDataProduct(res[0].token);
       }
     } catch (error) {
@@ -176,7 +176,7 @@ function PaymentPage() {
         data.includes(membership.package_code)
       );
       setMembershipList(filteredMemberships);
-      setPackageActive(filteredMemberships[0].package_code);
+      setPackageActive(filteredMemberships[0]?.package_code);
     } catch (error) {
       console.log(error, "ini error");
     }
