@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { Icon } from "@chakra-ui/icons";
 import {
   Accordion,
@@ -147,7 +148,7 @@ function SidebarComponentV3({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => {};
+    return () => { };
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -158,7 +159,7 @@ function SidebarComponentV3({ layout }) {
     setMenu(value);
 
     if (value.status) {
-      null;
+      null
     } else {
       if (value?.link?.includes("https")) {
         window.open(value?.link, "_blank");
@@ -300,7 +301,7 @@ function SidebarComponentV3({ layout }) {
                   <Image
                     src={themeConfig.logokotak}
                     borderRadius="full"
-                    // maxH={80}
+                  // maxH={80}
                   />
                 </Box>
 
