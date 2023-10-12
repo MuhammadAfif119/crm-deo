@@ -84,7 +84,9 @@ const Modals = (props) => {
           currentCompany
         );
 
-        navigate(`/courses/${id}`);
+        setTimeout(() => {
+          navigate(`/courses/${id}`);
+        }, 1500);
       } catch (error) {
         console.log(error.message, "error while adding course");
       } finally {
@@ -128,6 +130,31 @@ const Modals = (props) => {
         onClose();
       } catch (error) {
         console.log(error.message, "error when adding lesson");
+      } finally {
+        setLoading(false);
+      }
+    } else if (datas.type === "changeThumbnail") {
+      try {
+        const resImage = await uploadFile(
+          `${datas?.title}-${moment(new Date()).valueOf()}`,
+          "course",
+          thumbnailChange
+        );
+        inputData.thumbnail = resImage;
+
+        console.log(inputData);
+
+        const id = await updateDocumentFirebase("courses", datas?.id, {
+          thumbnail: resImage,
+        });
+
+        console.log(id);
+
+        setTimeout(() => {
+          setUpdate(!update);
+        }, 1500);
+      } catch (error) {
+        console.log(error.message, "error while adding course");
       } finally {
         setLoading(false);
       }
@@ -316,62 +343,63 @@ const Modals = (props) => {
     //   }
     //   setFilesImage(newFiles);
     // }
-    if (filesImage[0]) {
-      const resImage = await uploadFile(
-        `${datas?.title}-${moment(new Date()).valueOf()}`,
-        "course",
-        filesImage[0]
-      );
-
-      datas.thumbnail = resImage;
-    }
-    console.log(datas);
-
-    const id = await updateDocumentFirebase(
-      "courses",
-      datas.id,
-      datas.thumbnail
-    );
-    console.log(filesImage, "ini file image");
-  };
-
-  const handleFileEditThumbnail = async (filesImage) => {
-    setThumbnailChange(filesImage[0]);
-    // if (newFiles.length) {
-    //   const newFileArray = [...files];
-    //   for (let i = 0; i < newFiles.length; i++) {
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(newFiles[i]);
-    //     reader.onload = () => {
-    //       newFileArray.push({
-    //         file: reader.result,
-    //         fileName: newFiles[i].name,
-    //         description: newFiles[i].type,
-    //       });
-    //       setFiles(newFileArray);
-    //       console.log(files, "ini file image");
-    //     };
-    //   }
-    //   setFilesImage(newFiles);
-    // }
-    // if (filesImage[0]) {
+    // if (thumbnailChange) {
     //   const resImage = await uploadFile(
-    //     `${input?.title}-${moment(new Date()).valueOf()}`,
+    //     `${datas?.title}-${moment(new Date()).valueOf()}`,
     //     "course",
     //     filesImage[0]
     //   );
-    //   inputData.thumbnail = resImage;
+
+    //   datas.thumbnail = resImage;
     // }
-    // console.log(inputData);
-    // const id = await addDocumentFirebase(
+    // console.log(datas);
+
+    // const id = await updateDocumentFirebase(
     //   "courses",
-    //   inputData,
-    //   currentCompany
+    //   datas.id,
+    //   datas.thumbnail
     // );
-    // console.log(filesImage, "ini file image");
+
+    setUpdate(!update);
   };
 
-  console.log(thumbnailChange, "ini ganti thumbnail");
+  console.log(datas);
+
+  // const handleFileEditThumbnail = async (filesImage) => {
+  //   setThumbnailChange(filesImage[0]);
+  //   // if (newFiles.length) {
+  //   //   const newFileArray = [...files];
+  //   //   for (let i = 0; i < newFiles.length; i++) {
+  //   //     const reader = new FileReader();
+  //   //     reader.readAsDataURL(newFiles[i]);
+  //   //     reader.onload = () => {
+  //   //       newFileArray.push({
+  //   //         file: reader.result,
+  //   //         fileName: newFiles[i].name,
+  //   //         description: newFiles[i].type,
+  //   //       });
+  //   //       setFiles(newFileArray);
+  //   //       console.log(files, "ini file image");
+  //   //     };
+  //   //   }
+  //   //   setFilesImage(newFiles);
+  //   // }
+  //   // if (filesImage[0]) {
+  //   //   const resImage = await uploadFile(
+  //   //     `${input?.title}-${moment(new Date()).valueOf()}`,
+  //   //     "course",
+  //   //     filesImage[0]
+  //   //   );
+  //   //   inputData.thumbnail = resImage;
+  //   // }
+  //   // console.log(inputData);
+  //   // const id = await addDocumentFirebase(
+  //   //   "courses",
+  //   //   inputData,
+  //   //   currentCompany
+  //   // );
+  //   // console.log(filesImage, "ini file image");
+  // };
 
   const handleFileInputChange = (event) => {
     console.log(event);
@@ -578,7 +606,7 @@ const Modals = (props) => {
               <Input
                 my={2}
                 type="file"
-                onChange={(e) => handleFileEditThumbnail(e.target.files)}
+                onChange={(e) => setThumbnailChange(e.target.files[0])}
               />
             </>
           ) : (
@@ -589,8 +617,8 @@ const Modals = (props) => {
         <ModalFooter>
           {datas?.type !== "deleteCourse" ? (
             <Button
-              isLoading={loading}
-              isDisabled={loading}
+              // isLoading={loading}
+              // isDisabled={loading}
               loadingText="Saving..."
               colorScheme="red"
               mx={3}
@@ -627,7 +655,7 @@ const Modals = (props) => {
               isDisabled={loading}
               loadingText="Saving..."
               colorScheme="green"
-              onClick={() => handleSaveEditThumbnail()}
+              onClick={() => handleSave()}
             >
               Save
             </Button>

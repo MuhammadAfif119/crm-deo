@@ -169,7 +169,7 @@ function OutletViewPage() {
           <FormControl mt="2">
             <Text fontWeight={500}>Outlet Address</Text>
 
-            <FormLabel size={"sm"}>Full Address</FormLabel>
+            <FormLabel>Full Address</FormLabel>
             <Textarea
               type="text"
               placeholder={data?.description}

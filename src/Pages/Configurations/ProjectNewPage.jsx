@@ -208,6 +208,7 @@ function ProjectsViewPage() {
       console.log("Terjadi kesalahan:", error);
     }
 
+    setModalProjectUser(false);
     setSelectedUserProjectIds([]);
     setProjectActive("");
     setSearchResult([]);
