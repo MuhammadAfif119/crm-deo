@@ -23,6 +23,8 @@ import {
   Drawer,
   useDisclosure,
   Avatar,
+  TagLabel,
+  Tag,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
@@ -50,6 +52,7 @@ import { BiAlignLeft } from "react-icons/bi";
 
 function SidebarComponentV3({ layout }) {
   const [menu, setMenu] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
   const [userInfo, setUserInfo] = useState("");
   const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure();
   const [showSubmenu, setShowSubmenu] = useState(false);
@@ -64,6 +67,16 @@ function SidebarComponentV3({ layout }) {
   const globalState = useUserStore();
 
   // console.log(globalState, "xxx");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible((prevIsVisible) => !prevIsVisible);
+    }, 800);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const fetchProjects = async (id) => {
     const fetchProjectId = localStorage.getItem("currentProject");
@@ -383,9 +396,15 @@ function SidebarComponentV3({ layout }) {
                         <Icon as={menu.icon} boxSize={6} />
                         <Text fontSize={10}>{menu.name}</Text>
                         {menu.status ? (
-                          <Text fontSize={10} fontWeight={500} color={"red"}>
-                            {"("}Coming Soon{")"}
-                          </Text>
+                          <Tag
+                            size={"xs"}
+                            colorScheme={"red"}
+                            visibility={isVisible ? "visible" : "hidden"}
+                          >
+                            <TagLabel fontSize={"xs"} py={"0.5"} px={1}>
+                              Coming Soon
+                            </TagLabel>
+                          </Tag>
                         ) : null}
                       </Stack>
                     ))}

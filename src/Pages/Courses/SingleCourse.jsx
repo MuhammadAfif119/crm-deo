@@ -386,8 +386,6 @@ const SingleCourse = () => {
     }
   };
 
-  console.log(shareLink, "ini shareLink");
-
   const handleDeleteMedia = async () => {
     // Create a reference to the file to delete
     Swal.fire({
@@ -637,6 +635,7 @@ const SingleCourse = () => {
                   size="xs"
                   onClick={() => {
                     setDatas({
+                      ...courseDetail,
                       ...datas,
                       type: "changeThumbnail",
                       courseId: params?.courseId,
@@ -982,8 +981,9 @@ const SingleCourse = () => {
                 {courseDetail?.sections?.length > 0 ? (
                   courseDetail?.sections?.map((x, i) => (
                     <AccordionItem
-                    // borderBottom="1px"
-                    // borderColor="gray.50"
+                      key={i}
+                      // borderBottom="1px"
+                      // borderColor="gray.50"
                     >
                       <h2>
                         <AccordionButton

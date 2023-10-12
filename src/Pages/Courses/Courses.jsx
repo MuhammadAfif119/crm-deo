@@ -51,8 +51,7 @@ const Courses = () => {
         limitValue
       );
       setDatas(res);
-      console.log("res", res);
-      console.log("conditions", conditions);
+
       const lastVisible = res[res?.length - 1]?.createdAt;
       setLast(lastVisible);
     } catch (error) {

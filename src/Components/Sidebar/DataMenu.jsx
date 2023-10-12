@@ -88,7 +88,7 @@ export const data = [
   {
     name: "RMS",
     icon: FcShop,
-    link: "https://rms.deoapp.com/",
+    link: "/rms",
     description:
       "Elevate restaurant operations with streamlined order and inventory management, and menu updates for enhanced efficiency and customer satisfaction.",
   },
@@ -109,15 +109,6 @@ export const data = [
   },
 
   {
-    name: "Importir",
-    status: "Coming Soon",
-    icon: FcShipped,
-    link: "https://www.importir.com/",
-    description:
-      "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
-  },
-
-  {
     name: "Chat",
     icon: FcSms,
     link: "/chat",
@@ -128,6 +119,15 @@ export const data = [
     //   { name: "Marketplace Settings", icon: FcSettings, link: "/chat" },
     //   { name: "Webchat Settings", icon: FcSettings, link: "/chat" },
     // ],
+  },
+
+  {
+    name: "Importir",
+    status: "Coming Soon",
+    icon: FcShipped,
+    link: "https://www.importir.com/",
+    description:
+      "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
   },
 
   {
@@ -398,9 +398,9 @@ export const dataMenuCRM = [
         link: "/configuration/backup",
       },
       { name: "Company", icon: FcOrganization, link: "/configuration/user" },
-      { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
+      // { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
-      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
+      { name: "Office / Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
 ];

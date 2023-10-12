@@ -29,6 +29,7 @@ import {
   arrayUnionFirebase,
   getSingleDocumentFirebase,
   uploadFile,
+  deleteFileFirebase,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import moment from "moment";
@@ -49,8 +50,10 @@ const Modals = (props) => {
   const toast = useToast();
   const params = useParams();
   const globalState = useUserStore();
+  const [thumbnailChange, setThumbnailChange] = useState();
   const { currentProject, currentCompany } = globalState;
 
+  console.log(datas, "ini type");
   const handleSave = async () => {
     setLoading(true);
     let inputData = {
@@ -294,6 +297,82 @@ const Modals = (props) => {
     }
   };
 
+  const handleSaveEditThumbnail = async () => {
+    console.log(thumbnailChange);
+    // if (newFiles.length) {
+    //   const newFileArray = [...files];
+    //   for (let i = 0; i < newFiles.length; i++) {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(newFiles[i]);
+    //     reader.onload = () => {
+    //       newFileArray.push({
+    //         file: reader.result,
+    //         fileName: newFiles[i].name,
+    //         description: newFiles[i].type,
+    //       });
+    //       setFiles(newFileArray);
+    //       console.log(files, "ini file image");
+    //     };
+    //   }
+    //   setFilesImage(newFiles);
+    // }
+    if (filesImage[0]) {
+      const resImage = await uploadFile(
+        `${datas?.title}-${moment(new Date()).valueOf()}`,
+        "course",
+        filesImage[0]
+      );
+
+      datas.thumbnail = resImage;
+    }
+    console.log(datas);
+
+    const id = await updateDocumentFirebase(
+      "courses",
+      datas.id,
+      datas.thumbnail
+    );
+    console.log(filesImage, "ini file image");
+  };
+
+  const handleFileEditThumbnail = async (filesImage) => {
+    setThumbnailChange(filesImage[0]);
+    // if (newFiles.length) {
+    //   const newFileArray = [...files];
+    //   for (let i = 0; i < newFiles.length; i++) {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(newFiles[i]);
+    //     reader.onload = () => {
+    //       newFileArray.push({
+    //         file: reader.result,
+    //         fileName: newFiles[i].name,
+    //         description: newFiles[i].type,
+    //       });
+    //       setFiles(newFileArray);
+    //       console.log(files, "ini file image");
+    //     };
+    //   }
+    //   setFilesImage(newFiles);
+    // }
+    // if (filesImage[0]) {
+    //   const resImage = await uploadFile(
+    //     `${input?.title}-${moment(new Date()).valueOf()}`,
+    //     "course",
+    //     filesImage[0]
+    //   );
+    //   inputData.thumbnail = resImage;
+    // }
+    // console.log(inputData);
+    // const id = await addDocumentFirebase(
+    //   "courses",
+    //   inputData,
+    //   currentCompany
+    // );
+    // console.log(filesImage, "ini file image");
+  };
+
+  console.log(thumbnailChange, "ini ganti thumbnail");
+
   const handleFileInputChange = (event) => {
     console.log(event);
     const { files: newFiles } = event.target;
@@ -310,6 +389,7 @@ const Modals = (props) => {
             description: newFiles[i].type,
           });
           setFiles(newFileArray);
+          console.log(newFileArray);
         };
       }
       setFilesImage(newFiles);
@@ -498,7 +578,7 @@ const Modals = (props) => {
               <Input
                 my={2}
                 type="file"
-                onChange={(e) => uploadFileToDropbox(e.target.files[0])}
+                onChange={(e) => handleFileEditThumbnail(e.target.files)}
               />
             </>
           ) : (
@@ -540,6 +620,16 @@ const Modals = (props) => {
               onClick={() => handleDelete(datas?.type)}
             >
               Delete Lesson
+            </Button>
+          ) : datas?.type === "changeThumbnail" ? (
+            <Button
+              isLoading={loading}
+              isDisabled={loading}
+              loadingText="Saving..."
+              colorScheme="green"
+              onClick={() => handleSaveEditThumbnail()}
+            >
+              Save
             </Button>
           ) : (
             <Button
