@@ -113,17 +113,14 @@ function RMSPageview() {
     setProjectData(searchProject);
   };
 
-  const getDataOutlet = async () => {
-    const docData = await getSingleDocumentFirebase("outlets", params.id);
-    // setPageData(docData);
-  };
-
   const getDataPage = async () => {
     const docData = await getSingleDocumentFirebase(
       "rms",
-      "yuVG8dOWY1vkGuSrqhZP"
+      globalState.currentProject
     );
     setPageData(docData);
+
+    console.log(docData);
   };
 
   const getDataDomain = async () => {
@@ -134,9 +131,9 @@ function RMSPageview() {
     setDomainPage(res);
   };
 
-  console.log(pageData, "oooooo");
+  // console.log(pageData, "oooooo");
 
-  console.log(`https://rms.deoapp.com/orders/${params.id}/1`);
+  // console.log(`https://rms.deoapp.com/orders/${params.id}/1`);
   const handleSave = () => {
     Swal.fire({
       title: "Do you want to save the changes?",
@@ -487,8 +484,6 @@ function RMSPageview() {
     }
   };
 
-  console.log(pageData?.stations, "ini features");
-
   const handleCheckSwitch = (value) => {
     if (!pageData.features) {
       // If pageData.features is undefined or null, initialize it as an empty array
@@ -555,8 +550,6 @@ function RMSPageview() {
       });
     }
   };
-
-  console.log(projectData, "ini project data");
 
   // useEffect(() => {
   //   getDataPage()
