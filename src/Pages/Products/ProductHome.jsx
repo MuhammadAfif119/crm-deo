@@ -1,8 +1,9 @@
 import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
+// import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
 import BackButtons from "../../Components/Buttons/BackButtons";
+import { dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 
 const ProductHome = () => {
   const navigate = useNavigate();

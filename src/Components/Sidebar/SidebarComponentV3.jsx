@@ -67,7 +67,6 @@ function SidebarComponentV3({ layout }) {
 
   const globalState = useUserStore();
 
-  // console.log(globalState, "xxx");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -142,21 +141,8 @@ function SidebarComponentV3({ layout }) {
     setListProject(projects);
   };
 
-  // console.log(userInfo);
-
-  const getUserData = async () => {
-    const res = await getSingleDocumentFirebase("users", globalState.uid);
-    // console.log(res);
-  };
 
   const user = auth.currentUser;
-
-  // useEffect(() => {
-  //   const getUserInfo = auth.currentUser;
-  //   setUserInfo(getUserInfo);
-
-  //   return () => {};
-  // }, []);
 
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
@@ -274,20 +260,15 @@ function SidebarComponentV3({ layout }) {
               bg: `gray.200`,
             },
           }}
-          // py={5}
-          height="100vh"
-          // width={isDesktop ? "auto" : "150px"}
           width={"100px"}
           transition={"0.2s ease-in-out"}
-          // display={"initial"}
-          overflowY="scroll"
           shadow={"xl"}
-          // overflow="wrap"
           roundedBottomRight={"lg"}
           roundedTopRight={"lg"}
           backgroundColor={themeConfig.color.colorFirst}
         >
-          <Box position="sticky" overflowY="auto">
+          <Box position="sticky"             
+>
             <Stack
               {...getButtonProps()}
               position={"absolute"}
@@ -297,9 +278,6 @@ function SidebarComponentV3({ layout }) {
               borderRadius={"md"}
               zIndex={1}
               cursor={"pointer"}
-              // onClick={handleClick}
-              // alignItems="flex-end"
-              // justifyContent={"flex-end"}
               p={1}
             >
               {isOpen ? (
@@ -308,45 +286,19 @@ function SidebarComponentV3({ layout }) {
                 <IoIosArrowForward size={18} />
               )}
             </Stack>
-            <Flex as="section" minH="100vh">
+
+            <Flex as="section" minH="100vh"   overflowY="scroll">
               <Stack>
                 <Box onClick={() => navigate("/")} cursor={"pointer"}>
                   <Image
                     src={themeConfig.logokotak}
                     borderRadius="full"
-                  // maxH={80}
                   />
                 </Box>
 
                 <Box px={2}>
                   <Divider />
                 </Box>
-
-                <Stack
-                  // position={"absolute"}
-                  // right={0}
-                  cursor={"pointer"}
-                  // onClick={handleClick}
-                  // alignItems="flex-end"
-                  // justifyContent={"flex-end"}
-                  // p={2}
-                  alignItems={"center"}
-                >
-                  {/* {desktopShow ? (
-                <BiAlignLeft size={20} />
-              ) : (
-                <BiAlignLeft size={20} />
-              )} */}
-                  {/* {hidden ? (
-                    <Text fontSize={10} textDecoration={"underline"}>
-                      Submenu {">"}
-                    </Text>
-                  ) : (
-                    <Text fontSize={10} textDecoration={"underline"}>
-                      Submenu {"<"}
-                    </Text>
-                  )} */}
-                </Stack>
 
                 <Stack alignItems={"center"}>
                   <Select
@@ -382,35 +334,37 @@ function SidebarComponentV3({ layout }) {
                   </Select>
                 </Stack>
 
-                <Center>
-                  <Stack>
-                    {data.map((menu, i) => (
-                      <Stack
-                        key={i}
-                        pt={2}
-                        spacing={1}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                        onClick={() => handleSelectMenu(menu)}
-                        cursor={"pointer"}
-                      >
-                        <Icon as={menu.icon} boxSize={6} />
-                        <Text fontSize={10}>{menu.name}</Text>
-                        {menu.status ? (
-                          <Tag
-                            size={"xs"}
-                            colorScheme={"red"}
-                            visibility={isVisible ? "visible" : "hidden"}
-                          >
-                            <TagLabel fontSize={"xs"} py={"0.5"} px={1}>
-                              Coming Soon
-                            </TagLabel>
-                          </Tag>
-                        ) : null}
-                      </Stack>
-                    ))}
-                  </Stack>
-                </Center>
+                <Stack height={"55vh"} overflowY="scroll">
+                  {data.map((menu, i) => (
+                    <Stack
+                      key={i}
+                      pt={2}
+                      spacing={1}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      onClick={() => handleSelectMenu(menu)}
+                      cursor={"pointer"}
+                      position="relative"
+                    >
+                      <Icon as={menu.icon} boxSize={6} />
+                      <Text fontSize={10}>{menu.name}</Text>
+                      {menu.status ? (
+                        <Stack
+                          size={"xs"}
+                          position="absolute"
+                          bgColor={"red"}
+                          borderRadius='md'
+                          visibility={isVisible ? "visible" : "hidden"}
+                          top={2}
+                        >
+                          <Text color={"white"} fontSize={"xx-small"} fontWeight={500} py={"0.5"} px={1}>
+                            Coming Soon
+                          </Text>
+                        </Stack>
+                      ) : null}
+                    </Stack>
+                  ))}
+                </Stack>
                 <Spacer />
 
                 {/* <Button

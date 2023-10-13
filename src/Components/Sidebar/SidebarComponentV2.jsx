@@ -29,7 +29,7 @@ import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Config/firebase";
 
-import { data, dataApps } from "./DataMenu";
+import { data } from "./DataMenu";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -414,7 +414,7 @@ function SidebarComponentV2({ layout }) {
                     </Button>
                     <Divider />
 
-                    <SimpleGrid
+                    {/* <SimpleGrid
                       columns={isDesktop ? [dataApps.length] : [1]}
                       w={"auto"}
                       overflowX={"scroll"}
@@ -441,7 +441,7 @@ function SidebarComponentV2({ layout }) {
                           </Stack>
                         </a>
                       ))}
-                    </SimpleGrid>
+                    </SimpleGrid> */}
                     <Divider />
                   </Stack>
 
