@@ -30,7 +30,7 @@ import {
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
 import store from "store";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward, IoIosArrowBack, IoIosArrowDropdownCircle } from "react-icons/io";
 import { UserProfile } from "./UserProfile";
 import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -364,6 +364,10 @@ function SidebarComponentV3({ layout }) {
                       ) : null}
                     </Stack>
                   ))}
+                </Stack>
+
+                <Stack alignItems={"center"} justifyContent="center">
+                  <IoIosArrowDropdownCircle />
                 </Stack>
                 <Spacer />
 
