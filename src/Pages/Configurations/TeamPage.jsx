@@ -71,6 +71,8 @@ function TeamPage() {
 
   const toast = useToast({ position: "top", align: "center" });
 
+  console.log(companyActive, "ini company active");
+
   const navigate = useNavigate();
 
   //   const getDataCompany = async () => {

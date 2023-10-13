@@ -66,13 +66,15 @@ export const data = [
     name: "Accounting",
     icon: FcCurrencyExchange,
     link: " https://anggaran-v2.web.app/",
-    description: "Access your profile pageview.",
+    description:
+      "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
   },
   {
     name: "Finance",
     icon: FcMoneyTransfer,
     link: " https://anggaran-v2.web.app/",
-    description: "Access your profile pageview.",
+    description:
+      "The definitive finance solution, offering a comprehensive suite of tools and features to elevate your financial business.",
   },
 
   {
@@ -80,15 +82,15 @@ export const data = [
     icon: FcSportsMode,
     link: "https://productivity.deoapp.com/",
     description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+      "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
   },
 
   {
     name: "RMS",
     icon: FcShop,
-    link: "https://rms.deoapp.com/",
+    link: "/rms",
     description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+      "Elevate restaurant operations with streamlined order and inventory management, and menu updates for enhanced efficiency and customer satisfaction.",
   },
 
   {
@@ -96,23 +98,14 @@ export const data = [
     icon: FcOnlineSupport,
     link: "/crm",
     description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+      "Optimize customer relationships, simplifies customer data management, and provides valuable insights to drive informed decisions and boost customer satisfaction.",
   },
   {
     name: "AI",
     icon: FcMindMap,
     link: "https://ai.deoapp.com/",
     description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
-  },
-
-  {
-    name: "Importir",
-    status: "Soon",
-    icon: FcShipped,
-    link: "https://www.importir.com/",
-    description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+      "Simplifies the AI journey and enables you to harness the benefits of AI for your specific needs",
   },
 
   {
@@ -129,11 +122,21 @@ export const data = [
   },
 
   {
+    name: "Importir",
+    status: "Coming Soon",
+    icon: FcShipped,
+    link: "https://www.importir.com/",
+    description:
+      "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
+  },
+
+  {
     name: "Calendly",
-    status: "Soon",
+    status: "Coming Soon",
     icon: FcCalendar,
     link: "/",
-    description: "Real-time communication, engage with your clients seamlessly",
+    description:
+      "Optimize time management, simplifies scheduling, enhances collaboration, and provides valuable insights for increased productivity and organization.",
     // submenu: [
     //   { name: "Chat", icon: FcEditImage, link: "/chat" },
     //   { name: "WhatsApp Settings", icon: FcSettings, link: "/chat-user" },
@@ -144,11 +147,11 @@ export const data = [
 
   {
     name: "WMS",
-    status: "Soon",
+    status: "Coming Soon",
     icon: FcPackage,
     link: "/",
     description:
-      "Organize and access all your important contacts, track communications, set reminders, and ensure you never lose touch with your clients.",
+      "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
   },
 
   // {
@@ -395,9 +398,9 @@ export const dataMenuCRM = [
         link: "/configuration/backup",
       },
       { name: "Company", icon: FcOrganization, link: "/configuration/user" },
-      { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
+      // { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
-      { name: "Outlet", icon: FcShop, link: "/configuration/outlet" },
+      { name: "Office / Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
   },
 ];

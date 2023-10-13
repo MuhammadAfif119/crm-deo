@@ -47,6 +47,7 @@ const NewsCreatePage = () => {
   const [dataInput, setDataInput] = useState({
     tags: [],
   });
+  const [imageFile, setImageFile] = useState();
   const [loading, setLoading] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -69,12 +70,13 @@ const NewsCreatePage = () => {
 
     if (dataInput.title || dataInput.title === "") {
       await uploadFile(dataInput.title, "news", file).then((uploadedImg) => {
-        console.log(uploadedImg, "this is data result");
-        setDataInput({
-          ...dataInput,
-          thumbnail: uploadedImg,
-        });
-        setIsUploading(false);
+        setTimeout(() => {
+          setDataInput({
+            ...dataInput,
+            thumbnail: uploadedImg,
+          });
+          setIsUploading(false);
+        }, 1000);
       });
 
       setIsUploading(false);
@@ -89,6 +91,29 @@ const NewsCreatePage = () => {
 
     setIsUploading(false);
   };
+
+  // const handleFileInputChange = (event) => {
+  //   const { files: newFiles } = event.target;
+
+  //   if (newFiles.length) {
+  //     const newFileArray = [...imageFile];
+  //     for (let i = 0; i < newFiles.length; i++) {
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(newFiles[i]);
+  //       reader.onload = () => {
+  //         newFileArray.push({
+  //           file: reader.result,
+  //           fileName: newFiles[i].name,
+  //           description: newFiles[i].type,
+  //         });
+  //         setImageFile(newFileArray);
+  //       };
+  //     }
+  //     // setFilesImage(newFiles);
+  //   }
+
+  //   console.log(imageFile)
+  // };
 
   const contentChange = (value) => {
     setDataInput({ ...dataInput, content: value });

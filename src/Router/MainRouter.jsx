@@ -20,6 +20,7 @@ import ProductRouter from "./ProductRouter";
 import ThemesRouter from "./ThemesRouter";
 import CourseRouter from "./CourseRouter";
 import HRISRouter from "./HRISRouter";
+import RMSRouter from "./RMSRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -44,6 +45,7 @@ function MainRouter() {
     ...ProductRouter,
     ...ThemesRouter,
     ...CourseRouter,
+    ...RMSRouter,
   ];
   return (
     <Routes>

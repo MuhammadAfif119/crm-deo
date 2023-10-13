@@ -201,7 +201,7 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
     if (
       param.type === "product" &&
       dataParam?.is_shipping === true &&
-      Object.keys(dataLeads.shippingDetails).length > 0
+      dataLeads?.shippingDetails?.price
     ) {
       updatedOrder = {
         orders: dataOrder,
