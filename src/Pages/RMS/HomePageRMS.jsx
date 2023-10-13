@@ -24,6 +24,8 @@ import {
   Tooltip,
   SimpleGrid,
   HStack,
+  Center,
+  Textarea,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -32,6 +34,7 @@ import {
   getCollectionFirebase,
   getSingleDocumentFirebase,
   setDocumentFirebase,
+  updateDocumentFirebase,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
@@ -52,12 +55,15 @@ const HomePageRMS = () => {
   const navigate = useNavigate();
   const modalCreateCompany = useDisclosure();
   const modalCreateProject = useDisclosure();
+  const modalCreateOutlet = useDisclosure();
+  const modalCreateDetailOutlet = useDisclosure();
   const modalCreateDomain = useDisclosure();
   const [outlets, setOutlets] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [companyId, setCompanyId] = useState("");
+  const [outletId, setOutletId] = useState("");
   const [listProject, setListProject] = useState([]);
   const [domainPage, setDomainPage] = useState();
   const [dataCompany, setDataCompany] = useState({
@@ -65,6 +71,12 @@ const HomePageRMS = () => {
   });
 
   const [dataProject, setDataProject] = useState({
+    name: "",
+    description: "",
+    modules: ["crm"],
+  });
+
+  const [dataOutlet, setDataOutlet] = useState({
     name: "",
     description: "",
     modules: ["crm"],
@@ -81,20 +93,22 @@ const HomePageRMS = () => {
     );
     setDomainPage(res);
   };
+
   const getDataOutlets = async () => {
-    const conditions = [
-      { field: "projectId", operator: "==", value: globalState.currentProject },
-    ];
-
-    try {
-      const res = await getCollectionFirebase("outlets", conditions);
-      setOutlets(res);
-
-      console.log(res, "xxx");
-    } catch (error) {
-      console.log(error, "ini error");
-    }
+    const q = query(
+      collection(db, "outlets"),
+      where("projectId", "==", globalState?.currentProject)
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const outletArr = [];
+      querySnapshot.forEach((doc) => {
+        outletArr.push({ ...doc.data(), id: doc.id });
+      });
+      setOutlets(outletArr);
+    });
   };
+
+  console.log(outlets);
 
   const handleCreateCompany = async () => {
     const data = {
@@ -119,6 +133,53 @@ const HomePageRMS = () => {
 
         modalCreateCompany.onClose();
         modalCreateProject.onOpen();
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateOutlets = async () => {
+    const data = {
+      name: dataOutlet.name,
+      owner: [globalState.uid],
+      managers: [globalState.uid],
+      users: [globalState.uid],
+      projectId: globalState.currentProject,
+    };
+
+    try {
+      setIsLoading(true);
+      if (dataOutlet.name === "") {
+        toast({
+          title: "Deoapp CRM",
+          description: "Please fill the form",
+          status: "error",
+          duration: 3000,
+        });
+      } else {
+        // const docRef = await addDoc(collection(db, "outlets"), data);
+        const docRef = await addDocumentFirebase(
+          "outlets",
+          data,
+          globalState.currentCompany
+        );
+        console.log("Document written with ID: ", docRef);
+        setOutletId(docRef);
+
+        toast({
+          title: "Deoapp CRM",
+          description: "Success Add Outlet",
+          status: "success",
+          duration: 2000,
+        });
+
+        modalCreateOutlet.onClose();
+        modalCreateDetailOutlet.onOpen();
       }
 
       setIsLoading(false);
@@ -161,6 +222,46 @@ const HomePageRMS = () => {
       getDataProject();
       setIsLoading(false);
       modalCreateProject.onClose();
+      // location.reload();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateDetailOutlet = async () => {
+    const data = {
+      ...dataOutlet,
+    };
+
+    console.log(data, "ini data");
+
+    setIsLoading(true);
+
+    try {
+      if (dataOutlet.name === "" || dataOutlet.description === "") {
+        toast({
+          title: "Deoapp CRM",
+          description: "Please fill the form",
+          status: "error",
+          duration: 3000,
+        });
+      } else {
+        setIsLoading(true);
+        const res = await updateDocumentFirebase("outlets", outletId, data);
+
+        toast({
+          title: "Deoapp CRM",
+          description: "Outlet Created!",
+          status: "success",
+          duration: 3000,
+        });
+      }
+
+      getDataOutlets();
+      setIsLoading(false);
+      modalCreateDetailOutlet.onClose();
       // location.reload();
     } catch (error) {
       console.log(error);
@@ -289,88 +390,112 @@ const HomePageRMS = () => {
       ) : (
         <Stack my={5} p={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
           <Text fontWeight={500} align={"center"} fontSize={"sm"}>
-            You have {globalState.companies.length} Company and{" "}
-            {globalState?.projects?.length} Project
+            {outlets?.length} Outlets found in this project
           </Text>
 
-          <SimpleGrid columns={3} spacing={3} py={4}>
-            {outlets?.map((outlet, i) => (
-              <Stack
-                align={"center"}
-                border={"1px"}
-                borderColor={"gray.50"}
-                shadow={"md"}
-                key={outlet.id}
-                p={2}
-                borderRadius={"md"}
-              >
-                <Text fontWeight={500} textTransform={"capitalize"}>
-                  {outlet.name}
-                </Text>
-                {/* <Text fontSize={13}>Total User: {outlet.users?.length}</Text> */}
-                <HStack>
-                  <Button
-                    size={"xs"}
-                    onClick={() => navigate(`dashboard/${outlet.id}`)}
-                  >
-                    Dashboard Pageview
-                  </Button>
-                  <Button
-                    size={"xs"}
-                    onClick={() =>
-                      window.open("https://rms.deoapp.com", "_blank")
-                    }
-                  >
-                    Go To Admin Page
-                  </Button>
-                </HStack>
+          {outlets?.length > 0 ? (
+            <SimpleGrid columns={3} spacing={3} py={4}>
+              {outlets?.map((outlet, i) => (
+                <Stack
+                  align={"center"}
+                  border={"1px"}
+                  borderColor={"gray.50"}
+                  shadow={"md"}
+                  key={outlet.id}
+                  py={5}
+                  borderRadius={"md"}
+                >
+                  <Avatar size={"md"} name={outlet.name} src={outlet?.image} />
+
+                  <Text fontWeight={500} textTransform={"capitalize"}>
+                    {outlet.name}
+                  </Text>
+                  {/* <Text fontSize={13}>Total User: {outlet.users?.length}</Text> */}
+                  <HStack>
+                    <Button
+                      size={"xs"}
+                      onClick={() => navigate(`dashboard/${outlet.id}`)}
+                    >
+                      Dashboard Pageview
+                    </Button>
+                    <Button
+                      size={"xs"}
+                      onClick={() =>
+                        window.open("https://rms.deoapp.com", "_blank")
+                      }
+                    >
+                      Go To Admin Page
+                    </Button>
+                  </HStack>
+                </Stack>
+              ))}
+            </SimpleGrid>
+          ) : (
+            <Center>
+              <Stack align={"center"}>
+                <Text>Project has no outlets</Text>
+                <Button size={"sm"} onClick={modalCreateOutlet.onOpen}>
+                  Create Outlet / Office
+                </Button>
               </Stack>
-            ))}
-          </SimpleGrid>
+            </Center>
+          )}
         </Stack>
       )}
 
       <Modal
-        isOpen={modalCreateCompany.isOpen}
-        onClose={modalCreateCompany.onClose}
+        isOpen={modalCreateOutlet.isOpen}
+        onClose={modalCreateOutlet.onClose}
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create Company</ModalHeader>
+          <ModalHeader>Create Outlet</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text>Fill the form correctly</Text>
             <FormLabel fontSize={14} my={3}>
-              Company Name
-              <Text as={"span"} color={"gray.400"} fontStyle={"italic"}>
-                {"  "}
-                {"("}use your name if you're individual{")"}
-              </Text>
+              Outlet Name
             </FormLabel>
             <Input
               onChange={(e) =>
-                setDataCompany({ ...dataCompany, name: e.target.value })
+                setDataOutlet({ ...dataOutlet, name: e.target.value })
               }
-              placeholder={"Enter company name"}
+              placeholder={"Enter outlet name"}
             />
+
+            <Text
+              align={"center"}
+              fontSize={12}
+              my={3}
+              fontWeight={500}
+              color={"gray.400"}
+            >
+              The outlet will be assigned to the same project you currently in.
+              You currently in {searchProject?.name}'s Project
+            </Text>
           </ModalBody>
 
           <ModalFooter>
-            {/* <Button
+            <Button
+              size={"sm"}
               colorScheme="blue"
               mr={3}
-              onClick={modalCreateCompany.onClose}
+              onClick={modalCreateOutlet.onClose}
             >
-              Close
-            </Button> */}
-            <Button variant="ghost" onClick={handleCreateCompany}>
+              Cancel
+            </Button>
+            <Button
+              size={"sm"}
+              colorScheme="green"
+              onClick={handleCreateOutlets}
+            >
               Create
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal
+      {/* <Modal
         isOpen={modalCreateProject.isOpen}
         onClose={modalCreateProject.onClose}
       >
@@ -419,54 +544,128 @@ const HomePageRMS = () => {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
 
       <Modal
-        isOpen={modalCreateProject.isOpen}
-        onClose={modalCreateProject.onClose}
+        isOpen={modalCreateDetailOutlet.isOpen}
+        onClose={modalCreateDetailOutlet.onClose}
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create Domain</ModalHeader>
+          <ModalHeader>Create Detail Outlet</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text>Fill the form correctly</Text>
 
             <FormControl>
-              <FormLabel fontSize={14} my={3}>
-                Project Name
+              <FormLabel fontSize={14}>
+                Outlet Name
                 <Text as={"span"} color={"gray.400"} fontStyle={"italic"}>
                   {"  "}
-                  {"("}your business name{")"}
+                  {"("}your Outlet name{")"}
                 </Text>
               </FormLabel>
               <Input
+                defaultValue={dataOutlet.name}
                 onChange={(e) =>
-                  setDataProject({ ...dataProject, name: e.target.value })
+                  setDataProject({ ...dataOutlet, name: e.target.value })
                 }
                 placeholder={"Enter project/business name"}
               />
             </FormControl>
 
-            <FormControl>
-              <FormLabel fontSize={14} my={3}>
-                Project Description
-              </FormLabel>
+            <FormControl my={3}>
+              <FormLabel fontSize={14}>Outlet Description</FormLabel>
               <Input
                 onChange={(e) =>
-                  setDataProject({
-                    ...dataProject,
+                  setDataOutlet({
+                    ...dataOutlet,
                     description: e.target.value,
                   })
                 }
                 placeholder={"Enter project/business description"}
               />
             </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize={14}>Outlet Address</FormLabel>
+              <Textarea
+                type="text"
+                placeholder={"Your Outlet Address"}
+                onChange={(e) =>
+                  setDataOutlet({ ...dataOutlet, fullAddress: e.target.value })
+                }
+              />
+            </FormControl>
+
+            <FormControl my={2}>
+              <HStack>
+                <Stack>
+                  <Text fontWeight={500} fontSize={14}>
+                    Subdistrict
+                  </Text>
+                  <Input
+                    type="text"
+                    placeholder={"outlet subdistrict"}
+                    onChange={(e) =>
+                      setDataOutlet({
+                        ...dataOutlet,
+                        subdistrict: e.target.value,
+                      })
+                    }
+                  />
+                </Stack>
+
+                <Stack>
+                  <Text fontWeight={500} fontSize={14}>
+                    City/Region
+                  </Text>
+                  <Input
+                    type="text"
+                    placeholder={"outlet city"}
+                    onChange={(e) =>
+                      setDataOutlet({ ...dataOutlet, city: e.target.value })
+                    }
+                  />
+                </Stack>
+              </HStack>
+            </FormControl>
+
+            <HStack>
+              <Stack>
+                <Text fontWeight={500} fontSize={14}>
+                  Postal Code
+                </Text>
+                <Input
+                  type="number"
+                  placeholder={"outlet postal code"}
+                  onChange={(e) =>
+                    setDataOutlet({ ...dataOutlet, postalCode: e.target.value })
+                  }
+                />
+              </Stack>
+              <Stack>
+                <Text fontWeight={500} fontSize={14}>
+                  Country
+                </Text>
+                <Input
+                  type="text"
+                  placeholder={"Outlet country"}
+                  onChange={(e) =>
+                    setDataOutlet({ ...dataOutlet, country: e.target.value })
+                  }
+                />
+              </Stack>
+            </HStack>
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={handleCreateProject} variant="ghost">
-              Create Project
+            <Button
+              isLoading={isLoading}
+              onClick={handleCreateDetailOutlet}
+              colorScheme="green"
+            >
+              Create Outlet
             </Button>
           </ModalFooter>
         </ModalContent>

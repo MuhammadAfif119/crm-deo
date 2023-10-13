@@ -99,6 +99,13 @@ export const data = [
     link: "/crm",
     description:
       "Optimize customer relationships, simplifies customer data management, and provides valuable insights to drive informed decisions and boost customer satisfaction.",
+    submenu: [
+      { name: "Pageview", icon: FcHome, link: "/crm/pageview" },
+      { name: "Contacts", icon: FcContacts, link: "/contacts" },
+      { name: "Pipeline", icon: FcKindle, link: "/pipelineHome" },
+      { name: "Products", icon: FcConferenceCall, link: "/productHome" },
+      { name: "Configuration", icon: FcSettings, link: "/configuration" },
+    ],
   },
   {
     name: "AI",
