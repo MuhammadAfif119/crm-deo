@@ -199,8 +199,12 @@ const NewsCreatePage = () => {
       }
 
       setContent((prevContent) => prevContent + ` ${htmlContent}`);
+      setDataInput({ ...dataInput, content: content });
     }
   };
+
+  console.log(content);
+  console.log(dataInput, "xxx");
 
   const openModal = () => {
     setModalUploadOpen(true);

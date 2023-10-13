@@ -30,7 +30,11 @@ import {
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
 import store from "store";
-import { IoIosArrowForward, IoIosArrowBack, IoIosArrowDropdownCircle } from "react-icons/io";
+import {
+  IoIosArrowForward,
+  IoIosArrowBack,
+  IoIosArrowDropdownCircle,
+} from "react-icons/io";
 import { UserProfile } from "./UserProfile";
 import LogoDeoApp from "../../assets/1.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -66,7 +70,6 @@ function SidebarComponentV3({ layout }) {
   const [listProject, setListProject] = useState([]);
 
   const globalState = useUserStore();
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -141,13 +144,12 @@ function SidebarComponentV3({ layout }) {
     setListProject(projects);
   };
 
-
   const user = auth.currentUser;
 
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => { };
+    return () => {};
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -158,7 +160,7 @@ function SidebarComponentV3({ layout }) {
     setMenu(value);
 
     if (value.status) {
-      null
+      null;
     } else {
       if (value?.link?.includes("https")) {
         window.open(value?.link, "_blank");
@@ -267,8 +269,7 @@ function SidebarComponentV3({ layout }) {
           roundedTopRight={"lg"}
           backgroundColor={themeConfig.color.colorFirst}
         >
-          <Box position="sticky"
-          >
+          <Box position="sticky">
             <Stack
               {...getButtonProps()}
               position={"absolute"}
@@ -290,10 +291,7 @@ function SidebarComponentV3({ layout }) {
             <Flex as="section" minH="100vh" overflowY="scroll">
               <Stack>
                 <Box onClick={() => navigate("/")} cursor={"pointer"}>
-                  <Image
-                    src={themeConfig.logokotak}
-                    borderRadius="full"
-                  />
+                  <Image src={themeConfig.logokotak} borderRadius="full" />
                 </Box>
 
                 <Box px={2}>
@@ -334,7 +332,24 @@ function SidebarComponentV3({ layout }) {
                   </Select>
                 </Stack>
 
-                <Stack height={"55vh"} overflowY="scroll">
+                <Stack
+                  height={"55vh"}
+                  overflowY="scroll"
+                  sx={{
+                    "&::-webkit-scrollbar": {
+                      w: "2",
+                      h: "3",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      w: "6",
+                      h: "5",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      borderRadius: "10",
+                      bg: `gray.200`,
+                    },
+                  }}
+                >
                   {data.map((menu, i) => (
                     <Stack
                       key={i}
@@ -353,12 +368,17 @@ function SidebarComponentV3({ layout }) {
                           size={"xs"}
                           position="absolute"
                           bgColor={"red"}
-                          borderRadius='md'
+                          borderRadius="md"
                           visibility={isVisible ? "visible" : "hidden"}
                           top={2}
-                          
                         >
-                          <Text color={"white"} fontSize={"xx-small"} fontWeight={500} py={"0.5"} px={1}>
+                          <Text
+                            color={"white"}
+                            fontSize={"xx-small"}
+                            fontWeight={500}
+                            py={"0.5"}
+                            px={1}
+                          >
                             Coming Soon
                           </Text>
                         </Stack>

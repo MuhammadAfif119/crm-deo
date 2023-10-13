@@ -54,6 +54,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../Config/firebase";
 import { FcPlus } from "react-icons/fc";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const NewsPage = () => {
   const toast = useToast();
@@ -345,6 +346,7 @@ const NewsPage = () => {
     //   </Modal>
     // </Box>
     <Stack p={[1, 1, 5]}>
+      <BackButtons />
       <Stack spacing={4}>
         <HStack>
           <Heading size={"md"} fontWeight="bold">

@@ -108,8 +108,6 @@ const HomePageRMS = () => {
     });
   };
 
-  console.log(outlets);
-
   const handleCreateCompany = async () => {
     const data = {
       name: dataCompany.name,
@@ -153,7 +151,7 @@ const HomePageRMS = () => {
     };
 
     const pageviewData = {
-      name: dataOutlet.name,
+      name: dataOutlet?.name,
       color_view: "#F05A28",
       image_dashboard: [
         {
@@ -163,7 +161,8 @@ const HomePageRMS = () => {
         },
       ],
       projectId: globalState.currentProject,
-      stasions: ["wook", "server"],
+      companyId: globalState.currentCompany,
+      stations: ["wook", "server"],
     };
 
     try {
@@ -187,8 +186,8 @@ const HomePageRMS = () => {
 
         const addPageview = await setDocumentFirebase(
           "rms",
-          docRef,
-          pageviewData
+          globalState.currentProject,
+          { ...pageviewData, outletId: docRef }
           // globalState.currentCompany
         );
 
@@ -436,18 +435,27 @@ const HomePageRMS = () => {
                   {/* <Text fontSize={13}>Total User: {outlet.users?.length}</Text> */}
                   <HStack>
                     <Button
+                      colorScheme="blue"
                       size={"xs"}
                       onClick={() => navigate(`dashboard/${outlet.id}`)}
                     >
                       Dashboard Pageview
                     </Button>
                     <Button
+                      colorScheme="yellow"
                       size={"xs"}
                       onClick={() =>
                         window.open("https://rms.deoapp.com", "_blank")
                       }
                     >
                       Go To Admin Page
+                    </Button>
+                    <Button
+                      colorScheme="yellow"
+                      size={"xs"}
+                      onClick={() => navigate(`reports/${outlet.id}`)}
+                    >
+                      Go To Reports
                     </Button>
                   </HStack>
                 </Stack>

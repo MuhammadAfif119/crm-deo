@@ -104,6 +104,7 @@ const RMSThemeSettingForm = ({
         <Text fontWeight="bold">Outlet Name</Text>
         <Flex h={100} alignItems={"center"} justifyContent={"center"}>
           <Input
+            defaultValue={data?.outletName || data?.name}
             placeholder="Enter your outlet name ..."
             type="text"
             onChange={(e) => setData({ ...data, outletName: e.target.value })}

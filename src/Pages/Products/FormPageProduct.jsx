@@ -486,6 +486,9 @@ function FormPageProduct() {
     }
   };
 
+  console.log(filesImage);
+  console.log(files);
+
   const handleFileLogoInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles?.length) {
