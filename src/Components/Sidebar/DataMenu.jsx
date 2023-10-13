@@ -65,7 +65,7 @@ export const data = [
   {
     name: "Accounting",
     icon: FcCurrencyExchange,
-    link: " https://anggaran-v2.web.app/",
+    link: "https://accounting-deoapps.web.app/",
     description:
       "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
   },
@@ -107,6 +107,17 @@ export const data = [
       { name: "Configuration", icon: FcSettings, link: "/configuration" },
     ],
   },
+  {
+    name: "LMS",
+    icon: FcReading,
+    link: "/lms",
+    description:
+      "Organize your own pageview webapp with ease.",
+    submenu: [
+      { name: "Courses", icon: FcIdea, link: "/courses" },
+    ],
+  },
+
   {
     name: "AI",
     icon: FcMindMap,
@@ -369,16 +380,16 @@ export const dataMenuCRM = [
     ],
   },
 
-  {
-    name: "LMS",
-    icon: FcReading,
-    link: "/lmsHome",
-    description: "Organize your own pageview webapp with ease",
-    submenu: [
-      // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
-      { name: "Courses", icon: FcIdea, link: "/courses" },
-    ],
-  },
+  // {
+  //   name: "LMS",
+  //   icon: FcReading,
+  //   link: "/lmsHome",
+  //   description: "Organize your own pageview webapp with ease",
+  //   submenu: [
+  //     // { name: "Dashboard", icon: FcMoneyTransfer, link: "/learning/dashboard" },
+  //     { name: "Courses", icon: FcIdea, link: "/courses" },
+  //   ],
+  // },
 
   {
     name: "Configuration",

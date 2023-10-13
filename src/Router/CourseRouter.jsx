@@ -12,7 +12,7 @@ const CourseRouter = [
   },
 
   {
-    path: "/lmsHome",
+    path: "/lms",
     element: <LmsHome />,
   },
 

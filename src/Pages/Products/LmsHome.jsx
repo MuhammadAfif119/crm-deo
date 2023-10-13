@@ -1,6 +1,6 @@
 import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
+import { data } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
 import BackButtons from "../../Components/Buttons/BackButtons";
 
@@ -23,7 +23,7 @@ const LmsHome = () => {
           LMS Menu
         </Text>
         <SimpleGrid columns={4} spacing={5}>
-          {dataMenuCRM
+          {data
             .find((menu) => menu.name === "LMS")
             ?.submenu?.map((x, i) => (
               <Stack
