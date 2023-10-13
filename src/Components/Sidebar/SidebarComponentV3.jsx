@@ -267,8 +267,8 @@ function SidebarComponentV3({ layout }) {
           roundedTopRight={"lg"}
           backgroundColor={themeConfig.color.colorFirst}
         >
-          <Box position="sticky"             
->
+          <Box position="sticky"
+          >
             <Stack
               {...getButtonProps()}
               position={"absolute"}
@@ -287,7 +287,7 @@ function SidebarComponentV3({ layout }) {
               )}
             </Stack>
 
-            <Flex as="section" minH="100vh"   overflowY="scroll">
+            <Flex as="section" minH="100vh" overflowY="scroll">
               <Stack>
                 <Box onClick={() => navigate("/")} cursor={"pointer"}>
                   <Image
@@ -356,6 +356,7 @@ function SidebarComponentV3({ layout }) {
                           borderRadius='md'
                           visibility={isVisible ? "visible" : "hidden"}
                           top={2}
+                          
                         >
                           <Text color={"white"} fontSize={"xx-small"} fontWeight={500} py={"0.5"} px={1}>
                             Coming Soon
