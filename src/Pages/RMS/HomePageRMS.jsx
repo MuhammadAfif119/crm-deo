@@ -152,6 +152,20 @@ const HomePageRMS = () => {
       projectId: globalState.currentProject,
     };
 
+    const pageviewData = {
+      name: dataOutlet.name,
+      color_view: "#F05A28",
+      image_dashboard: [
+        {
+          data: "Restaurant",
+          image:
+            "https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
+        },
+      ],
+      projectId: globalState.currentProject,
+      stasions: ["wook", "server"],
+    };
+
     try {
       setIsLoading(true);
       if (dataOutlet.name === "") {
@@ -168,8 +182,17 @@ const HomePageRMS = () => {
           data,
           globalState.currentCompany
         );
-        console.log("Document written with ID: ", docRef);
+
         setOutletId(docRef);
+
+        const addPageview = await setDocumentFirebase(
+          "rms",
+          docRef,
+          pageviewData
+          // globalState.currentCompany
+        );
+
+        console.log(addPageview);
 
         toast({
           title: "Deoapp CRM",
