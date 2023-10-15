@@ -607,6 +607,32 @@ export const uploadFile = async (title, type, file) => {
   }
 };
 
+export const uploadFileV2 = async (title, type, file) => {
+  const path = `${type}/${title}`;
+  const thumbnailPath = `${type}/${title}_800x800`;
+  const storageRef = ref(storage, path);
+
+  try {
+    await uploadBytes(storageRef, file);
+
+    const originalURL = await getDownloadURL(storageRef);
+    const thumbnailURL = `https://firebasestorage.googleapis.com/v0/b/deoapp-indonesia.appspot.com/o/${encodeURIComponent(
+      thumbnailPath
+    )}?alt=media`;
+
+    const returnData = originalURL;
+    // {
+    //   image_original: originalURL,
+    //   image_thumbnail: thumbnailURL,
+    // };
+
+    console.log(returnData, 'ini return data')
+    return returnData;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 export const deleteFileFirebase = async (fileName, location) => {
   const desertRef = ref(storage, `${location}/${fileName}`);
   deleteObject(desertRef)

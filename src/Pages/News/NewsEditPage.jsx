@@ -30,10 +30,12 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import {
   addDocumentFirebase,
+  deleteFileFirebase,
   getSingleDocumentFirebase,
   updateDocumentFirebase,
   UploadBlob,
   uploadFile,
+  uploadFileV2,
 } from "../../Api/firebaseApi";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -49,6 +51,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 
 import BackButtons from "../../Components/Buttons/BackButtons";
 import { MdOutlinePermMedia } from "react-icons/md";
+import moment from "moment";
 
 const NewsEditPage = () => {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -67,6 +70,9 @@ const NewsEditPage = () => {
   const companyId = globalState.currentCompany;
 
   const [newTag, setNewTag] = useState("");
+  const [imageUrl, setImageUrl] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [filesImage, setFilesImage] = useState([]);
   const [dataInput, setDataInput] = useState({
     tags: [],
   });
@@ -75,20 +81,44 @@ const NewsEditPage = () => {
   const [loading, setLoading] = useState(false);
   const contentRef = useRef();
 
-  console.log(contentRef, "ini ref");
-
   const toast = useToast();
-
-  console.log(dataInput, "ini data");
 
   const getNews = async () => {
     const res = await getSingleDocumentFirebase("news", idProject);
+
     setDataInput({
       title: res.title,
-      thumbnail: res.thumbnail,
+      // thumbnail: res.thumbnail,
       content: res.content,
       tags: res.tags,
     });
+    setFiles(res?.thumbnail);
+    setImageUrl(res?.thumbnail);
+  };
+
+  const handleFileInputChange = (event) => {
+    const { files: newFiles } = event.target;
+
+    if (newFiles.length) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          setFiles(newFileArray);
+
+          if (i === 0) {
+            setImageUrl(reader.result);
+          }
+        };
+      }
+      setFilesImage(newFiles);
+    }
   };
 
   useEffect(() => {
@@ -96,9 +126,6 @@ const NewsEditPage = () => {
       getNews();
     }
   }, [idProject]);
-
-  console.log(idProject);
-  console.log(dataInput.content);
 
   const handleDropImage = async (file) => {
     const filesFormats = ["image/jpg", "image/jpeg", "image/png", "image/heic"];
@@ -139,8 +166,6 @@ const NewsEditPage = () => {
 
     setIsUploading(false);
   };
-
-  console.log(dataInput);
 
   const handleSave = async () => {
     setLoading(true);
@@ -209,30 +234,44 @@ const NewsEditPage = () => {
 
   const handleEdit = async () => {
     setLoading(true);
-    // setDataInput({
-    //   ...dataInput,
-    //   content: contentRef?.current,
-    //   projectId: projectId,
-    // });
+
+    let data = {
+      ...dataInput,
+    };
+
     if (Object.keys(projectId)?.length === 0) {
       setLoading(false);
       toast({
         title: "Which project you want to post this article to?",
         description: "Please select project from the sidebar on the left",
         isClosable: true,
-        duration: 9000,
+        duration: 1000,
         status: "warning",
       });
     } else {
-      updateDocumentFirebase("news", idProject, dataInput, companyId)
+      deleteFileFirebase(`${dataInput.title}_800x800`, "articles");
+
+      if (filesImage[0]) {
+        const resImage = await uploadFile(
+          `${dataInput?.title}-${moment(new Date()).valueOf()}`,
+          "articles",
+          filesImage[0]
+        );
+        data.thumbnail = resImage;
+      }
+
+      updateDocumentFirebase("news", idProject, data, companyId)
         .then((id) => {
           toast({
             title: "Edit article success",
             isClosable: true,
-            duration: 9000,
+            duration: 1000,
             status: "success",
           });
-          navigate(-1);
+
+          setTimeout(() => {
+            navigate(-1);
+          }, 1000);
         })
         .catch((err) => {
           console.log(err.message);
@@ -240,7 +279,7 @@ const NewsEditPage = () => {
             title: "Which project you want to post this article to?",
             description: "Please select project from the sidebar on the left",
             isClosable: true,
-            duration: 9000,
+            duration: 1000,
             status: "warning",
           });
         });
@@ -276,7 +315,7 @@ const NewsEditPage = () => {
 
   const contentChange = (value) => {
     contentRef.current = value;
-    console.log(contentRef.current);
+
     setDataInput({ ...dataInput, content: value });
   };
 
@@ -339,17 +378,68 @@ const NewsEditPage = () => {
               Thumbnail
             </Text>
           </Tooltip>
-          {dataInput.thumbnailURL ? (
-            <Image
-              boxSize="200px"
-              objectFit={"cover"}
-              src={dataInput?.thumbnailURL}
-            ></Image>
+          {imageUrl ? (
+            <Stack alignItems={"center"}>
+              <Image
+                src={imageUrl}
+                boxSize="100%"
+                maxWidth={300}
+                borderRadius="xl"
+                alt={idProject ? dataInput?.title : files[0]?.name}
+                shadow="sm"
+              />
+              <Flex>
+                <Input
+                  type="file"
+                  onChange={handleFileInputChange}
+                  display="none"
+                  id="fileInput"
+                />
+
+                <label htmlFor="fileInput">
+                  <HStack cursor="pointer">
+                    <Stack>
+                      <MdOutlinePermMedia />
+                    </Stack>
+                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                      Change Image thumbnail
+                    </Text>
+                  </HStack>
+                </label>
+              </Flex>
+            </Stack>
           ) : (
-            <></>
+            <Flex
+              border={"2px"}
+              borderRadius={"md"}
+              borderStyle={"dashed"}
+              borderColor={"gray.300"}
+              h={250}
+              w={300}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Input
+                type="file"
+                onChange={handleFileInputChange}
+                display="none"
+                id="fileInput"
+              />
+
+              <label htmlFor="fileInput">
+                <HStack cursor="pointer">
+                  <Stack>
+                    <MdOutlinePermMedia />
+                  </Stack>
+                  <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                    Add Image thumbnail
+                  </Text>
+                </HStack>
+              </label>
+            </Flex>
           )}
           {/* <SimpleGrid columns={2} gap={2}> */}
-          <Input
+          {/* <Input
             mt="5"
             accept="image/png, image/jpeg, image/jpg, image/webp"
             type="file"
@@ -359,8 +449,8 @@ const NewsEditPage = () => {
             display={"none"}
             id="fileInput"
             onChange={(e) => handleDropImage(e.target.files[0])}
-          />
-          <label htmlFor="fileInput">
+          /> */}
+          {/* <label htmlFor="fileInput">
             <HStack cursor="pointer" mt="3">
               <Stack>
                 <MdOutlinePermMedia />
@@ -369,11 +459,11 @@ const NewsEditPage = () => {
                 Add Image Thumbnail for News
               </Text>
             </HStack>
-          </label>
-          <Image
+          </label> */}
+          {/* <Image
             maxW="300px"
             src={dataInput?.thumbnail?.replace("_800x800$1", "")}
-          />
+          /> */}
           {/* </SimpleGrid> */}
         </Box>
         {isUploading ? <Spinner /> : null}

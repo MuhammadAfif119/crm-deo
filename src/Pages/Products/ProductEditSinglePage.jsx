@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   getSingleDocumentFirebase,
   updateDocumentFirebase,
+  uploadFile,
 } from "../../Api/firebaseApi";
 import {
   Box,
@@ -23,6 +24,8 @@ import ReactQuill from "react-quill";
 import RichTextEditor from "../../Components/Quill/RichTextEditor";
 import DropboxUploader from "../../Components/DropBox/DropboxUploader";
 import useUserStore from "../../Hooks/Zustand/Store";
+import { MdOutlinePermMedia } from "react-icons/md";
+import moment from "moment";
 
 const ProductEditSinglePage = () => {
   const navigate = useNavigate();
@@ -36,6 +39,10 @@ const ProductEditSinglePage = () => {
   const [shareLink, setShareLink] = useState("");
   const [title, setTitle] = useState(data?.title);
   const [value, setValue] = useState(data?.content);
+  const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [filesImage, setFilesImage] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
   const [modalUploadOpen, setModalUploadOpen] = useState(false);
 
   const getDataProduct = async () => {
@@ -47,6 +54,8 @@ const ProductEditSinglePage = () => {
       );
       console.log(res);
       setData(res);
+      setFiles(res?.thumbnailURL);
+      setImageUrl(res?.thumbnailURL);
     } catch (error) {
       console.log(error);
     } finally {
@@ -55,12 +64,21 @@ const ProductEditSinglePage = () => {
   };
 
   const handleSave = async () => {
-    const dataInput = {
+    let dataInput = {
       title: title || data?.title,
       content: value || data?.content,
     };
 
-    console.log(dataInput);
+    if (filesImage[0]) {
+      const resImage = await uploadFile(
+        `${data?.title}-${moment(new Date()).valueOf()}`,
+        "articles",
+        filesImage[0]
+      );
+      dataInput.thumbnailURL = resImage;
+    }
+
+    setIsLoading(true);
 
     try {
       const res = await updateDocumentFirebase(
@@ -76,9 +94,38 @@ const ProductEditSinglePage = () => {
         description: "Data update",
       });
 
-      navigate(-1);
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFileInputChange = (event) => {
+    const { files: newFiles } = event.target;
+
+    if (newFiles.length) {
+      const newFileArray = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(newFiles[i]);
+        reader.onload = () => {
+          newFileArray.push({
+            file: reader.result,
+            fileName: newFiles[i].name,
+            description: newFiles[i].type,
+          });
+          setFiles(newFileArray);
+
+          if (i === 0) {
+            setImageUrl(reader.result);
+          }
+        };
+      }
+      setFilesImage(newFiles);
     }
   };
 
@@ -172,7 +219,50 @@ const ProductEditSinglePage = () => {
             </HStack>
           </Box>
           <Box py={3}>
-            <Image src={data?.thumbnailURL} boxSize="300px" objectFit="cover" />
+            {imageUrl ? (
+              <>
+                <Image src={imageUrl} boxSize="300px" objectFit="cover" />
+                <Flex justify={"center"}>
+                  <Input
+                    type="file"
+                    onChange={handleFileInputChange}
+                    display="none"
+                    id="fileInput"
+                  />
+
+                  <label htmlFor="fileInput">
+                    <HStack cursor="pointer">
+                      <Stack>
+                        <MdOutlinePermMedia />
+                      </Stack>
+                      <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                        Change Image thumbnail
+                      </Text>
+                    </HStack>
+                  </label>
+                </Flex>
+              </>
+            ) : (
+              <Flex justify={"center"}>
+                <Input
+                  type="file"
+                  onChange={handleFileInputChange}
+                  display="none"
+                  id="fileInput"
+                />
+
+                <label htmlFor="fileInput">
+                  <HStack cursor="pointer">
+                    <Stack>
+                      <MdOutlinePermMedia />
+                    </Stack>
+                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                      Change Image thumbnail
+                    </Text>
+                  </HStack>
+                </label>
+              </Flex>
+            )}
           </Box>
 
           <Divider />
@@ -202,7 +292,7 @@ const ProductEditSinglePage = () => {
           />
         </Stack>
         <Button
-          isLoading={loading}
+          isLoading={isLoading}
           onClick={() => handleSave()}
           colorScheme="blue"
         >

@@ -56,39 +56,44 @@ import moment from "moment";
 import { formatFrice } from "../../Utils/numberUtil";
 
 function FormPageListing() {
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  const idProject = searchParams.get("id");
-
-  const [projectList, setProjectList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [projectName, setProjectName] = useState("");
-  const [category, setCategory] = useState([]);
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [files, setFiles] = useState([]); // Initialize with an empty array
-  const [filesImage, setFilesImage] = useState([]);
-  const [details, setDetails] = useState([]);
-  const [contactPerson, setContactPerson] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
-  const [selectedCategory, setSelectedCategory] = useState([]);
-  const [filesImageLogo, setFilesImageLogo] = useState([]);
-  const [filesLogo, setFilesLogo] = useState([]);
-  const [categoryInput, setCategoryInput] = useState("");
-  const [categoryData, setCategoryData] = useState([]);
-  const [checkPrice, setCheckPrice] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoryList, setCategoryList] = useState([]);
-  const [queries, setQueries] = useState("");
-  const [priceEnd, setPriceEnd] = useState("");
-  const globalState = useUserStore();
-  const [priceWarning, setPriceWarning] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const globalState = useUserStore();
 
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [queries, setQueries] = useState("");
+  const [priceEnd, setPriceEnd] = useState("");
+  const [projectId, setProjectId] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [description, setDescription] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
+  const [categoryInput, setCategoryInput] = useState("");
+
+  const [files, setFiles] = useState([]); // Initialize with an empty array
+  const [modules, setModules] = useState([]); // Tambahkan state untuk checkbox modules
+  const [details, setDetails] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [filesLogo, setFilesLogo] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [filesImage, setFilesImage] = useState([]);
+  const [projectList, setProjectList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [filesImageLogo, setFilesImageLogo] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+  const [checkPrice, setCheckPrice] = useState(false);
+  const [priceWarning, setPriceWarning] = useState(false);
+
+  const idProject = searchParams.get("id");
   const companyId = globalState.currentCompany;
 
   const getProject = () => {
@@ -106,7 +111,9 @@ function FormPageListing() {
     setDescription(res.description);
     setPrice(res.price);
     setFiles(res?.image || []);
+    setImageUrl(res?.image);
     setFilesLogo(res?.logo || []);
+    setLogoUrl(res?.logo);
     setModules(res.modules);
     setIsActive(res.is_active);
     setProjectName(res.projectName);
@@ -355,7 +362,7 @@ function FormPageListing() {
     const { files: newFiles } = event.target;
 
     if (newFiles.length) {
-      const newFileArray = [...files];
+      const newFileArray = [];
       for (let i = 0; i < newFiles.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(newFiles[i]);
@@ -366,6 +373,10 @@ function FormPageListing() {
             description: newFiles[i].type,
           });
           setFiles(newFileArray);
+
+          if (i === 0) {
+            setImageUrl(reader.result);
+          }
         };
       }
       setFilesImage(newFiles);
@@ -386,6 +397,10 @@ function FormPageListing() {
             description: newFiles[i].type,
           });
           setFilesLogo(newFileArray);
+
+          if (i === 0) {
+            setLogoUrl(reader.result);
+          }
         };
       }
       setFilesImageLogo(newFiles);
@@ -596,79 +611,145 @@ function FormPageListing() {
         mb={2}
       >
         <Stack spacing={6} align={"left"} w="100%">
-          <Flex justify={"space-between"} w="full" gap={5}>
+          <Flex
+            justify={"space-between"}
+            w="full"
+            gap={5}
+            justifyItems={"center"}
+            alignContent={"center"}
+          >
             <FormControl id="image" isRequired>
               <HStack>
-                {files?.length > 0 && (
-                  <Stack>
+                {/* {files?.length > 0 ? ( */}
+                {imageUrl ? (
+                  <Stack alignItems={"center"}>
                     <Image
-                      src={idProject ? files : files[0].file}
+                      src={imageUrl}
                       boxSize="100%"
                       maxWidth={300}
                       borderRadius="xl"
-                      alt={idProject ? title : files[0].name}
+                      alt={idProject ? title : files[0]?.name}
                       shadow="sm"
                     />
+                    <Flex>
+                      <Input
+                        type="file"
+                        onChange={handleFileInputChange}
+                        display="none"
+                        id="fileInput"
+                      />
+
+                      <label htmlFor="fileInput">
+                        <HStack cursor="pointer">
+                          <Stack>
+                            <MdOutlinePermMedia />
+                          </Stack>
+                          <Text
+                            fontSize="sm"
+                            color="blue.600"
+                            fontStyle="italic"
+                          >
+                            Add Image thumbnail
+                          </Text>
+                        </HStack>
+                      </label>
+                    </Flex>
                   </Stack>
+                ) : (
+                  <Flex
+                    border={"2px"}
+                    borderRadius={"md"}
+                    borderStyle={"dashed"}
+                    borderColor={"gray.300"}
+                    h={250}
+                    w={300}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Input
+                      type="file"
+                      onChange={handleFileInputChange}
+                      display="none"
+                      id="fileInput"
+                    />
+
+                    <label htmlFor="fileInput">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Image thumbnail
+                        </Text>
+                      </HStack>
+                    </label>
+                  </Flex>
                 )}
               </HStack>
-
-              <Stack>
-                <Input
-                  type="file"
-                  onChange={handleFileInputChange}
-                  display="none"
-                  id="fileInput"
-                />
-
-                <label htmlFor="fileInput">
-                  <HStack cursor="pointer">
-                    <Stack>
-                      <MdOutlinePermMedia />
-                    </Stack>
-                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                      Add Image thumbnail
-                    </Text>
-                  </HStack>
-                </label>
-              </Stack>
             </FormControl>
 
             <FormControl id="logo" isRequired>
               <HStack>
-                {filesLogo?.length > 0 && (
-                  <Stack>
+                {/* {filesLogo?.length > 0 ? ( */}
+                {logoUrl ? (
+                  <Stack alignItems={"center"}>
                     <Image
-                      src={idProject ? filesLogo : filesLogo[0].file}
+                      src={logoUrl}
                       boxSize="100%"
                       maxWidth={300}
                       borderRadius="xl"
                       alt={idProject ? `${title}-logo` : filesLogo[0].name}
                       shadow="sm"
                     />
+                    <Input
+                      type="file"
+                      onChange={handleFileLogoInputChange}
+                      display="none"
+                      id="fileInputLogo"
+                    />
+
+                    <label htmlFor="fileInputLogo">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Image logo
+                        </Text>
+                      </HStack>
+                    </label>
                   </Stack>
+                ) : (
+                  <Flex
+                    border={"2px"}
+                    borderRadius={"md"}
+                    borderStyle={"dashed"}
+                    borderColor={"gray.300"}
+                    h={250}
+                    w={300}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Input
+                      type="file"
+                      onChange={handleFileLogoInputChange}
+                      display="none"
+                      id="fileInputLogo"
+                    />
+
+                    <label htmlFor="fileInputLogo">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Image logo
+                        </Text>
+                      </HStack>
+                    </label>
+                  </Flex>
                 )}
               </HStack>
-
-              <Stack>
-                <Input
-                  type="file"
-                  onChange={handleFileLogoInputChange}
-                  display="none"
-                  id="fileInputLogo"
-                />
-
-                <label htmlFor="fileInputLogo">
-                  <HStack cursor="pointer">
-                    <Stack>
-                      <MdOutlinePermMedia />
-                    </Stack>
-                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                      Add Image logo
-                    </Text>
-                  </HStack>
-                </label>
-              </Stack>
             </FormControl>
           </Flex>
 

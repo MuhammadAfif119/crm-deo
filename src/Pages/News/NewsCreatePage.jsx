@@ -34,6 +34,7 @@ import { addDocumentFirebase, uploadFile } from "../../Api/firebaseApi";
 import DropboxUploader from "../../Components/DropBox/DropboxUploader";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const NewsCreatePage = () => {
   const navigate = useNavigate();
@@ -52,6 +53,9 @@ const NewsCreatePage = () => {
   const [shareLink, setShareLink] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [modalUploadOpen, setModalUploadOpen] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [filesImage, setFilesImage] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const handleDropImage = async (file) => {
     const filesFormats = ["image/jpg", "image/jpeg", "image/png", "image/heic"];
@@ -92,6 +96,7 @@ const NewsCreatePage = () => {
     setIsUploading(false);
   };
 
+  console.log(dataInput.title);
   // const handleFileInputChange = (event) => {
   //   const { files: newFiles } = event.target;
 
@@ -121,26 +126,26 @@ const NewsCreatePage = () => {
 
   const handleSave = async () => {
     setLoading(true);
-    setDataInput({
+
+    let data = {
       ...dataInput,
       projectId: globalState?.currentProject,
       status: "active",
-    });
+    };
+    //
+    //
 
-    console.log(dataInput);
-    //
-    //
+    if (filesImage[0]) {
+      const resImage = await uploadFile(
+        `${dataInput?.title}-${moment(new Date()).valueOf()}`,
+        "articles",
+        filesImage[0]
+      );
+      data.thumbnail = resImage;
+    }
 
     // 1. save to news collection via adddoc
-    addDocumentFirebase(
-      "news",
-      {
-        ...dataInput,
-        projectId: globalState?.currentProject,
-        status: "active",
-      },
-      globalState?.currentCompany
-    )
+    addDocumentFirebase("news", data, globalState?.currentCompany)
       .then((id) => {
         console.log("added with id ", id);
         toast({
@@ -162,6 +167,39 @@ const NewsCreatePage = () => {
           status: "warning",
         });
       });
+  };
+
+  const handleFileInputChange = (event) => {
+    if (dataInput?.title === "" || dataInput?.title === undefined) {
+      toast({
+        status: "warning",
+        title: " Deoapp CRM",
+        description: "Please input title first",
+        duration: 2000,
+      });
+    } else {
+      const { files: newFiles } = event.target;
+      if (newFiles.length) {
+        const newFileArray = [];
+        for (let i = 0; i < newFiles.length; i++) {
+          const reader = new FileReader();
+          reader.readAsDataURL(newFiles[i]);
+          reader.onload = () => {
+            newFileArray.push({
+              file: reader.result,
+              fileName: newFiles[i].name,
+              description: newFiles[i].type,
+            });
+            setFiles(newFileArray);
+
+            if (i === 0) {
+              setImageUrl(reader.result);
+            }
+          };
+        }
+        setFilesImage(newFiles);
+      }
+    }
   };
 
   const handleSaveTag = () => {
@@ -203,9 +241,6 @@ const NewsCreatePage = () => {
     }
   };
 
-  console.log(content);
-  console.log(dataInput, "xxx");
-
   const openModal = () => {
     setModalUploadOpen(true);
   };
@@ -214,7 +249,6 @@ const NewsCreatePage = () => {
     setModalUploadOpen(false);
   }
 
-  console.log(dataInput, "ini data input");
   return (
     <>
       <BackButtons />
@@ -268,23 +302,63 @@ const NewsCreatePage = () => {
             </Box>
           )}
         </Box>
-        <Box mb="5">
+
+        <Box my={5}>
           <Tooltip label="Thumbnail image for your articles">
             <Text fontWeight={600} color="gray.600">
               Thumbnail
             </Text>
           </Tooltip>
-          {dataInput.thumbnailURL ? (
-            <Image
-              boxSize="200px"
-              objectFit={"cover"}
-              src={dataInput?.thumbnailURL}
-            ></Image>
+          {imageUrl ? (
+            <>
+              <Image src={imageUrl} boxSize="300px" objectFit="cover" />
+              <Flex justify={"center"}>
+                <Input
+                  type="file"
+                  onChange={handleFileInputChange}
+                  display="none"
+                  id="fileInput"
+                />
+
+                <label htmlFor="fileInput">
+                  <HStack cursor="pointer">
+                    <Stack>
+                      <MdOutlinePermMedia />
+                    </Stack>
+                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                      Change Image thumbnail
+                    </Text>
+                  </HStack>
+                </label>
+              </Flex>
+            </>
           ) : (
-            <></>
+            <Flex justify={"center"}>
+              <Input
+                type="file"
+                onChange={handleFileInputChange}
+                display="none"
+                id="fileInput"
+              />
+
+              <label htmlFor="fileInput">
+                <HStack cursor="pointer">
+                  <Stack>
+                    <MdOutlinePermMedia />
+                  </Stack>
+                  <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                    Add Image thumbnail
+                  </Text>
+                </HStack>
+              </label>
+            </Flex>
           )}
           {/* <SimpleGrid columns={2} gap={2}> */}
-          <Input
+
+          {/* </SimpleGrid> */}
+
+          {/* <SimpleGrid columns={2} gap={2}> */}
+          {/* <Input
             mt="5"
             accept="image/png, image/jpeg, image/jpg, image/webp"
             type="file"
@@ -305,7 +379,7 @@ const NewsCreatePage = () => {
           <Image
             maxW="300px"
             src={dataInput?.thumbnail?.replace("_800x800$1", "")}
-          />
+          /> */}
           {/* </SimpleGrid> */}
         </Box>
         {isUploading ? <Spinner /> : null}

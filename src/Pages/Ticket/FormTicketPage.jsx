@@ -533,6 +533,7 @@ const FormTicketPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const params = useParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   let [searchParams, setSearchParams] = useSearchParams();
   const idProject = searchParams.get("id");
@@ -549,9 +550,12 @@ const FormTicketPage = () => {
   const [lastFormId, setLastFormId] = useState();
   const [formId, setFormId] = useState();
   const [currentForm, setCurrentForm] = useState({});
+  const [dateCorrection, setDateCorrection] = useState(false);
 
   const [filesImage, setFilesImage] = useState("");
   const [logo, setLogo] = useState([]);
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const [filesLogo, setFilesLogo] = useState("");
   const [checkboxDate, setCheckboxDate] = useState(false);
   const [data, setData] = useState({
@@ -581,7 +585,6 @@ const FormTicketPage = () => {
       },
     ],
   });
-
 
   const [eventType, setEventType] = useState([]);
   const [formPage, setFormPage] = useState(false);
@@ -647,8 +650,10 @@ const FormTicketPage = () => {
       setData(newData);
       setProjectId(res.projectId);
       setProjectName(res.projectName);
-      setLogo(res.logo);
+      setLogo(res?.logo);
       setFiles(res.thumbnail);
+      setImageUrl(res?.thumbnail);
+      setLogoUrl(res?.logo);
       setCategoryDetails(res.category);
       setTicketCounts([res.category[0]?.tickets?.length]);
       setLastFormId(res.formId);
@@ -802,7 +807,6 @@ const FormTicketPage = () => {
     });
   };
 
-
   const handleCategoryChange = (categoryIndex, field, value) => {
     setCategoryDetails((prevCategoryDetails) => {
       const updatedCategoryDetails = [...prevCategoryDetails];
@@ -811,10 +815,11 @@ const FormTicketPage = () => {
     });
   };
 
+  console.log(filesImage, "xxx");
+
   const handleSubmit = async (type) => {
-
-
     if (checkboxDate && data.dateStart >= data.dateEnd) {
+      setDateCorrection(true);
       // Menampilkan pesan kesalahan atau melakukan tindakan lain sesuai kebutuhan
       return toast({
         title: "Deoapp.com",
@@ -826,6 +831,8 @@ const FormTicketPage = () => {
     }
 
     try {
+      setIsLoading(true);
+      setDateCorrection(false);
       if (type === "create") {
         const newDatas = {
           ...data,
@@ -902,6 +909,8 @@ const FormTicketPage = () => {
           newData.eventType = eventType;
         }
 
+        console.log(newData, "xxx");
+
         const resUpdate = await updateDocumentFirebase(
           "tickets",
           idProject,
@@ -967,6 +976,7 @@ const FormTicketPage = () => {
           navigate("/ticket");
         }
       }
+      setIsLoading(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -975,6 +985,18 @@ const FormTicketPage = () => {
         position: "top-right",
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkDateRange = (date) => {
+    if (data.dateEnd !== undefined || !data?.dateEnd) {
+      if (data.dateStart >= date) {
+        setDateCorrection(true);
+      } else {
+        setDateCorrection(false);
+      }
     }
   };
 
@@ -1055,8 +1077,9 @@ const FormTicketPage = () => {
 
   const handleFileInputChange = (event) => {
     const { files: newFiles } = event.target;
+
     if (newFiles.length) {
-      const newFileArray = [...files];
+      const newFileArray = [];
       for (let i = 0; i < newFiles.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(newFiles[i]);
@@ -1067,6 +1090,10 @@ const FormTicketPage = () => {
             description: newFiles[i].type,
           });
           setFiles(newFileArray);
+
+          if (i === 0) {
+            setImageUrl(reader.result);
+          }
         };
       }
       setFilesImage(newFiles);
@@ -1076,7 +1103,7 @@ const FormTicketPage = () => {
   const handleFileLogoInputChange = (event) => {
     const { files: newFiles } = event.target;
     if (newFiles?.length) {
-      const newFileArray = [...logo];
+      const newFileArray = [...filesLogo];
       for (let i = 0; i < newFiles?.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(newFiles[i]);
@@ -1087,12 +1114,16 @@ const FormTicketPage = () => {
             description: newFiles[i].type,
           });
           setLogo(newFileArray);
+
+          if (i === 0) {
+            setLogoUrl(reader.result);
+          }
         };
       }
       setFilesLogo(newFiles);
     }
   };
-  useEffect(() => { }, [categoryDetails.length !== 0]);
+  useEffect(() => {}, [categoryDetails.length !== 0]);
   return (
     <>
       <Stack>
@@ -1137,76 +1168,148 @@ const FormTicketPage = () => {
               value={data?.description}
             />
           </FormControl>
-          <Flex justify={"space-between"}>
-            <FormControl id="image-peaker">
+
+          <Flex
+            justify={"space-between"}
+            w="full"
+            gap={5}
+            justifyItems={"center"}
+            alignContent={"center"}
+          >
+            <FormControl id="image" isRequired>
               <HStack>
-                <Stack>
-                  {files?.length > 0 && (
+                {/* {files?.length > 0 ? ( */}
+                {imageUrl ? (
+                  <Stack alignItems={"center"}>
                     <Image
+                      src={imageUrl}
                       boxSize="100%"
                       maxWidth={300}
                       borderRadius="xl"
+                      alt={idProject ? data?.title : files[0]?.name}
                       shadow="sm"
-                      src={idProject ? files : files[0].file}
-                      alt={idProject ? data?.title : files[0].name}
                     />
-                  )}
-                </Stack>
-              </HStack>
-              <Stack>
-                <Input
-                  type="file"
-                  display="none"
-                  id="fileInput"
-                  onChange={handleFileInputChange}
-                />
+                    <Flex>
+                      <Input
+                        type="file"
+                        onChange={handleFileInputChange}
+                        display="none"
+                        id="fileInput"
+                      />
 
-                <label htmlFor="fileInput">
-                  <HStack cursor="pointer">
-                    <Stack>
-                      <MdOutlinePermMedia />
-                    </Stack>
-                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                      Add Banner Event
-                    </Text>
-                  </HStack>
-                </label>
-              </Stack>
+                      <label htmlFor="fileInput">
+                        <HStack cursor="pointer">
+                          <Stack>
+                            <MdOutlinePermMedia />
+                          </Stack>
+                          <Text
+                            fontSize="sm"
+                            color="blue.600"
+                            fontStyle="italic"
+                          >
+                            Add Image thumbnail
+                          </Text>
+                        </HStack>
+                      </label>
+                    </Flex>
+                  </Stack>
+                ) : (
+                  <Flex
+                    border={"2px"}
+                    borderRadius={"md"}
+                    borderStyle={"dashed"}
+                    borderColor={"gray.300"}
+                    h={250}
+                    w={300}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Input
+                      type="file"
+                      onChange={handleFileInputChange}
+                      display="none"
+                      id="fileInput"
+                    />
+
+                    <label htmlFor="fileInput">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Banner Event
+                        </Text>
+                      </HStack>
+                    </label>
+                  </Flex>
+                )}
+              </HStack>
             </FormControl>
-            <FormControl id="image-peaker">
+
+            <FormControl id="logo" isRequired>
               <HStack>
-                <Stack>
-                  {logo?.length > 0 && (
+                {/* {filesLogo?.length > 0 ? ( */}
+                {logoUrl ? (
+                  <Stack alignItems={"center"}>
                     <Image
+                      src={logoUrl}
                       boxSize="100%"
                       maxWidth={300}
                       borderRadius="xl"
+                      alt={
+                        idProject ? `${data?.title}-logo` : filesLogo[0].name
+                      }
                       shadow="sm"
-                      src={idProject ? logo : logo[0].file}
-                      alt={idProject ? `${data?.title}-logo` : logo[0].name}
                     />
-                  )}
-                </Stack>
-              </HStack>
-              <Stack>
-                <Input
-                  type="file"
-                  display="none"
-                  id="logoInput"
-                  onChange={handleFileLogoInputChange}
-                />
+                    <Input
+                      type="file"
+                      onChange={handleFileLogoInputChange}
+                      display="none"
+                      id="fileInputLogo"
+                    />
 
-                <label htmlFor="logoInput">
-                  <HStack cursor="pointer">
-                    <Stack>
-                      <MdOutlinePermMedia />
-                    </Stack>
-                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                      Add Image Logo
-                    </Text>
-                  </HStack>
-                </label>
-              </Stack>
+                    <label htmlFor="fileInputLogo">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Image logo
+                        </Text>
+                      </HStack>
+                    </label>
+                  </Stack>
+                ) : (
+                  <Flex
+                    border={"2px"}
+                    borderRadius={"md"}
+                    borderStyle={"dashed"}
+                    borderColor={"gray.300"}
+                    h={250}
+                    w={300}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Input
+                      type="file"
+                      onChange={handleFileLogoInputChange}
+                      display="none"
+                      id="fileInputLogo"
+                    />
+
+                    <label htmlFor="fileInputLogo">
+                      <HStack cursor="pointer">
+                        <Stack>
+                          <MdOutlinePermMedia />
+                        </Stack>
+                        <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                          Add Image logo
+                        </Text>
+                      </HStack>
+                    </label>
+                  </Flex>
+                )}
+              </HStack>
             </FormControl>
           </Flex>
 
@@ -1219,7 +1322,7 @@ const FormTicketPage = () => {
             <HStack>
               <Text>Rp.</Text>
               <Input
-                w={'auto'}
+                w={"auto"}
                 type="number"
                 value={data?.price}
                 onChange={(e) => {
@@ -1227,8 +1330,9 @@ const FormTicketPage = () => {
                 }}
               />
               <Spacer />
-              <Text fontWeight={500}>Rp.{formatFrice(parseFloat(data.price || 0))}</Text>
-
+              <Text fontWeight={500}>
+                Rp.{formatFrice(parseFloat(data.price || 0))}
+              </Text>
             </HStack>
           </FormControl>
 
@@ -1252,10 +1356,7 @@ const FormTicketPage = () => {
           </Stack>
 
           <SimpleGrid columns={[1, 1, 2]} align={"center"} spacing="5">
-            <FormControl
-              isRequired
-              isInvalid={isError.includes("dateStart")}
-            >
+            <FormControl isRequired isInvalid={isError.includes("dateStart")}>
               <FormLabel>Date Start</FormLabel>
               <Input
                 type="date"
@@ -1267,24 +1368,29 @@ const FormTicketPage = () => {
             </FormControl>
 
             {checkboxDate && (
-              <FormControl isRequired >
-                <FormLabel>Date End</FormLabel>
-                <Input
-                  type="date"
-                  onChange={(e) => {
-                    setData({ ...data, dateEnd: e.target.value });
-                  }}
-                  value={data?.dateEnd}
-                />
-              </FormControl>
+              <>
+                <FormControl isRequired>
+                  <FormLabel>Date End</FormLabel>
+                  <Input
+                    borderColor={dateCorrection ? "red" : null}
+                    type="date"
+                    onChange={(e) => {
+                      setData({ ...data, dateEnd: e.target.value });
+                      checkDateRange(e.target.value);
+                    }}
+                    value={data?.dateEnd}
+                  />
+                  {dateCorrection ? (
+                    <Text color={"red"} fontSize={12}>
+                      Date End should not be before or equal than date start
+                    </Text>
+                  ) : null}
+                </FormControl>
+              </>
             )}
-
           </SimpleGrid>
           <SimpleGrid columns={[1, 1, 2]} spacing={5}>
-            <FormControl
-              isRequired
-              isInvalid={isError.includes("time")}
-            >
+            <FormControl isRequired isInvalid={isError.includes("time")}>
               <FormLabel>Time Start</FormLabel>
               <Input
                 type="time"
@@ -1292,10 +1398,7 @@ const FormTicketPage = () => {
                 value={data?.time}
               />
             </FormControl>
-            <FormControl
-              isRequired
-              isInvalid={isError.includes("timeEnd")}
-            >
+            <FormControl isRequired isInvalid={isError.includes("timeEnd")}>
               <FormLabel>Time End</FormLabel>
               <Input
                 type="time"
@@ -1426,7 +1529,11 @@ const FormTicketPage = () => {
               <SimpleGrid columns={[1, 1, 3]} spacing={3}>
                 {dataForm?.map((form, i) => (
                   <Stack
-                    _hover={{ transform: "scale(1.02)", transition: "0.3s", bgColor: 'blue.200' }}
+                    _hover={{
+                      transform: "scale(1.02)",
+                      transition: "0.3s",
+                      bgColor: "blue.200",
+                    }}
                     shadow={"sm"}
                     key={i}
                     borderWidth="1px"
@@ -1463,7 +1570,7 @@ const FormTicketPage = () => {
           <Divider />
 
           <SimpleGrid columns={[1, 1, 2]} py={[1, 1, 5]} spacing={5}>
-            <Box >
+            <Box>
               <Text fontWeight={"semibold"}>
                 Data Details To Be Displayed in PageView
               </Text>
@@ -1598,9 +1705,10 @@ const FormTicketPage = () => {
           {params.type === "create" ? (
             <Flex align="end" justify={"end"}>
               <Button
+                isLoading={isLoading}
                 colorScheme="blue"
                 onClick={() => handleSubmit("create")}
-              // onClick={() => console.log("clicked")}
+                // onClick={() => console.log("clicked")}
               >
                 Create
               </Button>
@@ -1608,11 +1716,12 @@ const FormTicketPage = () => {
           ) : (
             <Flex align="end" justify={"end"}>
               <Button
+                isLoading={isLoading}
                 // rightIcon={<FiChevronRight />}
                 variant={"outline"}
                 colorScheme="blue"
                 onClick={() => handleSubmit("edit")}
-              // onClick={() => console.log("clicked")}
+                // onClick={() => console.log("clicked")}
               >
                 Save Changes
               </Button>

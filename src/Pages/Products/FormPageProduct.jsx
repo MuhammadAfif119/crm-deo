@@ -96,6 +96,8 @@ function FormPageProduct() {
   const [currentForm, setCurrentForm] = useState();
   const [lastFormId, setLastFormId] = useState("");
   const [priceEnd, setPriceEnd] = useState("");
+  const [imageUrl, setImageUrl] = useState(null);
+  const [logoUrl, setLogoUrl] = useState(null);
   const [detailProduct, setDetailProduct] = useState(false);
   const [stock, setStock] = useState(0);
   const [volume, setVolume] = useState(0);
@@ -134,7 +136,9 @@ function FormPageProduct() {
     setDescription(res.description);
     setPrice(res.price);
     setFiles(res?.image || []);
+    setImageUrl(res?.image);
     setFilesLogo(res?.logo || []);
+    setLogoUrl(res?.logo);
     setModules(res.modules);
     setIsActive(res.is_active);
     setProjectName(res.projectName);
@@ -469,7 +473,7 @@ function FormPageProduct() {
     const { files: newFiles } = event.target;
 
     if (newFiles.length) {
-      const newFileArray = [...files];
+      const newFileArray = [];
       for (let i = 0; i < newFiles.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(newFiles[i]);
@@ -480,14 +484,15 @@ function FormPageProduct() {
             description: newFiles[i].type,
           });
           setFiles(newFileArray);
+
+          if (i === 0) {
+            setImageUrl(reader.result);
+          }
         };
       }
       setFilesImage(newFiles);
     }
   };
-
-  console.log(filesImage);
-  console.log(files);
 
   const handleFileLogoInputChange = (event) => {
     const { files: newFiles } = event.target;
@@ -503,6 +508,10 @@ function FormPageProduct() {
             description: newFiles[i].type,
           });
           setFilesLogo(newFileArray);
+
+          if (i === 0) {
+            setLogoUrl(reader.result);
+          }
         };
       }
       setFilesImageLogo(newFiles);
@@ -757,14 +766,15 @@ function FormPageProduct() {
             >
               <FormControl id="image" isRequired>
                 <HStack>
-                  {files?.length > 0 ? (
+                  {/* {files?.length > 0 ? ( */}
+                  {imageUrl ? (
                     <Stack alignItems={"center"}>
                       <Image
-                        src={idProject ? files : files[0].file}
+                        src={imageUrl}
                         boxSize="100%"
                         maxWidth={300}
                         borderRadius="xl"
-                        alt={idProject ? title : files[0].name}
+                        alt={idProject ? title : files[0]?.name}
                         shadow="sm"
                       />
                       <Flex>
@@ -830,10 +840,11 @@ function FormPageProduct() {
 
               <FormControl id="logo" isRequired>
                 <HStack>
-                  {filesLogo?.length > 0 ? (
+                  {/* {filesLogo?.length > 0 ? ( */}
+                  {logoUrl ? (
                     <Stack alignItems={"center"}>
                       <Image
-                        src={idProject ? filesLogo : filesLogo[0].file}
+                        src={logoUrl}
                         boxSize="100%"
                         maxWidth={300}
                         borderRadius="xl"

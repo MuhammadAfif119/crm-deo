@@ -247,7 +247,7 @@ const ProductPage = () => {
                     title: "Deleted!",
                     description: res,
                     status: "success",
-                    duration: 9000,
+                    duration: 1000,
                     isClosable: true,
                   });
                   setModalDelete(false);

@@ -34,6 +34,7 @@ import { addDocumentFirebase, uploadFile } from "../../Api/firebaseApi";
 import DropboxUploader from "../../Components/DropBox/DropboxUploader";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const ProductArticleCreatePage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,9 @@ const ProductArticleCreatePage = () => {
   const [loading, setLoading] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [filesImage, setFilesImage] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
   const [modalUploadOpen, setModalUploadOpen] = useState(false);
 
   const handleDropImage = async (file) => {
@@ -113,38 +117,59 @@ const ProductArticleCreatePage = () => {
     //
     //
 
-    // 1. save to news collection via adddoc
-    addDocumentFirebase(
-      "listings_product",
-      {
-        ...dataInput,
-        content: content,
-        projectId: globalState?.currentProject,
-        type: "pages",
-      },
-      globalState?.currentCompany
-    )
-      .then((id) => {
-        console.log("added with id ", id);
-        toast({
-          title: "Posting article success",
-          isClosable: true,
-          duration: 9000,
-          status: "success",
+    let data = {
+      ...dataInput,
+      content: content,
+      projectId: globalState?.currentProject,
+      type: "pages",
+    };
+
+    try {
+      if (filesImage[0]) {
+        const resImage = await uploadFile(
+          `${dataInput?.title}-${moment(new Date()).valueOf()}`,
+          "articles",
+          filesImage[0]
+        );
+        data.thumbnailURL = resImage;
+      }
+
+      addDocumentFirebase("listings_product", data, globalState?.currentCompany)
+        .then((id) => {
+          toast({
+            title: "Deoapp Business",
+            description: "Article created!",
+            status: "success",
+            duration: 1000,
+          });
+
+          setTimeout(() => {
+            navigate("/products/articles");
+          }, 1000);
+        })
+        .catch((err) => {
+          console.log(err.message);
+          toast({
+            title: "Which project you want to post this article to?",
+            description:
+              "Please select project from the sidebar on the left and make sure to fill the content",
+            isClosable: true,
+            duration: 1000,
+            status: "warning",
+          });
         });
-        navigate("/products/articles");
-      })
-      .catch((err) => {
-        console.log(err.message);
-        toast({
-          title: "Which project you want to post this article to?",
-          description:
-            "Please select project from the sidebar on the left and make sure to fill the content",
-          isClosable: true,
-          duration: 9000,
-          status: "warning",
-        });
+    } catch (error) {
+      console.log(error);
+
+      toast({
+        title: "Deoapp Business",
+        description: error,
+        status: "error",
+        duration: 1000,
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveTag = () => {
@@ -155,6 +180,40 @@ const ProductArticleCreatePage = () => {
       tags: arr,
     });
     modalTag.onClose();
+  };
+
+  const handleFileInputChange = (event) => {
+    const { files: newFiles } = event.target;
+
+    if (dataInput?.title === "" || dataInput?.title === undefined) {
+      toast({
+        status: "warning",
+        title: " Deoapp CRM",
+        description: "Please input title first",
+        duration: 2000,
+      });
+    } else {
+      if (newFiles.length) {
+        const newFileArray = [];
+        for (let i = 0; i < newFiles.length; i++) {
+          const reader = new FileReader();
+          reader.readAsDataURL(newFiles[i]);
+          reader.onload = () => {
+            newFileArray.push({
+              file: reader.result,
+              fileName: newFiles[i].name,
+              description: newFiles[i].type,
+            });
+            setFiles(newFileArray);
+
+            if (i === 0) {
+              setImageUrl(reader.result);
+            }
+          };
+        }
+        setFilesImage(newFiles);
+      }
+    }
   };
 
   const handleShareLinkChange = (x) => {
@@ -191,8 +250,6 @@ const ProductArticleCreatePage = () => {
 
     closeModal();
   };
-
-  console.log(content, "ini content");
 
   const openModal = () => {
     setModalUploadOpen(true);
@@ -255,44 +312,58 @@ const ProductArticleCreatePage = () => {
             </Box>
           )}
         </Box>
-        <Box mb="5">
+        <Box my={5}>
           <Tooltip label="Thumbnail image for your articles">
             <Text fontWeight={600} color="gray.600">
               Thumbnail
             </Text>
           </Tooltip>
-          {dataInput.thumbnailURL ? (
-            <Image
-              boxSize="200px"
-              objectFit={"cover"}
-              src={dataInput?.thumbnailURL}
-            ></Image>
+          {imageUrl ? (
+            <>
+              <Image src={imageUrl} boxSize="300px" objectFit="cover" />
+              <Flex justify={"center"}>
+                <Input
+                  type="file"
+                  onChange={handleFileInputChange}
+                  display="none"
+                  id="fileInput"
+                />
+
+                <label htmlFor="fileInput">
+                  <HStack cursor="pointer">
+                    <Stack>
+                      <MdOutlinePermMedia />
+                    </Stack>
+                    <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                      Change Image thumbnail
+                    </Text>
+                  </HStack>
+                </label>
+              </Flex>
+            </>
           ) : (
-            <></>
+            <Flex justify={"center"}>
+              <Input
+                type="file"
+                onChange={handleFileInputChange}
+                display="none"
+                id="fileInput"
+              />
+
+              <label htmlFor="fileInput">
+                <HStack cursor="pointer">
+                  <Stack>
+                    <MdOutlinePermMedia />
+                  </Stack>
+                  <Text fontSize="sm" color="blue.600" fontStyle="italic">
+                    Add Image thumbnail
+                  </Text>
+                </HStack>
+              </label>
+            </Flex>
           )}
           {/* <SimpleGrid columns={2} gap={2}> */}
-          <Input
-            mt="5"
-            accept="image/png, image/jpeg, image/jpg, image/webp"
-            type="file"
-            display={"none"}
-            id="fileInput"
-            onChange={(e) => handleDropImage(e.target.files[0])}
-          />
-          <label htmlFor="fileInput">
-            <HStack cursor="pointer" mt="3">
-              <Stack>
-                <MdOutlinePermMedia />
-              </Stack>
-              <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                Add Image Thumbnail for Articles
-              </Text>
-            </HStack>
-          </label>
-          <Image
-            maxW="300px"
-            src={dataInput?.thumbnail?.replace("_800x800$1", "")}
-          />
+
           {/* </SimpleGrid> */}
         </Box>
         {isUploading ? <Spinner /> : null}
@@ -348,7 +419,7 @@ const ProductArticleCreatePage = () => {
         )} */}
 
         <Button
-          // isLoading={loading}
+          isLoading={loading}
           my={3}
           size="md"
           colorScheme={"blue"}
