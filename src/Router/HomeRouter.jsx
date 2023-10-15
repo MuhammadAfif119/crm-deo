@@ -15,11 +15,11 @@ const HomeRouter = [
   },
 
   {
-    path: "/crm/pageview/dashboard",
+    path: "/crm/website/dashboard",
     element: <HomePageV2 />,
   },
   {
-    path: "/crm/pageview",
+    path: "/crm/website",
     element: <HomePageWelcome />,
   },
 ];
