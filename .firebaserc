@@ -1,18 +1,18 @@
 {
   "projects": {
-    "default": "buildfire-project"
+    "default": "deoapp-indonesia"
   },
   "targets": {
     "buildfire-project": {
       "hosting": {
         "admin": [
-          "edrus-pasardigital"
+          "business-deoapp"
         ],
         "admin-testing": [
-          "edrus-test"
+          "business-deoapp"
         ],
         "docial": [
-          "docial-app"
+          "business-deoapp"
         ]
       }
     }

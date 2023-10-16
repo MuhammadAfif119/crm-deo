@@ -56,6 +56,7 @@ import {
   FcFilingCabinet,
   FcBusinessman,
   FcDiploma2,
+  FcTwoSmartphones,
 } from "react-icons/fc";
 
 export const data = [
@@ -157,6 +158,12 @@ export const data = [
         name: "Social media",
         icon: FcManager,
         link: "/socialmedia",
+      },
+
+      {
+        name: "Affiliate",
+        icon: FcTwoSmartphones,
+        link: "https://ai.deoapp.com/",
       },
 
       {
