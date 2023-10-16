@@ -147,23 +147,6 @@ function RMSPageview() {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         setIsLoading(true);
-        // const updateProjectData = await updateDocumentFirebase(
-        //   "projects",
-        //   globalState.currentProject,
-        //   {
-        //     ...formData,
-        //     links: linkList,
-        //     contactDetails: {
-        //       ...contactForm,
-        //       whatsappActive:
-        //         projectData?.contactDetails?.whatsappActive || false,
-        //       emailActive: projectData?.contactDetails?.emailActive || false,
-        //       businessAddressActive:
-        //         projectData?.contactDetails?.businessAddressActive || false,
-        //     },
-        //   }
-        // );
-        // console.log(updateProjectData, "updated");
 
         let updateData;
         if (bannerList.length === 0) {
@@ -189,24 +172,24 @@ function RMSPageview() {
 
         console.log(updateData);
 
-        // if (pageData !== undefined) {
-        //   setDocumentFirebase(
-        //     "rms",
-        //     "yuVG8dOWY1vkGuSrqhZP",
-        //     updateData
-        //     //   globalState.currentProject
-        //   )
-        //     .then((response) => {
-        //       if (response) {
-        //         setIsLoading(false);
-        //         Swal.fire("Saved!", "", "success");
-        //       }
-        //     })
-        //     .catch((error) => {
-        //       console.log(error.message);
-        //     });
-        // }
-        // setIsLoading(false);
+        if (pageData !== undefined) {
+          setDocumentFirebase(
+            "rms",
+            // "yuVG8dOWY1vkGuSrqhZP",
+            globalState.currentProject,
+            updateData
+          )
+            .then((response) => {
+              if (response) {
+                setIsLoading(false);
+                Swal.fire("Saved!", "", "success");
+              }
+            })
+            .catch((error) => {
+              console.log(error.message);
+            });
+        }
+        setIsLoading(false);
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }

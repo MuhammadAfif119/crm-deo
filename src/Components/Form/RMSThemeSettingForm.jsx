@@ -24,9 +24,10 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import "./colorStyles.css";
 import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
-import { HexColorPicker } from "react-colorful";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 
 const RMSThemeSettingForm = ({
   data,
@@ -423,6 +424,19 @@ const RMSThemeSettingForm = ({
             <Stack align={"center"}>
               <Box>
                 <HexColorPicker color={color} onChange={setColor} />
+                <Box
+                  py={3}
+                  border={"1px"}
+                  borderColor={"gray.100"}
+                  align={"center"}
+                >
+                  <HexColorInput
+                    className="color-input"
+                    style={{ border: "1px" }}
+                    color={color}
+                    onChange={setColor}
+                  />
+                </Box>
               </Box>
               <Box>
                 <Box aspectRatio={1} w="10" bg={color}></Box>
