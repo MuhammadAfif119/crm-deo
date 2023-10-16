@@ -7,16 +7,6 @@ const HRISRouter = [
     path: "/hris",
     element: <HomePage />,
   },
-
-  // {
-  //   path: "/hris-home",
-  //   element: <HomePage />,
-  // },
-
-  // {
-  //   path: "/recruitment",
-  //   element: <ChatUserPage />,
-  // },
 ];
 
 export default HRISRouter;

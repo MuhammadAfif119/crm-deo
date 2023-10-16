@@ -149,7 +149,7 @@ function SidebarComponentV3({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => {};
+    return () => { };
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -462,29 +462,93 @@ function SidebarComponentV3({ layout }) {
               my={3}
               fontWeight={"semibold"}
               align={"center"}
+              textTransform='uppercase'
             >
-              DEOAPP CRM
+               Business Deoapp
             </Text>
             <Box>
               <Divider />
             </Box>
             <Stack spacing={3} pt={3}>
-              {menu.submenu?.map((sub, i) => (
-                <Box
-                  p={1}
-                  key={i}
-                  onClick={() => navigate(sub.link)}
-                  cursor={"pointer"}
-                >
-                  <HStack spacing={3}>
-                    <Icon as={sub.icon} boxSize={4} />
-                    <Text fontWeight={500} fontSize={"sm"}>
-                      {sub.name}
-                    </Text>
-                  </HStack>
-                  <Divider py={1} />
-                </Box>
-              ))}
+              <Accordion allowToggle>
+
+                {menu.submenu?.map((sub, i) => (
+
+                  <AccordionItem
+                    key={i}
+                  // isDisabled={x.name === "Social Media" ? true : false}
+                  >
+                    <h2>
+                      <AccordionButton w={"100%"}>
+                        <HStack spacing={2} w={"100%"}>
+                          <Icon
+                            as={sub.icon}
+                            boxSize={isDesktop ? 5 : 7}
+                          />
+                          {isDesktop && (
+                            <Text
+                              fontWeight={500}
+                              fontSize="sm"
+                              noOfLines={1}
+                            >
+                              {sub.name}
+                            </Text>
+                          )}
+                          <Spacer />
+                          <AccordionIcon />
+                        </HStack>
+                      </AccordionButton>
+                    </h2>
+                    {sub.submenu ? (
+                      <>
+                        <AccordionPanel>
+                          <Stack >
+                            {sub.submenu?.map((subitem, i) => (
+                              <Link to={subitem.link} key={i}>
+                                <HStack spacing="3">
+                                  <Icon as={subitem.icon} boxSize={5} />
+                                  {isDesktop && (
+                                    <>
+                                      <Text
+                                        pl={3}
+                                        fontWeight={300}
+                                        fontSize="sm"
+                                        noOfLines={1}
+                                      >
+                                        {subitem.name}
+                                      </Text>
+                                    </>
+                                  )}
+
+                                </HStack>
+                                <Divider py={1}/>
+
+                              </Link>
+                            ))}
+                          </Stack>
+
+                        </AccordionPanel>
+                      </>
+                    ) : (
+                      <>{null}</>
+                    )}
+                  </AccordionItem>
+                  // <Box
+                  //   p={1}
+                  //   key={i}
+                  //   onClick={() => navigate(sub.link)}
+                  //   cursor={"pointer"}
+                  // >
+                  //   <HStack spacing={3}>
+                  //     <Icon as={sub.icon} boxSize={4} />
+                  //     <Text fontWeight={500} fontSize={"sm"}>
+                  //       {sub.name}
+                  //     </Text>
+                  //   </HStack>
+                  //   <Divider py={1} />
+                  // </Box>
+                ))}
+              </Accordion>
             </Stack>
             <Spacer />
             <Stack spacing={0} align={"center"} color={"gray.500"}>
@@ -498,7 +562,7 @@ function SidebarComponentV3({ layout }) {
               fontSize={12}
               fontWeight={"semibold"}
             >
-              Deoapp CRM
+              Business Deoapp
             </Text>
           </Stack>
         </motion.div>

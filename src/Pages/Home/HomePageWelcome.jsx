@@ -300,7 +300,7 @@ const HomePageWelcome = () => {
         {listProject?.length === 0 ? (
           <>
             <Text align={"center"} fontSize={"sm"}>
-              Create or Edit your pageview
+              Create or Edit your website
             </Text>
             <Box fontSize={"sm"} align={"center"}>
               {listProject?.length === 0 ? (
@@ -375,7 +375,7 @@ const HomePageWelcome = () => {
                         size={"sm"}
                         onClick={() => navigate("dashboard")}
                       >
-                        Dashboard Pageview
+                        Dashboard website
                       </Button>
                     </>
                   )}
@@ -384,7 +384,7 @@ const HomePageWelcome = () => {
             ) : (
               <>
                 <Text align={"center"} fontSize={"sm"}>
-                  Create or Edit your pageview
+                  Create or Edit your website
                 </Text>
                 <Box fontSize={"sm"} align={"center"}>
                   <Button size={"sm"} onClick={modalCreateCompany.onOpen}>

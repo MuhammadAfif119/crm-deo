@@ -21,6 +21,9 @@ import ThemesRouter from "./ThemesRouter";
 import CourseRouter from "./CourseRouter";
 import HRISRouter from "./HRISRouter";
 import RMSRouter from "./RMSRouter";
+import ManagementRouter from "./ManagementRouter";
+import MarketingRouter from "./MarketingRouter";
+import SalesRouter from "./SalesRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -46,6 +49,9 @@ function MainRouter() {
     ...ThemesRouter,
     ...CourseRouter,
     ...RMSRouter,
+    ...ManagementRouter,
+    ...MarketingRouter,
+    ...SalesRouter
   ];
   return (
     <Routes>
