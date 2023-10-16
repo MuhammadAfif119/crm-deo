@@ -19,11 +19,31 @@ import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
 import ChatPageFirst from "./Pages/Messanger/ChatPageFirst";
+import { setCookie } from "./Utils/storage";
 
 function App() {
   const globalState = useUserStore();
   const toast = useToast();
   const navigate = useNavigate();
+
+  const getTokenAuth = async () => {
+    if (globalState.isLoggedin) {
+
+      const uid = globalState.uid
+      const email = auth.currentUser.email
+
+      setCookie("uid", uid, 1); // Token will expire in 1 day
+      setCookie("email", email, 1); // Token will expire in 1 day
+    }
+  };
+
+  useEffect(() => {
+    getTokenAuth()
+  
+    return () => {
+    }
+  }, [globalState.isLoggedin])
+  
 
   const fetchProjectsAndCompanies = async (uid) => {
     const fetchCompanyId = localStorage.getItem("currentCompany");
