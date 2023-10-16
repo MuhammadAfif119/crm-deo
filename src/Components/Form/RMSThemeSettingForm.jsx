@@ -423,20 +423,24 @@ const RMSThemeSettingForm = ({
           <ModalBody>
             <Stack align={"center"}>
               <Box>
-                <HexColorPicker color={color} onChange={setColor} />
-                <Box
+                <HexColorPicker
+                  // placeholder={color}
+                  color={color}
+                  onChange={setColor}
+                />
+                {/* <Box
                   py={3}
                   border={"1px"}
                   borderColor={"gray.100"}
                   align={"center"}
-                >
-                  <HexColorInput
-                    className="color-input"
-                    style={{ border: "1px" }}
-                    color={color}
-                    onChange={setColor}
-                  />
-                </Box>
+                > */}
+                <HexColorInput
+                  className="color-input"
+                  placeholder={color}
+                  color={color}
+                  onChange={setColor}
+                />
+                {/* </Box> */}
               </Box>
               <Box>
                 <Box aspectRatio={1} w="10" bg={color}></Box>

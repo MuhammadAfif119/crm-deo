@@ -20,6 +20,7 @@ import {
   getCollectionFirebaseV2,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
+import { param } from "jquery";
 
 const Courses = () => {
   const [datas, setDatas] = useState([]);
@@ -80,6 +81,10 @@ const Courses = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleNavigation = (item) => {
+    navigate(`/courses/${item.id}`);
   };
 
   useEffect(() => {
@@ -179,6 +184,7 @@ const Courses = () => {
                   getData={getData}
                   setDatas={setDatas}
                   datas={datas}
+                  navigation={() => handleNavigation(item)}
                 />
               ))}
             </Box>

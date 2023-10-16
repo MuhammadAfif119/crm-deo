@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
-import { HexColorPicker } from "react-colorful";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 
 const ThemeSettingForm = ({
   data,
@@ -495,6 +495,12 @@ const ThemeSettingForm = ({
               <Box>
                 <HexColorPicker color={color} onChange={setColor} />
               </Box>
+              <HexColorInput
+                className="color-input"
+                placeholder={color}
+                color={color}
+                onChange={setColor}
+              />
               <Box>
                 <Box aspectRatio={1} w="10" bg={color}></Box>
                 <Text>{color}</Text>

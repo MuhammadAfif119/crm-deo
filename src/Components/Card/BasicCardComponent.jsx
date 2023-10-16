@@ -21,7 +21,7 @@ import { BiPencil } from "react-icons/bi";
 
 function BasicCardComponent(props) {
   let data;
-  let { update, setUpdate, getData } = props;
+  let { update, setUpdate, getData, navigation } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [type, setType] = useState(null);
 
@@ -57,6 +57,8 @@ function BasicCardComponent(props) {
         transform: "scale(1.04)",
         transition: "60ms linear",
       }}
+      cursor={"pointer"}
+      onClick={navigation}
     >
       <Image
         width="100px"
