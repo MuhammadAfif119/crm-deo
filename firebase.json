@@ -1,6 +1,6 @@
 {
 	"hosting": {
-		"site": "crm-deoapp",
+		"site": "business-deoapp",
 		"public": "build",
 		"ignore": [
 			"firebase.json",
