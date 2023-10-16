@@ -68,8 +68,7 @@ root.render(
     <BrowserRouter>
       <ChakraProvider theme={theme}>
         <ScrollToTop>
-          <App />
-        
+          <App />      
         </ScrollToTop>
       </ChakraProvider>
     </BrowserRouter>
