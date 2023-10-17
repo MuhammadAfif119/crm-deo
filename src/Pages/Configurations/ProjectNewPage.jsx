@@ -60,10 +60,12 @@ function ProjectsViewPage() {
   const [manager, setManager] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [selectedUserProjectIds, setSelectedUserProjectIds] = useState([]);
+  const [isAddingTeam, setIsAddingTeam] = useState(false);
 
   const [projectActive, setProjectActive] = useState("");
   const [companyActive, setCompanyActive] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
   const [modalProjectUser, setModalProjectUser] = useState(false);
   const [modalProjectUserTeam, setModalProjectUserTeam] = useState(false);
 
@@ -175,6 +177,7 @@ function ProjectsViewPage() {
   };
 
   const handleAddTeamProject = async () => {
+    setIsAddingTeam(true);
     selectedUserProjectIds.forEach(async (x) => {
       const collectionName = `projects/${projectActive.id}/users`;
       const docName = x.id;
@@ -206,7 +209,16 @@ function ProjectsViewPage() {
       console.log(result); // Pesan toast yang berhasil
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
+    } finally {
+      setIsAddingTeam(false);
     }
+
+    toast({
+      status: "success",
+      title: "Deoapp Business",
+      description: "Success adding team to the project",
+      duration: 1000,
+    });
 
     setModalProjectUser(false);
     setSelectedUserProjectIds([]);
@@ -215,7 +227,7 @@ function ProjectsViewPage() {
     getData();
   };
 
-  console.log(projectActive, "xxx");
+  // console.log(projectActive, "xxx");
 
   // console.log(projectData, "ini project data");
   // console.log(manager, "ini manager");
@@ -236,12 +248,24 @@ function ProjectsViewPage() {
       );
     }
 
-    if (params.id === "new") {
-      await addDocumentFirebase("projects", input, globalState.currentCompany);
-    } else {
-      await setDocumentFirebase("projects", params.id, input, data.companyId);
+    setIsLoading(true);
+    try {
+      if (params.id === "new") {
+        await addDocumentFirebase(
+          "projects",
+          input,
+          globalState.currentCompany
+        );
+      } else {
+        await setDocumentFirebase("projects", params.id, input, data.companyId);
+      }
+
+      navigate(-1);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-    navigate(-1);
   };
 
   const submitImage = async (file) => {
@@ -454,6 +478,7 @@ function ProjectsViewPage() {
           </FormControl>
 
           <Button
+            isLoading={isLoading}
             mt="5"
             colorScheme="green"
             w="full"
@@ -653,6 +678,7 @@ function ProjectsViewPage() {
               </AvatarGroup>
               <Spacer />
               <Button
+                isLoading={isAddingTeam}
                 leftIcon={<AddIcon boxSize={3} />}
                 colorScheme="green"
                 onClick={() => handleAddTeamProject()}

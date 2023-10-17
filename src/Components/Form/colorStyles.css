@@ -1,6 +1,5 @@
-input {
-    display: block;
-    box-sizing: border-box;
+.color-input {
+    /* box-sizing: border-box; */
     width: 90px;
     margin: 20px 55px 0;
     padding: 6px;

@@ -82,6 +82,7 @@ import {
 import { addDoc, arrayUnion } from "firebase/firestore";
 import DropboxUploader from "../../Components/DropBox/DropboxUploader";
 import moment from "moment";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const SingleCourse = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -105,6 +106,7 @@ const SingleCourse = () => {
   const [newTitle, setNewTitle] = useState("");
   const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [categoryEdit, setCategoryEdit] = useState("");
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -283,6 +285,13 @@ const SingleCourse = () => {
       );
 
       console.log(updateRes);
+
+      toast({
+        status: "success",
+        title: "Deoapp Business",
+        description: "Thumbnail Video Saved!",
+        duration: 1000,
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -320,10 +329,18 @@ const SingleCourse = () => {
   };
 
   const submitUrl = async (type) => {
-    await updateDocumentFirebase("courses", params.id_course, {
-      media: fileRef.current,
-      sourceType: type,
-    });
+    setIsSubmit(true);
+    try {
+      await updateDocumentFirebase("courses", params.id_course, {
+        media: fileRef.current,
+        sourceType: type,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmit(false);
+    }
+
     getCourseDetail();
   };
 
@@ -536,7 +553,12 @@ const SingleCourse = () => {
                     }}
                   />
                   <InputRightElement w="fit-content">
-                    <Button onClick={() => submitUrl("video")}>Submit</Button>
+                    <Button
+                      isLoading={isSubmit}
+                      onClick={() => submitUrl("video")}
+                    >
+                      Submit
+                    </Button>
                   </InputRightElement>
                 </InputGroup>
               </Box>
@@ -561,7 +583,12 @@ const SingleCourse = () => {
                     }}
                   />
                   <InputRightElement w="fit-content">
-                    <Button onClick={() => submitUrl("audio")}>Submit</Button>
+                    <Button
+                      isLoading={isSubmit}
+                      onClick={() => submitUrl("audio")}
+                    >
+                      Submit
+                    </Button>
                   </InputRightElement>
                 </InputGroup>
               </Box>
@@ -587,7 +614,12 @@ const SingleCourse = () => {
                     }}
                   />
                   <InputRightElement w="fit-content">
-                    <Button onClick={() => submitUrl("file")}>Submit</Button>
+                    <Button
+                      isLoading={isSubmit}
+                      onClick={() => submitUrl("file")}
+                    >
+                      Submit
+                    </Button>
                   </InputRightElement>
                 </InputGroup>
               </Box>
@@ -609,6 +641,9 @@ const SingleCourse = () => {
 
   return (
     <>
+      <Box mb={3}>
+        <BackButtons />
+      </Box>
       <BreadCrumbComponent data={data} />
       <Flex flexDir="row" justifyContent="center">
         <Box alignSelf="center" w="90%">

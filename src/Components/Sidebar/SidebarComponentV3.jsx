@@ -119,6 +119,16 @@ function SidebarComponentV3({ layout }) {
         } else {
           globalState.setRoleProject("user");
         }
+        // if (projects.length > 0) {
+        //   // If there are projects, update the role
+        //   if (projects[0].owner?.includes(globalState.uid)) {
+        //     globalState.setRoleProject("owner");
+        //   } else if (projects[0].managers?.includes(globalState.uid)) {
+        //     globalState.setRoleProject("managers");
+        //   } else {
+        //     globalState.setRoleProject("user");
+        //   }
+        // }
       } catch (error) {
         console.log(error, "ini error");
       }
@@ -149,7 +159,7 @@ function SidebarComponentV3({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => { };
+    return () => {};
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -198,12 +208,15 @@ function SidebarComponentV3({ layout }) {
       });
   };
 
+  // console.log("xxx");
+
   const handleClick = () => {
     setDesktopShow(!desktopShow);
     setShowSubmenu((prev) => !prev);
   };
 
   const handleCompanySelect = (e) => {
+    globalState.setIsLoading(true);
     const dataCompany = globalState.companies;
 
     const findCompany = dataCompany.find((x) => x.id === e);
@@ -225,9 +238,16 @@ function SidebarComponentV3({ layout }) {
     } else {
       globalState.setRoleProject("user");
     }
+
+    setTimeout(() => {
+      globalState.setIsLoading(false);
+    }, 1000);
   };
 
+  // console.log(globalState.isLoading, "ssss");
+
   const handleProjectSelect = (e) => {
+    globalState.setIsLoading(true);
     const dataProject = listProject;
 
     const findProject = dataProject.find((x) => x.id === e);
@@ -242,6 +262,10 @@ function SidebarComponentV3({ layout }) {
     } else {
       globalState.setRoleProject("user");
     }
+
+    setTimeout(() => {
+      globalState.setIsLoading(false);
+    }, 1000);
   };
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
@@ -462,35 +486,26 @@ function SidebarComponentV3({ layout }) {
               my={3}
               fontWeight={"semibold"}
               align={"center"}
-              textTransform='uppercase'
+              textTransform="uppercase"
             >
-               Business Deoapp
+              Business Deoapp
             </Text>
             <Box>
               <Divider />
             </Box>
             <Stack spacing={3} pt={3}>
               <Accordion allowToggle>
-
                 {menu.submenu?.map((sub, i) => (
-
                   <AccordionItem
                     key={i}
-                  // isDisabled={x.name === "Social Media" ? true : false}
+                    // isDisabled={x.name === "Social Media" ? true : false}
                   >
                     <h2>
                       <AccordionButton w={"100%"}>
                         <HStack spacing={2} w={"100%"}>
-                          <Icon
-                            as={sub.icon}
-                            boxSize={isDesktop ? 5 : 7}
-                          />
+                          <Icon as={sub.icon} boxSize={isDesktop ? 5 : 7} />
                           {isDesktop && (
-                            <Text
-                              fontWeight={500}
-                              fontSize="sm"
-                              noOfLines={1}
-                            >
+                            <Text fontWeight={500} fontSize="sm" noOfLines={1}>
                               {sub.name}
                             </Text>
                           )}
@@ -502,7 +517,7 @@ function SidebarComponentV3({ layout }) {
                     {sub.submenu ? (
                       <>
                         <AccordionPanel>
-                          <Stack >
+                          <Stack>
                             {sub.submenu?.map((subitem, i) => (
                               <Link to={subitem.link} key={i}>
                                 <HStack spacing="3">
@@ -519,14 +534,11 @@ function SidebarComponentV3({ layout }) {
                                       </Text>
                                     </>
                                   )}
-
                                 </HStack>
-                                <Divider py={1}/>
-
+                                <Divider py={1} />
                               </Link>
                             ))}
                           </Stack>
-
                         </AccordionPanel>
                       </>
                     ) : (

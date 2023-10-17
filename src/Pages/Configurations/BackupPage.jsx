@@ -190,7 +190,7 @@ const BackupPage = () => {
   };
 
   const handleSubmitSubcolection = () => {
-    console.log(subcollectionName, "ini nama subcol");
+    // console.log(subcollectionName, "ini nama subcol");
     setSubcollectionData([...subcollectionData, subcollectionName]);
 
     setSubcollectionName("");
@@ -200,7 +200,7 @@ const BackupPage = () => {
     const updatedData = subcollectionData.filter((item) => item !== value);
     setSubcollectionData(updatedData);
 
-    console.log(subcollectionData, "ini subcol");
+    // console.log(subcollectionData, "ini subcol");
   };
 
   return (

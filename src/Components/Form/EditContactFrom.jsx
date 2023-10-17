@@ -13,7 +13,7 @@ import {
   Radio,
   RadioGroup,
 } from "@chakra-ui/react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { setDocumentFirebase } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 
@@ -25,6 +25,8 @@ function EditContactFrom({ data }) {
   const dateOfBirthRef = useRef(data?.dateOfBirth);
   const sourceRef = useRef(data?.source);
   const contactTypeRef = useRef(data?.contactType);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -42,6 +44,7 @@ function EditContactFrom({ data }) {
     const docName = data.id;
     const value = updatedData;
 
+    setIsLoading(true);
     try {
       const result = await setDocumentFirebase(
         collectionName,
@@ -61,6 +64,8 @@ function EditContactFrom({ data }) {
       console.log(result); // Pesan toast yang berhasil
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -169,6 +174,7 @@ function EditContactFrom({ data }) {
           </Stack>
           <HStack gap={3} alignItems="flex-end" justifyContent={"flex-end"}>
             <Button
+              isLoading={isLoading}
               leftIcon={<AddIcon boxSize={3} />}
               colorScheme="green"
               onClick={handleSaveData}

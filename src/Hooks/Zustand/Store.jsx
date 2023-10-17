@@ -7,6 +7,7 @@ console.log(companyItem, "ini company");
 
 const useUserStore = create((set, get) => ({
   isLoggedIn: false,
+  isLoading: false,
   companies: [],
   projects: [],
   currentCompany: companyItem || "",
@@ -42,6 +43,12 @@ const useUserStore = create((set, get) => ({
   setIsLoggedIn: (data) => {
     set({
       isLoggedIn: data,
+    });
+  },
+
+  setIsLoading: (data) => {
+    set({
+      isLoading: data,
     });
   },
 
