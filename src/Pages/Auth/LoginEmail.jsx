@@ -14,7 +14,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "../../assets/1.png";
 import {
   MdEmail,
@@ -23,7 +23,7 @@ import {
   MdVpnKey,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { signInWithCustomToken, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
@@ -33,6 +33,9 @@ import {
 import store from "store";
 import { encryptToken } from "../../Utils/encrypToken";
 import { removeSymbols } from "../../Utils/Helper";
+import axios from "axios";
+import ApiBackend from "../../Api/ApiBackend";
+import { getCookie } from "../../Utils/storage";
 
 function LoginEmail() {
   const [email, setEmail] = useState("");
@@ -45,19 +48,9 @@ function LoginEmail() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const logout = async () => {
-    await signOut(auth)
-      .then(() => {
-        globalState.setIsLoggedIn(false);
-        store.clearAll();
-      })
-      .catch((error) => {
-        console.log(error, "ini error");
-      })
-      .finally(() => {
-        navigate("/login");
-      });
-  };
+
+
+
 
   const middleWareAccess = () => {
     toast({
@@ -78,7 +71,6 @@ function LoginEmail() {
         pathLink
       );
 
-      console.log(resCheck, "xxx");
 
       if (!resCheck) {
         return middleWareAccess();
@@ -141,6 +133,94 @@ function LoginEmail() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
+  const uidCookie = getCookie("uid");
+  const emailCookie = getCookie("email");
+
+
+
+  const handleLoginToken = async () => {
+
+    console.log(emailCookie, "true")
+    if (emailCookie) {
+      const pathLink = "crm";
+      const resCheck = await checkUserAccess(
+        window.location.hostname,
+        emailCookie,
+        pathLink
+      );
+
+
+      if (!resCheck) {
+        return middleWareAccess();
+      }
+
+
+
+
+      const data = {
+        uid : uidCookie
+      }
+
+      try {
+        setLoading(true);
+
+        const getToken = await ApiBackend.post("/getToken", data )
+        const userCredential = await signInWithCustomToken(auth, getToken?.data?.customToken);
+        const user = userCredential.user;
+
+        if (user) {
+          const pathLink = "crm";
+          const res = await loginUserWithIp(
+            window.location.hostname,
+            email,
+            pathLink
+          );
+
+          if (!res) {
+            return middleWareAccess();
+          }
+        }
+
+        globalState.setUid(user.uid);
+        globalState.setName(user.displayName);
+        globalState.setEmail(user.email);
+        globalState.setIsLoggedIn(true);
+
+        toast({
+          title: "Login Successful",
+          description: `You have successfully logged in as ${userCredential.user.email}`,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+
+        navigate("/");
+      } catch (error) {
+        console.log(error, "ini error");
+        toast({
+          title: "Error",
+          description:
+            error.code === "auth/wrong-password"
+              ? "Wrong email or password. Please try again."
+              : "An error occurred. Please try again.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    handleLoginToken()
+
+    return () => {
+    }
+  }, [])
+
 
   const height = window.innerHeight;
   const width = window.innerWidth;
