@@ -1617,7 +1617,7 @@ const FormTicketPage = () => {
             )}
           </Box>
 
-          <Divider />
+          <Divider py={3} />
 
           {/* <SimpleGrid columns={[1, 1, 2]} py={[1, 1, 5]} spacing={5}>
             <Box>

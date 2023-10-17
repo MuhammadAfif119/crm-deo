@@ -388,7 +388,7 @@ const HomePageWelcome = () => {
                 </Text>
                 <Box fontSize={"sm"} align={"center"}>
                   <Button size={"sm"} onClick={modalCreateCompany.onOpen}>
-                    Buat Company disini
+                    Create Company Here
                   </Button>
                 </Box>
               </>

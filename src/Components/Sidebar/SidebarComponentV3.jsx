@@ -81,8 +81,17 @@ function SidebarComponentV3({ layout }) {
     };
   }, []);
 
+  // console.log(globalState);
+
   const fetchProjects = async (id) => {
     const fetchProjectId = localStorage.getItem("currentProject");
+
+    const searchProjectId = globalState?.projects?.find(
+      (x) => x.companyId === id
+    );
+
+    console.log(fetchProjectId, "xxx");
+    console.log(searchProjectId, "xxx");
 
     const conditions = [
       {
@@ -100,6 +109,8 @@ function SidebarComponentV3({ layout }) {
     const projects = await getCollectionFirebase("projects", conditions);
 
     if (!fetchProjectId) {
+      console.log("kondisi 1 jalan");
+
       try {
         globalState.setProjects(projects);
         // console.log(projects, "ini project");
@@ -119,20 +130,11 @@ function SidebarComponentV3({ layout }) {
         } else {
           globalState.setRoleProject("user");
         }
-        // if (projects.length > 0) {
-        //   // If there are projects, update the role
-        //   if (projects[0].owner?.includes(globalState.uid)) {
-        //     globalState.setRoleProject("owner");
-        //   } else if (projects[0].managers?.includes(globalState.uid)) {
-        //     globalState.setRoleProject("managers");
-        //   } else {
-        //     globalState.setRoleProject("user");
-        //   }
-        // }
       } catch (error) {
         console.log(error, "ini error");
       }
     } else {
+      console.log("kondisi 2 jalan");
       const getProjects = await getSingleDocumentFirebase(
         "projects",
         fetchProjectId
@@ -208,13 +210,6 @@ function SidebarComponentV3({ layout }) {
       });
   };
 
-  // console.log("xxx");
-
-  const handleClick = () => {
-    setDesktopShow(!desktopShow);
-    setShowSubmenu((prev) => !prev);
-  };
-
   const handleCompanySelect = (e) => {
     globalState.setIsLoading(true);
     const dataCompany = globalState.companies;
@@ -243,8 +238,6 @@ function SidebarComponentV3({ layout }) {
       globalState.setIsLoading(false);
     }, 1000);
   };
-
-  // console.log(globalState.isLoading, "ssss");
 
   const handleProjectSelect = (e) => {
     globalState.setIsLoading(true);
