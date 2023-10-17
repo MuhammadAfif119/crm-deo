@@ -171,21 +171,6 @@ function App() {
     return () => {};
   }, []);
 
-  const getTokenAuth = async () => {
-    if (globalState?.isLoggedIn === true) {
-      const uid = globalState?.uid;
-      const email = auth?.currentUser?.email;
-
-      setCookie("uid", uid, 1); // Token will expire in 1 day
-      setCookie("email", email, 1);
-    }
-  };
-
-  useEffect(() => {
-    getTokenAuth();
-
-    return () => {};
-  }, [auth?.currentUser]);
 
   return (
     <Stack position={"relative"} overflow="hidden">

@@ -2,9 +2,18 @@ import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
 import { data } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../Hooks/Zustand/Store";
+import { encryptToken } from "../../Utils/encrypToken";
 
 const ManagementPage = () => {
     const navigate = useNavigate();
+
+    const globalState = useUserStore();
+    const uid = globalState?.uid
+
+    const encryptUid = encryptToken(uid)
+    const encryptFix = encodeURIComponent(encryptUid)
+
     return (
         <Box p={5}>
             <Stack align={"center"} spacing={3}>
@@ -35,7 +44,7 @@ const ManagementPage = () => {
                                 cursor={"pointer"}
                                 borderRadius={"md"}
                                 borderColor={"gray.300"}
-                                onClick={() => window.open(`${x.link}`, "_blank")}
+                                onClick={() => window.open(`${x.link}?id=${encryptFix}`, "_blank")}
                                 _hover={{ transform: "scale(1.03)", transition: "0.3s" }}
                             >
                                 <Icon as={x.icon} boxSize={12} />
