@@ -141,7 +141,7 @@ export const data = [
         name: "Calendar",
         status: "Coming Soon",
         icon: FcCalendar,
-        link: "/",
+        link: "/calendar",
       },
 
     ],

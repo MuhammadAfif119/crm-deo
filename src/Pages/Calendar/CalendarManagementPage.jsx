@@ -36,7 +36,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 
 const localizer = momentLocalizer(moment);
 
-const CalendarPage = () => {
+const CalendarManagementPage = () => {
   const [events, setEvents] = useState([]);
   const globalState = useUserStore();
 
@@ -203,4 +203,4 @@ const CalendarPage = () => {
   );
 };
 
-export default CalendarPage;
+export default CalendarManagementPage;
