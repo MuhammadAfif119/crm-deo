@@ -84,6 +84,7 @@ function EditLesson() {
   const [accessTokenDb, setAccessTokenDb] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [generatedLink, setGeneratedLink] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const inputRef = useRef();
   const fileRef = useRef();
@@ -264,6 +265,7 @@ function EditLesson() {
   };
 
   const handleSave = () => {
+    setIsLoading(true);
     if (isUploading) {
     }
     updateDocumentFirebase(
@@ -273,6 +275,7 @@ function EditLesson() {
     )
       .then(() => {
         navigate(-1);
+        setIsLoading(false);
       })
       .catch((error) => {
         toast({
@@ -280,7 +283,7 @@ function EditLesson() {
           description: error.message,
           isClosable: true,
           status: "error",
-          duration: 9000,
+          duration: 1000,
         });
       });
   };
@@ -646,7 +649,11 @@ function EditLesson() {
               <Button colorScheme="red" onClick={() => handleDelete("lesson")}>
                 Delete
               </Button>
-              <Button colorScheme="green" onClick={handleSave}>
+              <Button
+                isLoading={isLoading}
+                colorScheme="green"
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </HStack>

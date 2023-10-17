@@ -66,6 +66,7 @@ const ContactsPage = () => {
   const [contactList, setContactList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   // const getData = async () => {
 
@@ -236,6 +237,8 @@ const ContactsPage = () => {
       lastUpdated: new Date(),
       companyId: globalState?.currentCompany,
     };
+
+    setIsLoading(true);
     try {
       const result = await setDocumentFirebase(
         collectionName,
@@ -255,6 +258,8 @@ const ContactsPage = () => {
       getData();
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -544,6 +549,7 @@ const ContactsPage = () => {
           </ModalBody>
           <ModalFooter>
             <Button
+              isLoading={isLoading}
               colorScheme="blue"
               // variant={"outline"}
               size="sm"

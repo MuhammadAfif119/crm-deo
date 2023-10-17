@@ -49,6 +49,7 @@ function OutletViewPage() {
   const [modalData, setModalData] = useState();
   const params = useParams();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const getData = () => {
@@ -71,12 +72,20 @@ function OutletViewPage() {
       );
     }
 
-    if (params.id === "new") {
-      await addDocumentFirebase("outlets", input, globalState.currentCompany);
-    } else {
-      await setDocumentFirebase("outlets", params.id, input, data.companyId);
+    try {
+      setIsLoading(true);
+      if (params.id === "new") {
+        await addDocumentFirebase("outlets", input, globalState.currentCompany);
+      } else {
+        await setDocumentFirebase("outlets", params.id, input, data.companyId);
+      }
+
+      navigate(-1);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-    navigate(-1);
   };
 
   const handleModal = (data) => {
@@ -262,6 +271,7 @@ function OutletViewPage() {
 					</FormControl> */}
 
           <Button
+            isLoading={isLoading}
             mt="5"
             colorScheme="green"
             w="full"

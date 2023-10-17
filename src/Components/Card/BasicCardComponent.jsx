@@ -49,7 +49,7 @@ function BasicCardComponent(props) {
       maxH="32"
       borderRadius="md"
       p="5"
-      m="1"
+      my="3"
       width="full"
       bg="white"
       shadow="md"

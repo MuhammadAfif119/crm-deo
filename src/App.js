@@ -19,6 +19,7 @@ import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
 import ChatPageFirst from "./Pages/Messanger/ChatPageFirst";
+import LoadingOverlay from "./Components/Loader/LoadingOverlay";
 
 function App() {
   const globalState = useUserStore();
@@ -174,7 +175,15 @@ function App() {
     <Stack position={"relative"} overflow="hidden">
       {globalState.isLoggedIn ? (
         <Layout>
-          <MainRouter />
+          {globalState.isLoading ? (
+            <>
+            <LoadingOverlay />
+            <MainRouter />
+            </>
+          ):(
+            
+            <MainRouter />
+          )}
         </Layout>
       ) : (
         <AuthRouter />

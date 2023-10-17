@@ -12,7 +12,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getSingleDocumentFirebase,
@@ -38,6 +38,7 @@ function DetailPipelineCard({
   const statusRef = useRef(data?.status);
   const sourceRef = useRef(data?.source);
   const opportunityValueRef = useRef(data?.opportunity_value);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveData = async () => {
     const updatedData = {
@@ -54,6 +55,7 @@ function DetailPipelineCard({
     const docName = data.id;
     const value = updatedData;
 
+    setIsLoading(true);
     try {
       const result = await setDocumentFirebase(
         collectionName,
@@ -73,9 +75,12 @@ function DetailPipelineCard({
       if (result) {
         fetchData();
       }
+
       console.log(result); // Pesan toast yang berhasil
     } catch (error) {
       console.log("Terjadi kesalahan:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -223,6 +228,7 @@ function DetailPipelineCard({
             Go to contact
           </Button>
           <Button
+            isLoading={isLoading}
             leftIcon={<AddIcon boxSize={3} />}
             colorScheme="green"
             onClick={handleSaveData}
