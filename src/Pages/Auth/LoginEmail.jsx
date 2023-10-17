@@ -141,7 +141,7 @@ function LoginEmail() {
 
   const handleLoginToken = async () => {
 
-    
+    console.log(emailCookie, "true")
     if (emailCookie) {
       const pathLink = "crm";
       const resCheck = await checkUserAccess(
