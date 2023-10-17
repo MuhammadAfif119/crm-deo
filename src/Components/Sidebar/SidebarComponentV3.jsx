@@ -52,6 +52,7 @@ import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "../../Utils/Helper";
 import { BiAlignLeft } from "react-icons/bi";
+import { deleteCookie } from "../../Utils/storage";
 
 // ** Theme Configuration
 
@@ -196,6 +197,10 @@ function SidebarComponentV3({ layout }) {
           description: "Logged out success",
           duration: 2000,
         });
+
+        deleteCookie("uid");
+        deleteCookie("email");
+        console.log('delete cookie')
 
         globalState.setIsLoggedIn(false);
         store.clearAll();
