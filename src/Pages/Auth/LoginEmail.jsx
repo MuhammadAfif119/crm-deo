@@ -90,7 +90,8 @@ function LoginEmail() {
           const res = await loginUserWithIp(
             window.location.hostname,
             email,
-            pathLink
+            pathLink,
+            user.uid
           );
 
           if (!res) {
@@ -174,7 +175,8 @@ function LoginEmail() {
           const res = await loginUserWithIp(
             window.location.hostname,
             email,
-            pathLink
+            pathLink,
+            user.uid
           );
 
           if (!res) {

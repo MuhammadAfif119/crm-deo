@@ -38,7 +38,7 @@ const logoutIfExpired = async (hostName, email, pathLink) => {
 
 
 
-const loginUserWithIp = async (hostName, email, pathLink) => {
+const loginUserWithIp = async (hostName, email, pathLink, uid) => {
 
   const checkAccess = await checkUserAccess(hostName, email, pathLink)
 
@@ -49,6 +49,8 @@ const loginUserWithIp = async (hostName, email, pathLink) => {
     try {
       await set(ref(database, `onlineUsers/${removeSymbols(hostName)}-${pathLink}-${removeSymbols(email)}`), {
         loginTime: new Date().toString(),
+        email: email,
+        uid: uid
       });
       return true;
     } catch (error) {
