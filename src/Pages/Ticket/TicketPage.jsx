@@ -208,6 +208,7 @@ const TicketPage = () => {
                           transition: "0.3s",
                           cursor: "pointer",
                         }}
+                        onClick={() => handleModal("read", item)}
                       >
                         {item.isActive === true ? (
                           <Badge
@@ -231,7 +232,7 @@ const TicketPage = () => {
                         <Flex justify={"space-between"} align={"center"}>
                           <Heading
                             size={"sm"}
-                            onClick={() => handleModal("read", item)}
+                            // onClick={() => handleModal("read", item)}
                           >
                             {item?.title}
                           </Heading>
@@ -241,7 +242,7 @@ const TicketPage = () => {
                           <Flex
                             gap={2}
                             align={"center"}
-                            onClick={() => handleModal("read", item)}
+                            // onClick={() => handleModal("read", item)}
                           >
                             <FiCalendar />
                             <Text size={"sm"}>
@@ -281,15 +282,19 @@ const TicketPage = () => {
                               Created by: {item.createdBy}
                             </Text>
                             <Spacer />
-                            <Button
-                              variant={"unstyled"}
-                              onClick={() => handleModal("delete", item)}
-                            >
-                              <FiTrash2 size={15} />
-                            </Button>
                           </HStack>
                         </Box>
                       </VStack>
+                      <Button
+                        bottom={0}
+                        right={0}
+                        pos={"absolute"}
+                        zIndex={999}
+                        variant={"unstyled"}
+                        onClick={() => handleModal("delete", item)}
+                      >
+                        <FiTrash2 size={15} />
+                      </Button>
                     </Box>
                   </>
                 );
@@ -330,6 +335,7 @@ const TicketPage = () => {
                             transition: "0.3s",
                             cursor: "pointer",
                           }}
+                          onClick={() => handleModal("read", item)}
                         >
                           {item.isActive === true ? (
                             <Badge
@@ -353,7 +359,7 @@ const TicketPage = () => {
                           <Flex justify={"space-between"} align={"center"}>
                             <Heading
                               size={"sm"}
-                              onClick={() => handleModal("read", item)}
+                              // onClick={() => handleModal("read", item)}
                             >
                               {item?.title}
                             </Heading>
@@ -362,7 +368,7 @@ const TicketPage = () => {
                             <Flex
                               gap={2}
                               align={"center"}
-                              onClick={() => handleModal("read", item)}
+                              // onClick={() => handleModal("read", item)}
                             >
                               <FiCalendar />
                               <Text size={"sm"}>
@@ -402,15 +408,19 @@ const TicketPage = () => {
                                 Created by: {item.createdBy}
                               </Text>
                               <Spacer />
-                              <Button
-                                variant={"unstyled"}
-                                onClick={() => handleModal("delete", item)}
-                              >
-                                <FiTrash2 size={15} />
-                              </Button>
                             </HStack>
                           </Box>
                         </VStack>
+                        <Button
+                          bottom={0}
+                          right={0}
+                          pos={"absolute"}
+                          zIndex={999}
+                          variant={"unstyled"}
+                          onClick={() => handleModal("delete", item)}
+                        >
+                          <FiTrash2 size={15} />
+                        </Button>
                       </Box>
                     </>
                   );

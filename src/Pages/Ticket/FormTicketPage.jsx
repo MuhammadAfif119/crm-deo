@@ -815,8 +815,6 @@ const FormTicketPage = () => {
     });
   };
 
-  console.log(filesImage, "xxx");
-
   const handleSubmit = async (type) => {
     if (checkboxDate && data.dateStart >= data.dateEnd) {
       setDateCorrection(true);
@@ -1123,7 +1121,7 @@ const FormTicketPage = () => {
       setFilesLogo(newFiles);
     }
   };
-  useEffect(() => {}, [categoryDetails.length !== 0]);
+  // useEffect(() => {}, [categoryDetails.length !== 0]);
   return (
     <>
       <Stack>
@@ -1154,6 +1152,17 @@ const FormTicketPage = () => {
               placeholder="Event name ex: [Event] Seminar Entreprenerus 24/10/2023"
               onChange={(e) => {
                 setData({ ...data, title: e.target.value });
+                setCategoryDetails({
+                  ...categoryDetails,
+                  title: e.target.value,
+                });
+                setCategoryDetails((prevCategory) => ({
+                  ...prevCategory,
+                  tickets: prevCategory.tickets.map((ticket) => ({
+                    ...ticket,
+                    title: e.target.value,
+                  })),
+                }));
               }}
               value={data?.title}
             />
@@ -1162,9 +1171,13 @@ const FormTicketPage = () => {
             <FormLabel>Description of Event</FormLabel>
             <Textarea
               placeholder="Describe your event"
-              onChange={(e) =>
-                setData({ ...data, description: e.target.value })
-              }
+              onChange={(e) => {
+                setData({ ...data, description: e.target.value });
+                setCategoryDetails({
+                  ...categoryDetails,
+                  details: e.target.value,
+                });
+              }}
               value={data?.description}
             />
           </FormControl>
@@ -1327,6 +1340,17 @@ const FormTicketPage = () => {
                 value={data?.price}
                 onChange={(e) => {
                   setData({ ...data, price: e.target.value });
+                  setCategoryDetails({
+                    ...categoryDetails,
+                    price: e.target.value,
+                  });
+                  setCategoryDetails((prevCategory) => ({
+                    ...prevCategory,
+                    tickets: prevCategory.tickets.map((ticket) => ({
+                      ...ticket,
+                      price: e.target.value,
+                    })),
+                  }));
                 }}
               />
               <Spacer />
@@ -1377,6 +1401,13 @@ const FormTicketPage = () => {
                     onChange={(e) => {
                       setData({ ...data, dateEnd: e.target.value });
                       checkDateRange(e.target.value);
+                      setCategoryDetails((prevCategory) => ({
+                        ...prevCategory,
+                        tickets: prevCategory.tickets.map((ticket) => ({
+                          ...ticket,
+                          endTicket: e.target.value,
+                        })),
+                      }));
                     }}
                     value={data?.dateEnd}
                   />
@@ -1521,6 +1552,25 @@ const FormTicketPage = () => {
             </Box>
           ) : null}
 
+          <Box>
+            <FormControl mt={2}>
+              <FormLabel>Notes for the event</FormLabel>
+              <Textarea
+                placeholder="Enter Notes..."
+                value={categoryDetails[0]?.tickets[0]?.notes}
+                onChange={(e) =>
+                  setCategoryDetails((prevCategory) => ({
+                    ...prevCategory,
+                    tickets: prevCategory.tickets.map((ticket) => ({
+                      ...ticket,
+                      notes: e.target.value,
+                    })),
+                  }))
+                }
+              />
+            </FormControl>
+          </Box>
+
           <Box my={2}>
             <Text fontWeight={"semibold"} my={2}>
               Choose Form
@@ -1569,7 +1619,7 @@ const FormTicketPage = () => {
 
           <Divider />
 
-          <SimpleGrid columns={[1, 1, 2]} py={[1, 1, 5]} spacing={5}>
+          {/* <SimpleGrid columns={[1, 1, 2]} py={[1, 1, 5]} spacing={5}>
             <Box>
               <Text fontWeight={"semibold"}>
                 Data Details To Be Displayed in PageView
@@ -1602,9 +1652,9 @@ const FormTicketPage = () => {
                       })
                     }
                   />
-                  {/* <Spacer />
+                  <Spacer />
                   <Text fontWeight={500}
-                  >Rp.{formatFrice(parseFloat(categoryDetails?.price || 0))}</Text> */}
+                  >Rp.{formatFrice(parseFloat(categoryDetails?.price || 0))}</Text>
                 </HStack>
               </FormControl>
 
@@ -1700,7 +1750,7 @@ const FormTicketPage = () => {
                 />
               </FormControl>
             </Box>
-          </SimpleGrid>
+          </SimpleGrid> */}
 
           {params.type === "create" ? (
             <Flex align="end" justify={"end"}>
