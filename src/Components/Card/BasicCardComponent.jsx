@@ -45,62 +45,69 @@ function BasicCardComponent(props) {
   };
 
   return (
-    <HStack
-      maxH="32"
-      borderRadius="md"
-      p="5"
-      my="3"
-      width="full"
-      bg="white"
-      shadow="md"
-      _hover={{
-        transform: "scale(1.04)",
-        transition: "60ms linear",
-      }}
-      cursor={"pointer"}
-      onClick={navigation}
-    >
-      <Image
-        width="100px"
-        height="50px"
-        objectFit="cover"
-        src={data?.thumbnail}
-        alt={data?.title}
-      />
-      <Box>
-        <HStack>
-          <Heading fontSize="md">{data?.title}</Heading>
-          <Badge fontSize={8} colorScheme="blue">
-            {data?.courseType}
-          </Badge>
-        </HStack>
-        <HStack divider={<StackDivider />}>
-          <Text>{data?.sections?.length} Sections</Text>
-          <Text>{data?.lessons?.length} Lessons</Text>
+    <HStack pos={"relative"}>
+      <HStack
+        maxH="32"
+        borderRadius="md"
+        p="5"
+        my="1"
+        width="full"
+        bg="white"
+        shadow="md"
+        _hover={{
+          transform: "scale(1.01)",
+          transition: "60ms linear",
+        }}
+        cursor={"pointer"}
+        onClick={navigation}
+      >
+        <Image
+          width="100px"
+          height="50px"
+          objectFit="cover"
+          src={data?.thumbnail}
+          alt={data?.title}
+        />
+        <Box>
           <HStack>
-            <FiCalendar />
-            {/* <Text>{convertMilisecond(data?.createdAt)}</Text> */}
+            <Heading fontSize="md">{data?.title}</Heading>
+            <Badge fontSize={8} colorScheme="blue">
+              {data?.courseType}
+            </Badge>
           </HStack>
-        </HStack>
-      </Box>
-      <Spacer />
+          <HStack divider={<StackDivider />}>
+            <Text>{data?.sections?.length} Sections</Text>
+            <Text>{data?.lessons?.length} Lessons</Text>
+            <HStack>
+              <FiCalendar />
+              {/* <Text>{convertMilisecond(data?.createdAt)}</Text> */}
+            </HStack>
+          </HStack>
+        </Box>
+        <Spacer />
 
-      <Link to={`/courses/${data.id}`} state={data}>
+        {/* <Link to={`/courses/${data.id}`} state={data}>
         <EditIcon />
-      </Link>
-      <Box onClick={() => handleDelete()} cursor="pointer">
+      </Link> */}
+
+        <Modals
+          datas={data}
+          isOpen={isOpen}
+          onClose={onClose}
+          type={type}
+          update={update}
+          setUpdate={setUpdate}
+          getData={getData}
+        />
+      </HStack>
+      <Box
+        pos={"absolute"}
+        right={5}
+        onClick={() => handleDelete()}
+        cursor="pointer"
+      >
         <DeleteIcon />
       </Box>
-
-      <Modals
-        datas={data}
-        isOpen={isOpen}
-        onClose={onClose}
-        type={type}
-        update={update}
-        setUpdate={setUpdate}
-        getData={getData}
-      />
     </HStack>
   );
 }

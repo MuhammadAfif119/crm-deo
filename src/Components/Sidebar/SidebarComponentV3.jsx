@@ -52,7 +52,7 @@ import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "../../Utils/Helper";
 import { BiAlignLeft } from "react-icons/bi";
-import { deleteCookie } from "../../Utils/storage";
+import { encryptToken } from "../../Utils/encrypToken";
 
 // ** Theme Configuration
 
@@ -72,6 +72,11 @@ function SidebarComponentV3({ layout }) {
 
   const globalState = useUserStore();
 
+  const uid = globalState?.uid;
+
+  const encryptUid = encryptToken(uid);
+  const encryptFix = encodeURIComponent(encryptUid);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIsVisible((prevIsVisible) => !prevIsVisible);
@@ -85,14 +90,9 @@ function SidebarComponentV3({ layout }) {
   // console.log(globalState);
 
   const fetchProjects = async (id) => {
-    const fetchProjectId = localStorage.getItem("currentProject");
-
     const searchProjectId = globalState?.projects?.find(
       (x) => x.companyId === id
     );
-
-    console.log(fetchProjectId, "xxx");
-    console.log(searchProjectId, "xxx");
 
     const conditions = [
       {
@@ -109,50 +109,75 @@ function SidebarComponentV3({ layout }) {
 
     const projects = await getCollectionFirebase("projects", conditions);
 
-    if (!fetchProjectId) {
-      console.log("kondisi 1 jalan");
+    const fetchProjectId = localStorage.getItem("currentProject");
 
-      try {
-        globalState.setProjects(projects);
-        // console.log(projects, "ini project");
+    // Set the projects for the company
+    globalState.setProjects(projects);
+
+    if (!fetchProjectId) {
+      // If there's no project explicitly selected, set the first project as the current project
+      if (projects.length > 0) {
         globalState.setCurrentProject(projects[0].id);
         localStorage.setItem("currentProject", projects[0].id);
-
-        if (
-          projects.length > 0 &&
-          projects[0].owner?.includes(globalState.uid)
-        ) {
-          globalState.setRoleProject("owner");
-        } else if (
-          projects.length > 0 &&
-          projects[0].managers?.includes(globalState.uid)
-        ) {
-          globalState.setRoleProject("managers");
-        } else {
-          globalState.setRoleProject("user");
-        }
-      } catch (error) {
-        console.log(error, "ini error");
+      } else {
+        // Handle the case when no projects are available for the company
+        globalState.setCurrentProject(null);
+        localStorage.removeItem("currentProject");
       }
     } else {
-      console.log("kondisi 2 jalan");
-      const getProjects = await getSingleDocumentFirebase(
-        "projects",
-        fetchProjectId
-      );
-
-      globalState.setProjects(projects);
+      // Handle the case when a project was explicitly selected
       globalState.setCurrentProject(fetchProjectId);
-      localStorage.setItem("currentProject", projects[0]?.id);
-
-      if (getProjects?.owner?.includes(globalState.uid)) {
-        globalState.setRoleProject("owner");
-      } else if (getProjects?.managers?.includes(globalState.uid)) {
-        globalState.setRoleProject("managers");
-      } else {
-        globalState.setRoleProject("user");
-      }
     }
+    // if (!fetchProjectId) {
+    //   console.log("kondisi 1 jalan");
+
+    //   try {
+    //     globalState.setProjects(projects);
+    //     // console.log(projects, "ini project");
+    //     globalState.setCurrentProject(projects[0].id);
+    //     localStorage.setItem("currentProject", projects[0].id);
+
+    //     if (
+    //       projects.length > 0 &&
+    //       projects[0].owner?.includes(globalState.uid)
+    //     ) {
+    //       globalState.setRoleProject("owner");
+    //     } else if (
+    //       projects.length > 0 &&
+    //       projects[0].managers?.includes(globalState.uid)
+    //     ) {
+    //       globalState.setRoleProject("managers");
+    //     } else {
+    //       globalState.setRoleProject("user");
+    //     }
+    //   } catch (error) {
+    //     console.log(error, "ini error");
+    //   }
+    // } else {
+    //   console.log("kondisi 2 jalan");
+    //   const getProjects = await getSingleDocumentFirebase(
+    //     "projects",
+    //     fetchProjectId
+    //   );
+
+    //   if (searchProjectId === undefined) {
+    //     globalState.setProjects(projects);
+    //     globalState.setCurrentProject(fetchProjectId);
+    //     localStorage.setItem("currentProject", projects[0]?.id);
+    //   } else {
+    //     globalState.setProjects(projects);
+    //     globalState.setCurrentProject(fetchProjectId);
+    //     localStorage.setItem("currentProject", projects[0]?.id);
+    //   }
+
+    //   if (getProjects?.owner?.includes(globalState.uid)) {
+    //     globalState.setRoleProject("owner");
+    //   } else if (getProjects?.managers?.includes(globalState.uid)) {
+    //     globalState.setRoleProject("managers");
+    //   } else {
+    //     globalState.setRoleProject("user");
+    //   }
+    // }
 
     setListProject(projects);
   };
@@ -200,10 +225,6 @@ function SidebarComponentV3({ layout }) {
           duration: 2000,
         });
 
-        deleteCookie("uid");
-        deleteCookie("email");
-        console.log('delete cookie')
-
         globalState.setIsLoggedIn(false);
         store.clearAll();
       })
@@ -215,7 +236,36 @@ function SidebarComponentV3({ layout }) {
       });
   };
 
-  const handleCompanySelect = (e) => {
+  // const handleCompanySelect = (e) => {
+  //   globalState.setIsLoading(true);
+  //   const dataCompany = globalState.companies;
+
+  //   const findCompany = dataCompany.find((x) => x.id === e);
+
+  //   localStorage.setItem("currentCompany", findCompany.id || e);
+  //   globalState.setCurrentCompany(findCompany.id || e);
+  //   globalState.setUsers(findCompany.users);
+  //   globalState.setCurrentXenditId(findCompany?.xenditId);
+
+  //   if (findCompany.id || e) {
+  //     fetchProjects(findCompany.id || e);
+  //   }
+
+  //   if (findCompany.owner && findCompany.owner.includes(e)) {
+  //     // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+  //     globalState.setRoleProject("owner");
+  //   } else if (findCompany.managers && findCompany.managers.includes(e)) {
+  //     globalState.setRoleProject("managers");
+  //   } else {
+  //     globalState.setRoleProject("user");
+  //   }
+
+  //   setTimeout(() => {
+  //     globalState.setIsLoading(false);
+  //   }, 1000);
+  // };
+
+  const handleCompanySelect = async (e) => {
     globalState.setIsLoading(true);
     const dataCompany = globalState.companies;
 
@@ -227,11 +277,41 @@ function SidebarComponentV3({ layout }) {
     globalState.setCurrentXenditId(findCompany?.xenditId);
 
     if (findCompany.id || e) {
-      fetchProjects(findCompany.id || e);
+      const conditions = [
+        {
+          field: "users",
+          operator: "array-contains",
+          value: globalState.uid,
+        },
+        {
+          field: "companyId",
+          operator: "==",
+          value: findCompany.id || e,
+        },
+      ];
+
+      const projects = await getCollectionFirebase("projects", conditions);
+
+      globalState.setProjects(projects);
+
+      const projectWithSameCompany = projects?.find(
+        (project) =>
+          project.companyId === localStorage.getItem("currentProject")
+      );
+
+      if (projectWithSameCompany) {
+        globalState.setCurrentProject(projectWithSameCompany.id);
+        localStorage.setItem("currentProject", projectWithSameCompany.id);
+      } else if (projects.length > 0) {
+        globalState.setCurrentProject(projects[0].id);
+        localStorage.setItem("currentProject", projects[0].id);
+      } else {
+        globalState.setCurrentProject(null);
+        localStorage.removeItem("currentProject");
+      }
     }
 
     if (findCompany.owner && findCompany.owner.includes(e)) {
-      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
       globalState.setRoleProject("owner");
     } else if (findCompany.managers && findCompany.managers.includes(e)) {
       globalState.setRoleProject("managers");
@@ -264,6 +344,14 @@ function SidebarComponentV3({ layout }) {
     setTimeout(() => {
       globalState.setIsLoading(false);
     }, 1000);
+  };
+
+  const handleNavigate = (value) => {
+    if (value?.link?.includes("https")) {
+      window.open(`${value.link}?id=${encryptFix}`, "_blank");
+    } else {
+      navigate(value.link);
+    }
   };
 
   if (layout.type === "vertical" || layout.type === "vertical-horizontal")
@@ -517,7 +605,11 @@ function SidebarComponentV3({ layout }) {
                         <AccordionPanel>
                           <Stack>
                             {sub.submenu?.map((subitem, i) => (
-                              <Link to={subitem.link} key={i}>
+                              <Box
+                                cursor={"pointer"}
+                                onClick={() => handleNavigate(subitem)}
+                                key={i}
+                              >
                                 <HStack spacing="3">
                                   <Icon as={subitem.icon} boxSize={5} />
                                   {isDesktop && (
@@ -534,7 +626,7 @@ function SidebarComponentV3({ layout }) {
                                   )}
                                 </HStack>
                                 <Divider py={1} />
-                              </Link>
+                              </Box>
                             ))}
                           </Stack>
                         </AccordionPanel>

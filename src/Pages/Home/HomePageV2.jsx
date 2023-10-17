@@ -77,6 +77,7 @@ function HomePageV2() {
   });
   const [domainPage, setDomainPage] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [checkBanner, setCheckBanner] = useState(false);
 
   const [emailCheck, setEmailCheck] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -455,11 +456,19 @@ function HomePageV2() {
   // };
 
   const handleInputBanner = (value, index) => {
-    console.log(value, "ini value");
-    console.log(index, "ini index");
     const newBannerList = [...bannerList];
-    newBannerList[index].link = value;
+
+    value = value?.replace(/^\/+/, "");
+
+    newBannerList[index].link = "/" + value;
+
     setBannerList([...newBannerList]);
+
+    if (value === "" || value === undefined) {
+      setCheckBanner(true);
+    } else {
+      setCheckBanner(false);
+    }
   };
 
   const handleRemoveFeature = (index) => {
@@ -479,8 +488,6 @@ function HomePageV2() {
       setBannerList([...arr]);
     }
   };
-
-  console.log(pageData?.features, "ini features");
 
   const handleCheckSwitch = (value) => {
     if (!pageData.features) {
@@ -546,8 +553,6 @@ function HomePageV2() {
       });
     }
   };
-
-  console.log(projectData, "ini project data");
 
   useEffect(() => {
     getDataPage()
@@ -900,10 +905,16 @@ function HomePageV2() {
                           <ThemeSettingForm
                             onOpen={onOpen}
                             onClose={onClose}
-                            isOpen={isOpen}
-                            data={pageData}
-                            setData={setPageData}
                             color={color}
+                            data={pageData}
+                            isOpen={isOpen}
+                            bannerList={bannerList}
+                            bannerInput={bannerInput}
+                            checkBanner={checkBanner}
+                            logoInputDark={imageLogoDark}
+                            logoInputLight={imageLogoLight}
+                            logoInputFavicon={imageFavicon}
+                            setData={setPageData}
                             setBannerList={setBannerList}
                             setColor={setColor}
                             handleSaveColor={handleSaveModal}
@@ -919,11 +930,6 @@ function HomePageV2() {
                             handleAddFeature={handleAddFeature}
                             handleInputBanner={handleInputBanner}
                             handleUploadBanner={handleUploadBanner}
-                            bannerList={bannerList}
-                            logoInputDark={imageLogoDark}
-                            logoInputLight={imageLogoLight}
-                            logoInputFavicon={imageFavicon}
-                            bannerInput={bannerInput}
                             handleDeleteCurrentBanner={
                               handleDeleteCurrentBanner
                             }

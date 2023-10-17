@@ -21,6 +21,15 @@ import {
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { param } from "jquery";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../Config/firebase";
 
 const Courses = () => {
   const [datas, setDatas] = useState([]);
@@ -38,26 +47,43 @@ const Courses = () => {
   const navigate = useNavigate();
 
   const getData = async () => {
-    const conditions = [
-      { field: "projectsId", operator: "==", value: currentProject },
-    ];
-    const sortBy = { field: "createdAt", direction: "asc" };
-    const limitValue = 5;
+    // const conditions = [
+    //   { field: "projectsId", operator: "==", value: currentProject },
+    // ];
+    // const sortBy = { field: "createdAt", direction: "asc" };
+    // const limitValue = 5;
 
-    try {
-      const res = await getCollectionFirebase(
-        "courses",
-        conditions,
-        sortBy,
-        limitValue
-      );
-      setDatas(res);
+    // try {
+    //   const res = await getCollectionFirebase(
+    //     "courses",
+    //     conditions,
+    //     sortBy,
+    //     limitValue
+    //   );
+    //   setDatas(res);
 
-      const lastVisible = res[res?.length - 1]?.createdAt;
+    //   const lastVisible = res[res?.length - 1]?.createdAt;
+    //   setLast(lastVisible);
+    // } catch (error) {
+    //   console.log(error, "ini error");
+    // }
+
+    const q = query(
+      collection(db, "courses"),
+      where("projectsId", "==", globalState?.currentProject),
+      orderBy("createdAt", "asc"),
+      limit(5)
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const courseArr = [];
+      querySnapshot.forEach((doc) => {
+        courseArr.push({ ...doc.data(), id: doc.id });
+      });
+      setDatas(courseArr);
+
+      const lastVisible = courseArr[courseArr?.length - 1]?.createdAt;
       setLast(lastVisible);
-    } catch (error) {
-      console.log(error, "ini error");
-    }
+    });
   };
 
   const fetchNext = async () => {
@@ -214,9 +240,13 @@ const Courses = () => {
 									<Button>Next</Button>
 								</ButtonGroup>
 							</HStack> */}
-              {datas?.length < 10 ? null : (
+              {datas?.length < 5 ? null : (
                 // <Button onClick={fetchNext}>Next</Button>
-                <Button onClick={fetchNext}>Next</Button>
+                <Box align={"center"}>
+                  <Button colorScheme={"blue"} onClick={fetchNext}>
+                    Next
+                  </Button>
+                </Box>
               )}
             </Box>
           </Stack>

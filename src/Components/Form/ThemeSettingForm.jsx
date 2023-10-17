@@ -42,6 +42,7 @@ const ThemeSettingForm = ({
   handleUploadBanner,
   bannerList,
   handleInputBanner,
+  checkBanner,
   setBannerList,
   handleRemoveFeature,
   handleDeleteBanner,
@@ -279,13 +280,23 @@ const ThemeSettingForm = ({
         bg={"white"}
         p={3}
       >
-        <Text size="sm">Color Presets</Text>
+        <Text size="sm" fontWeight={"bold"}>
+          Color Presets
+        </Text>
         <Text fontSize="sm">Choose Color palette for your brand</Text>
         <Box>
           <SimpleGrid columns={3} spacing={3}>
             <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 1
+              <Text align={"center"} fontSize={14} fontWeight={500}>
+                Primary Color Themes
+              </Text>
+              <Text
+                align={"center"}
+                fontSize={12}
+                fontWeight={400}
+                color={"gray.500"}
+              >
+                Pageview main color, include navigation bar
               </Text>
               <Box
                 borderWidth={1}
@@ -302,8 +313,16 @@ const ThemeSettingForm = ({
             </Stack>
 
             <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 2{" "}
+              <Text align={"center"} fontSize={14} fontWeight={500}>
+                Secondary Color Themes
+              </Text>
+              <Text
+                align={"center"}
+                fontSize={12}
+                fontWeight={400}
+                color={"gray.500"}
+              >
+                Pageview secondary color, include card background
               </Text>
               <Box
                 borderWidth={1}
@@ -319,8 +338,16 @@ const ThemeSettingForm = ({
             </Stack>
 
             <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 3
+              <Text align={"center"} fontSize={14} fontWeight={500}>
+                Accent Color Themes
+              </Text>
+              <Text
+                align={"center"}
+                fontSize={12}
+                fontWeight={400}
+                color={"gray.500"}
+              >
+                Pageview accent color, include text and border icons
               </Text>
               <Box
                 borderWidth={1}
@@ -337,7 +364,18 @@ const ThemeSettingForm = ({
           </SimpleGrid>
 
           <Box my={5} maxW="md">
-            <Text size="sm">ColorScheme : </Text>
+            <Text size="sm" align={"center"}>
+              Button Color Scheme
+            </Text>
+            <Text
+              size="sm"
+              align={"center"}
+              fontSize={12}
+              fontWeight={400}
+              color={"gray.500"}
+            >
+              Change all buttons color
+            </Text>
             <Flex alignItems="center" gap={10} mt={3}>
               <Select
                 bg="white"
@@ -411,14 +449,27 @@ const ThemeSettingForm = ({
                 {/* <Image alt={i} src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/201211130529126a0.jpg/480px-201211130529126a0.jpg" /> */}
                 <Flex justifyContent="space-between" padding={2}>
                   <Stack>
-                    <Heading size="sm">Link :</Heading>
+                    <HStack>
+                      <Heading size="sm">Link : </Heading>
+                      <Text as={"span"} fontSize={12}>
+                        {"("}required{")"}
+                      </Text>
+                    </HStack>
                     <Input
+                      borderColor={checkBanner ? "red" : null}
+                      border={checkBanner ? "1px" : null}
                       size={"sm"}
                       onChange={(e) => handleInputBanner(e.target.value, i)}
                       value={bannerList[i]?.link}
                     />
+                    {checkBanner ? (
+                      <Text color={"red"} fontSize={12}>
+                        Link cannot be empty
+                      </Text>
+                    ) : null}
                     <Heading size="sm">Image :</Heading>
                     <Input
+                      isDisabled={checkBanner ? true : false}
                       type="file"
                       size={"sm"}
                       //   onChange={(e) =>

@@ -66,6 +66,9 @@ const Modals = (props) => {
     };
 
     if (datas?.type === "addCourse") {
+      console.log("ini addcourse");
+
+      // console.log(filesImage, "ini oooo");
       try {
         if (filesImage[0]) {
           const resImage = await uploadFile(
@@ -89,6 +92,13 @@ const Modals = (props) => {
         }, 1500);
       } catch (error) {
         console.log(error.message, "error while adding course");
+
+        toast({
+          status: "error",
+          title: "Deoapp Business",
+          description: `Please fill all form input and upload image for thumbnail`,
+          duration: 1000,
+        });
       } finally {
         setLoading(false);
       }
@@ -178,7 +188,7 @@ const Modals = (props) => {
           duration: 9000,
         });
       } finally {
-        getData();
+        // getData();
         setLoading();
       }
     } else if (type === "deleteLesson") {
