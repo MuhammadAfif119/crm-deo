@@ -303,6 +303,11 @@ function SignUpPage() {
                   bgColor={"white"}
                   color={"blackAlpha.700"}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSignup();
+                    }
+                  }}
                 />
                 <InputRightElement>
                   {showConfirmPassword ? (

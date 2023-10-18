@@ -570,21 +570,8 @@ const FormTicketPage = () => {
     tnc: "",
   });
 
-  const [categoryDetails, setCategoryDetails] = useState({
-    title: "",
-    price: "",
-    priceEnd: "",
-    details: "",
-    tickets: [
-      {
-        title: data.title,
-        price: data?.price,
-        endTicket: data?.timeEnd,
-        totalAudience: "",
-        notes: "",
-      },
-    ],
-  });
+  const [categoryDetails, setCategoryDetails] = useState({});
+  const [categoryDetailsTicket, setCategoryDetailsTicket] = useState({});
 
   const [eventType, setEventType] = useState([]);
   const [formPage, setFormPage] = useState(false);
@@ -654,14 +641,17 @@ const FormTicketPage = () => {
       setFiles(res.thumbnail);
       setImageUrl(res?.thumbnail);
       setLogoUrl(res?.logo);
-      setCategoryDetails(res.category);
+      setCategoryDetails(res.category[0]);
+      setCategoryDetailsTicket(res.category[0]?.tickets[0]);
       setTicketCounts([res.category[0]?.tickets?.length]);
       setLastFormId(res.formId);
     }
 
+    console.log(res.category, "xxx");
+
     //get data form
     const ticketForm = await getSingleDocumentFirebase("forms", res.formId);
-    console.log(ticketForm, "ini current form");
+    // console.log(ticketForm, "ini current form");
     setCurrentForm(ticketForm);
   };
 
@@ -736,6 +726,7 @@ const FormTicketPage = () => {
   //   }
   // };
 
+  console.log(categoryDetails, "xxx");
   useEffect(() => {
     getDataForms();
     getProject();
@@ -743,33 +734,6 @@ const FormTicketPage = () => {
       getTickets();
     }
   }, [globalState.currentProject]);
-
-  const handleAddTicket = async (categoryIndex) => {
-    await setCategoryDetails((prevCategoryDetails) => {
-      const updatedCategoryDetails = [...prevCategoryDetails];
-      if (
-        updatedCategoryDetails[categoryIndex]?.tickets?.length ===
-        ticketCounts[categoryIndex]
-      ) {
-        updatedCategoryDetails[categoryIndex].tickets.push({
-          title: "",
-          price: "",
-          gtmId: "",
-          endTicket: "",
-          totalAudience: "",
-          notes: "",
-        });
-      }
-      return updatedCategoryDetails;
-    });
-    setTicketCounts((prevTicketCounts) => {
-      const updatedTicketCounts = [...prevTicketCounts];
-
-      updatedTicketCounts[categoryIndex] =
-        updatedTicketCounts[categoryIndex] + 1;
-      return updatedTicketCounts;
-    });
-  };
 
   const handleEventTypeChange = (value) => {
     if (eventType?.includes(value)) {
@@ -779,40 +743,6 @@ const FormTicketPage = () => {
     } else {
       setEventType((prevEventType) => [...prevEventType, value]);
     }
-  };
-
-  const handleIncrement = () => {
-    setCategoryCount((prevCategoryCount) => prevCategoryCount + 1);
-    setTicketCounts((prevTicketCounts) => [...prevTicketCounts, 1]);
-    setCategoryDetails((prevCategoryDetails) => [
-      ...prevCategoryDetails,
-      {
-        title: "",
-        price: "",
-        gtmId: "",
-        priceEnd: "",
-        details: "",
-        tickets: [
-          { title: "", price: "", endTicket: "", totalAudience: "", notes: "" },
-        ],
-      },
-    ]);
-  };
-
-  const handleTicketChange = (categoryIndex, ticketIndex, field, value) => {
-    setCategoryDetails((prevCategoryDetails) => {
-      const updatedCategoryDetails = [...prevCategoryDetails];
-      updatedCategoryDetails[categoryIndex].tickets[ticketIndex][field] = value;
-      return updatedCategoryDetails;
-    });
-  };
-
-  const handleCategoryChange = (categoryIndex, field, value) => {
-    setCategoryDetails((prevCategoryDetails) => {
-      const updatedCategoryDetails = [...prevCategoryDetails];
-      updatedCategoryDetails[categoryIndex][field] = value;
-      return updatedCategoryDetails;
-    });
   };
 
   const handleSubmit = async (type) => {
@@ -834,7 +764,14 @@ const FormTicketPage = () => {
       if (type === "create") {
         const newDatas = {
           ...data,
-          category: [categoryDetails],
+          category: [
+            {
+              details: categoryDetails.details,
+              price: categoryDetails.price,
+              title: categoryDetails.title,
+              tickets: [categoryDetailsTicket],
+            },
+          ],
           projectId: projectId,
           projectName: projectName,
         };
@@ -881,7 +818,14 @@ const FormTicketPage = () => {
       } else {
         let newData = {
           ...data,
-          category: categoryDetails,
+          category: [
+            {
+              details: categoryDetails.details,
+              price: categoryDetails.price,
+              title: categoryDetails.title,
+              tickets: [categoryDetailsTicket],
+            },
+          ],
           projectId: projectId,
           projectName: projectName,
         };
@@ -1028,6 +972,8 @@ const FormTicketPage = () => {
     });
   };
 
+  console.log(categoryDetailsTicket, "pppp");
+
   const getDataForms = async () => {
     try {
       const q = query(
@@ -1156,13 +1102,10 @@ const FormTicketPage = () => {
                   ...categoryDetails,
                   title: e.target.value,
                 });
-                setCategoryDetails((prevCategory) => ({
-                  ...prevCategory,
-                  tickets: prevCategory.tickets.map((ticket) => ({
-                    ...ticket,
-                    title: e.target.value,
-                  })),
-                }));
+                setCategoryDetailsTicket({
+                  ...categoryDetailsTicket,
+                  title: e.target.value,
+                });
               }}
               value={data?.title}
             />
@@ -1344,13 +1287,10 @@ const FormTicketPage = () => {
                     ...categoryDetails,
                     price: e.target.value,
                   });
-                  setCategoryDetails((prevCategory) => ({
-                    ...prevCategory,
-                    tickets: prevCategory.tickets.map((ticket) => ({
-                      ...ticket,
-                      price: e.target.value,
-                    })),
-                  }));
+                  setCategoryDetailsTicket({
+                    ...categoryDetailsTicket,
+                    price: e.target.value,
+                  });
                 }}
               />
               <Spacer />
@@ -1401,19 +1341,16 @@ const FormTicketPage = () => {
                     onChange={(e) => {
                       setData({ ...data, dateEnd: e.target.value });
                       checkDateRange(e.target.value);
-                      setCategoryDetails((prevCategory) => ({
-                        ...prevCategory,
-                        tickets: prevCategory.tickets.map((ticket) => ({
-                          ...ticket,
-                          endTicket: e.target.value,
-                        })),
-                      }));
+                      setCategoryDetailsTicket({
+                        ...categoryDetailsTicket,
+                        endTicket: e.target.value,
+                      });
                     }}
-                    value={data?.dateEnd}
+                    value={data?.dateEnd || categoryDetailsTicket?.endTicket}
                   />
                   {dateCorrection ? (
                     <Text color={"red"} fontSize={12}>
-                      Date End should not be before or equal than date start
+                      Date End should not be before or equal to the date start
                     </Text>
                   ) : null}
                 </FormControl>
@@ -1557,15 +1494,12 @@ const FormTicketPage = () => {
               <FormLabel>Notes for the event</FormLabel>
               <Textarea
                 placeholder="Enter Notes..."
-                value={categoryDetails[0]?.tickets[0]?.notes}
+                value={categoryDetailsTicket?.notes}
                 onChange={(e) =>
-                  setCategoryDetails((prevCategory) => ({
-                    ...prevCategory,
-                    tickets: prevCategory.tickets.map((ticket) => ({
-                      ...ticket,
-                      notes: e.target.value,
-                    })),
-                  }))
+                  setCategoryDetailsTicket({
+                    ...categoryDetailsTicket,
+                    notes: e.target.value,
+                  })
                 }
               />
             </FormControl>

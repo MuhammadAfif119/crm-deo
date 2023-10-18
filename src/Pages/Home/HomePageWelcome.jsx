@@ -173,6 +173,28 @@ const HomePageWelcome = () => {
           data
         );
 
+        const pageRes = await setDocumentFirebase(
+          "pages",
+          globalState?.currentProject,
+          {
+            banner: [
+              {
+                image:
+                  "https://firebasestorage.googleapis.com/v0/b/deoapp-indonesia.appspot.com/o/pages%2FinTx5f8SG7Rzry8oXSMqfqEZ1mD2%2Fbog-start-with-why-eng_800x800.png?alt=media&token=53c24331-bc33-40fc-9df5-da342f78654f",
+                link: "/ticket",
+              },
+            ],
+            brand: { 1: "#ffd600", 2: "#ffffff", 3: "#000000" },
+            colorScheme: "telegram",
+            companiesId: globalState?.currentCompany,
+            favicon: "",
+            logo: "",
+            logoDark: "",
+            logoLight: "",
+            projectsId: globalState.currentProject,
+          }
+        );
+
         toast({
           title: "Deoapp CRM",
           description: "Domain Created!",
