@@ -290,7 +290,7 @@ const Modals = (props) => {
     } catch (error) {
       toast({
         title: "Oppss!",
-        description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+        description: `Error occured when create share links: ${error.message}`,
         isClosable: true,
         duration: 9000,
         status: "error",
@@ -323,10 +323,10 @@ const Modals = (props) => {
 
       return { link: urlRaw, type: typeFile };
     } catch (error) {
-      console.error("Terjadi kesalahan saat membuat tautan berbagi:", error);
+      console.error("Error occured when create share links:", error);
       toast({
         title: "Oppss!",
-        description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+        description: `Error occured when create share links: ${error.message}`,
         isClosable: true,
         duration: 9000,
         status: "error",
@@ -499,13 +499,13 @@ const Modals = (props) => {
   return (
     <Modal isOpen={isOpen} onClose={() => handleClose()} size="2xl">
       <ModalOverlay />
-      <ModalContent bg="gray.100">
+      <ModalContent bg="white">
         <ModalHeader textTransform="capitalize">
           {type === "delete" ? `Delete course ${datas?.title}` : datas?.title}
         </ModalHeader>
         <ModalCloseButton />
 
-        <ModalBody bg="gray.100">
+        <ModalBody bg="white">
           {datas?.type === "addCourse" ? (
             <Stack>
               <FormControl>

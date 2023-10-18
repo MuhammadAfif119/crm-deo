@@ -101,7 +101,7 @@ function DropboxUploader({
     } catch (error) {
       toast({
         title: "Oppss!",
-        description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+        description: `Error occured when create share links: ${error.message}`,
         isClosable: true,
         duration: 9000,
         status: "error",
@@ -159,10 +159,10 @@ function DropboxUploader({
 
       setShareLink({ link: urlRaw, type: typeFile });
     } catch (error) {
-      console.error("Terjadi kesalahan saat membuat tautan berbagi:", error);
+      console.error("Error occured when create share links:", error);
       toast({
         title: "Oppss!",
-        description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+        description: `Error occured when create share links: ${error.message}`,
         isClosable: true,
         duration: 9000,
         status: "error",
@@ -296,7 +296,11 @@ function DropboxUploader({
                     Copy
                   </Button>
 
-                  <a href={shareLink} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={shareLink.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Button size={"sm"} colorScheme="blue" variant={"outline"}>
                       Open in new tab
                     </Button>

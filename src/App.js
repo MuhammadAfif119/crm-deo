@@ -99,7 +99,7 @@ function App() {
       try {
         await arrayUnionFirebase(collectionName, docName, field, values);
       } catch (error) {
-        console.log("Terjadi kesalahan:", error);
+        console.log("Error occured:", error);
       }
     }
   };
@@ -126,7 +126,7 @@ function App() {
       await signOut(auth);
       toast({
         status: "success",
-        description: "Loggedout success",
+        description: "Logged out success",
         duration: 2000,
       });
     } catch (error) {

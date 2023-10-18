@@ -159,7 +159,7 @@ function EditLesson() {
     } catch (error) {
       toast({
         title: "Oppss!",
-        description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+        description: `Error occured when create share links: ${error.message}`,
         isClosable: true,
         duration: 9000,
         status: "error",
@@ -191,10 +191,10 @@ function EditLesson() {
 
   // 		return { link: urlRaw, type: typeFile };
   // 	} catch (error) {
-  // 		console.error('Terjadi kesalahan saat membuat tautan berbagi:', error);
+  // 		console.error('Error occured when create share links:', error);
   // 		toast({
   // 			title: 'Oppss!',
-  // 			description: `Terjadi kesalahan saat membuat tautan berbagi: ${error.message}`,
+  // 			description: `Error occured when create share links: ${error.message}`,
   // 			isClosable: true,
   // 			duration: 9000,
   // 			status: 'error',
@@ -479,9 +479,6 @@ function EditLesson() {
       <HStack>
         <Text fontWeight={500}>File</Text>
         <Spacer />
-        <Button onClick={openModal} colorScheme={"green"} variant="outline">
-          Upload File Here
-        </Button>
       </HStack>
       <Stack>
         <Text fontWeight="bold" fontSize={12}>
@@ -521,7 +518,16 @@ function EditLesson() {
 
         <TabPanels>
           <TabPanel>
-            <Container borderRadius="md" p="5">
+            <Container align={"center"} borderRadius="md" p="5">
+              <Button
+                mb={3}
+                size={"sm"}
+                onClick={openModal}
+                colorScheme={"green"}
+                variant="outline"
+              >
+                Upload File Here
+              </Button>
               <InputGroup size="md">
                 <Input
                   shadow="sm"
@@ -548,13 +554,16 @@ function EditLesson() {
             </Container>
           </TabPanel>
           <TabPanel>
-            <Container
-              borderRadius="md"
-              p="5"
-              border="1px"
-              borderColor="gray"
-              borderStyle="dotted"
-            >
+            <Container align={"center"} borderRadius="md" p="5">
+              <Button
+                mb={3}
+                size={"sm"}
+                onClick={openModal}
+                colorScheme={"green"}
+                variant="outline"
+              >
+                Upload File Here
+              </Button>
               <InputGroup size="md">
                 <Input
                   shadow="sm"
@@ -582,13 +591,16 @@ function EditLesson() {
           </TabPanel>
 
           <TabPanel>
-            <Container
-              borderRadius="md"
-              p="5"
-              border="1px"
-              borderColor="gray"
-              borderStyle="dotted"
-            >
+            <Container align={"center"} borderRadius="md" p="5">
+              <Button
+                mb={3}
+                size={"sm"}
+                onClick={openModal}
+                colorScheme={"green"}
+                variant="outline"
+              >
+                Upload File Here
+              </Button>
               <InputGroup size="md">
                 <Input
                   shadow="sm"

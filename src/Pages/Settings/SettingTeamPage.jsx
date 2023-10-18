@@ -77,7 +77,6 @@ function SettingTeamPage() {
   //     setCompanyData(globalState.companies);
   //   };
 
-
   const getDataProjects = async () => {
     const q = query(
       collection(db, "projects"),
@@ -313,13 +312,11 @@ function SettingTeamPage() {
   useEffect(() => {
     getDataProjects();
 
-    return () => { };
+    return () => {};
   }, [globalState.currentCompany]);
 
   return (
     <Stack>
-
-
       <Stack alignItems={"flex-end"} justifyContent="flex-end">
         <Button
           onClick={() => handleModalNewProject()}
@@ -349,7 +346,6 @@ function SettingTeamPage() {
       />
 
       <Divider />
-
 
       <Modal
         isOpen={modalProjectUser}
@@ -464,8 +460,8 @@ function SettingTeamPage() {
                         selectedRole === "manager"
                           ? "managers"
                           : selectedRole === "user"
-                            ? "users"
-                            : "admin";
+                          ? "users"
+                          : "admin";
                       const values = [x.id];
 
                       try {
@@ -478,9 +474,9 @@ function SettingTeamPage() {
 
                         toast({
                           title: "Berhasil",
-                          description: "berhasil mengupdate role team",
+                          description: "Success edit role team",
                           status: "success",
-                          duration: 9000,
+                          duration: 3000,
                           isClosable: true,
                         });
                       } catch (error) {
@@ -491,7 +487,7 @@ function SettingTeamPage() {
                         title: "Warning",
                         description: "You dont have any access to set role.",
                         status: "warning",
-                        duration: 9000,
+                        duration: 3000,
                         isClosable: true,
                       });
                     }
@@ -654,7 +650,6 @@ function SettingTeamPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-
     </Stack>
   );
 }

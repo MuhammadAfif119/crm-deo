@@ -122,7 +122,7 @@ function UsersPage() {
         title: "Alert!",
         description: "You dont have access to create new project.",
         status: "warning",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -212,7 +212,7 @@ function UsersPage() {
         title: "Alert!",
         description: "You dont have access to delete user",
         status: "warning",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } else {

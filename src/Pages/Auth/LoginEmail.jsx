@@ -23,7 +23,11 @@ import {
   MdVpnKey,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { signInWithCustomToken, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  signInWithCustomToken,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth, db } from "../../Config/firebase";
 import useUserStore from "../../Hooks/Zustand/Store";
 import {
@@ -48,16 +52,12 @@ function LoginEmail() {
   const toast = useToast();
   const navigate = useNavigate();
 
-
-
-
-
   const middleWareAccess = () => {
     toast({
       title: "Error",
       description: `Your account still online, please logout in another place. `,
       status: "error",
-      duration: 9000,
+      duration: 3000,
       isClosable: true,
     });
   };
@@ -70,7 +70,6 @@ function LoginEmail() {
         email,
         pathLink
       );
-
 
       if (!resCheck) {
         return middleWareAccess();
@@ -108,7 +107,7 @@ function LoginEmail() {
           title: "Login Successful",
           description: `You have successfully logged in as ${userCredential.user.email}`,
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -122,7 +121,7 @@ function LoginEmail() {
               ? "Wrong email or password. Please try again."
               : "An error occurred. Please try again.",
           status: "error",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
@@ -134,15 +133,12 @@ function LoginEmail() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const uidCookie = getCookie("uid");
   const emailCookie = getCookie("email");
 
-
-
   const handleLoginToken = async () => {
-
-    console.log(emailCookie, "true")
+    console.log(emailCookie, "true");
     if (emailCookie) {
       const pathLink = "crm";
       const resCheck = await checkUserAccess(
@@ -151,23 +147,22 @@ function LoginEmail() {
         pathLink
       );
 
-
       if (!resCheck) {
         return middleWareAccess();
       }
 
-
-
-
       const data = {
-        uid : uidCookie
-      }
+        uid: uidCookie,
+      };
 
       try {
         setLoading(true);
 
-        const getToken = await ApiBackend.post("/getToken", data )
-        const userCredential = await signInWithCustomToken(auth, getToken?.data?.customToken);
+        const getToken = await ApiBackend.post("/getToken", data);
+        const userCredential = await signInWithCustomToken(
+          auth,
+          getToken?.data?.customToken
+        );
         const user = userCredential.user;
 
         if (user) {
@@ -193,7 +188,7 @@ function LoginEmail() {
           title: "Login Successful",
           description: `You have successfully logged in as ${userCredential.user.email}`,
           status: "success",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
 
@@ -207,22 +202,20 @@ function LoginEmail() {
               ? "Wrong email or password. Please try again."
               : "An error occurred. Please try again.",
           status: "error",
-          duration: 9000,
+          duration: 3000,
           isClosable: true,
         });
       } finally {
         setLoading(false);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    handleLoginToken()
+    handleLoginToken();
 
-    return () => {
-    }
-  }, [])
-
+    return () => {};
+  }, []);
 
   const height = window.innerHeight;
   const width = window.innerWidth;

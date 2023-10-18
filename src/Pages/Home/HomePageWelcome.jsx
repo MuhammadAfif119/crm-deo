@@ -86,8 +86,8 @@ const HomePageWelcome = () => {
       users: [globalState.uid],
     };
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       if (dataCompany.name === "") {
         toast({
           title: "Deoapp CRM",
@@ -99,6 +99,9 @@ const HomePageWelcome = () => {
         const docRef = await addDoc(collection(db, "companies"), data);
         console.log("Document written with ID: ", docRef.id);
         setCompanyId(docRef.id);
+
+        globalState.setCurrentCompany(docRef.id);
+        localStorage.setItem("currentCompany", docRef.id);
 
         modalCreateCompany.onClose();
         modalCreateProject.onOpen();
@@ -118,9 +121,9 @@ const HomePageWelcome = () => {
       owner: [globalState.uid],
       users: [globalState.uid],
     };
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
       if (dataProject.name === "" || dataProject.description === "") {
         toast({
           title: "Deoapp CRM",
@@ -133,6 +136,9 @@ const HomePageWelcome = () => {
         console.log(res);
         console.log(data);
 
+        localStorage.setItem("currentProject", res);
+        globalState.setCurrentProject(res);
+
         toast({
           title: "Deoapp CRM",
           description: "Company and Project Created!",
@@ -144,7 +150,7 @@ const HomePageWelcome = () => {
       getDataProject();
       setIsLoading(false);
       modalCreateProject.onClose();
-      // location.reload();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     } finally {
@@ -241,7 +247,7 @@ const HomePageWelcome = () => {
         title: "Deoapp CRM",
         description: "Domain name should not contain space character",
         status: "warning",
-        duration: 800,
+        duration: 3000,
       });
     }
   };
@@ -299,25 +305,20 @@ const HomePageWelcome = () => {
       <Stack my={5} py={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
         {listProject?.length === 0 ? (
           <>
-            <Text align={"center"} fontSize={"sm"}>
-              Create or Edit your website
+            <Text align={"center"} fontSize={"md"}>
+              After you make company and project, you can create or edit your
+              website pageview by click the button below
             </Text>
             <Box fontSize={"sm"} align={"center"}>
-              {listProject?.length === 0 ? (
-                <Tooltip label={"Create your Project first"}>
-                  <Button
-                    isDisabled
-                    size={"sm"}
-                    onClick={modalCreateCompany.onOpen}
-                  >
-                    Create here
-                  </Button>
-                </Tooltip>
-              ) : (
-                <Button size={"sm"} onClick={modalCreateCompany.onOpen}>
+              <Tooltip label={"Create your Project first"}>
+                <Button
+                  isDisabled
+                  size={"sm"}
+                  onClick={modalCreateCompany.onOpen}
+                >
                   Create here
                 </Button>
-              )}
+              </Tooltip>
             </Box>
           </>
         ) : (
@@ -423,14 +424,11 @@ const HomePageWelcome = () => {
           </ModalBody>
 
           <ModalFooter>
-            {/* <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={modalCreateCompany.onClose}
+            <Button
+              isLoading={isLoading}
+              variant="ghost"
+              onClick={handleCreateCompany}
             >
-              Close
-            </Button> */}
-            <Button variant="ghost" onClick={handleCreateCompany}>
               Create
             </Button>
           </ModalFooter>
@@ -481,14 +479,18 @@ const HomePageWelcome = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={handleCreateProject} variant="ghost">
+            <Button
+              isLoading={isLoading}
+              onClick={handleCreateProject}
+              variant="ghost"
+            >
               Create Project
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal
+      {/* <Modal
         isOpen={modalCreateProject.isOpen}
         onClose={modalCreateProject.onClose}
       >
@@ -532,12 +534,12 @@ const HomePageWelcome = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={handleCreateProject} variant="ghost">
+            <Button isLoading={isLoading} onClick={handleCreateProject} variant="ghost">
               Create Project
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
 
       <Modal
         isOpen={modalCreateDomain.isOpen}

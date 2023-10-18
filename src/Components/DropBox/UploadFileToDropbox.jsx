@@ -85,7 +85,7 @@ const createShareLink = async (filePath, typeFile, token) => {
     const urlRaw = dataFix ? urlData : `${urlData}&raw=1`;
     return { link: urlRaw, type: typeFile };
   } catch (error) {
-    console.error("Terjadi kesalahan saat membuat tautan berbagi:", error);
+    console.error("Error occured when create share links:", error);
     return null;
   }
 };

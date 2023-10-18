@@ -131,9 +131,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
         toast({
           title: "Warning!",
           description:
-            "Terjadi Kesalah Generate VA, Silahkan menghubungi Admin.",
+            "An error occured when generate VA, Please contact admin",
           status: "warning",
-          duration: 9000,
+          duration: 2000,
           isClosable: true,
         });
 
@@ -144,9 +144,9 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
       toast({
         title: "Error!",
-        description: "Terjadi Kesalah, Silahkan menghubungi Admin.",
+        description: "An Error occured, Please contact admin.",
         status: error,
-        duration: 9000,
+        duration: 2000,
         isClosable: true,
       });
 
@@ -311,9 +311,10 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
       if (result.status === "PENDING") {
         toast({
           title: "Announcement",
-          description: "Kamu Belum Melakukan Transfer, harap segera transfer.",
+          description:
+            "You haven't made a transfer yet, Please transfer first.",
           status: "warning",
-          duration: 9000,
+          duration: 2000,
           isClosable: true,
         });
       }

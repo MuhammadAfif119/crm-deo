@@ -121,10 +121,9 @@ function PaymentXenditRecurring({
 
         toast({
           title: "Warning!",
-          description:
-            "Terjadi Kesalahan pembayaran, Silahkan menghubungi Admin.",
+          description: "There is an issue with payment, please contact admin",
           status: "warning",
-          duration: 9000,
+          duration: 2000,
           isClosable: true,
         });
 
@@ -135,9 +134,9 @@ function PaymentXenditRecurring({
 
       toast({
         title: "Error!",
-        description: "Terjadi Kesalahan, Silahkan menghubungi Admin.",
+        description: "An error occured, please contact admin",
         status: "error",
-        duration: 9000,
+        duration: 2000,
         isClosable: true,
       });
 

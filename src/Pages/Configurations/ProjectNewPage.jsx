@@ -770,9 +770,9 @@ function ProjectsViewPage() {
 
                         toast({
                           title: "Berhasil",
-                          description: "berhasil mengupdate role team",
+                          description: "Success update role team",
                           status: "success",
-                          duration: 9000,
+                          duration: 2000,
                           isClosable: true,
                         });
                       } catch (error) {
@@ -783,7 +783,7 @@ function ProjectsViewPage() {
                         title: "Warning",
                         description: "You dont have any access to set role.",
                         status: "warning",
-                        duration: 9000,
+                        duration: 2000,
                         isClosable: true,
                       });
                     }

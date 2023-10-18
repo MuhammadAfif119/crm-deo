@@ -67,7 +67,7 @@ export const NewsTableComponent = (props) => {
           description: "Successfully deleted the news",
           status: "success",
           isClosable: true,
-          duration: 9000,
+          duration: 2000,
         });
         props.getNews();
         onClose();
@@ -79,7 +79,7 @@ export const NewsTableComponent = (props) => {
           description: error.message,
           status: "error",
           isClosable: true,
-          duration: 9000,
+          duration: 2000,
         });
       });
   };

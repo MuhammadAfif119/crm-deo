@@ -187,7 +187,7 @@ function TeamPage() {
         title: "Alert!",
         description: "Please check your current company.",
         status: "warning",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -197,7 +197,7 @@ function TeamPage() {
         title: "Alert!",
         description: "You dont have access to create new project.",
         status: "warning",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -235,7 +235,7 @@ function TeamPage() {
         title: "Success",
         description: "Success add new project",
         status: "success",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     } catch (error) {
@@ -244,7 +244,7 @@ function TeamPage() {
         title: "error",
         description: error,
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
       setLoadingNewProject(false);

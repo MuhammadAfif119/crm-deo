@@ -63,9 +63,9 @@ function RichTextEditor({ value, onChange }) {
       console.error("Errr in upload Image:", error);
       toast({
         title: "Oops!",
-        description: "Password and confirm password is not the same",
+        description: `An error occured, ${error}`,
         status: "error",
-        duration: 9000,
+        duration: 2000,
         isClosable: true,
       });
     } finally {

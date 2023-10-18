@@ -177,7 +177,13 @@ const SingleCourse = () => {
   };
 
   const handleSaveEditCategory = async () => {
-    const categoryArray = categoryEdit?.toLowerCase()?.split(",");
+    let categoryInput = categoryEdit?.toLowerCase();
+
+    categoryInput = categoryInput.replace(/\s/g, " ");
+
+    const categoryArray = categoryInput.split(",");
+
+    console.log(categoryArray);
 
     try {
       //save to courses
@@ -933,13 +939,17 @@ const SingleCourse = () => {
                 {isEditingCategory ? (
                   <>
                     <Text fontSize={12} color="gray.600">
-                      Please write categories, <strong>WITHOUT</strong> any
-                      space, seperate with comma (example : beauty,fashion,food,{" "}
-                      <strong>NOT</strong> beauty, fashion, food)
+                      Please write categories, seperate with comma (example :
+                      beauty,fashion,food)
                     </Text>
                     <Input
                       bg="white"
                       onChange={(e) => setCategoryEdit(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSaveEditCategory();
+                        }
+                      }}
                     />
                     <Button size={"sm"} onClick={handleSaveEditCategory}>
                       Save
