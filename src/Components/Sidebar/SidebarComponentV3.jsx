@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-expressions */
 import { Icon } from "@chakra-ui/icons";
 import {
@@ -206,7 +207,7 @@ function SidebarComponentV3({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => {};
+    return () => { };
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -655,7 +656,7 @@ function SidebarComponentV3({ layout }) {
                 {menu.submenu?.map((sub, i) => (
                   <AccordionItem
                     key={i}
-                    // isDisabled={x.name === "Social Media" ? true : false}
+                  // isDisabled={x.name === "Social Media" ? true : false}
                   >
                     <h2>
                       <AccordionButton w={"100%"}>
