@@ -299,14 +299,33 @@ function EditLesson() {
   };
 
   const handleDeleteMedia = async (confirm) => {
+    setIsLoading(true);
     // modalConfirmDelete.open()
 
     if (confirm === "yes") {
-      setLesson({
-        ...lesson,
-        media: "",
-        sourceType: "",
-      });
+      try {
+        const res = await updateDocumentFirebase(
+          `course/${params.id_course}/lesson`,
+          params.id_lesson,
+          { media: "", sourceType: "" }
+        );
+
+        toast({
+          status: "success",
+          title: "Deoapp Business",
+          description: "Media Deleted",
+          duration: 2000,
+        });
+      } catch (error) {
+        toast({
+          status: "error",
+          title: "Deoapp Business",
+          description: `Failed to delete media, ${error}`,
+          duration: 2000,
+        });
+      } finally {
+        setIsLoading(false);
+      }
 
       modalConfirmDelete.onClose();
       // const desertRef = ref(storage, lesson?.mediaPath);
