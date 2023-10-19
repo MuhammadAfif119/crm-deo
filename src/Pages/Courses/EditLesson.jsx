@@ -95,6 +95,7 @@ function EditLesson() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [generatedLink, setGeneratedLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const toast = useToast();
   const inputRef = useRef();
   const fileRef = useRef();
@@ -299,16 +300,24 @@ function EditLesson() {
   };
 
   const handleDeleteMedia = async (confirm) => {
-    setIsLoading(true);
+    setIsDeleting(true);
     // modalConfirmDelete.open()
 
     if (confirm === "yes") {
+      setLesson({
+        ...lesson,
+        media: "",
+        sourceType: "",
+      });
+
       try {
         const res = await updateDocumentFirebase(
           `course/${params.id_course}/lesson`,
           params.id_lesson,
           { media: "", sourceType: "" }
         );
+
+        console.log(res);
 
         toast({
           status: "success",
@@ -317,14 +326,15 @@ function EditLesson() {
           duration: 2000,
         });
       } catch (error) {
-        toast({
-          status: "error",
-          title: "Deoapp Business",
-          description: `Failed to delete media, ${error}`,
-          duration: 2000,
-        });
+        console.log(error);
+        // toast({
+        //   status: "error",
+        //   title: "Deoapp Business",
+        //   description: `Failed to delete media, ${error}`,
+        //   duration: 2000,
+        // });
       } finally {
-        setIsLoading(false);
+        setIsDeleting(false);
       }
 
       modalConfirmDelete.onClose();
@@ -757,9 +767,10 @@ function EditLesson() {
                         height="200"
                       ></iframe>
                       <Button
+                        // isLoading={isLoading}
                         my={5}
                         colorScheme="red"
-                        onClick={handleDeleteMedia}
+                        onClick={modalConfirmDelete.onOpen}
                       >
                         Delete Media
                       </Button>
@@ -772,9 +783,10 @@ function EditLesson() {
                         url={lesson?.media}
                       />
                       <Button
+                        // isLoading={isLoading}
                         my={5}
                         colorScheme="red"
-                        onClick={handleDeleteMedia}
+                        onClick={modalConfirmDelete.onOpen}
                       >
                         Delete Media
                       </Button>
@@ -1002,7 +1014,7 @@ function EditLesson() {
             <ModalFooter>
               <HStack>
                 <Button
-                  // isLoading={loadingSaveTemplate}
+                  isLoading={isDeleting}
                   size={"sm"}
                   colorScheme="green"
                   onClick={() => handleDeleteMedia("yes")}
