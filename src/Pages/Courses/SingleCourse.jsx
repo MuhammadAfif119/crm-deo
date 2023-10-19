@@ -157,8 +157,6 @@ const SingleCourse = () => {
     } else return;
   };
 
-  console.log(courseDetail, "ppp");
-
   const handleSaveEditPrice = async () => {
     if (priceType === "paid") {
       await updateDocumentFirebase("courses", params.id_course, {
@@ -307,7 +305,7 @@ const SingleCourse = () => {
     }
   };
 
-  console.log(courseDetail);
+  // console.log(courseDetail);
 
   const handleModal = (type, course, lesson) => {
     onOpen();
@@ -387,10 +385,10 @@ const SingleCourse = () => {
         .then(() => {})
         .catch((error) => {
           toast({
-            title: "Gagal menghapus video",
+            title: "Failed to delete video",
             description: `Error when deleting video ${courseDetail?.title}, message : ${error.message}`,
             isClosable: true,
-            duration: 9000,
+            duration: 2000,
             status: "error",
           });
         });
