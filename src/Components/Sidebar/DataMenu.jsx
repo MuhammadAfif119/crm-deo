@@ -59,6 +59,7 @@ import {
   FcTwoSmartphones,
   FcEngineering,
   FcBusiness,
+  FcViewDetails,
 } from "react-icons/fc";
 
 export const data = [
@@ -559,6 +560,47 @@ export const data = [
     link: "/",
     description:
       "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
+    submenu: [
+      {
+        name: "Warehouse Address",
+        icon: FcViewDetails,
+        link: "/warehouse/address",
+        // submenu: [
+        //   {
+        //     name: "Attandance",
+        //     icon: FcSurvey,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "E-learning",
+        //     icon: FcConferenceCall,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Payroll",
+        //     icon: FcCurrencyExchange,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Announcement",
+        //     icon: FcPackage,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        // ]
+      },
+    ],
   },
 
   {
