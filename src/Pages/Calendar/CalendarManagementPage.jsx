@@ -1,15 +1,29 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import {
   Avatar,
   AvatarBadge,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   Flex,
   HStack,
   Spacer,
   Stack,
   Text,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  Input,
 } from "@chakra-ui/react";
 import { auth, db } from "../../Config/firebase";
 import {
@@ -21,7 +35,7 @@ import {
   where,
 } from "firebase/firestore";
 import AppSideAccountBar from "../../Components/AppSideAccountBar";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaFacebook,
   FaGoogle,
@@ -35,10 +49,15 @@ import {
 import useUserStore from "../../Hooks/Zustand/Store";
 
 const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop(Calendar);
 
 const CalendarManagementPage = () => {
   const [events, setEvents] = useState([]);
+  const [myEvents, setMyEvents] = useState();
   const globalState = useUserStore();
+  const Navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [select, setSelect] = useState(null);
 
   const height = window.innerHeight;
 
@@ -48,8 +67,81 @@ const CalendarManagementPage = () => {
 
   let [searchParams, setSearchParams] = useSearchParams();
 
+  const currentUser = auth.currentUser;
+  useEffect(() => {
+    const event1 = [
+      {
+        id: 1,
+        title: "test1",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+      {
+        id: 2,
+        title: "test",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+      {
+        id: 3,
+        title: "test",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+      {
+        id: 4,
+        title: "test",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+      {
+        id: 5,
+        title: "test",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+      {
+        id: 6,
+        title: "test",
+        start: moment(1697517637 * 1000).toDate(),
+        end: moment(1697534334 * 1000).toDate(),
+        status: "pending",
+      },
+    ];
+    setMyEvents(event1);
+  }, []);
 
-  const currentUser = auth.currentUser
+  const moveEvent = useCallback(
+    ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
+      const { allDay } = event;
+      if (!allDay && droppedOnAllDaySlot) {
+        event.allDay = true;
+      }
+
+      setMyEvents((prev) => {
+        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end, allDay }];
+      });
+    },
+    [setMyEvents]
+  );
+
+  const resizeEvent = useCallback(
+    ({ event, start, end }) => {
+      setMyEvents((prev) => {
+        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end }];
+      });
+    },
+    [setMyEvents]
+  );
   const fetchEvents = async () => {
     try {
       const docRef = doc(db, "schedule", currentUser.uid);
@@ -75,6 +167,8 @@ const CalendarManagementPage = () => {
       console.log(error, "ini error");
     }
   };
+
+  console.log(myEvents);
 
   const PlatformArr = [
     {
@@ -117,6 +211,19 @@ const CalendarManagementPage = () => {
     return () => {};
   }, []);
 
+  const handleCreate = () => {
+    Navigate("/calendar/input");
+  };
+
+  const handleView = () => {
+    Navigate("/calendar/view");
+  };
+
+  const handleOpen = (e) => {
+    setSelect(e);
+    onOpen();
+  };
+
   const eventStyleGetter = (event, start, end, isSelected) => {
     const backgroundColor = "#3174ad";
     const style = {
@@ -139,11 +246,17 @@ const CalendarManagementPage = () => {
     const resIcon = filterError[0]?.icon;
 
     return (
-      <HStack alignItems={"center"} p={1} spacing={3}>
+      <HStack
+        alignItems={"center"}
+        p={1}
+        spacing={3}
+        cursor={"pointer"}
+        onClick={() => handleOpen(event)}
+      >
         {/* <Avatar src={event.imageUrl} alt="event" style={{ width: '20px', height: '20px' }} /> */}
 
         <Avatar
-          cursor={"pointer"}
+          // cursor={"pointer"}
           size="xs"
           src={event?.imageUrl}
           alt={event?.imageUrl}
@@ -173,33 +286,97 @@ const CalendarManagementPage = () => {
   };
 
   return (
-    <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
+    <>
+      <Flex>
+        <Button onClick={handleCreate} m={"2%"}>
+          Create Agenda
+        </Button>
+        <Button onClick={handleView} m={"2%"}>
+          View Agenda
+        </Button>
+      </Flex>
 
-      <Stack w={"100%"} transition={"0.2s ease-in-out"} minH={height}>
-        <Stack p={10}>
-          <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
-            {" "}
-            Calendar{" "}
-          </Text>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{
-              height: "100vh",
-              backgroundColor: "white",
-              padding: 10,
-              borderRadius: "10px",
-            }}
-            eventPropGetter={eventStyleGetter}
-            components={{
-              event: Event,
-            }}
-          />
+      <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
+        <Stack w={"100%"} transition={"0.2s ease-in-out"} minH={height}>
+          <Stack p={10}>
+            <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
+              {" "}
+              Calendar{" "}
+            </Text>
+            <DnDCalendar
+              localizer={localizer}
+              events={myEvents}
+              draggableAccessor={(myEvents) => true}
+              startAccessor="start"
+              endAccessor="end"
+              onEventDrop={moveEvent}
+              onEventResize={resizeEvent}
+              popup
+              resizable
+              style={{
+                height: "100vh",
+                backgroundColor: "white",
+                padding: 10,
+                borderRadius: "10px",
+              }}
+              eventPropGetter={eventStyleGetter}
+              components={{
+                event: Event,
+              }}
+            />
+          </Stack>
         </Stack>
-      </Stack>
-    </Flex>
+      </Flex>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Title</FormLabel>
+              <Input
+                type="text"
+                defaultValue={select?.title}
+                // onChange={(e) => setDatas({ ...datas, title: e.target.value })}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Start Date</FormLabel>
+              <Input
+                type="text"
+                defaultValue={select?.start}
+                // onChange={(e) => setStartDate(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>End Date</FormLabel>
+              <Input
+                type="text"
+                defaultValue={select?.end}
+                // onChange={(e) => setEndDate(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Status</FormLabel>
+              <Input
+                type="text"
+                defaultValue={select?.status}
+                // onChange={(e) => setDatas({ ...datas, status: e.target.value })}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant="ghost">Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
