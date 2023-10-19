@@ -1,33 +1,30 @@
 import { Box, Heading, Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-// import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
+import { data } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
 import BackButtons from "../../Components/Buttons/BackButtons";
-import { dataMenuCRM, dataMenuProducts } from "../../Components/Sidebar/DataMenu";
 
-const ProductHome = () => {
+const OperationPage = () => {
   const navigate = useNavigate();
   return (
     <Box p={5}>
       <BackButtons />
       <Stack align={"center"} spacing={3}>
-        <Heading>Products</Heading>
+        <Heading>Operation</Heading>
         <Text w={"80%"} align={"center"} color={"gray.500"}>
-          Explore, organize, and track your offerings effortlessly in one
-          convenient location. Whether you're launching new products or
-          fine-tuning your existing lineup, our intuitive Product Menu
-          simplifies the process. Streamline your product management and take
-          control of your business's growth journey.
+          Customize your view, filter data, and gain clarity on every aspect of
+          your business with intuitive Pageview Menu, you're in control of your
+          data-driven journey, ensuring smarter choices and strategic growth.
         </Text>
       </Stack>
 
       <Box bg={"white"} my={7} p={4} shadow={"md"}>
         <Text color={"gray.500"} fontWeight={500} mb={5}>
-          Product Menu
+          Operation Menu
         </Text>
         <SimpleGrid columns={4} spacing={5}>
-          {dataMenuProducts
-            .find((menu) => menu.name === "Products")
+          {data
+            .find((menu) => menu.name === "Operation")
             ?.submenu?.map((x, i) => (
               <Stack
                 p={3}
@@ -51,4 +48,4 @@ const ProductHome = () => {
   );
 };
 
-export default ProductHome;
+export default OperationPage;

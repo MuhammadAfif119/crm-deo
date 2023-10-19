@@ -19,7 +19,6 @@ import Layout from "./Layouts";
 import MainRouter from "./Router/MainRouter";
 import AuthRouter from "./Router/AuthRouter";
 import ChatPageFirst from "./Pages/Messanger/ChatPageFirst";
-import { setCookie } from "./Utils/storage";
 import LoadingOverlay from "./Components/Loader/LoadingOverlay";
 
 function App() {

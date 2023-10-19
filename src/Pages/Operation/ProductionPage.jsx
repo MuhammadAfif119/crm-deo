@@ -3,15 +3,15 @@ import React from "react";
 // import { data, dataMenuCRM } from "../../Components/Sidebar/DataMenu";
 import { useNavigate } from "react-router-dom";
 import BackButtons from "../../Components/Buttons/BackButtons";
-import { dataMenuCRM, dataMenuProducts } from "../../Components/Sidebar/DataMenu";
+import { dataMenuCRM, dataMenuProduction, dataMenuProducts } from "../../Components/Sidebar/DataMenu";
 
-const ProductHome = () => {
+const ProductionPage = () => {
   const navigate = useNavigate();
   return (
     <Box p={5}>
       <BackButtons />
       <Stack align={"center"} spacing={3}>
-        <Heading>Products</Heading>
+        <Heading>Production</Heading>
         <Text w={"80%"} align={"center"} color={"gray.500"}>
           Explore, organize, and track your offerings effortlessly in one
           convenient location. Whether you're launching new products or
@@ -23,11 +23,11 @@ const ProductHome = () => {
 
       <Box bg={"white"} my={7} p={4} shadow={"md"}>
         <Text color={"gray.500"} fontWeight={500} mb={5}>
-          Product Menu
+          Production Menu
         </Text>
         <SimpleGrid columns={4} spacing={5}>
-          {dataMenuProducts
-            .find((menu) => menu.name === "Products")
+          {dataMenuProduction
+            .find((menu) => menu.name === "Production")
             ?.submenu?.map((x, i) => (
               <Stack
                 p={3}
@@ -51,4 +51,4 @@ const ProductHome = () => {
   );
 };
 
-export default ProductHome;
+export default ProductionPage;

@@ -24,8 +24,9 @@ import RMSRouter from "./RMSRouter";
 import ManagementRouter from "./ManagementRouter";
 import MarketingRouter from "./MarketingRouter";
 import SalesRouter from "./SalesRouter";
-import OperationalRouter from "./OperationalRouter";
 import WarehouseRouter from "./WarehouseRouter";
+import CreativeRouter from "./CreativeRouter";
+import OperationRouter from "./OperationRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -54,8 +55,9 @@ function MainRouter() {
     ...ManagementRouter,
     ...MarketingRouter,
     ...SalesRouter,
-    ...OperationalRouter,
+    ...OperationRouter,
     ...WarehouseRouter,
+    ...CreativeRouter
   ];
   return (
     <Routes>

@@ -163,20 +163,7 @@ const RMSThemeSettingForm = ({
             Add New Station
           </Button>
         </Box>
-        {/* <Stack>
-                <HStack>
-                  {featureSelection.map((x, i) => (
-                    <Checkbox
-                      value={x}
-                      isChecked={selectedFeature.includes(x)}
-                      onChange={() => handleSelectFeature(x)}
-                    >
-                      {x}
-                    </Checkbox>
-                  ))}
-                </HStack>
-                
-              </Stack> */}
+
       </Box>
 
       <Stack
@@ -189,88 +176,6 @@ const RMSThemeSettingForm = ({
         p={3}
       >
         <Box>
-          {/* <SimpleGrid columns={3} spacing={3}>
-            <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 1
-              </Text>
-              <Box
-                borderWidth={1}
-                aspectRatio={1}
-                w={10}
-                h={10}
-                bg={data?.brand ? data?.brand[1] : ""}
-              ></Box>
-
-              <Text align={"center"}>{data?.color_view ? data?.color_view[1] : ""}</Text>
-              <Button size="xs" id={1} onClick={() => handleModal(1)}>
-                Change
-              </Button>
-            </Stack>
-
-            <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 2{" "}
-              </Text>
-              <Box
-                borderWidth={1}
-                aspectRatio={1}
-                w={10}
-                h={10}
-                bg={data?.brand ? data?.color_view[2] : ""}
-              ></Box>
-              <Text align={"center"}>{data?.brand ? data?.brand[2] : ""}</Text>
-              <Button size="xs" id={2} onClick={() => handleModal(2)}>
-                Change
-              </Button>
-            </Stack>
-
-            <Stack align={"center"} shadow="md" bg="white" padding={2}>
-              <Text align={"center"} fontWeight={500}>
-                Brand 3
-              </Text>
-              <Box
-                borderWidth={1}
-                aspectRatio={1}
-                w={10}
-                h={10}
-                bg={data?.brand ? data?.brand[3] : ""}
-              ></Box>
-              <Text align={"center"}>{data?.brand ? data?.brand[3] : ""}</Text>
-              <Button size="xs" id={3} onClick={() => handleModal(3)}>
-                Change
-              </Button>
-            </Stack>
-          </SimpleGrid> */}
-
-          {/* <Box my={5} maxW="md">
-            <Text size="sm">ColorScheme : </Text>
-            <Flex alignItems="center" gap={10} mt={3}>
-              <Select
-                bg="white"
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    color_view: e.target.value,
-                  })
-                }
-              >
-                {colorSchemes?.map((x, i) => (
-                  <option value={x} key={i}>
-                    {x}
-                  </option>
-                ))}
-              </Select>
-              <Button
-                p={5}
-                colorScheme={data?.color_view || "blackAlpha"}
-                borderWidth={2}
-                borderColor="gray.600"
-              >
-                {data?.color_view || ""}
-              </Button>
-            </Flex>
-          </Box> */}
 
           <Stack align={"center"} shadow="md" bg="white" padding={2}>
             <Text align={"center"} fontWeight={500}>
@@ -336,7 +241,6 @@ const RMSThemeSettingForm = ({
 
             {bannerList?.map((item, i) => (
               <Stack key={i} shadow="md" bg="white" p={2}>
-                {/* <Image alt={i} src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/201211130529126a0.jpg/480px-201211130529126a0.jpg" /> */}
                 <Flex justifyContent="space-between" padding={2}>
                   <Stack>
                     <Heading size="sm">Data :</Heading>

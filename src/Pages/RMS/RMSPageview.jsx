@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 import {
   Accordion,
   AccordionButton,
@@ -74,22 +75,11 @@ function RMSPageview() {
   const [imageLogoLight, setImageLogoLight] = useState();
   const [imageFavicon, setImageFavicon] = useState();
 
-  const [contactForm, setContactForm] = useState({
-    whatsappContact: "",
-    email: "",
-    businessAddress: "",
-  });
-  const [domainPage, setDomainPage] = useState();
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const [emailCheck, setEmailCheck] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const [whatsappCheck, setWhatsappCheck] = useState(false);
-  const [businessCheck, setBusinessCheck] = useState(false);
   const [uploadingOnIndex, setUploadingOnIndex] = useState(null);
 
-  const modalAddFeatures = useDisclosure();
   const [color, setColor] = useState("");
 
   const [formData, setFormData] = useState({
@@ -98,13 +88,6 @@ function RMSPageview() {
     image: "",
   });
 
-  const [listingUsed, setListingUsed] = useState();
-  const [productUsed, setProductUsed] = useState();
-  // pageData?.features?.includes("product")
-  const [ticketUsed, setTicketUsed] = useState();
-  // pageData?.features?.includes("ticket")
-  const [courseUsed, setCourseUsed] = useState();
-  // pageData?.features?.includes("course")
 
   const getDataProject = () => {
     const searchProject = globalState?.projects?.find(
@@ -122,16 +105,8 @@ function RMSPageview() {
     );
     setPageData(docData);
 
-    console.log(docData);
   };
 
-  const getDataDomain = async () => {
-    const res = await getSingleDocumentFirebase(
-      "domains",
-      globalState.currentProject
-    );
-    setDomainPage(res);
-  };
 
   // console.log(pageData, "oooooo");
 
@@ -196,13 +171,7 @@ function RMSPageview() {
     });
   };
 
-  const handleFormDataChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-  };
+
 
   const handleUploadImage = async (e) => {
     const res = (await uploadImage(e.target.files[0])).data;
@@ -228,52 +197,6 @@ function RMSPageview() {
 
     const newFeatureList = [...existingFeatures, newFeature];
     setPageData({ ...pageData, stations: newFeatureList });
-  };
-
-  const handleInputLinkButton = (value, index) => {
-    const newLinkList = [...linkList];
-    newLinkList[index].buttonText = value;
-    setLinkList([...newLinkList]);
-  };
-
-  const handleInputLinkUrl = (value, index) => {
-    const newLinkList = [...linkList];
-    newLinkList[index].url = value;
-    setLinkList([...newLinkList]);
-  };
-
-  const handleDeleteLink = (i) => {
-    let arr = [];
-    arr = linkList;
-    if (arr?.length > 1) {
-      arr?.splice(i, 1);
-      setLinkList([...arr]);
-    } else {
-      arr = [];
-      setLinkList([...arr]);
-    }
-  };
-
-  const handleDeletePhoto = async () => {
-    const splitArr = user?.photoURL.split("?");
-    const splitSecond = splitArr[0].split("%2F");
-    setIsUploading(true);
-    deleteFileFirebase(user?.uid, "profile", splitSecond[2]).then(() => {
-      updateProfileFirebase({ photoURL: "" }).then(() => {
-        setIsUploading(false);
-      });
-    });
-
-    const resultUpdate = await addDocumentFirebase(
-      "logs",
-      {
-        activity: `delete user photo`,
-        uid: globalState.uid,
-        projectId: globalState.currentProject,
-      },
-      globalState.currentCompany
-    );
-    console.log(resultUpdate, "logs updated");
   };
 
   const handleUploadLogoLight = async (event) => {
@@ -436,12 +359,6 @@ function RMSPageview() {
     }
   };
 
-  // const handleInputBanner = (value, index) => {
-  //   const newBannerList = [...bannerList];
-  //   newBannerList[index].link = value;
-  //   setBannerList([...newBannerList]);
-  //   setPageData({ ...pageData, banner: bannerList });
-  // };
 
   const handleInputBanner = (value, index) => {
     console.log(value, "ini value");
@@ -469,24 +386,6 @@ function RMSPageview() {
     }
   };
 
-  const handleCheckSwitch = (value) => {
-    if (!pageData.features) {
-      // If pageData.features is undefined or null, initialize it as an empty array
-      setPageData({ ...pageData, stations: [] });
-    }
-
-    if (pageData.features.includes(value)) {
-      setPageData({
-        ...pageData,
-        stations: pageData.stations.filter((item) => item !== value),
-      });
-    } else {
-      setPageData({
-        ...pageData,
-        stations: [...pageData.stations, value],
-      });
-    }
-  };
 
   const handleDeleteCurrentBanner = async (i) => {
     let newArr = pageData.image_dashboard;
@@ -499,56 +398,15 @@ function RMSPageview() {
     }
   };
 
-  console.log(pageData);
 
-  const handleFormChange = (value, name) => {
-    if (name === "whatsapp") {
-      setWhatsappCheck((prev) => !prev);
-      setProjectData({
-        ...projectData,
-        contactDetails: {
-          ...projectData.contactDetails,
-          whatsappActive: value,
-        },
-      });
-    }
 
-    if (name === "email") {
-      setEmailCheck((prev) => !prev);
-      setProjectData({
-        ...projectData,
-        contactDetails: {
-          ...projectData.contactDetails,
-          emailActive: value,
-        },
-      });
-    }
-
-    if (name === "businessAddress") {
-      setBusinessCheck((prev) => !prev);
-      setProjectData({
-        ...projectData,
-        contactDetails: {
-          ...projectData.contactDetails,
-          businessAddressActive: value,
-        },
-      });
-    }
-  };
-
-  // useEffect(() => {
-  //   getDataPage()
-  //     .then((data) => setPageData(data))
-  //     .catch((error) => console.error(error));
-  // }, [globalState.currentProject]);
 
   useEffect(() => {
     // getDataOutlet();
     getDataPage();
-    getDataDomain();
     getDataProject();
 
-    return () => {};
+    return () => { };
   }, [globalState.currentProject]);
 
   return (
@@ -620,7 +478,7 @@ function RMSPageview() {
                       logoInputFavicon={imageFavicon}
                       bannerInput={bannerInput}
                       handleDeleteCurrentBanner={handleDeleteCurrentBanner}
-                      // handleChangeBrandColor={handleOpenModal}
+                    // handleChangeBrandColor={handleOpenModal}
                     />
                   </AccordionPanel>
                 </AccordionItem>
@@ -634,7 +492,7 @@ function RMSPageview() {
                 Save
               </Button>
             </Box>
-
+        
             <Box w={"50%"} align={"center"}>
               <DeviceFrameset device="iPhone X">
                 <Box>
@@ -643,10 +501,7 @@ function RMSPageview() {
                     width={400}
                     height={800}
                     src={
-                      domainPage?.domain
-                        ? // ? `https://rms.deoapp.com/orders/${params.id}`
-                          `https://rms.deoapp.com/orders//${params.id}/1`
-                        : ""
+                        `https://rms.deoapp.com/orders//${params.id}/1`
                     }
                   />
                 </Box>

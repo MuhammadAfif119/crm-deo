@@ -60,6 +60,19 @@ import {
   FcEngineering,
   FcBusiness,
   FcViewDetails,
+  FcMusic,
+  FcMultipleCameras,
+  FcList,
+  FcRightDown2,
+  FcRightUp2,
+  FcTimeline,
+  FcProcess,
+  FcBiohazard,
+  FcFactory,
+  FcClearFilters,
+  FcClock,
+  FcStatistics,
+  FcDataSheet,
 } from "react-icons/fc";
 
 export const data = [
@@ -267,30 +280,18 @@ export const data = [
           {
             name: "Pipeline",
             icon: FcKindle,
-            link: "/pipelineHome",
+            link: "/pipeline",
             description:
               "Effortless Progress Tracking with our Pipeline Feature",
-            submenu: [
-              { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
-              { name: "Orders", icon: FcInTransit, link: "/orders" },
-            ],
           },
           {
-            name: "Products",
-            icon: FcConferenceCall,
-            link: "/productHome",
+            name: "Orders",
+            icon: FcInTransit,
+            link: "/orders",
             description:
-              "Discover and Manage Your Offerings with Ease: The Product Menu",
-            submenu: [
-              { name: "Products", icon: FcDeployment, link: "/products" },
-              { name: "Tickets", icon: FcPackage, link: "/ticket" },
-              { name: "Membership", icon: FcLike, link: "/membership" },
-              { name: "Forms", icon: FcSurvey, link: "/form-builder" },
-              { name: "Listings", icon: FcParallelTasks, link: "/listing" },
-              { name: "News", icon: FcNews, link: "/news" },
-              { name: "Pages", icon: FcRules, link: "/products/articles" },
-            ],
+              "Effortless Progress Tracking with our Pipeline Feature",
           },
+
         ],
       },
 
@@ -302,7 +303,28 @@ export const data = [
           "Real-time communication, engage with your clients seamlessly",
       },
 
-      { name: "Courses", icon: FcIdea, link: "/courses" },
+      {
+        name: "Products",
+        icon: FcConferenceCall,
+        link: "/product",
+        description:
+          "Discover and Manage Your Offerings with Ease: The Product Menu",
+        submenu: [
+          { name: "Products", icon: FcDeployment, link: "/products" },
+          { name: "Tickets", icon: FcPackage, link: "/ticket" },
+          { name: "Membership", icon: FcLike, link: "/membership" },
+          { name: "Forms", icon: FcSurvey, link: "/form-builder" },
+          { name: "Listings", icon: FcParallelTasks, link: "/listing" },
+          { name: "News", icon: FcNews, link: "/news" },
+          { name: "Pages", icon: FcRules, link: "/products/articles" },
+          { name: "Courses", icon: FcIdea, link: "/courses" },
+
+        ],
+      },
+
+
+
+
     ],
   },
 
@@ -414,133 +436,113 @@ export const data = [
     link: "/rms",
     description:
       "Elevate restaurant operations with streamlined order and inventory management, and menu updates for enhanced efficiency and customer satisfaction.",
-
     submenu: [
       {
-        name: "HRIS",
-        icon: FcManager,
-        link: "https://recruitment.deoapp.com/",
-        submenu: [
-          {
-            name: "Attandance",
-            icon: FcSurvey,
-            link: "https://ai.deoapp.com/funnel",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "E-learning",
-            icon: FcConferenceCall,
-            link: "https://ai.deoapp.com/funnel",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Payroll",
-            icon: FcCurrencyExchange,
-            link: "https://ai.deoapp.com/funnel",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Announcement",
-            icon: FcPackage,
-            link: "https://ai.deoapp.com/funnel",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-        ],
+        name: "Transaction",
+        icon: FcBusinessContact,
+        link: "https://rms.deoapp.com/trasaction",
       },
       {
-        name: "Recruitment",
-        icon: FcConferenceCall,
-        link: "https://recruitment.deoapp.com/",
+        name: "Reports",
+        icon: FcRules,
+        link: "https://rms.deoapp.com/reports",
+      },
+
+      {
+        name: "Inventory",
+        icon: FcFactory,
+        link: "https://rms.deoapp.com/warehouse",
         submenu: [
           {
-            name: "Wealth Dynamic",
-            icon: FcFrame,
-            link: "https://recruitment-deoapp.firebaseapp.com/wealth-dynamic#",
+            name: "Menu",
+            icon: FcLike,
+            link: "https://rms.deoapp.com/menus",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Waste Food",
+            icon: FcClearFilters,
+            link: "https://rms.deoapp.com/wastefood",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Stock",
+            icon: FcSurvey,
+            link: "https://rms.deoapp.com/funnel",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Supplier",
+            icon: FcConferenceCall,
+            link: "https://rms.deoapp.com/suppliers",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Activity",
+            icon: FcClock,
+            link: "https://rms.deoapp.com/activity",
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
 
+        ],
+      },
+
+      {
+        name: "Restaurant",
+        icon: FcStatistics,
+        link: "https://rms.deoapp.com/",
+        submenu: [
           {
-            name: "Jobs",
-            icon: FcBriefcase,
-            link: "https://recruitment-deoapp.firebaseapp.com/jobs",
+            name: "Outlets",
+            icon: FcShop,
+            link: "https://rms.deoapp.com/outlets",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Orders",
+            icon: FcDataSheet,
+            link: "https://rms.deoapp.com/orders",
+            description:
+              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+          },
+          {
+            name: "Stations",
+            icon: FcCalendar,
+            link: "https://rms.deoapp.com/stations",
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
 
-          {
-            name: "Profile",
-            icon: FcBusinessman,
-            link: "https://recruitment-deoapp.firebaseapp.com/profile",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Assesment",
-            icon: FcDiploma2,
-            link: "https://recruitment-deoapp.firebaseapp.com/assessments",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
         ],
       },
     ],
   },
 
+
   {
-    name: "Operational",
+    name: "Operation",
     icon: FcEngineering,
-    link: "/operational",
-    // status: "coming soon",
+    link: "/operation",
     description:
       "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
     submenu: [
       {
         name: "Production",
-        icon: FcBusiness,
-        link: "/operational/productions",
-        // submenu: [
-        //   {
-        //     name: "Attandance",
-        //     icon: FcSurvey,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "E-learning",
-        //     icon: FcConferenceCall,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Payroll",
-        //     icon: FcCurrencyExchange,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Announcement",
-        //     icon: FcPackage,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        // ]
+        icon: FcProcess,
+        link: "/production",
+        submenu: [
+          {
+            name: "Line",
+            icon: FcTimeline,
+            link: "/production/line",
+          },
+        ]
       },
     ],
   },
@@ -549,50 +551,32 @@ export const data = [
 
   {
     name: "Warehouse",
-    // status: "Coming Soon",
     icon: FcPackage,
     link: "/warehouse",
     description:
       "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
     submenu: [
       {
-        name: "Warehouse Address",
+        name: "Inbound",
+        icon: FcRightDown2,
+        link: "/inbound",
+      },
+      {
+        name: "Stock",
         icon: FcViewDetails,
-        link: "/warehouse/address",
-        // submenu: [
-        //   {
-        //     name: "Attandance",
-        //     icon: FcSurvey,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "E-learning",
-        //     icon: FcConferenceCall,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Payroll",
-        //     icon: FcCurrencyExchange,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Announcement",
-        //     icon: FcPackage,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        // ]
+        link: "/stock",
+        submenu: [
+          {
+            name: "Rak",
+            icon: FcBusiness,
+            link: "/stock/rak",
+          },
+        ]
+      },
+      {
+        name: "Outbond",
+        icon: FcRightUp2,
+        link: "/outbond",
       },
     ],
   },
@@ -607,7 +591,7 @@ export const data = [
   },
 
   {
-    name: "Exim",
+    name: "Export Import",
     status: "Coming Soon",
     icon: FcShipped,
     link: "https://www.importir.com/",
@@ -615,124 +599,37 @@ export const data = [
       "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
   },
 
+  {
+    name: "Configuration",
+    icon: FcSettings,
+    link: "/configuration",
+    description:
+      "Fine-tune your CRM system to match your unique needs. Personalize workflows, data fields, and user permissions effortlessly.",
+    submenu: [
+      {
+        name: "Themes",
+        icon: FcCloseUpMode,
+        link: "/themes",
+      },
+      { name: "Data", icon: FcFile, link: "/configuration/data" },
+      { name: "Domain", icon: FcGlobe, link: "/configuration/domain" },
+      {
+        name: "Integration",
+        icon: FcAutomatic,
+        link: "/configuration/integration",
+      },
+      {
+        name: "Backup",
+        icon: FcEnteringHeavenAlive,
+        link: "/configuration/backup",
+      },
+      { name: "Company", icon: FcOrganization, link: "/configuration/user" },
+      { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
+      { name: "Office / Outlet", icon: FcShop, link: "/configuration/outlet" },
+    ],
+  },
+
   // batas sampai sini
-
-  // {
-  //   name: "HRIS",
-  //   icon: FcCollaboration,
-  //   link: "/hris",
-  //   description:
-  //     "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
-  //   submenu: [
-  //     {
-  //       name: "HRIS",
-  //       icon: FcManager,
-  //       link: "https://recruitment.deoapp.com/",
-  //     },
-  //     {
-  //       name: "Recruitment",
-  //       icon: FcConferenceCall,
-  //       link: "https://recruitment.deoapp.com/",
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Accounting",
-  //   icon: FcCurrencyExchange,
-  //   link: "https://accounting-deoapps.web.app/",
-  //   description:
-  //     "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
-  // },
-  // {
-  //   name: "Finance",
-  //   icon: FcMoneyTransfer,
-  //   link: " https://anggaran-v2.web.app/",
-  //   description:
-  //     "The definitive finance solution, offering a comprehensive suite of tools and features to elevate your financial business.",
-  // },
-
-  // {
-  //   name: "Productivity",
-  //   icon: FcSportsMode,
-  //   link: "https://productivity.deoapp.com/",
-  //   description:
-  //     "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-  // },
-
-  // {
-  //   name: "RMS",
-  //   icon: FcShop,
-  //   link: "/rms",
-  //   description:
-  //     "Elevate restaurant operations with streamlined order and inventory management, and menu updates for enhanced efficiency and customer satisfaction.",
-  // },
-
-  // {
-  //   name: "CRM",
-  //   icon: FcOnlineSupport,
-  //   link: "/crm",
-  //   description:
-  //     "Optimize customer relationships, simplifies customer data management, and provides valuable insights to drive informed decisions and boost customer satisfaction.",
-  //   submenu: [
-  //     { name: "Pageview", icon: FcHome, link: "/crm/pageview" },
-  //     { name: "Contacts", icon: FcContacts, link: "/contacts" },
-  //     { name: "Pipeline", icon: FcKindle, link: "/pipelineHome" },
-  //     { name: "Products", icon: FcConferenceCall, link: "/productHome" },
-  //     { name: "Configuration", icon: FcSettings, link: "/configuration" },
-  //   ],
-  // },
-  // {
-  //   name: "LMS",
-  //   icon: FcReading,
-  //   link: "/lms",
-  //   description:
-  //     "Organize your own pageview webapp with ease.",
-  //   submenu: [
-  //     { name: "Courses", icon: FcIdea, link: "/courses" },
-  //   ],
-  // },
-
-  // {
-  //   name: "AI",
-  //   icon: FcMindMap,
-  //   link: "https://ai.deoapp.com/",
-  //   description:
-  //     "Simplifies the AI journey and enables you to harness the benefits of AI for your specific needs",
-  // },
-
-  // {
-  //   name: "Chat",
-  //   icon: FcSms,
-  //   link: "/chat",
-  //   description: "Real-time communication, engage with your clients seamlessly",
-  // },
-
-  // {
-  //   name: "Importir",
-  //   status: "Coming Soon",
-  //   icon: FcShipped,
-  //   link: "https://www.importir.com/",
-  //   description:
-  //     "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
-  // },
-
-  // {
-  //   name: "Calendar",
-  //   status: "Coming Soon",
-  //   icon: FcCalendar,
-  //   link: "/",
-  //   description:
-  //     "Optimize time management, simplifies scheduling, enhances collaboration, and provides valuable insights for increased productivity and organization.",
-  // },
-
-  // {
-  //   name: "WMS",
-  //   status: "Coming Soon",
-  //   icon: FcPackage,
-  //   link: "/",
-  //   description:
-  //     "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
-  // },
 ];
 
 export const dataApps = [
@@ -785,22 +682,9 @@ export const dataMenuCRM = [
       { name: "Orders", icon: FcInTransit, link: "/orders" },
     ],
   },
-  {
-    name: "Products",
-    icon: FcConferenceCall,
-    link: "/productHome",
-    description:
-      "Discover and Manage Your Offerings with Ease: The Product Menu",
-    submenu: [
-      { name: "Products", icon: FcDeployment, link: "/products" },
-      { name: "Tickets", icon: FcPackage, link: "/ticket" },
-      { name: "Membership", icon: FcLike, link: "/membership" },
-      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
-      { name: "Listings", icon: FcParallelTasks, link: "/listing" },
-      { name: "News", icon: FcNews, link: "/news" },
-      { name: "Pages", icon: FcRules, link: "/products/articles" },
-    ],
-  },
+
+  { name: "Orders", icon: FcInTransit, link: "/orders", description: "Effortless Progress Tracking with our Pipeline Feature" },
+
 
   {
     name: "Configuration",
@@ -827,9 +711,45 @@ export const dataMenuCRM = [
         link: "/configuration/backup",
       },
       { name: "Company", icon: FcOrganization, link: "/configuration/user" },
-      // { name: "Team", icon: FcCollaboration, link: "/configuration/team" },
       { name: "Project", icon: FcBriefcase, link: "/configuration/project" },
       { name: "Office / Outlet", icon: FcShop, link: "/configuration/outlet" },
     ],
+  },
+];
+
+export const dataMenuProducts = [
+  {
+    name: "Products",
+    icon: FcConferenceCall,
+    link: "/product",
+    description:
+      "Discover and Manage Your Offerings with Ease: The Product Menu",
+    submenu: [
+      { name: "Products", icon: FcDeployment, link: "/products" },
+      { name: "Tickets", icon: FcPackage, link: "/ticket" },
+      { name: "Membership", icon: FcLike, link: "/membership" },
+      { name: "Forms", icon: FcSurvey, link: "/form-builder" },
+      { name: "Listings", icon: FcParallelTasks, link: "/listing" },
+      { name: "News", icon: FcNews, link: "/news" },
+      { name: "Pages", icon: FcRules, link: "/products/articles" },
+      { name: "Courses", icon: FcIdea, link: "/courses" },
+
+    ],
+  },
+];
+
+export const dataMenuProduction = [
+
+  {
+    name: "Production",
+    icon: FcProcess,
+    link: "/production",
+    submenu: [
+      {
+        name: "Line",
+        icon: FcTimeline,
+        link: "/production/line",
+      },
+    ]
   },
 ];

@@ -26,6 +26,7 @@ import {
   HStack,
   Center,
   Textarea,
+  Icon,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -47,6 +48,7 @@ import {
 import { db } from "../../Config/firebase";
 import { useNavigate } from "react-router-dom";
 import BackButtons from "../../Components/Buttons/BackButtons";
+import { data } from "../../Components/Sidebar/DataMenu";
 
 const HomePageRMS = () => {
   const globalState = useUserStore();
@@ -212,45 +214,6 @@ const HomePageRMS = () => {
     }
   };
 
-  const handleCreateProject = async () => {
-    const data = {
-      ...dataProject,
-      owner: [globalState.uid],
-      users: [globalState.uid],
-    };
-
-    try {
-      setIsLoading(true);
-      if (dataProject.name === "" || dataProject.description === "") {
-        toast({
-          title: "Deoapp CRM",
-          description: "Please fill the form",
-          status: "error",
-          duration: 3000,
-        });
-      } else {
-        const res = await addDocumentFirebase("projects", data, companyId);
-        console.log(res);
-        console.log(data);
-
-        toast({
-          title: "Deoapp CRM",
-          description: "Company and Project Created!",
-          status: "success",
-          duration: 3000,
-        });
-      }
-
-      getDataProject();
-      setIsLoading(false);
-      modalCreateProject.onClose();
-      // location.reload();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleCreateDetailOutlet = async () => {
     const data = {
@@ -390,13 +353,53 @@ const HomePageRMS = () => {
     getDataProject();
     getDataDomain();
     getDataOutlets();
-    return () => {};
+    return () => { };
   }, [globalState?.currentProject]);
 
   return (
     <Box>
       {/* <Heading align={"center"}>Welcome to Deoapp</Heading> */}
       <BackButtons />
+
+      <Box p={5}>
+        <Stack align={"center"} spacing={3}>
+          <Heading>Outlet</Heading>
+          <Text w={"80%"} align={"center"} color={"gray.500"}>
+            Elevate your HR operations with a powerful HRIS solution that
+            streamlines data management, recruitment, performance, and compliance,
+            ensuring efficient, error-free processes while empowering your
+            employees. Stay ahead of the competition, make informed decisions, and
+            enhance the employee experience.
+          </Text>
+        </Stack>
+
+        <Box bg={"white"} my={7} p={4} shadow={"md"}>
+          <Text color={"gray.500"} fontWeight={500} mb={5}>
+            Outlet Menu
+          </Text>
+          <SimpleGrid columns={4} spacing={5}>
+            {data
+              .find((menu) => menu.name === "Outlet")
+              ?.submenu?.map((x, i) => (
+                <Stack
+                  p={3}
+                  key={i}
+                  border={"1px"}
+                  shadow={"base"}
+                  align={"center"}
+                  cursor={"pointer"}
+                  borderRadius={"md"}
+                  borderColor={"gray.300"}
+                  onClick={() => window.open(`${x.link}`, "_blank")}
+                  _hover={{ transform: "scale(1.03)", transition: "0.3s" }}
+                >
+                  <Icon as={x.icon} boxSize={12} />
+                  <Text fontWeight={500}>{x.name}</Text>
+                </Stack>
+              ))}
+          </SimpleGrid>
+        </Box>
+      </Box>
 
       {globalState.companies?.length === 0 || globalState.projects === 0 ? (
         <Stack my={5} py={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
@@ -439,19 +442,19 @@ const HomePageRMS = () => {
                       size={"xs"}
                       onClick={() => navigate(`dashboard/${outlet.id}`)}
                     >
-                      Dashboard Pageview
+                      Pageview
                     </Button>
                     <Button
-                      colorScheme="yellow"
+                      colorScheme="blue"
                       size={"xs"}
                       onClick={() =>
                         window.open("https://rms.deoapp.com", "_blank")
                       }
                     >
-                      Go To Admin Page
+                      Go To Admin
                     </Button>
                     <Button
-                      colorScheme="yellow"
+                      colorScheme="blue"
                       size={"xs"}
                       onClick={() => navigate(`reports/${outlet.id}`)}
                     >

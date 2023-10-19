@@ -17,7 +17,7 @@ const ListingRouter = [
     element: <ProductPage />,
   },
   {
-    path: "/productHome",
+    path: "/product",
     element: <ProductHome />,
   },
   {
