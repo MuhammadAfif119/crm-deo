@@ -409,55 +409,6 @@ export const data = [
   },
 
   {
-    name: "Operational",
-    icon: FcEngineering,
-    link: "/operational",
-    description:
-      "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
-    submenu: [
-      {
-        name: "Production",
-        icon: FcBusiness,
-        link: "/operational/productions",
-        // submenu: [
-        //   {
-        //     name: "Attandance",
-        //     icon: FcSurvey,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "E-learning",
-        //     icon: FcConferenceCall,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Payroll",
-        //     icon: FcCurrencyExchange,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        //   {
-        //     name: "Announcement",
-        //     icon: FcPackage,
-        //     link: "https://ai.deoapp.com/funnel",
-        //     description:
-        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-        //   },
-
-        // ]
-      },
-    ],
-  },
-
-  {
     name: "Outlet",
     icon: FcShop,
     link: "/rms",
@@ -545,6 +496,56 @@ export const data = [
   },
 
   {
+    name: "Operational",
+    icon: FcEngineering,
+    link: "/operational",
+    status: "coming soon",
+    description:
+      "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
+    submenu: [
+      {
+        name: "Production",
+        icon: FcBusiness,
+        link: "/operational/productions",
+        // submenu: [
+        //   {
+        //     name: "Attandance",
+        //     icon: FcSurvey,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "E-learning",
+        //     icon: FcConferenceCall,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Payroll",
+        //     icon: FcCurrencyExchange,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Announcement",
+        //     icon: FcPackage,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        // ]
+      },
+    ],
+  },
+
+  {
     name: "GA",
     icon: FcPaid,
     status: "Coming Soon",
@@ -557,7 +558,7 @@ export const data = [
     name: "Warehouse",
     status: "Coming Soon",
     icon: FcPackage,
-    link: "/",
+    link: "/warehouse",
     description:
       "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
     submenu: [
