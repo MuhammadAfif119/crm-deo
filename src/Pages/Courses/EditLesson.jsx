@@ -29,6 +29,13 @@ import {
   InputRightElement,
   Progress,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import parse from "html-react-parser";
 import {
@@ -70,9 +77,12 @@ function EditLesson() {
   const params = useParams();
   const uid = auth.currentUser.uid;
   const globalState = useUserStore();
+  const modalConfirmDelete = useDisclosure();
   // const { currentProject } = globalState;
 
-  const [lesson, setLesson] = useState(null);
+  const [lesson, setLesson] = useState({
+    status: "draft",
+  });
   const [progress, setProgress] = useState(0);
   const [defaultIndex, setDefaultIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -288,13 +298,17 @@ function EditLesson() {
       });
   };
 
-  const handleDeleteMedia = async () => {
-    const confirmToDelete = window.confirm(
-      "Are you sure to delete the media? This process cannot be undone"
-    );
+  const handleDeleteMedia = async (confirm) => {
+    // modalConfirmDelete.open()
 
-    if (confirmToDelete) {
-      console.log(lesson);
+    if (confirm === "yes") {
+      setLesson({
+        ...lesson,
+        media: "",
+        sourceType: "",
+      });
+
+      modalConfirmDelete.onClose();
       // const desertRef = ref(storage, lesson?.mediaPath);
 
       // // // Delete the file
@@ -690,7 +704,7 @@ function EditLesson() {
               value={lesson?.title}
             />
 
-            <Box my={3}>
+            {/* <Box my={3}>
               <Text fontWeight="bold" m="1">
                 Section :
               </Text>
@@ -707,50 +721,52 @@ function EditLesson() {
                 <option value="2">2</option>
                 <option value="3">3</option>
               </Select>
-            </Box>
+            </Box> */}
 
-            <Text fontWeight="bold" m="1">
-              Media :
-            </Text>
-            <Box p="5" border="1px" borderStyle="dotted">
-              {lesson?.media ? (
-                lesson?.sourceType === "file" ? (
-                  <Stack>
-                    <iframe
-                      src={lesson.media}
-                      title="File Preview"
-                      width="auto"
-                      height="200"
-                    ></iframe>
-                    <Button
-                      my={5}
-                      colorScheme="red"
-                      onClick={handleDeleteMedia}
-                    >
-                      Delete Media
-                    </Button>
-                  </Stack>
+            <Box my={3}>
+              <Text fontWeight="bold" m="1">
+                Media :
+              </Text>
+              <Box p="5" border="1px" borderStyle="dotted">
+                {lesson?.media ? (
+                  lesson?.sourceType === "file" ? (
+                    <Stack>
+                      <iframe
+                        src={lesson.media}
+                        title="File Preview"
+                        width="auto"
+                        height="200"
+                      ></iframe>
+                      <Button
+                        my={5}
+                        colorScheme="red"
+                        onClick={handleDeleteMedia}
+                      >
+                        Delete Media
+                      </Button>
+                    </Stack>
+                  ) : (
+                    <Stack>
+                      <ReactPlayer
+                        width="full"
+                        controls={true}
+                        url={lesson?.media}
+                      />
+                      <Button
+                        my={5}
+                        colorScheme="red"
+                        onClick={handleDeleteMedia}
+                      >
+                        Delete Media
+                      </Button>
+                    </Stack>
+                  )
                 ) : (
-                  <Stack>
-                    <ReactPlayer
-                      width="full"
-                      controls={true}
-                      url={lesson?.media}
-                    />
-                    <Button
-                      my={5}
-                      colorScheme="red"
-                      onClick={handleDeleteMedia}
-                    >
-                      Delete Media
-                    </Button>
-                  </Stack>
-                )
-              ) : (
-                <MediaType />
-              )}
+                  <MediaType />
+                )}
+              </Box>
+              <Progress value={progress} />
             </Box>
-            <Progress value={progress} />
 
             <Box borderRadius="md" my={4}>
               <Heading size="sm">Description :</Heading>
@@ -952,6 +968,39 @@ function EditLesson() {
 						</Box> */}
           </Box>
         </Flex>
+
+        <Modal
+          size={"xl"}
+          isOpen={modalConfirmDelete.isOpen}
+          onClose={modalConfirmDelete.onClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Delete Template</ModalHeader>
+            <ModalBody>
+              <Text>Are you sure want to delete this template?</Text>
+            </ModalBody>
+            <ModalFooter>
+              <HStack>
+                <Button
+                  // isLoading={loadingSaveTemplate}
+                  size={"sm"}
+                  colorScheme="green"
+                  onClick={() => handleDeleteMedia("yes")}
+                >
+                  Yes
+                </Button>
+                <Button
+                  size={"sm"}
+                  colorScheme="red"
+                  onClick={modalConfirmDelete.onClose}
+                >
+                  No
+                </Button>
+              </HStack>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
         <DropboxUploader
           isActive={isModalOpen}

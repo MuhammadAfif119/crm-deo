@@ -57,10 +57,11 @@ import {
   FcBusinessman,
   FcDiploma2,
   FcTwoSmartphones,
+  FcEngineering,
+  FcBusiness,
 } from "react-icons/fc";
 
 export const data = [
-
   {
     name: "Dashboard",
     icon: FcPieChart,
@@ -68,7 +69,6 @@ export const data = [
     description:
       "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
   },
-
 
   {
     name: "Management",
@@ -132,9 +132,8 @@ export const data = [
             link: "https://productivity.deoapp.com/flowchart",
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          }
-
-        ]
+          },
+        ],
       },
 
       {
@@ -143,7 +142,6 @@ export const data = [
         icon: FcCalendar,
         link: "/calendar",
       },
-
     ],
   },
 
@@ -236,8 +234,7 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
-        ]
+        ],
       },
     ],
   },
@@ -270,7 +267,8 @@ export const data = [
             name: "Pipeline",
             icon: FcKindle,
             link: "/pipelineHome",
-            description: "Effortless Progress Tracking with our Pipeline Feature",
+            description:
+              "Effortless Progress Tracking with our Pipeline Feature",
             submenu: [
               { name: "Pipeline", icon: FcEditImage, link: "/pipeline" },
               { name: "Orders", icon: FcInTransit, link: "/orders" },
@@ -291,19 +289,19 @@ export const data = [
               { name: "News", icon: FcNews, link: "/news" },
               { name: "Pages", icon: FcRules, link: "/products/articles" },
             ],
-          }
-        ]
+          },
+        ],
       },
 
       {
         name: "Chat",
         icon: FcSms,
         link: "/chat",
-        description: "Real-time communication, engage with your clients seamlessly",
+        description:
+          "Real-time communication, engage with your clients seamlessly",
       },
 
       { name: "Courses", icon: FcIdea, link: "/courses" },
-
     ],
   },
 
@@ -314,7 +312,6 @@ export const data = [
     description:
       "The definitive finance solution, offering a comprehensive suite of tools and features to elevate your financial business.",
   },
-
 
   {
     name: "Accounting",
@@ -367,8 +364,7 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
-        ]
+        ],
       },
       {
         name: "Recruitment",
@@ -406,13 +402,59 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
-        ]
+        ],
       },
     ],
   },
 
+  {
+    name: "Operational",
+    icon: FcEngineering,
+    link: "/operational",
+    description:
+      "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
+    submenu: [
+      {
+        name: "Production",
+        icon: FcBusiness,
+        link: "/operational/productions",
+        // submenu: [
+        //   {
+        //     name: "Attandance",
+        //     icon: FcSurvey,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
 
+        //   {
+        //     name: "E-learning",
+        //     icon: FcConferenceCall,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Payroll",
+        //     icon: FcCurrencyExchange,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        //   {
+        //     name: "Announcement",
+        //     icon: FcPackage,
+        //     link: "https://ai.deoapp.com/funnel",
+        //     description:
+        //       "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
+        //   },
+
+        // ]
+      },
+    ],
+  },
 
   {
     name: "Outlet",
@@ -458,8 +500,7 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
-        ]
+        ],
       },
       {
         name: "Recruitment",
@@ -497,13 +538,10 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
-        ]
+        ],
       },
     ],
   },
-
-
 
   {
     name: "GA",
@@ -523,7 +561,6 @@ export const data = [
       "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
   },
 
-
   {
     name: "Exim",
     status: "Coming Soon",
@@ -533,11 +570,7 @@ export const data = [
       "Simplifies order tracking, customs compliance, and inventory management, all while providing critical data insights to enhance efficiency and reduce costs.",
   },
 
-
-
   // batas sampai sini
-
-
 
   // {
   //   name: "HRIS",
@@ -588,8 +621,6 @@ export const data = [
   //   description:
   //     "Elevate restaurant operations with streamlined order and inventory management, and menu updates for enhanced efficiency and customer satisfaction.",
   // },
-
-
 
   // {
   //   name: "CRM",
@@ -657,7 +688,6 @@ export const data = [
   //   description:
   //     "Enhance warehouse operations, simplifies inventory management, order processing, and logistics tracking, ensuring efficient and error-free warehouse processes.",
   // },
-
 ];
 
 export const dataApps = [
@@ -726,7 +756,6 @@ export const dataMenuCRM = [
       { name: "Pages", icon: FcRules, link: "/products/articles" },
     ],
   },
-
 
   {
     name: "Configuration",

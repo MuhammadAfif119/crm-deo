@@ -121,6 +121,7 @@ const Modals = (props) => {
           {
             title: input.title,
             section: datas?.course,
+            status: "draft",
           },
           currentCompany
         );
@@ -128,6 +129,7 @@ const Modals = (props) => {
           {
             title: input.title,
             section: datas?.course,
+            // status: "draft",
             id: res,
           },
         ])

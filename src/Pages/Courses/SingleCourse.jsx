@@ -791,7 +791,7 @@ const SingleCourse = () => {
             {courseDetail?.courseType === "full_course" ? (
               <Card bg={"white"} p={5} borderRadius="md" shadow={"md"}>
                 <HStack>
-                  <Heading mb={3} size="sm" color="blackAlpha.800">
+                  <Heading size="sm" color="blackAlpha.800">
                     Video thumbnail :{" "}
                   </Heading>
                   <Spacer />
@@ -804,6 +804,9 @@ const SingleCourse = () => {
                     Upload File Here
                   </Button>
                 </HStack>
+                <Text mb={3} fontSize="sm" color="gray.500">
+                  Input video thumbnail for teaser. (Only video files accepted)
+                </Text>
                 {courseDetail?.videoThumbnail ? (
                   <>
                     <ReactPlayer
