@@ -157,6 +157,8 @@ const SingleCourse = () => {
     } else return;
   };
 
+  console.log(courseDetail, "ppp");
+
   const handleSaveEditPrice = async () => {
     if (priceType === "paid") {
       await updateDocumentFirebase("courses", params.id_course, {
@@ -332,6 +334,15 @@ const SingleCourse = () => {
     });
     getCourseDetail();
     setEditActive(false);
+  };
+
+  const handleChangePriceType = async (value) => {
+    await updateDocumentFirebase("courses", params.id_course, {
+      priceType: value,
+      price: 0,
+    });
+
+    getCourseDetail();
   };
 
   const submitUrl = async (type) => {
@@ -880,13 +891,14 @@ const SingleCourse = () => {
                   w="30%"
                   value={priceType ?? courseDetail?.priceType}
                   defaultValue={courseDetail?.priceType}
-                  onChange={(e) => setPriceType(e.target.value)}
+                  onChange={(e) => handleChangePriceType(e.target.value)}
                   bg="white"
                 >
                   <option value="paid">Paid</option>
                   <option value="free">Free</option>
                 </Select>
-                {priceType === "free" &&
+
+                {/* {priceType === "free" &&
                 courseDetail?.priceType !== priceType ? (
                   <Button
                     colorScheme="green"
@@ -896,8 +908,9 @@ const SingleCourse = () => {
                   </Button>
                 ) : (
                   <></>
-                )}
-                {priceType !== "free" ? (
+                )} */}
+
+                {courseDetail?.priceType !== "free" ? (
                   !editPriceActive ? (
                     <HStack>
                       <Text fontSize={20} fontWeight="bold" color="red">
@@ -911,7 +924,7 @@ const SingleCourse = () => {
                         Edit
                       </Button>
                     </HStack>
-                  ) : editPriceActive ? (
+                  ) : (
                     <HStack>
                       <Input
                         defaultValue={courseDetail.price}
@@ -926,11 +939,15 @@ const SingleCourse = () => {
                         Save
                       </Button>
                     </HStack>
-                  ) : (
-                    <></>
                   )
                 ) : (
-                  <></>
+                  <>
+                    <HStack>
+                      <Text fontSize={20} fontWeight="bold" color="red">
+                        IDR 0
+                      </Text>
+                    </HStack>
+                  </>
                 )}
               </Flex>
             </Card>
@@ -939,6 +956,7 @@ const SingleCourse = () => {
                 <Heading y={2} size="sm" color="blackAlpha.800">
                   Category
                 </Heading>
+
                 {isEditingCategory ? (
                   <>
                     <Text fontSize={12} color="gray.600">

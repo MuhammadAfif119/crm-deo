@@ -39,7 +39,8 @@ import axios from "axios";
 const Modals = (props) => {
   const { isOpen, onClose, datas, navigate, update, setUpdate, type, getData } =
     props;
-  const [price, setPrice] = useState("free");
+  const [price, setPrice] = useState(0);
+  const [priceType, setPriceType] = useState("free");
   const [input, setInput] = useState({});
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -58,6 +59,7 @@ const Modals = (props) => {
     setLoading(true);
     let inputData = {
       ...input,
+      priceType: priceType,
       price: price,
       projectsId: currentProject || null,
       projectId: currentProject || null,
@@ -553,7 +555,10 @@ const Modals = (props) => {
               </FormControl>
               <FormControl>
                 <FormLabel>Price</FormLabel>
-                <Select bg="white" onChange={(e) => setPrice(e.target.value)}>
+                <Select
+                  bg="white"
+                  onChange={(e) => setPriceType(e.target.value)}
+                >
                   <option value="free">Free</option>
                   <option value="paid">Paid</option>
                 </Select>
