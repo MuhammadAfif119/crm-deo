@@ -26,6 +26,16 @@ import {
   Avatar,
   TagLabel,
   Tag,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FiSettings, FiLogOut } from "react-icons/fi";
@@ -45,6 +55,7 @@ import useUserStore from "../../Hooks/Zustand/Store";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import {
+  addDocumentFirebase,
   getCollectionFirebase,
   getSingleDocumentFirebase,
 } from "../../Api/firebaseApi";
@@ -64,6 +75,14 @@ function SidebarComponentV3({ layout }) {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const [desktopShow, setDesktopShow] = useState(true);
   const [hidden, setHidden] = useState(!isOpen);
+  const modalAddProject = useDisclosure();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [dataProject, setDataProject] = useState({
+    name: "",
+    description: "",
+    modules: ["crm"],
+  });
 
   const detailSubMenu = useDisclosure();
   const isDesktop = useBreakpointValue({ base: false, lg: desktopShow });
@@ -325,25 +344,74 @@ function SidebarComponentV3({ layout }) {
   };
 
   const handleProjectSelect = (e) => {
-    globalState.setIsLoading(true);
-    const dataProject = listProject;
-
-    const findProject = dataProject.find((x) => x.id === e);
-    localStorage.setItem("currentProject", findProject.id || e);
-    globalState.setCurrentProject(findProject.id || e);
-
-    if (findProject.owner && findProject.owner.includes(e)) {
-      // Jika iya, tambahkan field "owner" ke dalam objek data[0]
-      globalState.setRoleProject("owner");
-    } else if (findProject.managers && findProject.managers.includes(e)) {
-      globalState.setRoleProject("managers");
+    if (e === "add project") {
+      modalAddProject.onOpen();
     } else {
-      globalState.setRoleProject("user");
-    }
+      globalState.setIsLoading(true);
+      const dataProject = listProject;
 
-    setTimeout(() => {
-      globalState.setIsLoading(false);
-    }, 1000);
+      const findProject = dataProject.find((x) => x.id === e);
+      localStorage.setItem("currentProject", findProject.id || e);
+      globalState.setCurrentProject(findProject.id || e);
+
+      if (findProject.owner && findProject.owner.includes(e)) {
+        // Jika iya, tambahkan field "owner" ke dalam objek data[0]
+        globalState.setRoleProject("owner");
+      } else if (findProject.managers && findProject.managers.includes(e)) {
+        globalState.setRoleProject("managers");
+      } else {
+        globalState.setRoleProject("user");
+      }
+
+      setTimeout(() => {
+        globalState.setIsLoading(false);
+      }, 1000);
+    }
+  };
+
+  const handleAddProject = async () => {
+    const data = {
+      ...dataProject,
+      owner: [globalState.uid],
+      users: [globalState.uid],
+    };
+    setIsLoading(true);
+
+    try {
+      if (dataProject.name === "" || dataProject.description === "") {
+        toast({
+          title: "Deoapp CRM",
+          description: "Please fill the form",
+          status: "error",
+          duration: 3000,
+        });
+      } else {
+        const res = await addDocumentFirebase(
+          "projects",
+          data,
+          globalState.currentCompany
+        );
+
+        localStorage.setItem("currentProject", res);
+        globalState.setCurrentProject(res);
+
+        toast({
+          title: "Deoapp CRM",
+          description: "Project Created!",
+          status: "success",
+          duration: 3000,
+        });
+      }
+
+      setIsLoading(false);
+      modalAddProject.onClose();
+      location.reload();
+      // window.open('/crm')
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNavigate = (value) => {
@@ -439,6 +507,9 @@ function SidebarComponentV3({ layout }) {
                         <Text textTransform={"capitalize"}>{select?.name}</Text>
                       </option>
                     ))}
+                    <option value={"add project"} style={{ padding: "10px 0" }}>
+                      + New Project
+                    </option>
                   </Select>
                 </Stack>
 
@@ -668,6 +739,61 @@ function SidebarComponentV3({ layout }) {
             </Text>
           </Stack>
         </motion.div>
+
+        <Modal
+          isOpen={modalAddProject.isOpen}
+          onClose={modalAddProject.onClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add New Project</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Text>Fill the form correctly</Text>
+
+              <FormControl>
+                <FormLabel fontSize={14} my={3}>
+                  Project Name
+                  <Text as={"span"} color={"gray.400"} fontStyle={"italic"}>
+                    {"  "}
+                    {"("}your business name{")"}
+                  </Text>
+                </FormLabel>
+                <Input
+                  onChange={(e) =>
+                    setDataProject({ ...dataProject, name: e.target.value })
+                  }
+                  placeholder={"Enter project/business name"}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize={14} my={3}>
+                  Project Description
+                </FormLabel>
+                <Input
+                  onChange={(e) =>
+                    setDataProject({
+                      ...dataProject,
+                      description: e.target.value,
+                    })
+                  }
+                  placeholder={"Enter project/business description"}
+                />
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                isLoading={isLoading}
+                onClick={handleAddProject}
+                colorScheme="green"
+              >
+                Add New Project
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </HStack>
     );
 

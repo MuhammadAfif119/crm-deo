@@ -298,29 +298,38 @@ const HomePageWelcome = () => {
         </Stack>
       ) : (
         <Stack my={5} p={10} borderRadius={"md"} shadow={"md"} bg={"white"}>
-          <Text fontWeight={500} align={"center"} fontSize={"sm"}>
+          {/* <Text fontWeight={500} align={"center"} fontSize={"sm"}>
             You have {globalState.companies.length} Company and{" "}
             {globalState?.projects?.length} Project
-          </Text>
+          </Text> */}
 
-          <SimpleGrid columns={3} spacing={3} py={4}>
-            {globalState.companies?.map((company, i) => (
-              <Stack
-                align={"center"}
-                border={"1px"}
-                borderColor={"gray.50"}
-                shadow={"md"}
-                key={company.id}
-                p={2}
-                borderRadius={"md"}
-              >
-                <Text fontWeight={500} textTransform={"capitalize"}>
-                  {company.name}
-                </Text>
-                <Text fontSize={13}>Total User: {company.users?.length}</Text>
-              </Stack>
-            ))}
-          </SimpleGrid>
+          <Heading align={"center"} size={"md"}>
+            Your Company:
+          </Heading>
+
+          <Box align={"center"} columns={3} spacing={3} py={4}>
+            {globalState.companies
+              ?.filter((company) => company.id === globalState.currentCompany)
+              ?.map((company, i) => (
+                <Stack
+                  align={"center"}
+                  // border={"1px"}
+                  // borderColor={"gray.50"}
+                  // shadow={"md"}
+                  key={company.id}
+                  p={2}
+                  // borderRadius={"md"}
+                >
+                  <Avatar
+                    size="xl"
+                    name={company?.name}
+                    src={searchProject?.image ? searchProject?.image : ""}
+                  />
+                  <Heading textTransform={"capitalize"}>{company.name}</Heading>
+                  <Text fontSize={13}>Total User: {company.users?.length}</Text>
+                </Stack>
+              ))}
+          </Box>
         </Stack>
       )}
 
@@ -347,6 +356,9 @@ const HomePageWelcome = () => {
           <>
             {searchProject ? (
               <>
+                <Heading align={"center"} size={"md"}>
+                  Your Project:
+                </Heading>
                 <Stack
                   spacing={3}
                   justifyContent={"center"}
