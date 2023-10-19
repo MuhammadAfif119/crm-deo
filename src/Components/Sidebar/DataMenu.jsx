@@ -499,7 +499,7 @@ export const data = [
     name: "Operational",
     icon: FcEngineering,
     link: "/operational",
-    status: "coming soon",
+    // status: "coming soon",
     description:
       "All-in-one HRIS solution that simplifies HR tasks, enhances compliance, and provides valuable data-driven insights for strategic decision-making.",
     submenu: [
@@ -545,18 +545,11 @@ export const data = [
     ],
   },
 
-  {
-    name: "GA",
-    icon: FcPaid,
-    status: "Coming Soon",
-    link: "/",
-    description:
-      "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
-  },
+
 
   {
     name: "Warehouse",
-    status: "Coming Soon",
+    // status: "Coming Soon",
     icon: FcPackage,
     link: "/warehouse",
     description:
@@ -602,6 +595,15 @@ export const data = [
         // ]
       },
     ],
+  },
+
+  {
+    name: "GA",
+    icon: FcPaid,
+    status: "Coming Soon",
+    link: "/",
+    description:
+      "Transform financial operations, streamlining tasks, ensuring compliance while providing valuable data-driven insights for informed financial decisions.",
   },
 
   {
