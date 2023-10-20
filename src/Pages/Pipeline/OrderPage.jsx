@@ -40,6 +40,7 @@ import moment from "moment";
 import DatePicker from "../../Components/DatePicker/DatePicker";
 import { FaRegCalendar } from "react-icons/fa";
 import { decryptToken } from "../../Utils/encrypToken";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const OrderPage = () => {
   const [dataOrders, setDataOrders] = useState([]);
@@ -225,7 +226,7 @@ const OrderPage = () => {
   useEffect(() => {
     getDataPipeline();
 
-    return () => {};
+    return () => { };
   }, [globalState.currentProject]);
 
   useEffect(() => {
@@ -240,6 +241,8 @@ const OrderPage = () => {
     <Box>
       <Stack my={4}>
         <HStack>
+          <BackButtons />
+
           <Stack>
             <Heading size={"md"} fontWeight="bold" mb={3}>
               Data Orders
@@ -353,8 +356,8 @@ const OrderPage = () => {
                                   ? "yellow"
                                   : "green"
                                 : order.orderStatus === "onProcess"
-                                ? "yellow"
-                                : "green"
+                                  ? "yellow"
+                                  : "green"
                             }
                           >
                             {pipelineId !== ""
@@ -554,8 +557,8 @@ const OrderPage = () => {
                         ? "green"
                         : "yellow"
                       : detailOrder.paymentStatus === "PAID"
-                      ? "green"
-                      : "yellow"
+                        ? "green"
+                        : "yellow"
                   }
                 >
                   {pipelineId !== ""

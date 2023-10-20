@@ -275,9 +275,11 @@ const ContactsPage = () => {
 
   return (
     <Stack p={[1, 1, 5]}>
-      <BackButtons />
       <Stack spacing={4}>
+
         <HStack>
+          <BackButtons />
+
           <Heading size={"md"} fontWeight="bold">
             Contacts
           </Heading>

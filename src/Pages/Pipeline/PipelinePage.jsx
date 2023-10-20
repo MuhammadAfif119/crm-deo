@@ -41,6 +41,7 @@ import { DeleteIcon, SearchIcon } from "@chakra-ui/icons";
 import moment from "moment";
 import { decryptToken, encryptToken } from "../../Utils/encrypToken";
 import { FcPlus } from "react-icons/fc";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 function PipelinePage() {
   const [pipelineModal, setPipelineModal] = useState(false);
@@ -276,13 +277,15 @@ function PipelinePage() {
   useEffect(() => {
     fetchData();
 
-    return () => {};
-  }, [globalState.currentCompany, globalState.currentProject]);
+    return () => { };
+  }, [globalState.currentProject]);
 
   return (
     <Stack p={[1, 1, 5]}>
       <Stack spacing={5}>
         <HStack>
+          <BackButtons />
+
           <Heading size={"md"} textTransform="capitalize">
             pipeline
           </Heading>

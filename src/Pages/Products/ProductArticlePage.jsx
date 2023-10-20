@@ -43,6 +43,7 @@ import AddButtons from "../../Components/Buttons/AddButtons";
 import { FcPlus } from "react-icons/fc";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { FiEdit, FiEye } from "react-icons/fi";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const ProductArticlePage = () => {
   const modalDelete = useDisclosure();
@@ -150,6 +151,7 @@ const ProductArticlePage = () => {
     <Stack p={[1, 1, 5]}>
       <Stack spacing={4}>
         <HStack>
+          <BackButtons />
           <Heading size={"md"} fontWeight="bold">
             Products
           </Heading>

@@ -46,6 +46,7 @@ import {
   getSingleDocumentFirebase,
   setDocumentFirebase,
 } from "../../Api/firebaseApi";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 function ChatPage() {
   const [chatList, setChatList] = useState([]);
@@ -183,7 +184,10 @@ function ChatPage() {
   return (
     <Stack>
       <Stack spacing={5}>
-        <Heading size={"md"}>Chat</Heading>
+        <HStack>
+          <BackButtons />
+          <Heading size={"md"}>Chat</Heading>
+        </HStack>
 
         <Stack borderRadius="md" shadow={"md"} bgColor="white">
           <Box>
@@ -242,7 +246,7 @@ function ChatPage() {
                         >
                           <Box pos={"relative"} p={1}>
                             {!x.adminNotification ||
-                            x.adminNotification === 0 ? null : (
+                              x.adminNotification === 0 ? null : (
                               <Box
                                 right={-1}
                                 top={-1}

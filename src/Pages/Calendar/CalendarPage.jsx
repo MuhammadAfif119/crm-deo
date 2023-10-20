@@ -33,6 +33,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import useUserStore from "../../Hooks/Zustand/Store";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const localizer = momentLocalizer(moment);
 
@@ -174,8 +175,8 @@ const CalendarPage = () => {
 
   return (
     <Flex bgColor={"gray.100"} flex={1} flexDirection="row" spacing={3}>
-
       <Stack w={"100%"} transition={"0.2s ease-in-out"} minH={height}>
+        <BackButtons />
         <Stack p={10}>
           <Text fontSize={"xl"} fontWeight="bold" color={"gray.600"}>
             {" "}

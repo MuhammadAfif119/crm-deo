@@ -58,6 +58,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { DeviceFrameset } from "react-device-frameset";
 import "react-device-frameset/styles/marvel-devices.min.css";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 function HomePageV2() {
   const globalState = useUserStore();
@@ -568,13 +569,16 @@ function HomePageV2() {
     getDataDomain();
     getDataProject();
 
-    return () => {};
+    return () => { };
   }, [globalState.currentProject]);
 
   return (
     <Stack p={[1, 1, 5]}>
+
       <Stack spacing={4}>
+
         <HStack>
+        <BackButtons />
           <Heading size={"md"} fontWeight="bold">
             Home
           </Heading>
@@ -667,7 +671,7 @@ function HomePageV2() {
                               </HStack>
 
                               {projectData?.contactDetails?.whatsappActive ===
-                              true ? (
+                                true ? (
                                 <Stack>
                                   <Input
                                     size={"sm"}
@@ -727,7 +731,7 @@ function HomePageV2() {
                               </HStack>
 
                               {projectData?.contactDetails?.emailActive ===
-                              true ? (
+                                true ? (
                                 <Stack>
                                   <Input
                                     size={"sm"}
@@ -782,16 +786,16 @@ function HomePageV2() {
 
                               {projectData?.contactDetails
                                 ?.businessAddressActive === true && (
-                                <Textarea
-                                  onChange={(e) =>
-                                    setContactForm({
-                                      ...contactForm,
-                                      businessAddress: e.target.value,
-                                    })
-                                  }
-                                  placeholder="Business Address"
-                                />
-                              )}
+                                  <Textarea
+                                    onChange={(e) =>
+                                      setContactForm({
+                                        ...contactForm,
+                                        businessAddress: e.target.value,
+                                      })
+                                    }
+                                    placeholder="Business Address"
+                                  />
+                                )}
                             </Stack>
                           </Stack>
                         ) : submenu.name === "Links" ? (
@@ -936,7 +940,7 @@ function HomePageV2() {
                             handleDeleteCurrentBanner={
                               handleDeleteCurrentBanner
                             }
-                            // handleChangeBrandColor={handleOpenModal}
+                          // handleChangeBrandColor={handleOpenModal}
                           />
                         ) : null}
                       </AccordionPanel>
