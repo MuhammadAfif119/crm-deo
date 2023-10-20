@@ -49,6 +49,7 @@
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
+    "reactflow": "^11.9.4",
     "sheetjs-style": "^0.15.8",
     "social-post-api": "^1.1.1",
     "store": "^2.0.12",
