@@ -73,6 +73,7 @@ import {
   FcClock,
   FcStatistics,
   FcDataSheet,
+  FcEmptyFilter,
 } from "react-icons/fc";
 
 export const data = [
@@ -182,6 +183,12 @@ export const data = [
         name: "Landing Page",
         icon: FcFrame,
         link: "/marketing/lp-builder",
+      },
+
+      {
+        name: "Funnel",
+        icon: FcEmptyFilter,
+        link: "/marketing/funnel",
       },
 
       // {
