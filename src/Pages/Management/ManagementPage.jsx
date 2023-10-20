@@ -14,6 +14,17 @@ const ManagementPage = () => {
     const encryptUid = encryptToken(uid)
     const encryptFix = encodeURIComponent(encryptUid)
 
+
+    const handleNavigate = (value) => {
+        console.log(value,'xxx')
+        if (value?.link?.includes("https")) {
+          window.open(`${value.link}?id=${encryptFix}`, "_blank");
+        } else {
+          navigate(value.link);
+        }
+      };
+
+
     return (
         <Box p={5}>
             <Stack align={"center"} spacing={3}>
@@ -44,7 +55,7 @@ const ManagementPage = () => {
                                 cursor={"pointer"}
                                 borderRadius={"md"}
                                 borderColor={"gray.300"}
-                                onClick={() => window.open(`${x.link}?id=${encryptFix}`, "_blank")}
+                                onClick={() => handleNavigate(x)}
                                 _hover={{ transform: "scale(1.03)", transition: "0.3s" }}
                             >
                                 <Icon as={x.icon} boxSize={12} />
