@@ -68,8 +68,6 @@ const Modals = (props) => {
     };
 
     if (datas?.type === "addCourse") {
-      console.log("ini addcourse");
-
       // console.log(filesImage, "ini oooo");
       try {
         if (filesImage[0]) {
@@ -81,7 +79,7 @@ const Modals = (props) => {
           inputData.thumbnail = resImage;
         }
 
-        console.log(inputData);
+        // console.log(inputData);
 
         const id = await addDocumentFirebase(
           "courses",
@@ -89,9 +87,10 @@ const Modals = (props) => {
           currentCompany
         );
 
-        setTimeout(() => {
-          navigate(`/courses/${id}`);
-        }, 1500);
+        // setTimeout(() => {
+        //   navigate(`/courses/${id}`);
+        // }, 1500);
+        window.location.href = `/courses/${id}`;
       } catch (error) {
         console.log(error.message, "error while adding course");
 
