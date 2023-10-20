@@ -454,7 +454,7 @@ function SidebarComponentV3({ layout }) {
               position={"absolute"}
               right={-5}
               top={300}
-              bg={"white"}
+              bg={"blue.300"}
               h={50}
               borderRadius={"md"}
               zIndex={-1}
@@ -464,9 +464,9 @@ function SidebarComponentV3({ layout }) {
               justify={"center"}
             >
               {isOpen ? (
-                <IoIosArrowBack size={18} />
+                <IoIosArrowBack size={18} color="white" />
               ) : (
-                <IoIosArrowForward size={18} />
+                <IoIosArrowForward size={18} color="white" />
               )}
             </Stack>
 
