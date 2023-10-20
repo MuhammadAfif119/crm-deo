@@ -361,7 +361,7 @@ export const data = [
       {
         name: "HRIS",
         icon: FcManager,
-        link: "https://recruitment.deoapp.com/",
+        link: "https://recruitment-deoapp.firebaseapp.com/",
         submenu: [
           {
             name: "Attandance",
@@ -399,7 +399,7 @@ export const data = [
       {
         name: "Recruitment",
         icon: FcConferenceCall,
-        link: "https://recruitment.deoapp.com/",
+        link: "https://recruitment-deoapp.firebaseapp.com/",
         submenu: [
           {
             name: "Wealth Dynamic",
