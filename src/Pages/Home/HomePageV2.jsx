@@ -13,6 +13,13 @@ import {
   HStack,
   Icon,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Spacer,
   Stack,
   Switch,
@@ -64,6 +71,8 @@ function HomePageV2() {
   const [newFeature, setNewFeature] = useState();
   const [bannerList, setBannerList] = useState([]);
   const [progress, setProgress] = useState(0);
+
+  const modalSaveButton = useDisclosure();
 
   const [bannerInput, setBannerInput] = useState([]);
   const [imageLogoDark, setImageLogoDark] = useState();
@@ -131,80 +140,73 @@ function HomePageV2() {
     setDomainPage(res);
   };
 
-  const handleSave = () => {
-    Swal.fire({
-      title: "Do you want to save the changes?",
-      showDenyButton: false,
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      denyButtonText: `Don't save`,
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        setIsLoading(true);
-        const updateProjectData = await updateDocumentFirebase(
-          "projects",
-          globalState.currentProject,
-          {
-            ...formData,
-            links: linkList,
-            contactDetails: {
-              ...contactForm,
-              whatsappActive:
-                projectData?.contactDetails?.whatsappActive || false,
-              emailActive: projectData?.contactDetails?.emailActive || false,
-              businessAddressActive:
-                projectData?.contactDetails?.businessAddressActive || false,
-            },
-          }
-        );
-        console.log(updateProjectData, "updated");
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      const updateProjectData = await updateDocumentFirebase(
+        "projects",
+        globalState.currentProject,
+        {
+          ...formData,
+          links: linkList,
+          contactDetails: {
+            ...contactForm,
+            whatsappActive:
+              projectData?.contactDetails?.whatsappActive || false,
+            emailActive: projectData?.contactDetails?.emailActive || false,
+            businessAddressActive:
+              projectData?.contactDetails?.businessAddressActive || false,
+          },
+        }
+      );
+      // console.log(updateProjectData, "updated");
 
-        let updateData;
-        if (bannerList.length === 0) {
+      let updateData;
+      if (bannerList.length === 0) {
+        updateData = {
+          companiesId: globalState.currentCompany,
+          ...pageData,
+        };
+      } else {
+        if (pageData?.banner?.length > 0) {
           updateData = {
-            companiesId: globalState.currentCompany,
             ...pageData,
+            banner: [...pageData.banner, ...bannerList],
           };
         } else {
-          if (pageData?.banner?.length > 0) {
-            updateData = {
-              ...pageData,
-              banner: [...pageData.banner, ...bannerList],
-            };
-          } else {
-            updateData = {
-              ...pageData,
-              banner: bannerList,
-              companiesId: globalState.currentCompany,
-              projectsId: globalState.currentProject,
-              projectId: globalState.currentProject,
-            };
-          }
+          updateData = {
+            ...pageData,
+            banner: bannerList,
+            companiesId: globalState.currentCompany,
+            projectsId: globalState.currentProject,
+            projectId: globalState.currentProject,
+          };
         }
-
-        if (pageData !== undefined) {
-          setDocumentFirebase(
-            "pages",
-            globalState.currentProject,
-            updateData
-            //   globalState.currentProject
-          )
-            .then((response) => {
-              if (response) {
-                setIsLoading(false);
-                Swal.fire("Saved!", "", "success");
-              }
-            })
-            .catch((error) => {
-              console.log(error.message);
-            });
-        }
-        setIsLoading(false);
-      } else if (result.isDenied) {
-        Swal.fire("Changes are not saved", "", "info");
       }
-    });
+
+      if (pageData !== undefined) {
+        setDocumentFirebase(
+          "pages",
+          globalState.currentProject,
+          updateData
+          //   globalState.currentProject
+        )
+          .then((response) => {
+            if (response) {
+              setIsLoading(false);
+              modalSaveButton.onClose();
+            }
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+      }
+
+      location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleFormDataChange = (e) => {
@@ -945,7 +947,7 @@ function HomePageV2() {
                 isLoading={isLoading}
                 colorScheme="blue"
                 w={"full"}
-                onClick={handleSave}
+                onClick={modalSaveButton.onOpen}
               >
                 Save
               </Button>
@@ -969,6 +971,38 @@ function HomePageV2() {
           </Flex>
         </Stack>
       </Stack>
+
+      <Modal isOpen={modalSaveButton.isOpen} onClose={modalSaveButton.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Save Changes</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Finish changes and save?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              isLoading={isLoading}
+              // variant={"outline"}
+              size="sm"
+              colorScheme="blue"
+              mr={3}
+              onClick={handleSave}
+            >
+              Yes
+            </Button>
+            <Button
+              // variant={"outline"}
+              size="sm"
+              colorScheme="red"
+              mr={3}
+              onClick={modalSaveButton.onClose}
+            >
+              No
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 }
