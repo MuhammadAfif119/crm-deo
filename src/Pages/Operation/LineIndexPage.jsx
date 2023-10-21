@@ -155,8 +155,8 @@ function Mindmap() {
     const defaultEdgeOptions = {
         type: 'smoothstep',
         markerEnd: { type: MarkerType.ArrowClosed },
-        style: { strokeWidth: 2 },
-   };
+        style: { strokeWidth: 3 },
+    };
 
     const save = async () => {
         const newData = {
@@ -303,9 +303,7 @@ function Mindmap() {
 
                     setModalProjectUser(false);
                     setSelectedUserProjectIds([]);
-                    // setProjectActive("");
                     setSearchResult([]);
-                    // getDataProjects();
                     toast({
                         title: 'Success',
                         description: 'Success share this flowchart',
@@ -384,22 +382,17 @@ function Mindmap() {
                             fitView
                             nodes={nodes}
                             edges={edges}
-                            defaultEdges={edges}
                             onConnect={onConnect}
+                            defaultEdgeOptions={defaultEdgeOptions}
                             edgeTypes={edgeTypes}
                             nodeTypes={nodeTypes}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
                             fitViewOptions={fitViewOptions}
                             onNodeDragStart={onNodeDragStart}
-                            onNodesDelete={onNodesDelete}
-                            onEdgesDelete={onEdgesDelete}
                             onSelectionDragStart={onSelectionDragStart}
                             proOptions={proOptions}
-                            defaultEdgeOptions={defaultEdgeOptions}
                             connectionMode={ConnectionMode.Loose}
-                            connectionLineType={ConnectionLineType.Straight}
-                            connectionLineStyle={connectionLineStyle}
 
                         >
                             <Controls />

@@ -30,31 +30,30 @@ export default memo(({ id, data }) => {
   });
   const { updateNodeLabel, nodes, edges } = useFlowchartStore(selector);
 
-  const nodeClick = useNodeClick(id)
-  const nodeClick2 = useNodeClick2(id)
-  const nodeClick3 = useNodeClick3(id)
-  const nodeClick4 = useNodeClick4(id)
-
+  const nodeClick = useNodeClick(id);
+  const nodeClick2 = useNodeClick2(id);
+  const nodeClick3 = useNodeClick3(id);
+  const nodeClick4 = useNodeClick4(id);
 
   const handleClick = (label) => {
-    if(label === 1){
-      nodeClick()
+    if (label === 1) {
+      nodeClick();
     }
-    if(label === 2){
-      nodeClick2()
+    if (label === 2) {
+      nodeClick2();
     }
-    if(label === 3){
-      nodeClick3()
+    if (label === 3) {
+      nodeClick3();
     }
-    if(label === 4){
-      nodeClick4()
+    if (label === 4) {
+      nodeClick4();
     }
 
-  } 
+    setSelectedNode(null);
+  };
 
   const params = useParams();
   const globalState = useUserStore();
-
 
   const [selectedNode, setSelectedNode] = useState(null);
   const textareaRef = useRef(null);
@@ -64,46 +63,6 @@ export default memo(({ id, data }) => {
       setSelectedNode(null);
     } else {
       setSelectedNode(data);
-      // save()
-    }
-
-  };
-
-  const save = async () => {
-    const newData = {
-      edges: edges,
-      nodes: nodes,
-      lastUpdated: new Date(),
-      lastUpdatedBy: {
-        uid: globalState.uid,
-        email: globalState.email,
-      },
-    };
-    try {
-      const res = await updateDocumentFirebase(
-        "productions",
-        params.id,
-        newData,
-        globalState.currentCompany
-      );
-      if (res) {
-        console.log('auto save')
-        // toast({
-        //   title: "Saved",
-        //   description: res.message,
-        //   status: "success",
-        //   duration: 9000,
-        //   isClosable: true,
-        // });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
     }
   };
 
@@ -113,14 +72,10 @@ export default memo(({ id, data }) => {
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height = textarea.scrollHeight + "px";
-
     }
 
     // save()
   }, []);
-
-  
-
 
   useEffect(() => {
     handleChange();
@@ -197,10 +152,50 @@ export default memo(({ id, data }) => {
                 rows={1}
                 style={{ resize: "none", overflowY: "hidden", height: "auto" }}
               />
-              <Handle type="source" position={Position.Top} id="a" />
-              <Handle type="source" position={Position.Right} id="b" />
-              <Handle type="source" position={Position.Bottom} id="c" />
-              <Handle type="source" position={Position.Left} id="d" />
+              {!selectedNode && (
+                <>
+                  <Handle
+                    style={{
+                      width: "11px",
+                      height: "11px",
+                      backgroundColor: "transparent",
+                    }}
+                    type="source"
+                    position={Position.Top}
+                    id="a"
+                  />
+                  <Handle
+                    style={{
+                      width: "11px",
+                      height: "11px",
+                      backgroundColor: "transparent",
+                    }}
+                    type="source"
+                    position={Position.Right}
+                    id="b"
+                  />
+                  <Handle
+                    style={{
+                      width: "11px",
+                      height: "11px",
+                      backgroundColor: "transparent",
+                    }}
+                    type="source"
+                    position={Position.Bottom}
+                    id="c"
+                  />
+                  <Handle
+                    style={{
+                      width: "11px",
+                      height: "11px",
+                      backgroundColor: "transparent",
+                    }}
+                    type="source"
+                    position={Position.Left}
+                    id="d"
+                  />
+                </>
+              )}
             </Box>
           </Fade>
 
