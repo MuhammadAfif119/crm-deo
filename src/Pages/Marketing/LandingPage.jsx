@@ -6,6 +6,7 @@ import { useLocation, useParams } from "react-router-dom";
 import grapesjs from "grapesjs";
 import presetPlugin from "grapesjs-preset-webpage";
 import pluginGrapesjsBlocksBasic from "grapesjs-blocks-basic";
+import projectManager from "grapesjs-project-manager";
 import "grapesjs-project-manager/dist/grapesjs-project-manager.min.css";
 import gjsForms from "grapesjs-plugin-forms";
 import pluginExport from "grapesjs-plugin-export";
@@ -17,9 +18,11 @@ import pluginTyped from "grapesjs-typed";
 import {
   addDocumentFirebase,
   getCollectionFirebase,
+  updateDocumentFirebase,
 } from "../../Api/firebaseApi";
 import useUserStore from "../../Hooks/Zustand/Store";
 import BackButtons from "../../Components/Buttons/BackButtons";
+import { templateData } from "./TemplateData";
 
 function FunnelEditPageV2() {
   const editorRef = useRef(null);
@@ -36,7 +39,7 @@ function FunnelEditPageV2() {
 
     try {
       const res = await getCollectionFirebase(
-        `funnels/${param.id}/page/${param.pageId}/html`,
+        `funnels/${param.id}/${param.pageId}/html`,
         conditions,
         sortBy,
         limitValue
@@ -73,7 +76,7 @@ function FunnelEditPageV2() {
         stylePlugin,
         customCodePlugin,
         pluginTyped,
-        "grapesjs-project-manager",
+        projectManager,
       ],
       pluginsOpts: {
         [presetPlugin]: {},
@@ -106,11 +109,11 @@ function FunnelEditPageV2() {
     });
 
     // const templateBlocks = blockData;
-    // const templateType = templateData;
+    const templateType = templateData;
 
-    // templateType?.forEach((x) =>
-    //   editor.Components.addType(x.title, { ...x.data })
-    // );
+    templateType?.forEach((x) =>
+      editor.Components.addType(x.title, { ...x.data })
+    );
 
     // templateBlocks?.forEach((block) => {
     //   editor.BlockManager.add(block.id, {
@@ -122,24 +125,27 @@ function FunnelEditPageV2() {
     // });
 
     if (state?.message) {
+      // const res = await getCollectionFirebase('templates', )
       const airesult = state?.message;
       const tamplateFull = airesult?.reduce((result, obj) => {
         return result + obj?.htmlContent;
       }, "");
       const templateBlocksFull = tamplateFull;
 
+      console.log(templateBlocksFull, "pppp");
+
       editor.BlockManager.add("tamplate UI Full", {
         label: "tamplate UI Full",
-        content: templateBlocksFull,
+        content: tamplateFull,
         category: "Your AI Blocks",
         media: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="header"><path d="M13 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zm0 11H3V3h10v10z"></path><path d="M4 4h8v3H4z"></path></svg>`,
       });
     }
 
-    // editor.Panels.addPanel({
-    //   id: "panel-top",
-    //   el: ".panel__top",
-    // });
+    editor.Panels.addPanel({
+      id: "panel-top",
+      el: ".panel__top",
+    });
 
     editor.Panels.addPanel({
       id: "basic-actions",
@@ -162,6 +168,17 @@ function FunnelEditPageV2() {
           async command(editor) {
             try {
               const data = await editor.store();
+
+              await updateDocumentFirebase(
+                `funnels/${param.id}/page`,
+                `${param.pageId}`,
+                {
+                  message: [
+                    { htmlContent: editor.getHtml(), css: editor.getCss() },
+                  ],
+                },
+                globalState.currentCompany
+              );
 
               const response = await addDocumentFirebase(
                 `funnels/${param.id}/page/${param.pageId}/html`,

@@ -322,7 +322,7 @@ const ThemeSettingForm = ({
                 fontWeight={400}
                 color={"gray.500"}
               >
-                Pageview secondary color, include card background
+                Pageview secondary color, include background
               </Text>
               <Box
                 borderWidth={1}
