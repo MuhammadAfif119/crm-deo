@@ -46,11 +46,16 @@ function LoginEmail() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
 
   const globalState = useUserStore();
 
+  if(globalState?.uid){
+    navigate("/")
+  }
+
   const toast = useToast();
-  const navigate = useNavigate();
 
   const middleWareAccess = () => {
     toast({
@@ -213,6 +218,8 @@ function LoginEmail() {
 
   useEffect(() => {
     handleLoginToken();
+
+
 
     return () => {};
   }, []);

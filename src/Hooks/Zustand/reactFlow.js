@@ -58,6 +58,7 @@ export const useFlowchartStore = create((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+  
   onConnect: (connection) => {
     const { source, target, sourceHandle, targetHandle } = connection;
     if (source && target) {

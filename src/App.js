@@ -164,6 +164,7 @@ function App() {
         }
       } else {
         globalState.setIsLoggedIn(false);
+        navigate("/login")
       }
     });
 
