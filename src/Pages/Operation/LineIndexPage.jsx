@@ -303,9 +303,7 @@ function Mindmap() {
 
                     setModalProjectUser(false);
                     setSelectedUserProjectIds([]);
-                    // setProjectActive("");
                     setSearchResult([]);
-                    // getDataProjects();
                     toast({
                         title: 'Success',
                         description: 'Success share this flowchart',
