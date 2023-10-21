@@ -495,7 +495,7 @@ function Mindmap() {
                 </Stack>
                 <Stack border={0.5} shadow="md" borderColor={'gray.400'} borderRadius={'lg'} h={'95vh'} >
                     <Stack p={[1, 1, 5]}>
-                        <Text>List Line</Text>
+                        <Text fontSize={"xl"} fontWeight="bold">List Line</Text>
                         <Button onClick={() => handleData()} >Check</Button>
                         <Stack>
                             <Accordion defaultIndex={[0]} allowMultiple>
