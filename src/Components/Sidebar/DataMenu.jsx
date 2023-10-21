@@ -182,7 +182,7 @@ export const data = [
       {
         name: "Landing Page",
         icon: FcFrame,
-        link: "/marketing/lp-builder",
+        link: "/marketing/funnel",
       },
 
     ],
