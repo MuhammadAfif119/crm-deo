@@ -789,3 +789,25 @@ export const UploadBlob = async (
 			.catch((error) => reject(error.message));
 	});
 };
+
+export const deleteSubcollection = async (subcollectionPath) => {
+  try {
+    const subcollectionRef = collection(db, subcollectionPath);
+    const subcollectionSnapshot = await getDocs(subcollectionRef);
+
+    // Delete each document in the subcollection
+    const deletePromises = subcollectionSnapshot.docs.map(
+      async (docSnapshot) => {
+        await deleteDoc(doc(db, subcollectionPath, docSnapshot.id));
+      }
+    );
+
+    // Wait for all documents to be deleted
+    await Promise.all(deletePromises);
+
+    return "Subcollection deleted successfully.";
+  } catch (error) {
+    console.error("Error deleting subcollection:", error);
+    throw error;
+  }
+};

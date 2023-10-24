@@ -48,6 +48,7 @@ import { encryptToken } from "../../Utils/encrypToken";
 import { FcPlus } from "react-icons/fc";
 import { FiTrash } from "react-icons/fi";
 import { clientTypessense } from "../../Api/Typesense";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 function FormPageV2() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -262,6 +263,7 @@ function FormPageV2() {
   return (
     <Stack p={[1, 1, 5]} spacing={5}>
       <HStack>
+        <BackButtons />
         <Heading size="md">Form Builder</Heading>
         <Spacer />
         <Button

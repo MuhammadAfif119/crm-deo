@@ -1,6 +1,7 @@
-import { Heading, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Heading, HStack, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import _axios from '../../Api/AxiosBarrier'
+import BackButtons from '../../Components/Buttons/BackButtons'
 import { formatFrice } from '../../Utils/Helper'
 
 function MembershipPage() {
@@ -27,9 +28,10 @@ function MembershipPage() {
   return (
     <Stack>
         <Stack p={[1, 1, 5]} spacing={5}>
-            <Stack>
+            <HStack>
+                <BackButtons/>
                 <Heading size={'md'}>Membership</Heading>
-            </Stack>
+            </HStack>
             <Stack>
                 {membershipList.length > 0 && (
                     <SimpleGrid columns={[1, 2, 3]} gap={3}>

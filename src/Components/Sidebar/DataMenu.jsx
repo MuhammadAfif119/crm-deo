@@ -73,6 +73,7 @@ import {
   FcClock,
   FcStatistics,
   FcDataSheet,
+  FcEmptyFilter,
 } from "react-icons/fc";
 
 export const data = [
@@ -179,77 +180,11 @@ export const data = [
       },
 
       {
-        name: "AI",
-        icon: FcMindMap,
-        link: "https://ai.deoapp.com/",
-        description:
-          "Simplifies the AI journey and enables you to harness the benefits of AI for your specific needs",
-        submenu: [
-          {
-            name: "Page Builder",
-            icon: FcFrame,
-            link: "https://ai.deoapp.com/funnel",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Text AI",
-            icon: FcKindle,
-            link: "https://ai.deoapp.com/folder-aissistant/:name",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Image AI",
-            icon: FcPicture,
-            link: "https://ai.deoapp.com/image-generator",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Audio AI",
-            icon: FcSpeaker,
-            link: "https://ai.deoapp.com/create-aissistant",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Video AI",
-            icon: FcFilmReel,
-            link: "https://ai.deoapp.com/video/templates",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Marketer AI",
-            icon: FcBullish,
-            link: "https://ai.deoapp.com/create-aimarketer",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Train Your AI",
-            icon: FcReading,
-            link: "https://ai.deoapp.com/lptrain",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-
-          {
-            name: "Templates",
-            icon: FcFilingCabinet,
-            link: "https://ai.deoapp.com/template-web",
-            description:
-              "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
-          },
-        ],
+        name: "Landing Page",
+        icon: FcFrame,
+        link: "/marketing/funnel",
       },
+
     ],
   },
 
@@ -291,7 +226,6 @@ export const data = [
             description:
               "Effortless Progress Tracking with our Pipeline Feature",
           },
-
         ],
       },
 
@@ -318,13 +252,8 @@ export const data = [
           { name: "News", icon: FcNews, link: "/news" },
           { name: "Pages", icon: FcRules, link: "/products/articles" },
           { name: "Courses", icon: FcIdea, link: "/courses" },
-
         ],
       },
-
-
-
-
     ],
   },
 
@@ -354,7 +283,7 @@ export const data = [
       {
         name: "HRIS",
         icon: FcManager,
-        link: "https://recruitment.deoapp.com/",
+        link: "https://recruitment-deoapp.firebaseapp.com/",
         submenu: [
           {
             name: "Attandance",
@@ -392,7 +321,7 @@ export const data = [
       {
         name: "Recruitment",
         icon: FcConferenceCall,
-        link: "https://recruitment.deoapp.com/",
+        link: "https://recruitment-deoapp.firebaseapp.com/",
         submenu: [
           {
             name: "Wealth Dynamic",
@@ -488,7 +417,6 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
         ],
       },
 
@@ -518,12 +446,10 @@ export const data = [
             description:
               "Elevate business efficiency, simplifying task management, collaboration, and scheduling to drive informed decisions and boost productivity.",
           },
-
         ],
       },
     ],
   },
-
 
   {
     name: "Operation",
@@ -542,12 +468,10 @@ export const data = [
             icon: FcTimeline,
             link: "/production/line",
           },
-        ]
+        ],
       },
     ],
   },
-
-
 
   {
     name: "Warehouse",
@@ -571,7 +495,7 @@ export const data = [
             icon: FcBusiness,
             link: "/stock/rak",
           },
-        ]
+        ],
       },
       {
         name: "Outbond",
@@ -683,8 +607,12 @@ export const dataMenuCRM = [
     ],
   },
 
-  { name: "Orders", icon: FcInTransit, link: "/orders", description: "Effortless Progress Tracking with our Pipeline Feature" },
-
+  {
+    name: "Orders",
+    icon: FcInTransit,
+    link: "/orders",
+    description: "Effortless Progress Tracking with our Pipeline Feature",
+  },
 
   {
     name: "Configuration",
@@ -733,13 +661,11 @@ export const dataMenuProducts = [
       { name: "News", icon: FcNews, link: "/news" },
       { name: "Pages", icon: FcRules, link: "/products/articles" },
       { name: "Courses", icon: FcIdea, link: "/courses" },
-
     ],
   },
 ];
 
 export const dataMenuProduction = [
-
   {
     name: "Production",
     icon: FcProcess,
@@ -750,6 +676,6 @@ export const dataMenuProduction = [
         icon: FcTimeline,
         link: "/production/line",
       },
-    ]
+    ],
   },
 ];

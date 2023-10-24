@@ -54,6 +54,7 @@ import { FcPhone, FcPlus } from "react-icons/fc";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AddButtons from "../../Components/Buttons/AddButtons";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -315,8 +316,9 @@ const ProductPage = () => {
     <Box>
       <Stack py={2}>
         <HStack>
+          <BackButtons />
           <Text fontSize={"xl"} fontWeight={500}>
-            Category
+            Product
           </Text>
           <Spacer />
           <Button

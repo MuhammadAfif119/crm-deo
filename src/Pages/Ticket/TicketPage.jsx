@@ -43,6 +43,7 @@ import {
 import moment from "moment";
 import useUserStore from "../../Hooks/Zustand/Store";
 import AddButtons from "../../Components/Buttons/AddButtons";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const TicketPage = () => {
   const navigate = useNavigate();
@@ -153,19 +154,11 @@ const TicketPage = () => {
 
   return (
     <Box p={[1, 1, 5]}>
+      <HStack>
+        <BackButtons />
       <AddButtons type={"Tickets"} link={"/ticket/create"} />
-      {/* <Flex textAlign={'center'} my={5} >
-        <Box w='50%' onClick={() => setActive(true)} p='3' cursor={'pointer'} borderTopWidth={3} rounded={5} borderLeftWidth={3} borderColor={active === true ? 'green' : 'transparent'} shadow={active === false ? 'md' : 'none'}>
-          <Heading size='sm'>
-            Active
-          </Heading>
-        </Box>
-        <Box w='50%' onClick={() => setActive(false)} p='3' cursor={'pointer'} borderTopWidth={3} rounded={5} shadow={active === true ? 'md' : 'none'} borderRightWidth={3} borderColor={active === false ? 'green' : 'transparent'}>
-          <Heading size='sm'>
-            In-Active
-          </Heading>
-        </Box>
-      </Flex> */}
+      </HStack>
+     
 
       <Input
         mb={3}

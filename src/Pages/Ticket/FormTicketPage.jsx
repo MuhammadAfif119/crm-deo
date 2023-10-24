@@ -610,7 +610,7 @@ const FormTicketPage = () => {
         setCheckboxDate(true);
         newData = {
           ...newData,
-          dataEnd: res.dateEnd,
+          dateEnd: res.dateEnd,
         };
       }
       if (res.location) {
@@ -972,7 +972,7 @@ const FormTicketPage = () => {
     });
   };
 
-  console.log(categoryDetailsTicket, "pppp");
+  // console.log(categoryDetailsTicket, "pppp");
 
   const getDataForms = async () => {
     try {
@@ -1126,11 +1126,11 @@ const FormTicketPage = () => {
           </FormControl>
 
           <Flex
-            justify={"space-between"}
+            justify={"center"}
             w="full"
             gap={5}
-            justifyItems={"center"}
-            alignContent={"center"}
+            // justifyItems={"center"}
+            // alignItems={"center"}
           >
             <FormControl id="image" isRequired>
               <HStack>
@@ -1140,10 +1140,13 @@ const FormTicketPage = () => {
                     <Image
                       src={imageUrl}
                       boxSize="100%"
-                      maxWidth={300}
+                      w={300}
+                      maxH={200}
                       borderRadius="xl"
                       alt={idProject ? data?.title : files[0]?.name}
                       shadow="sm"
+                      objectFit={"cover"}
+                      objectPosition={"center center"}
                     />
                     <Flex>
                       <Input
@@ -1163,7 +1166,7 @@ const FormTicketPage = () => {
                             color="blue.600"
                             fontStyle="italic"
                           >
-                            Add Image thumbnail
+                            Change Image thumbnail
                           </Text>
                         </HStack>
                       </label>
@@ -1210,11 +1213,14 @@ const FormTicketPage = () => {
                     <Image
                       src={logoUrl}
                       boxSize="100%"
-                      maxWidth={300}
+                      w={300}
+                      maxH={200}
                       borderRadius="xl"
                       alt={
                         idProject ? `${data?.title}-logo` : filesLogo[0].name
                       }
+                      objectPosition={"center center"}
+                      objectFit={"cover"}
                       shadow="sm"
                     />
                     <Input
@@ -1230,7 +1236,7 @@ const FormTicketPage = () => {
                           <MdOutlinePermMedia />
                         </Stack>
                         <Text fontSize="sm" color="blue.600" fontStyle="italic">
-                          Add Image logo
+                          Change Image logo
                         </Text>
                       </HStack>
                     </label>

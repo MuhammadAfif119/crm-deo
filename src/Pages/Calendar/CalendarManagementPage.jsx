@@ -47,6 +47,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import useUserStore from "../../Hooks/Zustand/Store";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
@@ -288,6 +289,7 @@ const CalendarManagementPage = () => {
   return (
     <>
       <Flex>
+        <BackButtons/>
         <Button onClick={handleCreate} m={"2%"}>
           Create Agenda
         </Button>

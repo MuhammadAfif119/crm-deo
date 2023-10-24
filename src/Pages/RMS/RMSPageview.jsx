@@ -411,9 +411,10 @@ function RMSPageview() {
 
   return (
     <Stack p={[1, 1, 5]}>
-      <BackButtons />
       <Stack spacing={4}>
         <HStack>
+          <BackButtons />
+
           <Heading size={"md"} fontWeight="bold">
             Home
           </Heading>
@@ -492,7 +493,7 @@ function RMSPageview() {
                 Save
               </Button>
             </Box>
-        
+
             <Box w={"50%"} align={"center"}>
               <DeviceFrameset device="iPhone X">
                 <Box>
@@ -501,7 +502,7 @@ function RMSPageview() {
                     width={400}
                     height={800}
                     src={
-                        `https://rms.deoapp.com/orders//${params.id}/1`
+                      `https://rms.deoapp.com/orders//${params.id}/1`
                     }
                   />
                 </Box>

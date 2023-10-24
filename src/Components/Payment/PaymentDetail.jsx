@@ -33,6 +33,8 @@ function PaymentDetail({ dataLeads, dataTicket, dataProduct }) {
 
   let dataParam = "";
 
+  console.log(param, "ini param");
+
   if (param.type === "product") {
     dataParam = dataProduct;
   }

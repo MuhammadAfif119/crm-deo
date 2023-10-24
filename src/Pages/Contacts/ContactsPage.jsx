@@ -275,9 +275,11 @@ const ContactsPage = () => {
 
   return (
     <Stack p={[1, 1, 5]}>
-      <BackButtons />
       <Stack spacing={4}>
+
         <HStack>
+          <BackButtons />
+
           <Heading size={"md"} fontWeight="bold">
             Contacts
           </Heading>
@@ -380,9 +382,9 @@ const ContactsPage = () => {
                               >
                                 <a
                                   href={`https://wa.me/${modifiedPhoneNumber}?text=Halo,%20Saya%20dari%20tim%20${searchProject.name}`}
-                                  target="_blank"
+                                  target="_blank" rel="noreferrer"
                                 >
-                                  <Icon as={FaWhatsapp} boxSize={6} />
+                                  <Icon as={FaWhatsapp} boxSize={5} />
                                 </a>
                               </Button>
                               <Button

@@ -78,6 +78,9 @@ function PaymentPage() {
         limitValue
       );
 
+      console.log(res[0]?.formId);
+      console.log(res, "xoxo");
+
       setDataLeads(...res);
       getDataForm(res[0]?.formId);
 
@@ -90,12 +93,12 @@ function PaymentPage() {
   };
 
   const getDataTicket = async (formId) => {
-    console.log(decryptToken(formId));
     const conditions = [
       { field: "formId", operator: "==", value: decryptToken(formId) },
     ];
     const sortBy = { field: "createdAt", direction: "asc" };
     const limitValue = 1;
+    console.log(decryptToken(formId));
 
     try {
       const res = await getCollectionFirebase(
@@ -104,6 +107,9 @@ function PaymentPage() {
         sortBy,
         limitValue
       );
+
+      console.log(res);
+
       setDataTicket(...res);
       console.log(res);
     } catch (error) {
@@ -111,7 +117,11 @@ function PaymentPage() {
     }
   };
 
+  console.log(param, "ini param");
+  console.log(dataTicket, "xxx");
+
   const getDataForm = async (formId) => {
+    console.log(formId, "ini form yang harusnya masih ke encrypt");
     const conditions = [{ field: "token", operator: "==", value: formId }];
     const sortBy = { field: "createdAt", direction: "asc" };
     const limitValue = 1;
@@ -124,6 +134,7 @@ function PaymentPage() {
         limitValue
       );
 
+      console.log(res);
       setDataForm(...res);
 
       if (param.type === "membership" && res[0]?.membership_used?.length > 0) {

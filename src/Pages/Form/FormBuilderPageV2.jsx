@@ -426,28 +426,31 @@ function FormBuilderPage() {
           updateData.status = "open";
 
           const data = updateData;
-          try {
-            const res = await axios.post(
-              "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead",
-              data
-            );
 
-            window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
-              updateData.phoneNumber
-            }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+          console.log(data, "ini data");
+          console.log(updateData, "ini update data");
+          // try {
+          //   const res = await axios.post(
+          //     "https://asia-southeast2-deoapp-indonesia.cloudfunctions.net/createLead",
+          //     data
+          //   );
 
-            setDirectLink(
-              `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
-                updateData.phoneNumber
-              }/${updateData.name}/${encodeURIComponent(updateData.formId)}`
-            );
+          //   window.location.href = `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+          //     updateData.phoneNumber
+          //   }/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
 
-            // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
-          } catch (error) {
-            console.log(error, "ini error");
-          } finally {
-            setLoading(false);
-          }
+          //   setDirectLink(
+          //     `http://localhost:3000/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${
+          //       updateData.phoneNumber
+          //     }/${updateData.name}/${encodeURIComponent(updateData.formId)}`
+          //   );
+
+          //   // window.location.href = `http://crm.deoapp.com/payment/${selectedProductMethod}/${selectedPaymentMethod}/${projectId}/${updateData.phoneNumber}/${updateData.name}/${encodeURIComponent(updateData.formId)}`;
+          // } catch (error) {
+          //   console.log(error, "ini error");
+          // } finally {
+          //   setLoading(false);
+          // }
           // Implement your form submission logic here
         };
 

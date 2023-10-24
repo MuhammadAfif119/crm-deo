@@ -9,6 +9,8 @@ import {
   Container,
   Stack,
   useBreakpointValue,
+  HStack,
+  Spacer,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import BreadCrumbComponent from "../../Components/BreadCrumbs/BreadCrumbComponent";
@@ -30,6 +32,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../Config/firebase";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const Courses = () => {
   const [datas, setDatas] = useState([]);
@@ -118,8 +121,20 @@ const Courses = () => {
   }, [currentProject]);
 
   return (
-    <>
-      <Heading>Courses</Heading>
+    <Stack>
+      <HStack>
+        <BackButtons />
+        <Heading size={"md"}>Courses</Heading>
+        <Spacer />
+        <Button
+          leftIcon={<FiPlus />}
+          colorScheme="orange"
+          variant={"outline"}
+          onClick={() => navigate("/courses/create")}
+        >
+          Add Course
+        </Button>
+      </HStack>
       <BreadCrumbComponent data={data} />
       <Container
         py={{
@@ -144,62 +159,6 @@ const Courses = () => {
           }}
         >
           <Stack spacing="5">
-            <Box
-              px={{
-                base: "4",
-                md: "6",
-              }}
-              pt="5"
-            >
-              <Stack
-                direction={{
-                  base: "column",
-                  md: "row",
-                }}
-                justify="space-between"
-              >
-                {/* <InputGroup w="fit-content">
-									<InputLeftElement
-										pointerEvents="none"
-										children={
-											<FiSearch color="gray.300" />
-										}
-									/>
-									<Input
-										type="search-course"
-										placeholder="Search"
-									/>
-								</InputGroup>
-								<Select w="fit-content">
-									{course?.map((item, id) => (
-										<option key={id}>
-											{item.title}
-										</option>
-									))}
-								</Select>
-								<Select w="fit-content">
-									{category?.map((item, id) => (
-										<option key={id}>
-											{item.title}
-										</option>
-									))}
-								</Select>
-								<Select w="fit-content">
-									{author?.map((item, id) => (
-										<option key={id}>
-											{item.title}
-										</option>
-									))}
-								</Select> */}
-                <Button
-                  leftIcon={<FiPlus />}
-                  colorScheme="green"
-                  onClick={() => navigate("/courses/create")}
-                >
-                  Add Course
-                </Button>
-              </Stack>
-            </Box>
             <Box>
               {datas?.map((item, i) => (
                 <BasicCardComponent
@@ -221,25 +180,7 @@ const Courses = () => {
               }}
               pb="5"
             >
-              {/* <HStack spacing="3" justify="space-between">
-								{!isMobile && (
-									<Text color="muted" fontSize="sm">
-										Showing 0 of {datas?.length} results
-									</Text>
-								)}
-								<ButtonGroup
-									spacing="3"
-									justifyContent="space-between"
-									width={{
-										base: "full",
-										md: "auto",
-									}}
-									variant="secondary"
-								>
-									<Button>Previous</Button>
-									<Button>Next</Button>
-								</ButtonGroup>
-							</HStack> */}
+
               {datas?.length < 5 ? null : (
                 // <Button onClick={fetchNext}>Next</Button>
                 <Box align={"center"}>
@@ -252,7 +193,7 @@ const Courses = () => {
           </Stack>
         </Box>
       </Container>
-    </>
+    </Stack>
   );
 };
 

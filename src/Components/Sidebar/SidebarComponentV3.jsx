@@ -207,7 +207,7 @@ function SidebarComponentV3({ layout }) {
   useEffect(() => {
     fetchProjects(globalState.currentCompany);
 
-    return () => { };
+    return () => {};
   }, [globalState.currentCompany]);
 
   const navigate = useNavigate();
@@ -452,22 +452,25 @@ function SidebarComponentV3({ layout }) {
             <Stack
               {...getButtonProps()}
               position={"absolute"}
-              right={-1}
-              top={0}
-              bg={"blue.100"}
+              right={-5}
+              top={300}
+              bg={"blue.300"}
+              h={50}
               borderRadius={"md"}
-              zIndex={1}
+              zIndex={-1}
               cursor={"pointer"}
               p={1}
+              alignItems={"center"}
+              justify={"center"}
             >
               {isOpen ? (
-                <IoIosArrowBack size={18} />
+                <IoIosArrowBack size={18} color="white" />
               ) : (
-                <IoIosArrowForward size={18} />
+                <IoIosArrowForward size={18} color="white" />
               )}
             </Stack>
 
-            <Flex as="section" minH="100vh" overflowY="scroll">
+            <Flex as="section" minH="100vh">
               <Stack>
                 <Box onClick={() => navigate("/")} cursor={"pointer"}>
                   <Image src={themeConfig.logokotak} borderRadius="full" />
@@ -656,7 +659,7 @@ function SidebarComponentV3({ layout }) {
                 {menu.submenu?.map((sub, i) => (
                   <AccordionItem
                     key={i}
-                  // isDisabled={x.name === "Social Media" ? true : false}
+                    // isDisabled={x.name === "Social Media" ? true : false}
                   >
                     <h2>
                       <AccordionButton w={"100%"}>
