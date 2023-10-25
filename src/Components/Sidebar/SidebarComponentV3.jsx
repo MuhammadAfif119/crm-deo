@@ -64,6 +64,7 @@ import themeConfig from "../../Config/themeConfig";
 import { logoutUserWithIp } from "../../Hooks/Middleware/sessionMiddleWare";
 import { removeSymbols } from "../../Utils/Helper";
 import { BiAlignLeft } from "react-icons/bi";
+import { BsPersonLinesFill } from "react-icons/bs";
 import { encryptToken } from "../../Utils/encrypToken";
 
 // ** Theme Configuration
@@ -586,12 +587,22 @@ function SidebarComponentV3({ layout }) {
                 <Stack
                   spacing="3"
                   align={"center"}
+                  onClick={() => navigate("/administration")}
+                  cursor={"pointer"}
+                >
+                  <Icon as={BsPersonLinesFill} boxSize={6} color="subtle" />
+                  <Text fontSize={10}>Administrations</Text>
+                </Stack>
+                <Stack
+                  spacing="3"
+                  align={"center"}
                   onClick={() => navigate("/settings")}
                   cursor={"pointer"}
                 >
                   <Icon as={FiSettings} boxSize={6} color="subtle" />
                   <Text fontSize={10}>Setting</Text>
                 </Stack>
+
                 {/* </Button> */}
 
                 <Box py={3}>

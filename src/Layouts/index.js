@@ -15,12 +15,14 @@ function Layout({ children }) {
 
     const isFunnelEditPage = location.pathname.includes("/lp-builder");
 
+    const shouldShowSidebarV3 = !location.pathname.includes("/administration");
+
 
   return (
     <Fragment>
       <Flex height="100vh" w={"full"} bgColor={"gray.50"}>
         {/* <SidebarComponentV2 layout={themeConfig.layout} /> */}
-        {!isFunnelEditPage && <SidebarComponentV3 layout={themeConfig.layout} />}
+        {!isFunnelEditPage && shouldShowSidebarV3 && <SidebarComponentV3 layout={themeConfig.layout} />}
 
         <Container maxW={"full"} overflowY={"scroll"} pt={"4"}>
           <HeaderComponent layout={themeConfig.layout} />

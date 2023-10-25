@@ -27,6 +27,10 @@ import SalesRouter from "./SalesRouter";
 import WarehouseRouter from "./WarehouseRouter";
 import CreativeRouter from "./CreativeRouter";
 import OperationRouter from "./OperationRouter";
+// import AccountingRouter from "./AccountingRouter";
+// import FinanceRouter from "./FinanceRouter";
+// import GARouter from "./GARouter";
+import AdministrationRouter from "./AdministrationRouter";
 // import SettingRouter from "./SettingRouter";
 
 function MainRouter() {
@@ -57,7 +61,11 @@ function MainRouter() {
     ...SalesRouter,
     ...OperationRouter,
     ...WarehouseRouter,
-    ...CreativeRouter
+    ...CreativeRouter,
+    // ...AccountingRouter,
+    // ...FinanceRouter,
+    // ...GARouter,
+    ...AdministrationRouter,
   ];
   return (
     <Routes>
