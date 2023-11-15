@@ -587,7 +587,7 @@ function SidebarComponentV3({ layout }) {
                 <Stack
                   spacing="3"
                   align={"center"}
-                  onClick={() => navigate("/administration")}
+                  onClick={() => navigate("/administration/user-live")}
                   cursor={"pointer"}
                 >
                   <Icon as={BsPersonLinesFill} boxSize={6} color="subtle" />

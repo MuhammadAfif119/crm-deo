@@ -6,23 +6,27 @@ import SidebarComponentV2 from "../Components/Sidebar/SidebarComponentV2";
 import SidebarComponentV3 from "../Components/Sidebar/SidebarComponentV3";
 import themeConfig from "../Config/themeConfig";
 import { useLocation } from "react-router-dom";
+import AdminSidebar from "../Pages/Administration/AdminSidebar";
 
 function Layout({ children }) {
   let contentWidth =
     themeConfig.contentWidth === "full" ? "full" : "container.xl";
 
-    const location = useLocation();
+  const location = useLocation(); 
 
-    const isFunnelEditPage = location.pathname.includes("/lp-builder");
+  const admin = location.pathname.includes("/administration");
 
-    const shouldShowSidebarV3 = !location.pathname.includes("/administration");
-
+  const isFunnelEditPage = location.pathname.includes("/lp-builder");
 
   return (
     <Fragment>
       <Flex height="100vh" w={"full"} bgColor={"gray.50"}>
         {/* <SidebarComponentV2 layout={themeConfig.layout} /> */}
-        {!isFunnelEditPage && shouldShowSidebarV3 && <SidebarComponentV3 layout={themeConfig.layout} />}
+        {admin ? (
+          <AdminSidebar layout={themeConfig.layout} />
+        ) : (
+          <SidebarComponentV3 layout={themeConfig.layout} />
+        )}
 
         <Container maxW={"full"} overflowY={"scroll"} pt={"4"}>
           <HeaderComponent layout={themeConfig.layout} />
