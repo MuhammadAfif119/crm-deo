@@ -218,7 +218,7 @@ const AffiliateBillingPage = () => {
                                 :
                               </Text>
                               <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                                {x.discountRate}%
+                                {x.discount.discountRate}%
                               </Text>
                             </Box>
                           </SimpleGrid>

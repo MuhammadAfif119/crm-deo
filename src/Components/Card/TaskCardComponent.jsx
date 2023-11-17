@@ -13,7 +13,7 @@ import {
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDrag } from "react-dnd";
-import { FiPhoneCall, FiTag } from "react-icons/fi";
+// import { FiPhoneCall, FiTag } from "react-icons/fi";
 import SingleCalendarComponent from "./SingleCalendarComponent";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";

@@ -4,6 +4,8 @@ import UserList from "../Pages/Administration/UserList";
 import BillingPage from "../Pages/Administration/BillingPage";
 import HistoryPage from "../Pages/Administration/HistoryPage";
 import AffiliateBillingPage from "../Pages/Administration/AffiliateBillingPage";
+import DataCompanyPage from "../Pages/Administration/DataCompanyPage";
+import DataCompanyDetailPage from "../Pages/Administration/DataCompanyDetailPage";
 
 const AdministrationRouter = [
   {
@@ -25,6 +27,14 @@ const AdministrationRouter = [
   {
     path: "/administration/affiliate-billing",
     element: <AffiliateBillingPage />,
+  },
+  {
+    path: "/administration/data-company",
+    element: <DataCompanyPage />,
+  },
+  {
+    path: "/administration/data-company/:id",
+    element: <DataCompanyDetailPage />,
   },
 ];
 

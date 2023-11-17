@@ -21,7 +21,13 @@ const useUserStore = create((set, get) => ({
   roleProject: "",
   users: [],
   accessToken: "",
+  dataCompanyId: "",
 
+  setDataCompanyId: (data) => {
+    set({
+      dataCompanyId: data,
+    });
+  },
   setUid: (data) => {
     set({
       uid: data,
