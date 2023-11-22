@@ -23,7 +23,7 @@ import themeConfig from "../../Config/themeConfig";
 import { HiStatusOnline, HiUsers } from "react-icons/hi";
 import { RiBuilding4Fill } from "react-icons/ri";
 import { AiOutlineFolder } from "react-icons/ai";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, CalendarIcon } from "@chakra-ui/icons";
 import { TbAffiliate } from "react-icons/tb";
 import { BsBuildingFillGear } from "react-icons/bs";
 
@@ -39,6 +39,7 @@ const LinkItems = [
   // { name: "History", icon: AiOutlineFolder, navigate: "/administration/history" },
   { name: "Affiliate Billing", icon: TbAffiliate, navigate: "/administration/affiliate-billing" },
   { name: "Data Company", icon: BsBuildingFillGear  , navigate: "/administration/data-company" },
+  { name: "Data Calendar", icon: CalendarIcon  , navigate: "/administration/calendar" },  
 ];
 
 const AdminSidebar = () => {
@@ -62,13 +63,22 @@ const AdminSidebar = () => {
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav display={{ base: "flex", md: "none" }} onOpen={onOpen} />
+      <MobileNav
+        display={{ base: "flex", md: "none" }}
+        onOpen={onOpen}
+        position="fixed"  
+        top="0"          
+        left="0"         
+        width="100%"      
+        zIndex="999"      
+      />
       <Box ml={{ base: 0, md: 60 }} p="4">
         {/* Content */}
       </Box>
     </Box>
   );
 };
+
 
 const SidebarContent = ({ onClose, ...rest }) => {
   const navigate = useNavigate();

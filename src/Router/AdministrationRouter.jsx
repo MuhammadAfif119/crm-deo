@@ -6,6 +6,7 @@ import HistoryPage from "../Pages/Administration/HistoryPage";
 import AffiliateBillingPage from "../Pages/Administration/AffiliateBillingPage";
 import DataCompanyPage from "../Pages/Administration/DataCompanyPage";
 import DataCompanyDetailPage from "../Pages/Administration/DataCompanyDetailPage";
+import CalendarPage from "../Pages/Administration/CalendarPage";
 
 const AdministrationRouter = [
   {
@@ -35,6 +36,10 @@ const AdministrationRouter = [
   {
     path: "/administration/data-company/:id",
     element: <DataCompanyDetailPage />,
+  },
+  {
+    path: "/administration/calendar",
+    element: <CalendarPage />,
   },
 ];
 

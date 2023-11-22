@@ -118,8 +118,8 @@ const DataCompanyPage = () => {
 
   const handleOpen = async (stats) => {
     try {
-      globalState.setDataCompanyId(stats)
-      navigate(`/administration/data-company/${stats}`)
+      globalState.setDataCompanyId(stats);
+      navigate(`/administration/data-company/${stats}`);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -136,111 +136,89 @@ const DataCompanyPage = () => {
     getCompany();
   }, []);
 
-  console.log(data, "222222222");
   return (
     <>
-      <SimpleGrid columns={2}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={[5,6,8]}>
         {data?.map((value, index) => (
           <Box
-            marginTop={"2%"}
             key={index}
             border="1px solid #ccc"
-            mx={{
-              lg: 8,
-            }}
-            display={{
-              lg: "flex",
-            }}
-            maxW={{
-              lg: "5xl",
-            }}
-            rounded={{
-              lg: "lg",
-            }}
+            mx={{ lg: 6 }}
+            marginTop={"5%"}
+            rounded={{ lg: "lg" }}
+            overflow={"hidden"}
           >
             <Box
               py={6}
               px={6}
-              maxW={{
-                base: "xl",
-                lg: "5xl",
-              }}
-              w={{
-                lg: "100%",
-              }}
+              maxW={{ base: "xl", lg: "5xl" }}
+              w={"100%"}
             >
-              <Flex w={"100%"}>
+              <Flex w={"100%"} justifyContent="space-between" alignItems="center">
                 <chakra.h2
-                  w={"80%"}
-                  fontSize={{
-                    base: "2xl",
-                    md: "3xl",
-                  }}
+                  w={{ base: "100%", md: "80%" }}
+                  fontSize={{ base: "xl", md: "3xl" }}
                   color="gray.800"
-                  _dark={{
-                    color: "white",
-                  }}
                   fontWeight="bold"
                 >
                   Company Data
                 </chakra.h2>
                 <Button
-                  w={"20%"}
+                  w={{ base: "100%", md: "20%" }}
+                  marginLeft={{ base: "20px", md: 0, lg: 0 }}
                   borderRadius={"10px"}
                   color={"white"}
                   bg={"black"}
                   border={"1px solid black"}
                   _hover={{ bg: "white", color: "black" }}
                   _active={{ bg: "white", color: "black" }}
-                  onClick={() => 
-                    handleOpen(value.documentId)
-                  }
+                  onClick={() => handleOpen(value.documentId)}
                 >
                   View Detail
                 </Button>
               </Flex>
               <Box
                 border="none"
-                padding="4"
+                padding={[0, 2, 4]}
                 borderRadius="md"
                 display="grid"
                 gridTemplateColumns="max-content max-content 1fr"
                 gridGap="2"
               >
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Company Name
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value.name}
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Coupon Code
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value.coupon}
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Price
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value.price ? `Rp. ${value.price.toLocaleString()}` : null}
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Expire At
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value?.expired_at?.seconds
                     ? convertUnixTimestamp(value?.expired_at?.seconds)
                     : value?.expired_at !== undefined &&
@@ -249,22 +227,22 @@ const DataCompanyPage = () => {
                     : " "}
                 </chakra.p>
 
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Number of Owner
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value?.owner?.length}
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   Number of Users
                 </chakra.p>
-                <chakra.p fontSize="md" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["sm", "md", "md"]} fontFamily={"Sans-serif"}>
                   :
                 </chakra.p>
-                <chakra.p fontSize="lg" fontFamily={"Sans-serif"}>
+                <chakra.p fontSize={["md", "md", "lg"]} fontFamily={"Sans-serif"}>
                   {value?.users?.length}
                 </chakra.p>
               </Box>

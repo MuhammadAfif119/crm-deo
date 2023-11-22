@@ -23,6 +23,7 @@ import { MdLocalShipping } from "react-icons/md";
 import useUserStore from "../../Hooks/Zustand/Store";
 import { collection, getDocs, getFirestore, query } from "firebase/firestore";
 import { db } from "../../Config/firebase";
+import BackButtons from "../../Components/Buttons/BackButtons";
 
 const DataCompanyDetailPage = () => {
   const globalState = useUserStore();
@@ -181,6 +182,7 @@ const DataCompanyDetailPage = () => {
   return (
     <>
       <Container maxW={"7xl"}>
+        <BackButtons />
         {description.map((data, index) => (
           <SimpleGrid
             columns={{ base: 1, lg: 2 }}
