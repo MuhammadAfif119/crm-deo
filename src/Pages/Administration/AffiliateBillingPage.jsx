@@ -83,9 +83,6 @@ const AffiliateBillingPage = () => {
     }
   };
 
-  // console.log(history,"jjjjjjjjjjjjjjjjjjj");
-  // console.log(data,"hyhhhhhhhhhhhhhh")
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -139,43 +136,21 @@ const AffiliateBillingPage = () => {
   const color1 = useColorModeValue("gray.400", "gray.400");
   const color2 = useColorModeValue("gray.400", "gray.400");
   return (
-    // <Box p={4}>
-    //   <Table variant="striped">
-    //     <Thead>
-    //       <Tr>
-    //         <Th>Coupon Code</Th>
-    //         <Th>Created By</Th>
-    //         <Th>Discount (%)</Th>
-    //         <Th>Used By</Th>
-    //       </Tr>
-    //     </Thead>
-    //     <Tbody>
-
-    //       {value?.map((user) => (
-    //         <Tr key={user.id}>
-    //           <Td>{user.title}</Td>
-    //           <Td>{user.companyId}</Td>
-    //           <Td>{user.discountRate}</Td>
-    //           <Td>{user.name}</Td>
-    //         </Tr>
-    //       ))}
-    //     </Tbody>
-    //   </Table>
-    // </Box>
-    <Stack>
-       <Box fontSize="2xl" fontWeight="bold" mb={4}>
-         Affiliate Billing
-       </Box>
+    <Stack spacing={4}>
+      <Box fontSize="2xl" fontWeight="bold" mb={4}>
+        Affiliate Billing
+      </Box>
       <Accordion allowMultiple>
         {nilai &&
           Object.keys(nilai)?.map((data, index) => (
-            <AccordionItem key={index}>
+            <AccordionItem key={index} w={"full"}>
               <AccordionButton
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
+                w={"full"}
               >
-                <Text fontWeight="bold" fontSize="20px" p="3%">
+                <Text fontWeight="bold" fontSize={["15px", "15px", "20px"]} p="3%">
                   Coupon Code: {data}
                 </Text>
                 <AccordionIcon />
@@ -190,34 +165,33 @@ const AffiliateBillingPage = () => {
                       variant="outline"
                       key={subIndex}
                     >
-
-                      <Stack w={"80%"}>
+                      <Stack w={["100%","100%","100%"]} spacing={4}>
                         <CardBody>
-                          <SimpleGrid columns={[1]}>
+                          <SimpleGrid columns={[1, 1, 2]} spacing={4}>
                             <Box
-                              border="none"
-                              padding="4"
-                              borderRadius="md"
-                              display="grid"
-                              gridTemplateColumns="max-content max-content 1fr"
-                              gridGap="2"
+                            border="none"
+                            padding={["0","3","4"]}
+                            borderRadius="md"
+                            display="grid"
+                            gridTemplateColumns="max-content max-content 1fr"
+                            gridGap="2"
                             >
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
                                 Company Name
                               </Text>
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
                                 :
                               </Text>
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
                                 {x.name}
                               </Text>
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                                Discount Rate 
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
+                                Discount Rate
                               </Text>
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
                                 :
                               </Text>
-                              <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                              <Text fontSize={["sm","md","lg"]} fontFamily={"Sans-serif"} >
                                 {x.discount.discountRate}%
                               </Text>
                             </Box>

@@ -132,14 +132,14 @@ function UserLive() {
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         User Live
       </Text>
-      <InputGroup marginTop={"2%"} marginBottom={"2%"}>
+      <InputGroup marginTop={"2%"} marginBottom={["7%","5%","2%"]}>
         <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.300" />
         </InputLeftElement>
         <Input
           type="tel"
           placeholder="Filter User"
-          w={"30%"}
+          w={["100%","100%","30%"]}
           onChange={(e) => setSearch(e.target.value)}
         />
       </InputGroup>

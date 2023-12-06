@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f8f8f8;
+        margin: 0;
+        padding: 0;
+      }
+
+      #calendar {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+        background-color: #fff;
+      }
+
+      #calendar-header {
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #3498db;
+        color: white;
+        border-radius: 10px 10px 0 0;
+      }
+
+      #calendar-header button {
+        cursor: pointer;
+        background-color: #2980b9;
+        color: white;
+        border: none;
+        padding: 12px;
+        margin: 11px;
+        border-radius: 5px;
+      }
+
+      #calendar-header button:hover {
+        background-color: #2575a7;
+      }
+
+      #calendar-header span {
+        flex-grow: 1;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      #calendar-days {
+        display: flex;
+        justify-content: space-between;
+        background-color: #3498db;
+        color: white;
+      }
+
+      .today {
+        background-color: #54b1ee;
+        color: white;
+      }
+
+      .day {
+        flex-grow: 1;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+      }
+
+      #calendar-body {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      .day-container {
+        position: relative;
+        height: 160px;
+      }
+
+      .day-number {
+        width: 100%;
+        height: 160px;
+        /* line-height: 50px; */
+        text-align: center;
+        position: relative;
+        overflow: none;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+
+      .event-card {
+        position: absolute;
+        top: 40px;
+        margin-left: 2%;
+        width: 98%;
+        height: 40%;
+        border-radius: 5px;
+        overflow: hidden;
+        text-align: center;
+        background-color: #3498db;
+        color: white;
+      }
+
+      .event-content {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+      }
+
+      .event-image {
+        width: 30%;
+        height: 40px;
+        margin-right: 5px;
+        border-radius: 50%;
+      }
+
+      .event-text {
+        flex-grow: 1;
+        font-size: 8px;
+      }
+
+      .empty {
+        width: 100%;
+        height: 160px;
+        line-height: 50px;
+        text-align: center;
+        border: 1px solid #ccc;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #table {
+        display: none;
+        margin-right: auto;
+        margin-left: auto;
+        width: 80%;
+        margin-top: 20px;
+      }
+
+      #calendar-title {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #toggle-button {
+        cursor: pointer;
+        background-color: #2980b9;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        margin-top: 7px;
+      }
+
+      #toggle-button:hover {
+        background-color: #2575a7;
+      }
+
+      #event-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      #event-table th,
+      #event-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        .event-text{
+          font-size: 45%;
+        }
+      }
+
+      @media only screen and (max-width: 600px) {
+        #calendar {
+          width: 100%;
+        }
+
+        #calendar-header {
+          width: 100%;
+        }
+
+        .event-card {
+          width: full;
+          padding: 0;
+          left: 3%;
+        }
+
+        .event-content {
+          display: inline;
+        }
+
+        .event-image {
+          margin-top: 10%;
+          left: 0;
+          width: 80%;
+        }
+
+        .event-text {
+          display: none;
+        }
+
+        .day {
+          font-size: 12px;
+        }
+
+        .day-container {
+          height: 80px;
+        }
+
+        .empty {
+          height: 80px;
+        }
+
+        .day-number {
+          height: 80px;
+          line-height: 30px;
+        }
+
+        .event-card {
+          height: 30px;
+        }
+
+        .event-image {
+          top: 0;
+          height: 20px;
+        }
+
+        .more-link {
+          font-size: 8px;
+        }
+
+        #table {
+          width: 100%;
+        }
+      }
+    </style>
+    <title>Calendar</title>
+  </head>
+  <body>
+    <div id="calendar-header">
+      <button onclick="prevMonth()"><</button>
+      <div id="calendar-title">
+        <span id="currentMonth"></span>
+        <button id="toggle-button" onclick="toggleView()">Toggle View</button>
+      </div>
+      <button onclick="nextMonth()">></button>
+    </div>
+    <div id="calendar">
+      <div id="calendar-days">
+        <div class="day">Sun</div>
+        <div class="day">Mon</div>
+        <div class="day">Tue</div>
+        <div class="day">Wed</div>
+        <div class="day">Thu</div>
+        <div class="day">Fri</div>
+        <div class="day">Sat</div>
+      </div>
+      <div id="calendar-body"></div>
+    </div>
+    <div id="table">
+      <table id="event-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>City</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody id="event-table-body"></tbody>
+      </table>
+    </div>
+
+    <script>
+      let currentMonth = moment();
+      let events = [];
+      let currentView = "calendar";
+
+      function toggleView() {
+        const calendar = document.getElementById("calendar");
+        const table = document.getElementById("table");
+
+        if (currentView === "calendar") {
+          calendar.style.display = "none";
+          table.style.display = "block";
+          currentView = "table";
+        } else {
+          calendar.style.display = "block";
+          table.style.display = "none";
+          currentView = "calendar";
+        }
+      }
+
+      async function fetchData() {
+        try {
+          const response = await axios.get(
+            "https://new-apiv2.importir.com/api/seminar/event-acquisition/next-one-month?event_type=entrepreneur"
+          );
+          if (response && response.data) {
+            events = response.data;
+            displayData(events);
+          } else {
+            console.error("Invalid response data:", response);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
+        }
+      }
+
+      function displayData(data) {
+        const filteredData = data.filter((event) => {
+          const eventMonth = moment(event.event_date).month();
+          const currentMonthIndex = currentMonth.month();
+          return eventMonth === currentMonthIndex;
+        });
+
+        updateCalendar(filteredData);
+
+        const eventTableBody = document.getElementById("event-table-body");
+        eventTableBody.innerHTML = "";
+
+        // console.log(filteredData, "lolol");
+        filteredData.forEach((event) => {
+          const row = document.createElement("tr");
+          row.innerHTML =
+            "<td>" +
+            event.event_title +
+            "</td><td>" +
+            event.event_date +
+            "</td><td>" +
+            event.event_city +
+            "</td><td>" +
+            event.event_link +
+            "</td>";
+          eventTableBody.appendChild(row);
+        });
+      }
+
+      function updateCalendar(data) {
+        const calendarHeader = document.getElementById("currentMonth");
+        const calendarBody = document.getElementById("calendar-body");
+
+        calendarHeader.textContent = currentMonth.format("MMMM YYYY");
+
+        calendarBody.innerHTML = "";
+
+        const today = moment();
+        const firstDay = moment(currentMonth).startOf("month");
+        const lastDay = moment(currentMonth).endOf("month");
+        const startDay = firstDay.day();
+        const endDay = lastDay.date();
+        console.log(startDay, endDay)
+        for (let i = 0; i < startDay; i++) {
+          const emptyDay = document.createElement("div");
+          emptyDay.classList.add("empty");
+          calendarBody.appendChild(emptyDay);
+        }
+
+        for (let day = 1; day <= endDay; day++) {
+          const dayContainer = document.createElement("div");
+          dayContainer.classList.add("day-container");
+
+          const dayNumber = document.createElement("div");
+          dayNumber.classList.add("day-number");
+          dayNumber.textContent = day;
+
+          const eventDate = moment(currentMonth).date(day);
+          const matchingEvents = data.filter((event) =>
+            moment(event.event_date).isSame(eventDate, "day")
+          );
+
+          if (today.isSame(eventDate, "day") || matchingEvents.length > 0) {
+            if (today.isSame(eventDate, "day")) {
+              dayNumber.classList.add("today");
+            }
+
+            dayNumber.addEventListener("click", () => {
+              handleDayClick(eventDate);
+            });
+
+            matchingEvents.forEach((event) => {
+              const eventCard = document.createElement("div");
+              eventCard.classList.add("event-card");
+
+              const eventContent = document.createElement("div");
+              eventContent.classList.add("event-content");
+
+              const image = document.createElement("img");
+              image.src = event.event_image;
+              image.alt = "Event Image";
+              image.classList.add("event-image");
+
+              const text = document.createElement("div");
+              text.classList.add("event-text");
+              text.innerHTML = "<strong>" + event.event_title + "</strong><br>";
+
+              const date = document.createElement("div");
+              date.classList.add("event-date");
+              date.textContent = moment(event.event_date).format(
+                "MMMM DD, YYYY"
+              );
+
+              const link = document.createElement("a");
+              link.classList.add("event-link");
+              link.href = event.event_link;
+
+              eventContent.appendChild(image);
+              eventContent.appendChild(text);
+              eventCard.appendChild(eventContent);
+              dayContainer.appendChild(dayNumber);
+              dayContainer.appendChild(eventCard);
+            });
+          } else {
+            dayNumber.classList.add("empty");
+          }
+
+          dayContainer.appendChild(dayNumber);
+          calendarBody.appendChild(dayContainer);
+        }
+      }
+
+      function updateTable(data, selectedDate) {
+        const eventTableBody = document.getElementById("event-table-body");
+        eventTableBody.innerHTML = "";
+
+        const filteredData = data.filter((event) =>
+          moment(event.event_date).isSame(selectedDate, "day")
+        );
+
+        filteredData.forEach((event) => {
+          const row = document.createElement("tr");
+          row.innerHTML =
+            "<td>" +
+            event.event_title +
+            "</td><td>" +
+            event.event_date +
+            "</td><td>" +
+            event.event_city +
+            "</td><td>" +
+            event.event_link +
+            "</td>";
+          eventTableBody.appendChild(row);
+        });
+      }
+
+      function handleDayClick(selectedDate) {
+        const calendar = document.getElementById("calendar");
+        const table = document.getElementById("table");
+
+        if (currentView === "calendar") {
+          calendar.style.display = "none";
+          table.style.display = "block";
+          currentView = "table";
+
+          updateTable(events, selectedDate);
+        } else {
+          calendar.style.display = "block";
+          table.style.display = "none";
+          currentView = "calendar";
+        }
+      }
+
+      function prevMonth() {
+        currentMonth = moment(currentMonth).subtract(1, "month");
+        fetchData();
+      }
+
+      function nextMonth() {
+        currentMonth = moment(currentMonth).add(1, "month");
+        fetchData();
+      }
+
+      fetchData();
+    </script>
+  </body>
+</html>

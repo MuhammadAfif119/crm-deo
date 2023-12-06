@@ -57,13 +57,14 @@ const BillingPage = () => {
     <Box>
       {data.map((item) => (
         <Card
-          key={item.id}
-          style={{
-            marginTop: "2%",
-            boxShadow:
-              "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
-          }}
-        >
+        key={item.id}
+        margin="2%"
+        boxShadow="0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)"
+        borderRadius="8px"
+        overflow="hidden"
+        transition="transform 0.2s"
+        _hover={{ transform: "scale(1.02)" }}
+      >
           <Stack>
             <CardHeader>
               <Flex justifyContent={"space-between"}>
@@ -82,57 +83,60 @@ const BillingPage = () => {
                   </ListItem>
                 </List>
                 <Button
-                  cursor="default"
-                  colorScheme="green"
-                  borderRadius="15px"
-                  fontFamily="Sans-serif"
-                >
-                  {item.action}
-                </Button>
+                cursor="default"
+                colorScheme="green"
+                borderRadius="15px"
+                fontFamily="Sans-serif"
+                display={{ base: "none", md: "block" }}
+              >
+                {item.action}
+              </Button>
+              
               </Flex>
             </CardHeader>
             <Divider />
-            <SimpleGrid columns={2} padding={"10px"}>
-              <Box
-                border="none"
-                padding="4"
-                borderRadius="md"
-                display="grid"
-                gridTemplateColumns="max-content max-content 1fr"
-                gridGap="2"
-              >
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  Name
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  :
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  {item.name}
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  No. HP
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  :
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  {item.phone_number}
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  Email
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  :
-                </Text>
-                <Text fontSize="lg" fontFamily={"Sans-serif"}>
-                  {item.email}
-                </Text>
-              </Box>
+            <SimpleGrid columns={[1,2,2]} spacing={4} padding="10px" templateColumns={["1fr", "40% 58%", "40% 58%"]}>
+            <Box
+            border="none"
+            padding={["0", "2", "4"]}
+            borderRadius="md"
+            display="grid"
+            gridTemplateColumns="max-content max-content 1fr"
+            gridGap="2"
+          >
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              Name
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              :
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"} whiteSpace="pre-wrap">
+              {item.name}
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              No. HP
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              :
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"} whiteSpace="pre-wrap">
+              {item.phone_number}
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              Email
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"}>
+              :
+            </Text>
+            <Text fontSize={["sm", "lg", "lg"]} fontFamily={"Sans-serif"} whiteSpace="pre-wrap">
+              {item.email}
+            </Text>
+          </Box>
+          
 
               <Box>
                 <Stack spacing="4">
-                  <Card variant="outline">
+                  <Card variant="outline" >
                     <CardHeader>
                       <Heading
                         size="md"
@@ -144,73 +148,73 @@ const BillingPage = () => {
                       </Heading>
                     </CardHeader>
                     <CardBody>
-                      <Flex justifyContent={"space-around"} alignItems="center">
-                        <Box textAlign="center" mx={4}>
+                      <SimpleGrid columns={[1, 5, 5]} alignItems="center">
+                        <Box textAlign="center" mx={3} marginTop={["15px", "0", "0"]}>
                           <Tooltip
                             label="number of accounts available"
                             aria-label="A tooltip"
                           >
-                            <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                            <Text fontSize={["sm","lg","lg"]} fontFamily={"Sans-serif"}>
                               HR
                             </Text>
                           </Tooltip>
-                          <Text fontSize="lg" mt={1} fontFamily={"Sans-serif"}>
+                          <Text fontSize={["sm","lg","lg"]} mt={1} fontFamily={"Sans-serif"}>
                             {item.package.hr.toLocaleString()}
                           </Text>
                         </Box>
-                        <Box textAlign="center" mx={4}>
+                        <Box textAlign="center" mx={3} marginTop={["15px", "0", "0"]}>
                           <Tooltip
                             label="number of accounts available"
                             aria-label="A tooltip"
                           >
-                            <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                            <Text fontSize={["sm","lg","lg"]} fontFamily={"Sans-serif"}>
                               Customer
                             </Text>
                           </Tooltip>
-                          <Text fontSize="lg" mt={1} fontFamily={"Sans-serif"}>
+                          <Text fontSize={["sm","lg","lg"]} mt={1} fontFamily={"Sans-serif"}>
                             {item.package.customers.toLocaleString()}
                           </Text>
                         </Box>
-                        <Box textAlign="center" mx={4}>
+                        <Box textAlign="center" mx={3} marginTop={["15px", "0", "0"]}>
                           <Tooltip
                             label="number of outlets available"
                             aria-label="A tooltip"
                           >
-                            <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                            <Text fontSize={["sm","lg","lg"]} fontFamily={"Sans-serif"}>
                               Outlet
                             </Text>
                           </Tooltip>
-                          <Text fontSize="lg" mt={1} fontFamily={"Sans-serif"}>
+                          <Text fontSize={["sm","lg","lg"]} mt={1} fontFamily={"Sans-serif"}>
                             {item.package.outlet.toLocaleString()}
                           </Text>
                         </Box>
-                        <Box textAlign="center" mx={4}>
+                        <Box textAlign="center" mx={3} marginTop={["15px", "0", "0"]}>
                           <Tooltip
                             label="number of accounts available"
                             aria-label="A tooltip"
                           >
-                            <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                            <Text fontSize={["sm","lg","lg"]} fontFamily={"Sans-serif"}>
                               Sales
                             </Text>
                           </Tooltip>
-                          <Text fontSize="lg" mt={1} fontFamily={"Sans-serif"}>
+                          <Text fontSize={["sm","lg","lg"]} mt={1} fontFamily={"Sans-serif"}>
                             {item.package.sales.toLocaleString()}
                           </Text>
                         </Box>
-                        <Box textAlign="center" mx={4}>
+                        <Box textAlign="center" mx={3} marginTop={["15px", "0", "0"]}>
                           <Tooltip
                             label="number of warehouse available"
                             aria-label="A tooltip"
                           >
-                            <Text fontSize="lg" fontFamily={"Sans-serif"}>
+                            <Text fontSize={["sm","lg","lg"]} fontFamily={"Sans-serif"}>
                               Warehouse
                             </Text>
                           </Tooltip>
-                          <Text fontSize="lg" mt={1} fontFamily={"Sans-serif"}>
+                          <Text fontSize={["sm","lg","lg"]} mt={1} fontFamily={"Sans-serif"}>
                             {item.package.warehouse.toLocaleString()}
                           </Text>
                         </Box>
-                      </Flex>
+                      </SimpleGrid>
                     </CardBody>
                   </Card>
                 </Stack>

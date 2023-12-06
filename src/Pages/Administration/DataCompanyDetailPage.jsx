@@ -185,11 +185,11 @@ const DataCompanyDetailPage = () => {
         <BackButtons />
         {description.map((data, index) => (
           <SimpleGrid
-            columns={{ base: 1, lg: 2 }}
-            spacing={{ base: 8, md: 10 }}
-            py={{ base: 18, md: 24 }}
-            key={index}
-          >
+          columns={{ base: 1, md: 2 }}
+          spacing={{ base: 4, md: 10 }}
+          py={{ base: 6, md: 12 }}
+          key={index}
+        >
             <Flex>
               <Image
                 rounded={"md"}
@@ -217,16 +217,16 @@ const DataCompanyDetailPage = () => {
                 direction={"column"}
                 divider={
                   <StackDivider
-                    borderColor={useColorModeValue("gray.200", "gray.600")}
+                    // borderColor={useColorModeValue("gray.200", "gray.600")}
                   />
                 }
               >
                 <Box>
-                  <SimpleGrid columns={2}>
+                  <SimpleGrid columns={2} spacing={"25%"}>
                     <Box>
                       <Text
-                        fontSize={{ base: "16px", lg: "18px" }}
-                        color={useColorModeValue("yellow.500", "yellow.300")}
+                        fontSize={["14px","18px,18px"]}
+                        // color={useColorModeValue("yellow.500", "yellow.300")}
                         fontWeight={"500"}
                         textTransform={"uppercase"}
                         mb={"4"}
@@ -247,8 +247,8 @@ const DataCompanyDetailPage = () => {
                     </Box>
                     <Box>
                       <Text
-                        fontSize={{ base: "16px", lg: "18px" }}
-                        color={useColorModeValue("yellow.500", "yellow.300")}
+                      fontSize={["14px","18px,18px"]}
+                        // color={useColorModeValue("yellow.500", "yellow.300")}
                         fontWeight={"500"}
                         textTransform={"uppercase"}
                         mb={"4"}
@@ -273,7 +273,7 @@ const DataCompanyDetailPage = () => {
                 <Box>
                   <Text
                     fontSize={{ base: "16px", lg: "18px" }}
-                    color={useColorModeValue("yellow.500", "yellow.300")}
+                    // color={useColorModeValue("yellow.500", "yellow.300")}
                     fontWeight={"500"}
                     textTransform={"uppercase"}
                     mb={"4"}
@@ -327,14 +327,14 @@ const DataCompanyDetailPage = () => {
         <Box>
           <Text
             fontSize={{ base: "16px", lg: "18px" }}
-            color={useColorModeValue("yellow.500", "yellow.300")}
+            // color={useColorModeValue("yellow.500", "yellow.300")}
             fontWeight={"500"}
             textTransform={"uppercase"}
             mb={"4"}
           >
             Roles
           </Text>
-          <SimpleGrid columns={4} w={"full"}>
+          <SimpleGrid columns={[1,4,4]} w={"full"}>
             {roles?.map((m, index) => (
               <Box
                 border="1px solid #ccc"
@@ -365,14 +365,14 @@ const DataCompanyDetailPage = () => {
         <Box>
           <Text
             fontSize={{ base: "16px", lg: "18px" }}
-            color={useColorModeValue("yellow.500", "yellow.300")}
+            // color={useColorModeValue("yellow.500", "yellow.300")}
             fontWeight={"500"}
             textTransform={"uppercase"}
             mb={"4"}
           >
             Bank
           </Text>
-          <SimpleGrid columns={4} w={"full"}>
+          <SimpleGrid columns={[1,4,4]} w={"full"}>
             {bank?.map((r, index) => (
               <Box
                 border="1px solid #ccc"

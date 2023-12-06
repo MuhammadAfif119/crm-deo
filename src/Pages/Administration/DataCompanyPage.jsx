@@ -174,7 +174,9 @@ const DataCompanyPage = () => {
                   _active={{ bg: "white", color: "black" }}
                   onClick={() => handleOpen(value.documentId)}
                 >
-                  View Detail
+                <Text fontSize={["sm", "md", "md"]}>
+                View Detail
+                </Text>
                 </Button>
               </Flex>
               <Box

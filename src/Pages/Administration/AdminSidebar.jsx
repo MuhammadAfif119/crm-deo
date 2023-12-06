@@ -38,8 +38,8 @@ const LinkItems = [
   { name: "Billing", icon: RiBuilding4Fill, navigate: "/administration/billing" },
   // { name: "History", icon: AiOutlineFolder, navigate: "/administration/history" },
   { name: "Affiliate Billing", icon: TbAffiliate, navigate: "/administration/affiliate-billing" },
-  { name: "Data Company", icon: BsBuildingFillGear  , navigate: "/administration/data-company" },
-  { name: "Data Calendar", icon: CalendarIcon  , navigate: "/administration/calendar" },  
+  { name: "Data Company", icon: BsBuildingFillGear, navigate: "/administration/data-company" },
+  { name: "Data Calendar", icon: CalendarIcon, navigate: "/administration/calendar" },
 ];
 
 const AdminSidebar = () => {
@@ -66,11 +66,11 @@ const AdminSidebar = () => {
       <MobileNav
         display={{ base: "flex", md: "none" }}
         onOpen={onOpen}
-        position="fixed"  
-        top="0"          
-        left="0"         
-        width="100%"      
-        zIndex="999"      
+        position="fixed"
+        top="0"
+        left="0"
+        width="100%"
+        zIndex="999"
       />
       <Box ml={{ base: 0, md: 60 }} p="4">
         {/* Content */}
@@ -112,15 +112,14 @@ const SidebarContent = ({ onClose, ...rest }) => {
             <Text fontWeight={500} color="#808080">
               Back
             </Text>
-          </Flex>
+          </Flex> 
           <Image src={themeConfig.logokotak} borderRadius="full" />
         </Box>
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
 
       <Box marginTop="15%">
         {LinkItems.map((link) => (
-          <Link key={link.name} to={link.navigate}>
+          <Link key={link.name} to={link.navigate} onClick={onClose}>
             <NavItem icon={link.icon}>{link.name}</NavItem>
           </Link>
         ))}
